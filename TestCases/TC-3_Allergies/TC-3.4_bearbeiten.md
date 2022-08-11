@@ -9,7 +9,7 @@ Der Benutzer wählt eine Unverträglichkeit aus und öffnet das Formular zur Bea
 In der Liste die Unverträglichkeiten erscheint die Änderungen als neuer Eintrag. Im Impfausweis hingegen wird nur der neue Eintrag mit den Änderungen angezeigt.
 
 
-### Vorbereitung:
+### Vorbereitung:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
