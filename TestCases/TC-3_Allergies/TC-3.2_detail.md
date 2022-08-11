@@ -6,7 +6,7 @@ Der Benutzer öffnet die Ansicht für die Unverträglichkeiten. Dem Benutzer wer
 
 Der Benutzer wählt aus der Liste der angezeigten Unverträglichkeiten genau eine Unverträglichkeit aus und öffnet die Detailansicht der Unverträglichkeit.
 
-### Vorbereitung:
+### Vorbereitung:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
