@@ -4,7 +4,9 @@ Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpers
 
 Der Benutzer öffnet die Ansicht für Impfungen, Unverträglichkeiten oder für den Impfausweis. Dem Benutzer werden die Impfungen oder Unverträglichkeiten und ggfs. erfasste Kommentare in der Liste angezeigt.
 
-Der Benutzer wählt eine Impfung oder Unverträglichkeit aus und öffnet die Ansicht zur Anzeige der Kommentare zur Impfung  oder Unverträglichkeit via Kontextmenü.
+Der Benutzer wählt eine Impfung, Unverträglichkeit oder durchmachte Infektionskrankheit aus und öffnet die Detailansicht des ausgewählten Eintrags.
+
+Der Benutzer öffnet die Liste der Kommentare aus der Detailansicht.
 
 ### Vorbereitung:
 

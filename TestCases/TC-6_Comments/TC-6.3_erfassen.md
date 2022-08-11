@@ -3,7 +3,9 @@ Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpers
 
 Der Benutzer öffnet die Ansicht für Impfungen, Unverträglichkeiten oder für den Impfausweis. Dem Benutzer werden die Impfungen oder Unverträglichkeiten und ggfs. erfasste Kommentare in der Liste angezeigt.
 
-Der Benutzer wählt eine Impfung oder Unverträglichkeit aus und öffnet das Formular zur Erfassung von Kommentaren per Kontextmenü, oder wählt eine kommentierte Impfung oder Unverträglichkeit aus, öffnet die Ansicht für Kommentare und öffnet das Formular zur Erfassung von Kommentaren per Button.
+Der Benutzer wählt eine Impfung, Unverträglichkeit oder durchmachte Infektionskrankheit aus und öffnet die Detailansicht des ausgewählten Eintrags.
+
+Der Benutzer öffnet das Firmular zur Erfassung und gibt einen Kommentar ein. 
 
 ### Vorbereitung:
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:

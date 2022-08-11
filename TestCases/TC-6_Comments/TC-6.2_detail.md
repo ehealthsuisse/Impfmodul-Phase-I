@@ -1,7 +1,11 @@
 ## TC 6.2: Kommentare Detailansicht
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
+
 Der Benutzer öffnet die Ansicht für Impfungen, Unverträglichkeiten oder für den Impfausweis. Dem Benutzer werden die Impfungen oder Unverträglichkeiten und ggfs. erfasste Kommentare in der Liste angezeigt.
-Der Benutzer wählt eine Impfung oder Unverträglichkeit aus und öffnet die Ansicht zur Anzeige der Kommentare zur Impfung  oder Unverträglichkeit via Kontextmenü. Der Benutzer öffnet die Detailansicht zum Kommentar via Mausklick.
+
+Der Benutzer wählt eine Impfung, Unverträglichkeit oder durchmachte Infektionskrankheit aus und öffnet die Detailansicht des ausgewählten Eintrags.
+
+Der Benutzer öffnet die Liste der Kommentare und wählt einen Kommentar aus. Der Kommentar wird dem Benutzer mit allen Attributen angezeigt. 
 
 ### Vorbereitung:
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
