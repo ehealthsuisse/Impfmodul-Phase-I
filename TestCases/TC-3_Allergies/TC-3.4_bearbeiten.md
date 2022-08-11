@@ -1,4 +1,4 @@
-## TC 3.4: Unverträglichkeit bearbeiten
+## TC 3.4: Unverträglichkeit bearbeiten
 
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
@@ -9,7 +9,7 @@ Der Benutzer wählt eine Unverträglichkeit aus und öffnet das Formular zur Bea
 In der Liste die Unverträglichkeiten erscheint die Änderungen als neuer Eintrag. Im Impfausweis hingegen wird nur der neue Eintrag mit den Änderungen angezeigt.
 
 
-### Vorbereitung:
+### Vorbereitung:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser

@@ -8,7 +8,7 @@ Der Benutzer wählt eine Unverträglichkeit aus und öffnet das Formular zum Ann
 In der Liste die Unverträglichkeiten erscheint die annullierte Unverträglichkeit mit Kommentar. Im Impfausweis hingegen wird der annullierte Eintrag nicht mehr angezeigt.
 
 
-### Vorbereitung:
+### Vorbereitung:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
@@ -17,7 +17,7 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Das EPD Testsystem ist aufgeschaltet und erreichbar (Gazelle, EPD Playground, Testsystem einer Gemeinschaft, EPD Mock).
 
 
-### Durchführung:
+### Durchführung:
 
 Der Test wird wie folgt durchgeführt:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
