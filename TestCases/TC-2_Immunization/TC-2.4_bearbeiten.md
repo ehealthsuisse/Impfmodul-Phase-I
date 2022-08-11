@@ -1,9 +1,12 @@
 ## TC 2.4: Impfung bearbeiten
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
-Der Benutzer öffnet die Ansicht für die Impfungen. Dem Benutzer werden alle Einträge mit Impfungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt, d.h. alle Einträge für Impfungen aus allen Dokumenten im EPD Testsystem werden angezeigt.
+Der Benutzer öffnet die Ansicht für die Impfungen. Dem Benutzer werden alle Einträge mit Impfungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt.
 
-Der Benutzer wählt eine Impfung aus und öffnet das Formular zur Bearbeitung einer ausgewählten Impfung per Kontextmenü. Der Benutzer ändert oder ergänzt die Attribute der Impfung und bestätigt die Änderungen. Das Impfmodul speichert ein neues Dokument mit allen Attributen nach Änderung und Bezug zum Original im EPD.
+Der Benutzer wählt eine Impfung aus und öffnet die Detailansicht. Der Benutzer öffnet
+das Formular zur Bearbeitung der Impfung. Der Benutzer ändert oder ergänzt die Attribute der Impfung und bestätigt die Änderungen.
+
+Das Impfmodul speichert ein neues Dokument mit allen Attributen nach Änderung und Bezug zum Original im EPD.
 
 In der Liste die Impfungen erscheint die Änderungen als neuer Eintrag. Im Impfausweis hingegen wird nur der neue Eintrag mit den Änderungen angezeigt.
 
@@ -30,7 +33,7 @@ Der Test wie folgt durchgeführt:
 ### Erwartetes Ergebnis:
 
 Das erwartete Resultat des Tests ist wie folgt:
-- Das Formular kann per Kontextmenü geöffnet werden.
+- Das Formular zur Bearbeitung kann aus der Detailansicht geöffnet werden.
 - Alle Attribute können bearbeitet werden.
 - Es wird ein Dialog zur Bestätigung angezeigt.
 - Der geänderte Eintrag erscheint in der Liste der Impfungen.

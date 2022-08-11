@@ -25,14 +25,15 @@ Iteration 1:
 - Die Ansicht für Impfungen öffnen.
 - Verifizieren, dass die Impfungen aus dem EPD Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) in einer Tabelle angezeigt werden.
 
+
 ### Erwartetes Ergebnis:
 
 Das erwartete Resultat des Tests ist wie folgt:
 - Das Impfmodul zeigt eine Tabelle mit allen Impfungen (1 Zeile pro Impfung) aus dem EPD Testsystem an.
 - Die Impfungen werden zeitgeordnet vom neuesten zum ältesten Zeitpunkt der Impfung angezeigt.  
 - Die Impfungen werden in der Tabelle mit den folgenden Attributen angezeigt:
--	Zeitpunkt der Impfung (occurenceDateTime)
--	Impfstoff (vaccineCode)
--	Impfschutz (targetDesease)
--	Dosisnummer (doseNumberPositiveInt)
--	Name der Gesundheitsfachperson, welche die Impfung verabreicht hat (performer).
+1. Zeitpunkt der Impfung (occurenceDateTime)
+2. Impfstoff (vaccineCode)
+3. Impfschutz (targetDesease)
+4. Dosisnummer (doseNumberPositiveInt)
+5. Name der Gesundheitsfachperson, welche die Impfung verabreicht hat (performer).

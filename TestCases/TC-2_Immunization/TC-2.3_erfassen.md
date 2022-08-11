@@ -1,9 +1,9 @@
 ## TC 2.3: Impfung erfassen
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
-Der Benutzer öffnet die Ansicht für die Impfungen. Dem Benutzer werden alle Einträge mit Impfungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt, d.h. alle Einträge für Impfungen aus allen Dokumenten im EPD Testsystem werden angezeigt.
+Der Benutzer öffnet die Ansicht für die Impfungen. Dem Benutzer werden alle Einträge mit Impfungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt.
 
-Der Benutzer öffnet das Formular zur Erfassung einer neuen Impfung mit dem Button.
+Der Benutzer öffnet das Formular zur Erfassung einer neuen Impfung.
 
 ### Vorbereitung:
 
@@ -25,7 +25,7 @@ Der Test wie folgt durchgeführt:
 ### Erwartetes Ergebnis:
 Das erwartete Resultat des Tests ist wie folgt:
 - Das Impfmodul zeigt alle Impfungen aus dem EPD Testsystem zeilenweise an und die neu erfasste Impfung erscheint in der Tabelle der Impfungen.
-- Die Detailansicht einer Impfung öffnet sich per Doppelklick in der Zeile der neue erfassten Impfung und die Attribute in der Detailansicht sind identisch mit den eingegeben Werten.
+- Die Detailansicht der Impfung öffnet sich per Doppelklick in der Zeile der neue erfassten Impfung und die Attribute in der Detailansicht sind identisch mit den eingegeben Werten.
 
 Eine neue Impfung muss mit den folgenden Attributen erfasst werden können:  
 1.  Zeitpunkt der Impfung (occurenceDateTime)

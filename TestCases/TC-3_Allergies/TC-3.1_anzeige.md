@@ -1,7 +1,7 @@
 ## TC 3.1: Unverträglichkeiten anzeigen
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
-Der Benutzer öffnet die Ansicht für die Unverträglichkeiten. Dem Benutzer werden alle Einträge mit Unverträglichkeiten zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt, d.h. alle Einträge für Unverträglichkeiten aus allen Dokumenten im EPD Testsystem werden angezeigt.
+Der Benutzer öffnet die Ansicht für die Unverträglichkeiten. Dem Benutzer werden alle Einträge mit Unverträglichkeiten zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt.
 
 ### Vorbereitung:
 
@@ -26,7 +26,8 @@ Der Test wird wie folgt durchgeführt:
 Das erwartete Resultat des Tests ist wie folgt:
 - Das Impfmodul zeigt alle Unverträglichkeiten aus dem EPD Testsystem zeilenweise an.
 - Unverträglichkeiten werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt.  
-- Unverträglichkeiten werden mit den folgenden Attributen angezeigt:
+
+Unverträglichkeiten werden mit den folgenden Attributen angezeigt:
 1.	Zeitpunkt (recordedDate)
 2.	Name der Allergie (code)
 3.	Kritikalität (criticality)

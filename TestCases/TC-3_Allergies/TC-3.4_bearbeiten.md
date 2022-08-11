@@ -4,9 +4,11 @@ Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpers
 
 Der Benutzer öffnet die Ansicht für die Unverträglichkeiten. Dem Benutzer werden alle Einträge mit Unverträglichkeiten zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt, d.h. alle Einträge für Unverträglichkeiten aus allen Dokumenten im EPD Testsystem werden angezeigt.
 
-Der Benutzer wählt eine Unverträglichkeit aus und öffnet das Formular zur Bearbeitung einer ausgewählten Unverträglichkeit per Kontextmenü. Der Benutzer ändert oder ergänzt die Attribute der Unverträglichkeit und bestätigt die Änderungen. Das Impfmodul speichert ein neues Dokument mit allen Attributen nach Änderung und Bezug zum Original im EPD.
+Der Benutzer wählt eine Unverträglichkeit aus und öffnet die Detailansicht. Der Benutzer öffnet das Formular zur Bearbeitung der ausgewählten Unverträglichkeit.
 
-In der Liste die Unverträglichkeiten erscheint die Änderungen als neuer Eintrag. Im Impfausweis hingegen wird nur der neue Eintrag mit den Änderungen angezeigt.
+Der Benutzer ändert oder ergänzt die Attribute der Unverträglichkeit und bestätigt die Änderungen. Das Impfmodul speichert ein neues Dokument mit allen Attributen nach Änderung und Bezug zum Original im EPD.
+
+In der Liste die Unverträglichkeiten erscheint die Änderung als neuer Eintrag. Im Impfausweis hingegen wird nur der neue Eintrag mit den Änderungen angezeigt.
 
 
 ### Vorbereitung:
@@ -23,7 +25,8 @@ Der Test wie folgt durchgeführt:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
 - Die Ansicht für Unverträglichkeiten im Menu auswählen.
 - Die Ansicht für Unverträglichkeiten öffnen.
-- Einen Eintrag in der Liste auswählen und das Formular zur Bearbeitung via Kontextmenü öffnen.
+- Einen Eintrag in der Liste auswählen und die Detailansicht öffnen.
+- Das Formular zum Bearbeiten öffnen.  
 - Ausgewählte Attribute des Eintrags ändern und die Änderung bestätigen.
 - Verifizieren, dass die Änderungen in einem neuen Dokument im EPD gespeichert wurde.
 - Verifizieren, dass der geänderte Eintrag in der Liste die Unverträglichkeiten erscheint.

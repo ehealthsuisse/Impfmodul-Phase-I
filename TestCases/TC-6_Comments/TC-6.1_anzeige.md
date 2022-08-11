@@ -2,11 +2,9 @@
 
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
-Der Benutzer öffnet die Ansicht für Impfungen, Unverträglichkeiten oder für den Impfausweis. Dem Benutzer werden die Impfungen oder Unverträglichkeiten und ggfs. erfasste Kommentare in der Liste angezeigt.
+Der Benutzer öffnet die Ansicht für Impfungen, Unverträglichkeiten oder für den Impfausweis. Dem Benutzer werden die Impfungen oder Unverträglichkeiten und in der Liste angezeigt.
 
-Der Benutzer wählt eine Impfung, Unverträglichkeit oder durchmachte Infektionskrankheit aus und öffnet die Detailansicht des ausgewählten Eintrags.
-
-Der Benutzer öffnet die Liste der Kommentare aus der Detailansicht.
+Der Benutzer wählt einen Eintrag aus und öffnet die Detailansicht. Der Benutzer öffnet die Liste der Kommentare aus der Detailansicht.
 
 ### Vorbereitung:
 
@@ -44,10 +42,10 @@ Iteration 3:
 
 Das erwartete Resultat des Tests ist wie folgt:
 
-- Die Ansicht für die Kommentare öffnet sich nach Aktivierung aus dem Kontextmenü der ausgewählten Impfung oder Unverträglichkeit.
-- Alle zur Impfung oder Unverträglichkeit erfassten Kommentare werden in einer Liste zeitgeordnet angezeigt (vom neuesten zum ältesten Kommentar).
+- Die Ansicht für die Kommentare kann aus der Detailansicht des ausgewählten Eintrags geöffnet werden.
+- Alle zum Eintrag erfassten Kommentare werden zeitgeordnet angezeigt (vom neuesten zum ältesten Kommentar).
 
-- Die Spalten der Liste zeigen die folgenden Daten:  
+Die Spalten der Liste zeigen die folgenden Daten:  
 1.	Zeitpunkt des Kommentars (note/time)
 2.	ersten N Zeichen des Kommentars (note/text)
 3.	Name der Gesundheitsfachperson, welche den Kommentar erfasst hat

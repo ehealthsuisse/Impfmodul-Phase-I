@@ -2,9 +2,9 @@
 
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
-Der Benutzer öffnet die Ansicht für die Impfungen. Dem Benutzer werden alle Einträge mit Impfungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt, d.h. alle Einträge für Impfungen aus allen Dokumenten im EPD Testsystem werden angezeigt.
+Der Benutzer öffnet die Ansicht für die Impfungen. Dem Benutzer werden alle Einträge mit Impfungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management nicht berücksichtigt.
 
-Der Benutzer wählt aus der Liste der angezeigten Impfungen genau eine Impfung aus und öffnet die Detailansicht der Unverträglichkeit.
+Der Benutzer wählt aus der Liste der angezeigten Impfungen genau eine Impfung aus und öffnet die Detailansicht.
 
 
 ### Vorbereitung:
@@ -29,9 +29,9 @@ Der Test wird wie folgt durchgeführt:
 
 Das erwartete Resultat des Tests ist wie folgt:
 - Das Impfmodul zeigt alle Impfungen aus dem EPD Testsystem zeilenweise an.
-- Die Impfungen werden zeitgeordnet angezeigt.  
 - Die Detailansicht einer Impfung öffnet sich per Doppelklick in der Zeile.
-- Die Impfung wird mit den folgenden Attributen angezeigt:
+
+Impfungen müssen mit den folgenden Attributen angezeigt werden:
 1.	Zeitpunkt der Impfung (occurenceDateTime)
 2.	Impfstoff (vaccineCode)
 3.	Impfschutz (targetDesease)
