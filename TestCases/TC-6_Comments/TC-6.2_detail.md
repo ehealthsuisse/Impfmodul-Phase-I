@@ -18,8 +18,7 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Browser hat bereits eine aktive Session mit dem Identity Provider, bzw. der Benutzer hat sich im EPD Portal authentisiert.
 - Der Benutzer startet das Impfmodul aus dem EPD Portal, per Button, Link, o.ä.  
 - Das EPD Testsystem ist aufgeschaltet und erreichbar (Gazelle, EPD Playground, Testsystem einer Gemeinschaft, EPD Mock).
-- Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Unverträglichkeiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
-- Die Testdokumente im EPD Testsystem enthalten Einträge mit Unverträglichkeiten.
+- Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Unverträglichkeiten, Infektionskrankheiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
 
 ### Durchführung:
 Der Test wird wie folgt durchgeführt:

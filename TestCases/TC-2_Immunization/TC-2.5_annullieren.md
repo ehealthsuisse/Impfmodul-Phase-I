@@ -22,6 +22,7 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Browser hat bereits eine aktive Session mit dem Identity Provider, bzw. der Benutzer hat sich im EPD Portal authentisiert.
 - Der Benutzer startet das Impfmodul aus dem EPD Portal, per Button, Link, o.ä.  
 - Das EPD Testsystem ist aufgeschaltet und erreichbar (Gazelle, EPD Playground, Testsystem einer Gemeinschaft, EPD Mock).
+- Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Unverträglichkeiten, Infektionskrankheiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
 
 
 ### Durchführung:
@@ -35,7 +36,6 @@ Der Test wie folgt durchgeführt:
 - Einen Eintrag in der Liste auswählen und das Formular zur Annullation per Kontextmenu öffnen.
 - Eine Begründung eingeben und die Annullierung bestätigen.
 - Verifizieren, dass der originale Eintrag in der Liste der Impfungen angezeigt wird.
-- Verifizieren, dass die Annulation als Kommentar angezeigt wird.
 - Verifizieren, dass der annullierte Eintrag nicht mehr im Impfausweis angezeigt wird.   
 
 
@@ -45,3 +45,5 @@ Das erwartete Resultat des Tests ist wie folgt:
 - Das Formular zum Annullieren kann aus der Detailansicht geöffnet werden.
 - Ein Begründung muss eingegeben werden.
 - Die Änderung annulliert den originalen Eintrag im Impfausweis.
+- Der originale Eintrag und die Annulation werden in der Liste der Impfungen angezeigt.
+- Der annullierte Eintrag wird nicht mehr im Impfausweis angezeigt.

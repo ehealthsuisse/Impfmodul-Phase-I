@@ -56,7 +56,7 @@ Unverträglichkeiten werden mit den folgenden Attributen angezeigt (vgl. TC 3.1:
 5.	Gesundheitsfachperson (recorder)
 
 Infektionskrankheiten werden mit den folgenden Attributen angezeigt (vgl. TC 3.1: Unverträglichkeiten anzeigen):
-- TBD
+- TODO
 
 Kommentare zu Impfungen und Unverträglichkeiten werden mit den folgenden Attributen angezeigt (vgl. TC 6.1: Kommentare anzeigen):
 1.	Zeitpunkt des Kommentars (note/time)
