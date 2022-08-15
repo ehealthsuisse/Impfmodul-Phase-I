@@ -39,5 +39,5 @@ Infektionskrankheiten werden mit den folgenden Attributen angezeigt:
 - Verifizierungsstatus (PastIllness.verificationStatus)
 - Schweregrad (PastIllness.severity, optional)
 - Endzeitpunkt (PastIllness.abatement[].abatementDateTime, optional)
-- Name der GFP (optional)
+- Name der Gesundheitsfachperson, welche die Infektionskrankheit erfasst hat (PastIllness.recorder).
 - 1..N Kontaktdaten der GFP (optional)  

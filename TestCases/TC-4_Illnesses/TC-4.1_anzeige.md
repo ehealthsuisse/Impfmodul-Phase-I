@@ -32,3 +32,4 @@ Infektionskrankheiten werden in der Liste mit den folgenden Attributen angezeigt
 - Krankheit (PastIllness.code)
 - Klinischer Status (PastIllness.clinicalStatus)
 - Verifizierungsstatus (PastIllness.verificationStatus)
+- Name der Gesundheitsfachperson, welche die Infektionskrankheit erfasst hat (PastIllness.recorder).
