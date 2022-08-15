@@ -17,7 +17,7 @@ Bundle Inhalt:
 
 Bundle Inhalt:
 - Datum: June 8, 2021
-- Autor: M. Wegmüller
+- Autor: TC-HCP1-C1 Bereit Allzeit
 - Patientin: M. Wegmüller
 - practitioner: TC-HCP1-C1 Bereit Allzeit
 - organization: TC-ORG1 Gruppenpraxis CH
