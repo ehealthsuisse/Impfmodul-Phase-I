@@ -2,7 +2,7 @@
 
 ### Impfungen
 
-#### Testfile A-D1-P_C1
+#### Testfile [A-D1-P-C1](../Testfiles/Bundle-A-D1-P-C1.json)
 
 Bundle Inhalt:
 - Datum: June 1, 2021
@@ -13,7 +13,7 @@ Bundle Inhalt:
 - Inhalt: 1 Impfung
 - Performer: TC-HCP1-C1 "BEREIT"
 
-#### Testfile B-D1-HCP1-C1
+#### Testfile [B-D1-HCP1-C1](../Testfiles/Bundle-B-D1-HCP1-C1.json)
 
 Bundle Inhalt:
 - Datum: June 8, 2021
@@ -24,7 +24,7 @@ Bundle Inhalt:
 - Inhalt: 2 Impfungen
 - Performer: TC-HCP1-C1 "BEREIT" für beide Impfungen
 
-#### Testfile A-D2-HCP1_C1
+#### Testfile [A-D2-HCP1-C1](../Testfiles/Bundle-A-D2-HCP1-C1.json)
 
 Bundle Inhalt:
 - Datum: June 15, 2021
@@ -35,7 +35,7 @@ Bundle Inhalt:
 - Inhalt: 1 Impfung
 - Performer: TC-HCP1-C1 "BEREIT"
 
-#### Testfile A-D3-HCP2_C2
+#### Testfile [A-D3-HCP2-C2](../Testfiles/Bundle-A-D3-HCP2-C2.json)
 
 Bundle Inhalt:
 - Datum: August 1, 2021
@@ -46,7 +46,7 @@ Bundle Inhalt:
 - Inhalt: 1 Impfung
 - Performer: TC-HCP2-C2 "GESUND"
 
-#### Testfile A-D4-HCP2_C2
+#### Testfile [A-D4-HCP2-C2](../Testfiles/Bundle-A-D4-HCP2-C2.json)
 
 Bundle Inhalt:
 - Datum: August 20, 2021
@@ -54,10 +54,10 @@ Bundle Inhalt:
 - Patientin: M. Wegmüller
 - practitioner: TC-HCP2-C2 Gesund Meist
 - organization: TC-ORG2 Praxis Dr. Gesund
-- Inhalt: 1 Impfung als 2te Dosis (zu A-D1-P_C1)
+- Inhalt: 1 Impfung als 2te Dosis (zu A-D1-P-C1)
 - Performer: TC-HCP2-C2 "GESUND"
 
-#### Testfile A_D5_P_C1
+#### Testfile [A-D5-P-C1](../Testfiles/Bundle-A-D5-P-C1.json)
 
 Bundle Inhalt:
 - Datum: September 1, 2021
@@ -65,13 +65,13 @@ Bundle Inhalt:
 - Patientin: M. Wegmüller
 - practitioner: TC-HCP2-C2 "GESUND"
 - organization: TC-ORG2 Praxis Dr. Gesund
-- Inhalt: 1 Impfung als 2te Dosis (zu A-D3-HCP2_C2)
+- Inhalt: 1 Impfung als 2te Dosis (zu A-D3-HCP2-C2)
 - Performer: TC-HCP2-C2 " GESUND"
 
 
 ### Unverträglichkeiten (Allergien)
 
-#### Testfile B_D2_HCP1_C1
+#### Testfile [B-D2-HCP1-C1](../Testfiles/Bundle-B-D2-HCP1-C1.json)
 
 Bundle Inhalt:
 - Datum: October 6, 2021
@@ -90,7 +90,7 @@ Bundle Inhalt:
 
 ### Durchgemachte Infektionserkankungen
 
-#### Testfile B_D3_HCP1_C1
+#### Testfile [B-D3-HCP1-C1](../Testfiles/Bundle-B-D3-HCP1-C1.json)
 
 Bundle Inhalt:
 - Datum: October 6, 2021
