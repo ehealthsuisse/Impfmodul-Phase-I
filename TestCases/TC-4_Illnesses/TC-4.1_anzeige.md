@@ -27,5 +27,8 @@ Das erwartete Resultat des Tests ist wie folgt:
 - Das Impfmodul zeigt alle Infektionskrankheiten aus dem EPD Testsystem zeilenweise an.
 - Infektionskrankheiten werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt.  
 
-Infektionskrankheiten werden mit den folgenden Attributen angezeigt:
-- TODO
+Infektionskrankheiten werden in der Liste mit den folgenden Attributen angezeigt:
+- Zeitpunkt der Erkrankung (PastIllness.onset[].onsetDateTime)
+- Krankheit (PastIllness.code)
+- Klinischer Status (PastIllness.clinicalStatus)
+- Verifizierungsstatus (PastIllness.verificationStatus)

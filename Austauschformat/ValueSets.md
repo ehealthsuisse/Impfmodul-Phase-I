@@ -32,4 +32,4 @@ Es müssen die folgenden Value Sets verwendet werden:
 
 ### Kommentare
 
-Keine
+Keine. Kommentare enthalten keine kodierten Werte. 

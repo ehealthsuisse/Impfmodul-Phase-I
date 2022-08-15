@@ -33,4 +33,11 @@ Das erwartete Resultat des Tests ist wie folgt:
 - Die Detailansicht einer Infektionskrankheit öffnet sich per Doppelklick in der Zeile.
 
 Infektionskrankheiten werden mit den folgenden Attributen angezeigt:
-- TODO
+- Zeitpunkt der Erkrankung (PastIllness.onset[].onsetDateTime)
+- Krankheit (PastIllness.code)
+- Klinischer Status (PastIllness.clinicalStatus)
+- Verifizierungsstatus (PastIllness.verificationStatus)
+- Schweregrad (PastIllness.severity, optional)
+- Endzeitpunkt (PastIllness.abatement[].abatementDateTime, optional)
+- Name der GFP (optional)
+- 1..N Kontaktdaten der GFP (optional)  

@@ -32,4 +32,11 @@ Das erwartete Resultat des Tests ist wie folgt:
 - Die Detailansicht einer Infektionskrankheit öffnet sich per Doppelklick in der Zeile der neue erfassten Infektionskrankheit und die Attribute in der Detailansicht sind identisch mit den eingegeben Werten.
 
 Eine neue Infektionskrankheit kannn mit den folgenden Attributen erfasst werden:  
-- TODO
+- Zeitpunkt der Erkrankung (PastIllness.onset[].onsetDateTime)
+- Krankheit (PastIllness.code)
+- Klinischer Status (PastIllness.clinicalStatus)
+- Verifizierungsstatus (PastIllness.verificationStatus)
+- Schweregrad (PastIllness.severity, optional)
+- Endzeitpunkt (PastIllness.abatement[].abatementDateTime, optional)
+- Name der GFP (optional)
+- 1..N Kontaktdaten der GFP (optional)  
