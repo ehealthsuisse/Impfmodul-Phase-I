@@ -24,22 +24,17 @@ Der Test wird wie folgt durchgeführt:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
 - Die Ansicht für den Impfausweis im Menu auswählen.
 - Die Ansicht für Impfausweis öffnen.
-- Verifizieren, dass die Impfungen, Unverträglichkeiten und Kommentare aus dem EPD Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) unter Berücksichtigung des Lifecycle Management in einer Tabelle angezeigt werden.
+- Verifizieren, dass die Impfungen, Unverträglichkeiten und Infektionskrankheiten aus dem EPD Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) unter Berücksichtigung des Lifecycle Management in einer Sicht angezeigt werden.
 
 
 ### Erwartetes Ergebnis:
 
 Das erwartete Resultat des Tests ist wie folgt:
-- Das Impfmodul zeigt eine Tabelle mit allen Impfungen, Unverträglichkeiten und Kommentaren aus dem EPD Testsystem an.
-- Die Impfungen werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt (Je eine Impfung pro Zeile). Die zeitliche Ordnung nutzt das Attribute "occurence" des Impfeintrags.
-- Die zeitliche Reihenfolge der Impfungen kann invertiert werden (ältester zum neuesten Eintrag).
-
-Impfungen können nach den folgenden Kriterien gefiltert werden:  
-1.	status
-2.	vaccineCode
-3.	TargetDisease
-
-- Zu den Impfungen werden die Unverträglichkeiten und Kommentare angezeigt (Zeitgeordnet unter der Impfung, zuerst Unverträglichkeiten dann Kommentare).    
+- Das Impfmodul zeigt die Impfungen, Unverträglichkeiten und Infektionskrnakheiten aus dem EPD Testsystem an.
+- Die Impfungen werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt. Die zeitliche Ordnung nutzt das Attribut "occurence" des Impfeintrags.
+- Die Unverträglichkeiten werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt. Die zeitliche Ordnung nutzt das Attribut "recorderDate".
+- Die Infektionskrankheiten werden jeweils zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt. Die zeitliche Ordnung nutzt das Attribut "Zeitpunkt der Erkrankung (PastIllness.onset[].onsetDateTime)".
+- Die Reihenfolge der Impfungen, Unverträglichkeiten und Infektionskrankheiten kann invertiert werden (ältester zum neuesten Eintrag).
 
 Impfungen werden mit den folgenden Attributen angezeigt (vgl. TC 2.1: Impfungen anzeigen):
 1.	Zeitpunkt der Impfung (occurenceDateTime)
@@ -55,10 +50,10 @@ Unverträglichkeiten werden mit den folgenden Attributen angezeigt (vgl. TC 3.1:
 4.	Status (clinicalStatus)
 5.	Gesundheitsfachperson (recorder)
 
-Infektionskrankheiten werden mit den folgenden Attributen angezeigt (vgl. TC 3.1: Unverträglichkeiten anzeigen):
-- TODO
+Infektionskrankheiten werden mit den folgenden Attributen angezeigt (vgl. TC 4.1: Infektionskrankheiten anzeigen):
+1. Zeitpunkt der Erkrankung (PastIllness.onset[].onsetDateTime)
+2. Krankheit (PastIllness.code)
+3. Klinischer Status (PastIllness.clinicalStatus)
+4. Verifizierungsstatus (PastIllness.verificationStatus)
+5. Name der Gesundheitsfachperson, welche die Infektionskrankheit erfasst hat (PastIllness.recorder).
 
-Kommentare zu Impfungen und Unverträglichkeiten werden mit den folgenden Attributen angezeigt (vgl. TC 6.1: Kommentare anzeigen):
-1.	Zeitpunkt des Kommentars (note/time)
-2.	ersten N Zeichen des Kommentars (note/text)
-3.	Name der Gesundheitsfachperson, welche den Kommentar erfasst hat
