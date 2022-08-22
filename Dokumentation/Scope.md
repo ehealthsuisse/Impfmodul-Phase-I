@@ -12,8 +12,10 @@ Zur konsistenten Zusammenführung von Impfdaten aus dem EPD, der Anzeige für Ge
 - Benutzeroberflächen zur Bearbeitung und Erfassung von Impfdaten implementieren. 
 - Die FHIR Profile des Austauschformats für Impfdaten im EPD unterstützen.
 
-Die Umsetzung der Anforderungen durch die Portale der Gemeinschaften und die Primärsysteme wird durch das Impfmodul erleichtert. Das Impfmodul implementiert die o.g. Funktionen 
-implementieren und ist so gestaltet, dass es in die Web Benutzeroberflächen der Portale der Gemeinschaften und die Primärsysteme integriert werden kann.               
+Die Umsetzung der Anforderungen durch die Portale der Gemeinschaften und die Primärsysteme wird durch das Impfmodul erleichtert. Das Impfmodul implementiert 
+die o.g. Funktionen und ist so gestaltet, dass es in die Web Benutzeroberflächen der Portale der Gemeinschaften und die Primärsysteme integriert werden kann. 
+
+TBD: Image
 
 ### Ziel 
 Das Impfmodul ist als Add On zu den Web Portalen der Gemeinschaften und Primärsystemen ausgelegt und implementiert die Funktionen und Benutzeroberflächen für die 
@@ -23,3 +25,11 @@ Bearbeitung von Impfdaten im EPD für Gesundheitsfachpersonen, Patientinnen und 
 - FHIR Profile des Austauschformats für Impfdaten im EPD.
 - EPD konforme Schnittstellen zur Abfrage und Speicherung von Dokumenten.
 - EPD konforme Authentisierung mit SAML 2 Single Sign On. 
+
+### Zielgruppe 
+Das Impfmodul wird von den Benutzern der Web Portale der Gemeinschaften genutzt, insbesondere: 
+1. Gesundheitsfachpersonen 
+2. Hilfspersonen 
+3. Patienten und Patientinnen
+4. Stellvertretungen von Patienten und Patientinnen
+
