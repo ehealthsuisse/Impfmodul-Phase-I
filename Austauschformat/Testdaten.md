@@ -2,15 +2,15 @@
 
 ### Patient
 
-#### TC patient 1
+#### TC patient 1
 - Name: Wegmueller
 - Vorname: Monika
 - Geb.: 1967-02-10
 - Adm. Geschlecht (gender): female
 
-### GFP
+### GFP
 
-#### TC_HCP1_C1
+#### TC_HCP1_C1
 - GLN = "7601888888884"
 - Name = "Bereit"
 - Vorname = "Allzeit"
