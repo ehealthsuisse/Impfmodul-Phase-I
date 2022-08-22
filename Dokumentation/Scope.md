@@ -15,7 +15,8 @@ Zur konsistenten Zusammenführung von Impfdaten aus dem EPD, der Anzeige für Ge
 Die Umsetzung der Anforderungen durch die Portale der Gemeinschaften und die Primärsysteme wird durch das Impfmodul erleichtert. Das Impfmodul implementiert 
 die o.g. Funktionen und ist so gestaltet, dass es in die Web Benutzeroberflächen der Portale der Gemeinschaften und die Primärsysteme integriert werden kann. 
 
-TBD: Image
+[Bild: Skizze der Einbettung des Impfmoduls](Images/scope-1.JPG)
+
 
 ### Ziel 
 Das Impfmodul ist als Add On zu den Web Portalen der Gemeinschaften und Primärsystemen ausgelegt und implementiert die Funktionen und Benutzeroberflächen für die 
