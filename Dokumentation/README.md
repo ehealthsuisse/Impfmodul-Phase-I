@@ -10,3 +10,4 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 6. Autorisierung
 7. Handbuch zur Installation 
 8. Betriebshandbuch
+9. 3rd Party Libraries
