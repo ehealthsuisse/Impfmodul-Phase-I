@@ -46,25 +46,21 @@ Das erwartete Resultat des Tests ist wie folgt:
 
 Das Kontextmenu zeigt die folgenden Aktionen bei Impfungen an:  
 1.	Detailansicht (öffnet die Detailansicht aus TC 2.2: Impfungen Detailansicht)
-2.	Bearbeiten (öffnet das Formular zur Bearbeitung aus TC 2.4: Impfung bearbeiten)
-3.	Annullieren (öffnet das Formular zur Annullierung aus TC 2.5: Impfung annullieren)
-4.	Unverträglichkeit erfassen (öffnet das Formular zur Erfassung von Unverträglichkeiten aus TC 3.3: Unverträglichkeit erfassen)
+2.	Impfung erfassen (öffnet das Formular zur Erfassung von Impfungen aus TC 2.3: Impfung erfassen)
+3.	Unverträglichkeit erfassen (öffnet das Formular zur Erfassung von Unverträglichkeiten aus TC 3.3: Unverträglichkeit erfassen)
+4.	Vorerkrankung erfassen (öffnet das Formular zur Erfassung von  aus TC 4.3: Infektionskrankheit erfassen)
 5.	Kommentar hinzufügen (öffnet das Formular zur Erfassung von Kommentaren aus TC 6.3: Kommentar erfassen)
-6. Impfung erfassen (öffnet das Formular zur Erfassung von Impfungen aus TC 2.3: Impfung erfassen)
 
 Das Kontextmenu zeigt die folgenden Aktionen bei Unverträglichkeit an:  
 1.	Detailansicht (öffnet die Detailansicht aus TC 3.2: Unverträglichkeiten Detailansicht)
-2.	Bearbeiten (öffnet das Formular zur Bearbeitung aus  TC 3.4: Unverträglichkeit bearbeiten)
-3.	Annullieren (öffnet das Formular zur Annullierung aus TC 3.5: Unverträglichkeit annullieren)
+2.	Unverträglichkeit erfassen (öffnet das Formular zur Erfassung von Unverträglichkeiten aus TC 3.3: Unverträglichkeit erfassen)
+3.	Vorerkrankung erfassen (öffnet das Formular zur Erfassung von  aus TC 4.3: Infektionskrankheit erfassen)
 4.	Kommentar hinzufügen (öffnet das Formular zur Erfassung von Kommentaren aus TC 6.3: Kommentar erfassen)
-5. Unverträglichkeit erfassen (öffnet das Formular zur Erfassung von Unverträglichkeiten aus TC 3.3: Unverträglichkeit erfassen)
 
 Das Kontextmenu zeigt die folgenden Aktionen bei durchgemachten Infektionskrankheiten an:
 1.	Detailansicht (öffnet die Detailansicht aus TC 4.2: Infektionskrankheiten Detailansicht)
-2.	Bearbeiten (öffnet das Formular zur Bearbeitung aus  TC 4.4: Infektionskrankheiten bearbeiten)
-3.	Annullieren (öffnet das Formular zur Annullierung aus TC 4.5: Infektionskrankheiten annullieren)
-4.	Kommentar hinzufügen (öffnet das Formular zur Erfassung von Kommentaren aus TC 6.3: Kommentar erfassen)
-5. Infektionskrankheiten erfassen (öffnet das Formular zur Erfassung von Infektionskrankheiten aus TC 4.3: Infektionskrankheiten erfassen)
+2.	Vorerkrankung erfassen (öffnet das Formular zur Erfassung von  aus TC 4.3: Infektionskrankheit erfassen)
+3.	Kommentar hinzufügen (öffnet das Formular zur Erfassung von Kommentaren aus TC 6.3: Kommentar erfassen)
 
 Das Kontextmenu zeigt die folgenden Aktionen bei Kommentaren an:  
 1.	Detailansicht (öffnet die Detailansicht aus TC 6.2: Kommentare Detailansicht)
