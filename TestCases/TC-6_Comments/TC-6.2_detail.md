@@ -1,4 +1,4 @@
-## TC 6.2: Kommentare Detailansicht
+## TC 6.2: Kommentare Detailansicht
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten
 und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die
 Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen
@@ -12,7 +12,7 @@ Der Benutzer wählt einen Eintrag aus und öffnet die Detailansicht. Der Benutze
 Kommentare und wählt einen Kommentar aus. Der Kommentar wird dem Benutzer mit allen Attributen
 angezeigt.
 
-### Vorbereitung:
+### Vorbereitung:
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
 - Der Browser hat bereits eine aktive Session mit dem Identity Provider, bzw. der Benutzer hat sich im EPD Portal authentisiert.
@@ -20,7 +20,7 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Das EPD Testsystem ist aufgeschaltet und erreichbar (Gazelle, EPD Playground, Testsystem einer Gemeinschaft, EPD Mock).
 - Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Unverträglichkeiten, Infektionskrankheiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
 
-### Durchführung:
+### Durchführung:
 Der Test wird wie folgt durchgeführt:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
 - Die Ansicht für Impfungen, Unverträglichkeiten oder den Impfausweis im Menu auswählen.
