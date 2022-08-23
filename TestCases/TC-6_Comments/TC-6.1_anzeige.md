@@ -1,4 +1,4 @@
-## TC 6.1: Kommentare anzeigen
+## TC 6.1: Kommentare anzeigen
 
 Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen oder Patienten und Patientinnen.  Dabei werden alle erforderlichen Attribute übergeben, damit das Impfmodul die Impfdaten des Patienten oder der Patientin aus dem EPD abfragen kann. Das Zertifikat der digitalen Signatur ist dem Impfmodul bekannt und die Signatur ist gültig.
 
@@ -15,7 +15,7 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Das EPD Testsystem ist aufgeschaltet und erreichbar (Gazelle, EPD Playground, Testsystem einer Gemeinschaft, EPD Mock).
 - Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Unverträglichkeiten, Infektionskrankheiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
 
-### Durchführung:
+### Durchführung:
 
 Der Test wird wie folgt durchgeführt:
 
@@ -37,7 +37,7 @@ Iteration 3:
 - Im View eine kommentierte Unverträglichkeit auswählen und die Ansicht für die Kommentare aus dem Kontextmenü aufrufen.
 - Verifizieren, dass alle Kommentare zur Unverträglichkeiten angezeigt werden.
 
-### Erwartetes Ergebnis:
+### Erwartetes Ergebnis:
 
 Das erwartete Resultat des Tests ist wie folgt:
 
