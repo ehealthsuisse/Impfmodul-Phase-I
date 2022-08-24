@@ -29,7 +29,7 @@ Das Impfmodul implementiert die folgenden EPD konformen Schnittstelle zu Plattfo
 
 http POST Schnittstelle zum Aufruf des Impfmoduls aus den Primärsystemen bzw. den Portalen für Gesundheitsfachpersonen, Patientinnen und Patienten. 
 
-Mit dem Aufruf werden die vom Impfmodul benötigten Daten aus der aufrufenden Applikation übergeben:
+Mit dem Aufruf werden die vom Impfmodul benötigten Daten aus der aufrufenden Applikation (signed JSON) übergeben:
 
 * Kennung des vom Benutzer im Portal oder Primärsystem genutzten Identity Provider. 
 * Lokale ID des Patienten oder der Patientin des Primärsystems bzw. des Portals. 
