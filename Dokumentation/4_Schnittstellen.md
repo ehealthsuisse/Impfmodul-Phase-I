@@ -38,5 +38,5 @@ Mit dem Aufruf werden die vom Impfmodul benötigten Daten aus der aufrufenden Ap
 
 Das Impfmodul prüft die Integrität des Aufrufs mit der digitalen Signatur und authentisiert das aufrufende Portal bzw. Primärsystem anhand der digitalen Signatur.  
 
-
 ### Präsentation API
+TBD
