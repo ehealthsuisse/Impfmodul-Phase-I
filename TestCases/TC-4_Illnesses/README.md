@@ -1,3 +1,3 @@
-# TC 4 Durchmachte Infektionskrankheiten
-In diesem Folder sind alle Testcases zur Anzeige und Bearbeitung von durchgemachten
-Infektionskrankheiten beschrieben.
+# TC 4 Vorerkrankungen
+In diesem Folder sind alle Testcases zur Anzeige und Bearbeitung von Vorerkrankungen (durchgemachten
+Infektionskrankheiten) beschrieben.
