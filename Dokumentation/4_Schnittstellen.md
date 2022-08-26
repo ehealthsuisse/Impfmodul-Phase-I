@@ -27,16 +27,26 @@ Das Impfmodul implementiert die folgenden EPD konformen Schnittstelle zu Plattfo
 
 ### Web Aufruf
 
-http POST Schnittstelle zum Aufruf des Impfmoduls aus den Primärsystemen bzw. den Portalen für Gesundheitsfachpersonen, Patientinnen und Patienten. 
+Der Web Abruf orientiert sich an der Web Aufruf Schnittstelle, welche die Plattform der Schweizer Post bereits implementiert hat. 
 
-Mit dem Aufruf werden die vom Impfmodul benötigten Daten aus der aufrufenden Applikation übergeben:
+http GET Schnittstelle zum Aufruf des Impfmoduls aus den Primärsystemen bzw. den Portalen für Gesundheitsfachpersonen, Patientinnen und Patienten. 
 
-* Kennung des vom Benutzer im Portal oder Primärsystem genutzten Identity Provider. 
-* Lokale ID des Patienten oder der Patientin des Primärsystems bzw. des Portals. 
-* Angaben zum Benutzer, insbesondere Name und Vorname, sowie Title, Fachrichtung und Institution von Gesundheitsfachpersonen.
-* Digitale Signatur des aufrufenden Systems. 
+Mit dem Aufruf werden die vom Impfmodul benötigten Daten als http GET Parameter aus der aufrufenden Applikation übergeben:
 
-Das Impfmodul prüft die Integrität des Aufrufs mit der digitalen Signatur und authentisiert das aufrufende Portal bzw. Primärsystem anhand der digitalen Signatur.  
+1. Kennung des vom Benutzer im Portal oder Primärsystem genutzten Identity Provider. 
+2. Name und Vorname des Benutzers.
+3. EPD Rolle des Benutzers.
+4. Lokale ID des Patienten oder der Patientin des Primärsystems bzw. des Portals. 
+5. Digitale Signatur (HMAC) des aufrufenden Systems bzw. Portals.
+6. Zeitstempel.   
+
+Das Impfmodul nutzt die digitale Signatur für: 
+* authentisiert das aufrufende Portal bzw. Primärsystem anhand der digitalen Signatur.
+* prüft die Integrität des Aufrufs mit der digitalen Signatur.
+
+Hinweis: Insbesondere für GFP und Hilfspersonen ist die Angabe des Namens und Vornamens des Benutzers nicht ausreichend um die 
+XDS.b Metadaten für neue Dokumente zu setzen und das Impfmodul muss die benötigte Information (GLN, Institution, etc.) aus dem 
+Response der Get X-User Assertion auslesen. 
 
 ### Präsentation API
 TBD
