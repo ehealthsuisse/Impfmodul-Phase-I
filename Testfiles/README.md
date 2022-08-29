@@ -12,24 +12,24 @@
 
 #### TC_HCP1_C1
 - GLN = "7601888888884"
-- Name = "Bereit"
-- Vorname = "Allzeit"
+- Name = "Müller"
+- Vorname = "Peter"
 - Titel = "Dr. med."
-- Strasse = "Doktorgasse 2"
-- Ort = "Musterhausen"
-- PLZ = "8888"
+- Strasse = "Grabenstrasse 2"
+- Ort = "Zürich"
+- PLZ = "8005"
 - Land = "CH"
 
 #### TC_HCP2_C2
 
 - GLN = "7601999999998"
-- Name = "Gesund"
-- Vorname = "Meist"
+- Name = "Meier"
+- Vorname = "Gabriela"
 - Titel = "Dr. med."
-- Strasse = "Aerztehaus"
-- Ort = "Beispielen"
-- PLZ = "7890"
-- Region = "ZH"
+- Strasse = "Werthgasse 34"
+- Ort = "Bern"
+- PLZ = "3000"
+- Region = "BE"
 - Land = "CH"
 
 ### Impfungen
@@ -43,8 +43,7 @@ Bundle Inhalt:
 
 Performer:
 - performer: TC_HCP1_C1
-- practitioner: TC_HCP1_C1 Bereit Allzeit
-- organization: TC_ORG1 Gruppenpraxis CH
+- organization: TC_ORG1
 
 Inhalt:
 - 1 Impfung
@@ -53,13 +52,12 @@ Inhalt:
 
 Bundle Inhalt:
 - date: June 8, 2021
-- author: TC_HCP1_C1
+- author: TC_HCP1_C1 Dr. Peter Müller
 - patient: M. Wegmüller
 
 Performer (beide Impfungen):
-- performer: TC_HCP1_C1
-- practitioner: TC_HCP1_C1 Bereit Allzeit
-- organization: TC_ORG1 Gruppenpraxis CH
+- performer: TC_HCP1_C1 Dr. Peter Müller
+- organization: TC_ORG1
 
 Inhalt:
 - 2 Impfungen
@@ -68,13 +66,12 @@ Inhalt:
 
 Bundle Inhalt:
 - date: June 15, 2021
-- author: TC_HCP1_C1
+- author: TC_HCP1_C1 Dr. Peter Müller
 - patient: M. Wegmüller
 
 Performer:
-- performer: TC_HCP1_C1
-- practitioner: TC_HCP1_C1 Bereit Allzeit
-- organization: TC_ORG1 Gruppenpraxis CH
+- performer: TC_HCP1_C1 Dr. Peter Müller
+- organization: TC_ORG1 
 
 Inhalt:
 - 1 Impfung
@@ -83,12 +80,11 @@ Inhalt:
 
 Bundle Inhalt:
 - date: August 1, 2021
-- author: TC_HCP2_C2
+- author: TC_HCP2_C2 Dr. Gabriela Meier
 - patient: M. Wegmüller
 
 Performer:
-- performer: TC_HCP2_C2
-- practitioner: TC_HCP2_C2
+- performer: TC_HCP2_C2 Dr. Gabriela Meier
 - organization: TC_ORG2
 
 Inhalt:
@@ -98,12 +94,11 @@ Inhalt:
 
 Bundle Inhalt:
 - date: August 20, 2021
-- author: TC_HCP2_C2
+- author: TC_HCP2_C2 Dr. Gabriela Meier
 - patient: M. Wegmüller
 
 Performer:
-- performer: TC_HCP2_C2
-- practitioner: TC_HCP2_C2
+- performer: TC_HCP2_C2 Dr. Gabriela Meier
 - organization: TC_ORG2
 
 Inhalt:
@@ -118,13 +113,28 @@ Bundle Inhalt:
 - patient: M. Wegmüller
 
 Performer:
-- performer: TC_HCP2_C2
-- practitioner: TC_HCP2_C2
+- performer: TC_HCP2_C2 Dr. Gabriela Meier
 - organization: TC_ORG2
 
 Inhalt:
 - 1 Impfung als 2te Dosis (zu [A-D3-HCP2-C2](#testfile-a-d3-hcp2-c2))
 
+
+#### Testfile F-D1-HCP1-C1
+
+Bundle Inhalt:
+- date: September 1, 2021
+- author: Dr. Peter Müller
+- patient: M. Wegmüller
+
+Performer:
+- performer: TC_HCP1_C1 Dr. Peter Müller
+- organization: Gruppenpraxis Müller
+
+Inhalt:
+- 1 Impfung Havrix 1440
+- Datum: 2021-05-27
+- LotNumber: AHAVB946A
 
 ### Unverträglichkeiten (Allergien)
 
@@ -132,13 +142,12 @@ Inhalt:
 
 Bundle Inhalt:
 - date: October 6, 2021
-- author: TC_HCP1_C1
+- author: TC_HCP1_C1 Dr. Peter Müller
 - patient: M. Wegmüller
 
 Recorder:
-- recorder: TC_HCP1_C1
-- practitioner: TC_HCP1_C1 Bereit Allzeit
-- organization: TC_ORG1 Gruppenpraxis CH
+- recorder: TC_HCP1_C1 Dr. Peter Müller
+- organization: TC_ORG1
 
 Inhalt:
 - 1 Unverträglichkeit (Allergy to component of vaccine product containing Salmonella ...
@@ -148,6 +157,26 @@ Inhalt:
 - clinicalStatus: Active
 - verificationStatus: Confirmed
 
+#### Testfile F_D3_HCP1_C1
+
+Bundle Inhalt:
+- date: September 1, 2021
+- author: TC_HCP1_C1 Dr. Peter Müller
+- patient: M. Wegmüller
+
+Recorder:
+- recorder: TC_HCP1_C1 Dr. Peter Müller
+- organization: TC_ORG1
+
+Inhalt:
+- 2 Unverträglichkeiten
+- onset: 2021-10-06
+- recordedDate: 2021-10-06
+- lastOccurrence: 2021-10-06
+- clinicalStatus: Active
+- verificationStatus: Confirmed
+
+
 
 ### Durchgemachte Infektionserkankungen
 
@@ -155,13 +184,12 @@ Inhalt:
 
 Bundle Inhalt:
 - date: October 6, 2021
-- author: TC_HCP1_C1
+- author: TC_HCP1_C1 Dr. Peter Müller
 - patient: M. Wegmüller
 
 Recorder:
-- recorder: TC_HCP1_C1
-- practitioner: TC_HCP1_C1 Bereit Allzeit
-- organization: TC_ORG1 Gruppenpraxis CH
+- recorder: TC_HCP1_C1 Dr. Peter Müller
+- organization: TC_ORG1 
 
 Inhalt: 1 Infektionskrankheit
 - code: Varicella
@@ -169,5 +197,15 @@ Inhalt: 1 Infektionskrankheit
 - recordedDate: 2015-05-30
 
 ### Kommentare
+
+#### Testfile F-D2-HCP1-C1
+
+#### Testfile F_D4_HCP1_C1
+
+#### Testfile F_D6_HCP1_C1
+
+
+
+
 
 TODO bisher keine Testfiles
