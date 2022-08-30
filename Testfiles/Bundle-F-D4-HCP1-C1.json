@@ -1,6 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "A-D2-HCP1-C1",
+  "id": "F-D4-HCP1-C1",
   "meta": {
     "profile": [
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration"
@@ -8,16 +8,16 @@
   },
   "identifier": {
     "system": "urn:ietf:rfc:3986",
-    "value": "urn:uuid:bef441e1-58b1-48e3-aa51-61237a3c20cd"
+    "value": "urn:uuid:77c855b2-97b4-4b30-aae8-bf01141fc298"
   },
   "type": "document",
-  "timestamp": "2021-06-15T00:00:00.390+02:00",
+  "timestamp": "2022-01-05T00:00:00.390+02:00",
   "entry": [
     {
-      "fullUrl": "http://test.fhir.ch/r4/Composition/A-D2-HCP1-C1-Composition",
+      "fullUrl": "http://test.fhir.ch/r4/Composition/F-D4-HCP1-C1-Composition",
       "resource": {
         "resourceType": "Composition",
-        "id": "A-D2-HCP1-C1-Composition",
+        "id": "F-D4-HCP1-C1-Composition",
         "meta": {
           "profile": [
             "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration"
@@ -37,7 +37,7 @@
         ],
         "identifier": {
           "system": "urn:ietf:rfc:3986",
-          "value": "urn:uuid:ab0add6e-0049-4567-8609-8d3ffdd84af0"
+          "value": "urn:uuid:9f0d4bfd-9232-401f-9c5c-1a0187c22d1a"
         },
         "status": "final",
         "type": {
@@ -52,7 +52,7 @@
         "subject": {
           "reference": "Patient/TC-patient"
         },
-        "date": "2021-06-15T00:00:00+02:00",
+        "date": "2022-01-05T00:00:00.390+02:00",
         "author": [
           {
             "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-author"
@@ -81,24 +81,24 @@
         },
         "section": [
           {
-            "id": "administration",
-            "title": "Immunization Administration",
+            "id": "allergies",
+            "title": "Allergies",
             "code": {
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "11369-6",
-                  "display": "Hx of Immunization"
+                  "code": "48765-2",
+                  "display": "Allergies and adverse reactions Document"
                 }
               ]
             },
             "text": {
               "status": "generated",
-              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Hx of Immunization (http://loinc.org#11369-6)</span></p><p><b>Entries:</b></p><table><tr><td><a href=\"Immunization-TCA01-IMMUN2-HCP1-ORG1-ROLE.html\">Immunization/TCA01-IMMUN2-HCP1-ORG1-ROLE</a></td></tr></table></div>"
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Allergies and adverse reactions Document (http://loinc.org#48765-2)</span></p><p><b>Entries:</b></p><table><tr><td><a href=\"AllergyIntolerance-TCF02-ALLINTO2.html\">AllergyIntolerance/TCF02-ALLINTO2</a></td></tr></table></div>"
             },
             "entry": [
               {
-                "reference": "Immunization/TCA01-IMMUN2-HCP1-ORG1-ROLE"
+                "reference": "AllergyIntolerance/TCF02-ALLINTO2"
               }
             ]
           }
@@ -333,106 +333,89 @@
       }
     },
     {
-      "fullUrl": "http://test.fhir.ch/r4/Immunization/TCA01-IMMUN2-HCP1-ORG1-ROLE",
+      "fullUrl": "http://test.fhir.ch/r4/AllergyIntolerance/TCF02-ALLINTO2",
       "resource": {
-        "resourceType": "Immunization",
-        "id": "TCA01-IMMUN2-HCP1-ORG1-ROLE",
+        "resourceType": "AllergyIntolerance",
+        "id": "TCF02-ALLINTO2",
         "meta": {
           "profile": [
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization"
+            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-allergyintolerances"
           ]
         },
         "text": {
           "status": "extensions",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Immunization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Immunization \"TCA01-IMMUN2-HCP1-ORG1-ROLE\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-immunization.html\">CH VACD Immunization</a></p></div><p><b>CH VACD Extension Immunization Recorder Reference</b>: <a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-author\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-author)</a></p><p><b>identifier</b>: id: 11853642-8ff4-45ae-af98-44c58b3bf0b7</p><p><b>status</b>: completed</p><p><b>vaccineCode</b>: Boostrix <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-swissmedic-cs.html\">Swiss Medic Authorized Vaccines Codesystem</a>#637)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>occurrence</b>: 2021-06-15</p><p><b>recorded</b>: 2021-06-20 12:00:00+0200</p><p><b>lotNumber</b>: 14-34218</p><p><b>route</b>: Intramuscular use <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (standardterms.edqm.eu#20035000)</span></p><h3>Performers</h3><table class=\"grid\"><tr><td>-</td><td><b>Actor</b></td></tr><tr><td>*</td><td><a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-performer\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-performer)</a></td></tr></table><p><b>note</b>: Der Patient hatte an mehreren nachfolgenden Tagen eine sehr empfindliche und leicht gerötete Haut rund um die Einstichstelle. (By Practitioner/TC-HCP1-C1 @2021-06-20)</p><h3>ProtocolApplieds</h3><table class=\"grid\"><tr><td>-</td><td><b>TargetDisease</b></td><td><b>DoseNumber[x]</b></td></tr><tr><td>*</td><td>Diphtheria caused by Corynebacterium diphtheriae (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#397430003)</span>, Tetanus (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#76902006)</span>, Pertussis (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#27836007)</span></td><td>1</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: AllergyIntolerance</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource AllergyIntolerance \"TCF02-ALLINTO2\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-allergyintolerances.html\">CH VACD AllergyIntolerance</a></p></div><blockquote><p><b>CH VACD Extension Entry Cross Reference</b></p><p><b>value</b>: <a href=\"AllergyIntolerance-TCF02-ALLINTO1.html\">AllergyIntolerance/TCF02-ALLINTO1</a></p><p><b>value</b>: <a href=\"Composition-F-D3-HCP1-C1-Composition.html\">Composition/F-D3-HCP1-C1-Composition</a></p><p><b>value</b>: replaces</p></blockquote><p><b>identifier</b>: id: e6e14c17-b468-4ecb-a4d7-8dfd5ddb36d8</p><p><b>clinicalStatus</b>: Active <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-allergyintolerance-clinical.html\">AllergyIntolerance Clinical Status Codes</a>#active)</span></p><p><b>verificationStatus</b>: Confirmed <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-allergyintolerance-verification.html\">AllergyIntolerance Verification Status</a>#confirmed)</span></p><p><b>code</b>: Atopic dermatitis (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#24079001)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>onset</b>: 2021-10-06</p><p><b>recordedDate</b>: 2021-10-06</p><p><b>recorder</b>: <a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-author\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-author)</a></p><p><b>lastOccurrence</b>: 2021-10-06</p><p><b>note</b>: This disorder will only occure if the time between the consumation of an apple and an vaccination is less than 10h (By Practitioner/TC-HCP1-C1 @2022-01-05)</p></div>"
         },
         "extension": [
           {
-            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-recorder-reference",
-            "valueReference": {
-              "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-author"
-            }
+            "extension": [
+              {
+                "url": "entry",
+                "valueReference": {
+                  "reference": "AllergyIntolerance/TCF02-ALLINTO1"
+                }
+              },
+              {
+                "url": "document",
+                "valueReference": {
+                  "reference": "Composition/F-D3-HCP1-C1-Composition"
+                }
+              },
+              {
+                "url": "relationcode",
+                "valueCode": "replaces"
+              }
+            ],
+            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference"
           }
         ],
         "identifier": [
           {
-            "system": "urn:oid:2.16.756.5.30.1.402.1.3.1.1.1",
-            "value": "11853642-8ff4-45ae-af98-44c58b3bf0b7"
+            "system": "urn:oid:2.16.756.5.30.1.402.1.3.1.1.2",
+            "value": "e6e14c17-b468-4ecb-a4d7-8dfd5ddb36d8"
           }
         ],
-        "status": "completed",
-        "vaccineCode": {
+        "clinicalStatus": {
           "coding": [
             {
-              "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs",
-              "code": "637",
-              "display": "Boostrix"
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "24079001",
+              "display": "Atopic dermatitis (disorder)"
             }
           ]
         },
         "patient": {
           "reference": "Patient/TC-patient"
         },
-        "occurrenceDateTime": "2021-06-15",
-        "recorded": "2021-06-20T00:00:00.390+02:00",
-        "lotNumber": "14-34218",
-        "route": {
-          "coding": [
-            {
-              "system": "http://standardterms.edqm.eu",
-              "code": "20035000",
-              "display": "Intramuscular use"
-            }
-          ]
+        "onsetDateTime": "2021-10-06",
+        "recordedDate": "2021-10-06",
+        "recorder": {
+          "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-author"
         },
-        "performer": [
-          {
-            "actor": {
-              "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-performer"
-            }
-          }
-        ],
+        "lastOccurrence": "2021-10-06",
         "note": [
           {
             "authorReference": {
               "reference": "Practitioner/TC-HCP1-C1"
             },
-            "time": "2021-06-20",
-            "text": "Der Patient hatte an mehreren nachfolgenden Tagen eine sehr empfindliche und leicht gerötete Haut rund um die Einstichstelle."
-          }
-        ],
-        "protocolApplied": [
-          {
-            "targetDisease": [
-              {
-                "coding": [
-                  {
-                    "system": "http://snomed.info/sct",
-                    "code": "397430003",
-                    "display": "Diphtheria caused by Corynebacterium diphtheriae (disorder)"
-                  }
-                ]
-              },
-              {
-                "coding": [
-                  {
-                    "system": "http://snomed.info/sct",
-                    "code": "76902006",
-                    "display": "Tetanus (disorder)"
-                  }
-                ]
-              },
-              {
-                "coding": [
-                  {
-                    "system": "http://snomed.info/sct",
-                    "code": "27836007",
-                    "display": "Pertussis (disorder)"
-                  }
-                ]
-              }
-            ],
-            "doseNumberPositiveInt": 1
+            "time": "2022-01-05",
+            "text": "This disorder will only occure if the time between the consumation of an apple and an vaccination is less than 10h"
           }
         ]
       }

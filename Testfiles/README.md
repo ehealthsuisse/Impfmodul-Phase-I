@@ -71,7 +71,7 @@ Bundle Inhalt:
 
 Performer:
 - performer: TC_HCP1_C1 Dr. Peter Müller
-- organization: TC_ORG1 
+- organization: TC_ORG1
 
 Inhalt:
 - 1 Impfung
@@ -189,7 +189,7 @@ Bundle Inhalt:
 
 Recorder:
 - recorder: TC_HCP1_C1 Dr. Peter Müller
-- organization: TC_ORG1 
+- organization: TC_ORG1
 
 Inhalt: 1 Infektionskrankheit
 - code: Varicella
