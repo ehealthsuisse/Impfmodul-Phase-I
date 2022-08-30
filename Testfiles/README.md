@@ -157,7 +157,7 @@ Inhalt:
 - clinicalStatus: Active
 - verificationStatus: Confirmed
 
-#### Testfile F_D3_HCP1_C1
+#### Testfile [F_D3_HCP1_C1](../Testfiles/Bundle-F-D3-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: September 1, 2021
@@ -177,7 +177,6 @@ Inhalt:
 - verificationStatus: Confirmed
 
 
-
 ### Durchgemachte Infektionserkankungen
 
 #### Testfile [B-D3-HCP1-C1](../Testfiles/Bundle-B-D3-HCP1-C1.json)
@@ -191,21 +190,79 @@ Recorder:
 - recorder: TC_HCP1_C1 Dr. Peter Müller
 - organization: TC_ORG1
 
-Inhalt: 1 Infektionskrankheit
+Inhalt:
+- 1 Infektionskrankheit
 - code: Varicella
 - onset: 2015-05-30
 - recordedDate: 2015-05-30
 
+#### Testfile [F-D5-HCP1-C1](../Testfiles/Bundle-F-D5-HCP1-C1.json)
+
+Bundle Inhalt:
+- date: October 6, 2021
+- author: TC_HCP1_C1 Dr. Peter Müller
+- patient: M. Wegmüller
+
+Recorder:
+- recorder: TC_HCP1_C1 Dr. Peter Müller
+- organization: TC_ORG1
+
+Inhalt:
+- 1 Infektionskrankheit
+- code: Varicella
+- onset: 2015-05-30
+- recordedDate: 2015-05-30
+
+
 ### Kommentare
 
-#### Testfile F-D2-HCP1-C1
+#### Testfile [F-D2-HCP1-C1](../Testfiles/Bundle-F-D2-HCP1-C1.json)
 
-#### Testfile F_D4_HCP1_C1
+Kommentar zu einer vorab erfassten Impfung
 
-#### Testfile F_D6_HCP1_C1
+Bundle Inhalt:
+- date: 2021-05-27
+- author: TC_HCP1_C1 Dr. Peter Müller
+- patient: M. Wegmüller
+
+Performer:
+- TC_HCP1_C1 Dr. Peter Müller
+
+Inhalt:
+- 1 Impfung mit Kommentar (zur Impfung in F-D1-HCP1-C1)
 
 
+#### Testfile [F-D4-HCP1-C1](../Testfiles/Bundle-F-D4-HCP1-C1.json)
+
+Kommentar zu einer vorab erfassten Unverträglichkeit (in Testfile F-D3-HCP1-C1)
+
+Bundle Inhalt:
+- date: June 15, 2021
+- author: TC_HCP1_C1 Dr. Peter Müller
+- patient: M. Wegmüller
+
+Recorder:
+- TC_HCP1_C1 Dr. Peter Müller
+
+Inhalt:
+- 1 Unverträglichkeit mit Kommentar (zur Unverträglichkeit in F-D3-HCP1-C1)
+- onset: 2021-10-06
+- recordedDate: 2021-10-06
 
 
+#### Testfile [F-D6-HCP1-C1](../Testfiles/Bundle-F-D6-HCP1-C1.json)
 
-TODO bisher keine Testfiles
+Kommentar zu einer vorab erfassten Vorerkrankung (in Testfile F-D5-HCP1-C1)
+
+Bundle Inhalt:
+- date: October 6, 2021
+- author: TC_HCP1_C1 Dr. Peter Müller
+- patient: M. Wegmüller
+
+Recorder:
+- TC_HCP1_C1 Dr. Peter Müller
+
+Inhalt:
+- 1 Vorerkrankung mit Kommentar (zur Unverträglichkeit in F-D5-HCP1-C1)
+- onset: 2015-05-30
+- recordedDate: 2015-05-30
