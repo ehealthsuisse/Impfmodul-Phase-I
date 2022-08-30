@@ -44,7 +44,7 @@ Das Impfmodul nutzt die digitale Signatur für:
 * authentisiert das aufrufende Portal bzw. Primärsystem anhand der digitalen Signatur.
 * prüft die Integrität des Aufrufs mit der digitalen Signatur.
 
-Hinweis: Insbesondere für GFP und Hilfspersonen ist die Angabe des Namens und Vornamens des Benutzers nicht ausreichend um die 
+Hinweis: Für GFP und Hilfspersonen ist die Angabe des Namens und Vornamens des Benutzers nicht ausreichend um die 
 XDS.b Metadaten für neue Dokumente zu setzen und das Impfmodul muss die benötigte Information (GLN, Institution, etc.) aus dem 
 Response der Get X-User Assertion auslesen. 
 
