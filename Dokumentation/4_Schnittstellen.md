@@ -17,13 +17,13 @@ Das Impfmodul unterstützt die Protokolle:
 
 ### Schnittstellen zur EPD Plattform
 
-Das Impfmodul implementiert die folgenden EPD konformen Schnittstelle zu Plattform:
-1. Registry Stored Query [ITI-18] - Abfrage der Dokument Metadaten
-2. Get X-User Assertion - Abfrage von Autentisierungstoken
-3. Provide X-User Assertion [ITI-40] - Übermittlung von Autentisierungstoken
-4. Provide and Register Document Set [ITI-41] - Speicherung von Dokumenten
-5. Retrieve Document Set [ITI-43] - Abfrage vom Dokumenten
-6. PIX V3 Query [ITI-45] - Abfrage des XAD-PID und EPD-SPID
+Das Impfmodul implementiert die folgenden EPD konformen Schnittstelle zur EPD Plattform:
+1. PIX V3 Query [ITI-45] - Abfrage des XAD-PID und EPD-SPID.
+2. Get X-User Assertion - Abfrage der XUA Assertion zur Authorisierung.
+3. Registry Stored Query [ITI-18] mit Provide X-User Assertion [ITI-40] - Abfrage der Dokument Metadaten mit Übermittlung der XUA Assertion.
+5. Provide and Register Document Set [ITI-41] mit Provide X-User Assertion [ITI-40] - Speicherung von Dokumenten mit Übermittlung der XUA Assertion.
+6. Retrieve Document Set [ITI-43] mit Provide X-User Assertion [ITI-40] - Abfrage vom Dokumenten mit Übermittlung der XUA Assertion.
+
 
 ### Web Aufruf
 
@@ -37,8 +37,10 @@ Mit dem Aufruf werden die vom Impfmodul benötigten Daten als http GET Parameter
 2. Name und Vorname des Benutzers.
 3. EPD Rolle des Benutzers.
 4. Lokale ID des Patienten oder der Patientin des Primärsystems bzw. des Portals. 
-5. Digitale Signatur (HMAC) des aufrufenden Systems bzw. Portals.
-6. Zeitstempel.   
+
+
+6. Digitale Signatur (HMAC) des aufrufenden Systems bzw. Portals.
+7. Zeitstempel.   
 
 Das Impfmodul nutzt die digitale Signatur für: 
 * authentisiert das aufrufende Portal bzw. Primärsystem anhand der digitalen Signatur.
@@ -49,4 +51,11 @@ XDS.b Metadaten für neue Dokumente zu setzen und das Impfmodul muss die benöti
 Response der Get X-User Assertion auslesen. 
 
 ### Präsentation API
-TBD
+
+Das Impfmodul ist als Rich Internet Applikation mit Javascript Client Komponenten (Angular) implement. 
+
+Zur Kommunikation der Javascript Client Komponenten implementiert das Impfmodul die folgenden Restful API: 
+1. CRUD API zur Anzeige und Bearbeitung von Impfungen. 
+2. CRUD API zur Anzeige und Bearbeitung von Unverträglichkeiten (Allergien).
+3. CRUD API zur Anzeige und Bearbeitung von Vorerkrankungen.    
+
