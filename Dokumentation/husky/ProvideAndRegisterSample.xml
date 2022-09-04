@@ -1,181 +1,185 @@
 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-    <soap:Header>
-      <Action soap:mustUnderstand="true" xmlns="http://www.w3.org/2005/08/addressing">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</Action>
-      <MessageID xmlns="http://www.w3.org/2005/08/addressing">urn:uuid:8e81027b-7304-447d-85aa-687619c2ed39</MessageID>
-      <To xmlns="http://www.w3.org/2005/08/addressing">http://ehealthsuisse.ihe-europe.net:8280/xdstools7/sim/epr-testing__for_init_gw_testing/rep/prb</To>
-      <ReplyTo xmlns="http://www.w3.org/2005/08/addressing">
-        <Address>http://www.w3.org/2005/08/addressing/anonymous</Address>
-      </ReplyTo>
-    </soap:Header>
-    <soap:Body>
-      <ns4:ProvideAndRegisterDocumentSetRequest
-        xmlns:ns7="urn:ihe:iti:rmd:2017"
-        xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0"
-        xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0"
-        xmlns:ns4="urn:ihe:iti:xds-b:2007"
-        xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0"
-        xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
-        <ns5:SubmitObjectsRequest><ns3:RequestSlotList/>
-          <ns2:RegistryObjectList>
-            <ns2:ExtrinsicObject mimeType="application/fhir+json" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1" id="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430">
-              <ns2:Slot name="creationTime">
+  <soap:Header>
+    <Action soap:mustUnderstand="true" xmlns="http://www.w3.org/2005/08/addressing">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</Action>
+    <MessageID xmlns="http://www.w3.org/2005/08/addressing">urn:uuid:8e81027b-7304-447d-85aa-687619c2ed39</MessageID>
+    <To xmlns="http://www.w3.org/2005/08/addressing">http://ehealthsuisse.ihe-europe.net:8280/xdstools7/sim/epr-testing__for_init_gw_testing/rep/prb</To>
+    <ReplyTo xmlns="http://www.w3.org/2005/08/addressing">
+      <Address>http://www.w3.org/2005/08/addressing/anonymous</Address>
+    </ReplyTo>
+  </soap:Header>
+  <soap:Body>
+    <ns4:ProvideAndRegisterDocumentSetRequest
+      xmlns:ns7="urn:ihe:iti:rmd:2017"
+      xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0"
+      xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0"
+      xmlns:ns4="urn:ihe:iti:xds-b:2007"
+      xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0"
+      xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+      <ns5:SubmitObjectsRequest><ns3:RequestSlotList/>
+        <ns2:RegistryObjectList>
+          <ns2:ExtrinsicObject mimeType="application/fhir+json" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1" id="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430">
+            <ns2:Slot name="creationTime">
+              <ns2:ValueList>
+                <ns2:Value>20220902083142</ns2:Value>
+              </ns2:ValueList>
+            </ns2:Slot>
+            <ns2:Slot name="languageCode">
+              <ns2:ValueList>
+                <ns2:Value>de-CH</ns2:Value>
+              </ns2:ValueList>
+            </ns2:Slot>
+            <ns2:Slot name="sourcePatientId">
+              <ns2:ValueList>
+                <ns2:Value>2342134localid^^^&amp;1.2.3.4&amp;ISO</ns2:Value>
+              </ns2:ValueList>
+            </ns2:Slot>
+            <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Impfung"/></ns2:Name>
+            <ns2:Classification classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="" id="urn:uuid:2fffa2a3-eb03-4480-bf94-81781c1a8f47">
+              <ns2:Slot name="authorPerson">
                 <ns2:ValueList>
-                  <ns2:Value>20220902083142</ns2:Value>
+                  <ns2:Value>^Müller^Peter^^^Dr. med</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
-              <ns2:Slot name="languageCode">
+              <ns2:Slot name="authorRole">
                 <ns2:ValueList>
-                  <ns2:Value>de-CH</ns2:Value>
+                  <ns2:Value>HCP^^^&amp;2.16.756.5.30.1.127.3.10.6&amp;ISO</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
-              <ns2:Slot name="sourcePatientId">
+              <ns2:Slot name="authorSpecialty">
                 <ns2:ValueList>
-                  <ns2:Value>2342134localid^^^&amp;1.2.3.4&amp;ISO</ns2:Value>
+                  <ns2:Value>^^^&amp;&amp;ISO</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
-              <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Impfung"/></ns2:Name>
-              <ns2:Classification classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="" id="urn:uuid:2fffa2a3-eb03-4480-bf94-81781c1a8f47">
-                <ns2:Slot name="authorPerson">
-                  <ns2:ValueList>
-                    <ns2:Value>^Müller^Peter^^^Dr. med</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Slot name="authorRole">
-                  <ns2:ValueList>
-                    <ns2:Value>HCP^^^&amp;2.16.756.5.30.1.127.3.10.6&amp;ISO</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Slot name="authorSpecialty">
-                  <ns2:ValueList>
-                    <ns2:Value>^^^&amp;&amp;ISO</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-              </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="184216000" id="urn:uuid:61765fba-7257-4a94-93af-57b39bb39eb8">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Patient record type (record artifact)"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:Classification
-                classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"
-                classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
-                nodeRepresentation="urn:che:epr:EPR_Unstructured_Document"
-                id="urn:uuid:4f7d324e-3cc8-43c1-b8f4-227821b46b1a">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.756.5.30.1.127.3.10.10</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Unstructured EPR document"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="22232009" id="urn:uuid:894c0b03-dbcc-4a96-abbb-3d54fea66cd7">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Hospital (environment)"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="394802001" id="urn:uuid:290dd442-33b7-487d-b316-7d4133c6259f">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString charset="UTF-8" value="General medicine (qualifier value)"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="41000179103" id="urn:uuid:bf4ccf6d-260f-4dba-b410-bde45a793354">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Immunization Record (record artifact)"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="17621005" id="urn:uuid:edd63290-670d-4330-9022-784b72aabf3a">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString xml:lang="en-US" charset="UTF-8" value="Normal"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:ExternalIdentifier
-                registryObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
-                identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"
-                value="IHERED-1024^^^&amp;1.3.6.1.4.1.21367.13.20.1000&amp;ISO"
-                id="urn:uuid:f67ca3d8-3f67-4433-8157-12f2671b5e24">
-                <ns2:Name><ns2:LocalizedString value="XDSDocumentEntry.patientId"/></ns2:Name>
-              </ns2:ExternalIdentifier>
-              <ns2:ExternalIdentifier
-                registryObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
-                identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"
-                value="2.25.315780944045548668836581423927969062443"
-                id="urn:uuid:0c09cc2b-8bc1-4c7c-9ef1-d97a715b167b">
-                <ns2:Name><ns2:LocalizedString value="XDSDocumentEntry.uniqueId"/></ns2:Name>
-              </ns2:ExternalIdentifier>
-            </ns2:ExtrinsicObject>
-            <ns2:RegistryPackage id="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e">
-              <ns2:Slot name="submissionTime">
+            </ns2:Classification>
+            <ns2:Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="184216000" id="urn:uuid:61765fba-7257-4a94-93af-57b39bb39eb8">
+              <ns2:Slot name="codingScheme">
                 <ns2:ValueList>
-                  <ns2:Value>20220902083143</ns2:Value>
+                  <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
-              <ns2:Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" nodeRepresentation="" id="urn:uuid:1f3f7a40-d5ea-4e49-8162-a4db5496248d">
-                <ns2:Slot name="authorPerson">
-                  <ns2:ValueList>
-                    <ns2:Value>^Müller^Peter^^^Dr. med</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Slot name="authorRole">
-                  <ns2:ValueList>
-                    <ns2:Value>Healthcare professional</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-              </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500" classifiedObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" nodeRepresentation="71388002" id="urn:uuid:9855f580-cd2b-40ef-aeb7-c20d864379e2">
-                <ns2:Slot name="codingScheme">
-                  <ns2:ValueList>
-                    <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
-                <ns2:Name><ns2:LocalizedString xml:lang="en-US" charset="UTF-8" value="Procedure (procedure)"/></ns2:Name>
-              </ns2:Classification>
-              <ns2:ExternalIdentifier
-                registryObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e"
-                identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"
-                value="IHERED-1024^^^&amp;1.3.6.1.4.1.21367.13.20.1000&amp;ISO"
-                id="urn:uuid:d182e586-3da4-43b0-a73b-a99696e4f4b9">
-                <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.patientId"/></ns2:Name>
-              </ns2:ExternalIdentifier>
-              <ns2:ExternalIdentifier
-                registryObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e"
-                identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"
-                value="2.25.173093884172794859578150089866596425262"
-                id="urn:uuid:771a77df-e178-445f-a2d3-77736b0164ce">
-                <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.uniqueId"/></ns2:Name>
-              </ns2:ExternalIdentifier>
-              <ns2:ExternalIdentifier registryObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832" value="2.16.756.5.30.1.139.1.1.11" id="urn:uuid:7649d2ed-1223-476b-a761-6a49d11dfea0">
-                <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.sourceId"/></ns2:Name>
-              </ns2:ExternalIdentifier>
-            </ns2:RegistryPackage><ns2:Classification classifiedObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" id="urn:uuid:c5097959-95c9-46f7-a868-4385db5ebee9"/>
-            <ns2:Association
-              associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
-              sourceObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e"
-              targetObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
-              id="urn:uuid:f4bf2fc1-34f2-43eb-a74d-7a38eb502e65">
-              <ns2:Slot name="SubmissionSetStatus">
+              <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Patient record type (record artifact)"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:Classification
+              classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"
+              classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
+              nodeRepresentation="urn:che:epr:EPR_Unstructured_Document"
+              id="urn:uuid:4f7d324e-3cc8-43c1-b8f4-227821b46b1a">
+              <ns2:Slot name="codingScheme">
                 <ns2:ValueList>
-                  <ns2:Value>Original</ns2:Value>
+                  <ns2:Value>2.16.756.5.30.1.127.3.10.10</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
-            </ns2:Association>
-          </ns2:RegistryObjectList>
-        </ns5:SubmitObjectsRequest>
-        <ns4:Document id="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:400b74f9-a2eb-42c8-bc60-06dd43a4226f-1@urn%3Aihe%3Aiti%3Axds-b%3A2007"/></ns4:Document>
-      </ns4:ProvideAndRegisterDocumentSetRequest>
-    </soap:Body>
-  </soap:Envelope>
+              <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Unstructured EPR document"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="22232009" id="urn:uuid:894c0b03-dbcc-4a96-abbb-3d54fea66cd7">
+              <ns2:Slot name="codingScheme">
+                <ns2:ValueList>
+                  <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+              <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Hospital (environment)"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="394802001" id="urn:uuid:290dd442-33b7-487d-b316-7d4133c6259f">
+              <ns2:Slot name="codingScheme">
+                <ns2:ValueList>
+                  <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+              <ns2:Name><ns2:LocalizedString charset="UTF-8" value="General medicine (qualifier value)"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="41000179103" id="urn:uuid:bf4ccf6d-260f-4dba-b410-bde45a793354">
+              <ns2:Slot name="codingScheme">
+                <ns2:ValueList>
+                  <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+              <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Immunization Record (record artifact)"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f" classifiedObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430" nodeRepresentation="17621005" id="urn:uuid:edd63290-670d-4330-9022-784b72aabf3a">
+              <ns2:Slot name="codingScheme">
+                <ns2:ValueList>
+                  <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+              <ns2:Name><ns2:LocalizedString xml:lang="en-US" charset="UTF-8" value="Normal"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:ExternalIdentifier
+              registryObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
+              identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"
+              value="IHERED-1024^^^&amp;1.3.6.1.4.1.21367.13.20.1000&amp;ISO"
+              id="urn:uuid:f67ca3d8-3f67-4433-8157-12f2671b5e24">
+              <ns2:Name><ns2:LocalizedString value="XDSDocumentEntry.patientId"/></ns2:Name>
+            </ns2:ExternalIdentifier>
+            <ns2:ExternalIdentifier
+              registryObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
+              identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"
+              value="2.25.315780944045548668836581423927969062443"
+              id="urn:uuid:0c09cc2b-8bc1-4c7c-9ef1-d97a715b167b">
+              <ns2:Name><ns2:LocalizedString value="XDSDocumentEntry.uniqueId"/></ns2:Name>
+            </ns2:ExternalIdentifier>
+          </ns2:ExtrinsicObject>
+          <ns2:RegistryPackage id="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e">
+            <ns2:Slot name="submissionTime">
+              <ns2:ValueList>
+                <ns2:Value>20220902083143</ns2:Value>
+              </ns2:ValueList>
+            </ns2:Slot>
+            <ns2:Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" nodeRepresentation="" id="urn:uuid:1f3f7a40-d5ea-4e49-8162-a4db5496248d">
+              <ns2:Slot name="authorPerson">
+                <ns2:ValueList>
+                  <ns2:Value>^Müller^Peter^^^Dr. med</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+              <ns2:Slot name="authorRole">
+                <ns2:ValueList>
+                  <ns2:Value>Healthcare professional</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+            </ns2:Classification>
+            <ns2:Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500" classifiedObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" nodeRepresentation="71388002" id="urn:uuid:9855f580-cd2b-40ef-aeb7-c20d864379e2">
+              <ns2:Slot name="codingScheme">
+                <ns2:ValueList>
+                  <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
+                </ns2:ValueList>
+              </ns2:Slot>
+              <ns2:Name><ns2:LocalizedString xml:lang="en-US" charset="UTF-8" value="Procedure (procedure)"/></ns2:Name>
+            </ns2:Classification>
+            <ns2:ExternalIdentifier
+              registryObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e"
+              identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"
+              value="IHERED-1024^^^&amp;1.3.6.1.4.1.21367.13.20.1000&amp;ISO"
+              id="urn:uuid:d182e586-3da4-43b0-a73b-a99696e4f4b9">
+              <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.patientId"/></ns2:Name>
+            </ns2:ExternalIdentifier>
+            <ns2:ExternalIdentifier
+              registryObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e"
+              identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"
+              value="2.25.173093884172794859578150089866596425262"
+              id="urn:uuid:771a77df-e178-445f-a2d3-77736b0164ce">
+              <ns2:Name>
+                <ns2:LocalizedString value="XDSSubmissionSet.uniqueId"/>
+              </ns2:Name>
+            </ns2:ExternalIdentifier>
+            <ns2:ExternalIdentifier registryObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832" value="2.16.756.5.30.1.139.1.1.11" id="urn:uuid:7649d2ed-1223-476b-a761-6a49d11dfea0">
+              <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.sourceId"/></ns2:Name>
+            </ns2:ExternalIdentifier>
+          </ns2:RegistryPackage><ns2:Classification classifiedObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e" classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" id="urn:uuid:c5097959-95c9-46f7-a868-4385db5ebee9"/>
+          <ns2:Association
+            associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
+            sourceObject="urn:uuid:d652dd4e-3215-4fcd-a217-fd45192fc54e"
+            targetObject="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"
+            id="urn:uuid:f4bf2fc1-34f2-43eb-a74d-7a38eb502e65">
+            <ns2:Slot name="SubmissionSetStatus">
+              <ns2:ValueList>
+                <ns2:Value>Original</ns2:Value>
+              </ns2:ValueList>
+            </ns2:Slot>
+          </ns2:Association>
+        </ns2:RegistryObjectList>
+      </ns5:SubmitObjectsRequest>
+      <ns4:Document id="urn:uuid:b55a1b31-95ad-43b2-a077-4962f2da8430"><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:400b74f9-a2eb-42c8-bc60-06dd43a4226f-1@urn%3Aihe%3Aiti%3Axds-b%3A2007"/></ns4:Document>
+    </ns4:ProvideAndRegisterDocumentSetRequest>
+  </soap:Body>
+</soap:Envelope>
+
+<!-- document ommitted -->

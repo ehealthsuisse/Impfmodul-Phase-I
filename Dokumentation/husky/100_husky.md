@@ -7,25 +7,27 @@
 - *author*
 - classCode
 - confidientalityCode
-- creationTime
-- entryUUID
 - formatCode
 - healthCareFacilityTypeCode
 - languageCode
 - mimeType
-- objectType
 - patientId (destinationPatientId)
 - practiceSettingCode
 - sourcePatientId
 - typeCode
+
+- creationTime
+- entryUUID
+- objectType
 - uniqueId
 
 #### SubmissionSet:
 
 - *author*
 - contentTypeCode
-- entryUUID
 - patientId
+
+- entryUUID
 - sourceId
 - submissionTime
 - uniqueId
