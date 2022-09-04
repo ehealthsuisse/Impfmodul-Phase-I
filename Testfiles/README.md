@@ -8,7 +8,7 @@
 - Geb.: 1967-02-10
 - Adm. Geschlecht (gender): female
 
-### GFP
+### Gesundheitsfachpersonen (GFP)
 
 #### TC_HCP1_C1
 - GLN = "7601888888884"
