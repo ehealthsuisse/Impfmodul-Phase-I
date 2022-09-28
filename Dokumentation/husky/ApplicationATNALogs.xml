@@ -1,0 +1,31 @@
+<AuditMessage>
+  <EventIdentification EventActionCode="E" EventDateTime="2022-09-13T16:31:45.173292Z" EventOutcomeIndicator="0">
+    <EventID csd-code="110100" codeSystemName="DCM" originalText="Application Activity"/>
+    <EventTypeCode csd-code="110120" codeSystemName="DCM" originalText="Application Start"/>
+  </EventIdentification>
+  <ActiveParticipant UserID="" UserIsRequestor="false" NetworkAccessPointID="192.168.10.182" NetworkAccessPointTypeCode="2">
+    <RoleIDCode csd-code="110150" codeSystemName="DCM" originalText="Application"/>
+  </ActiveParticipant>
+  <ActiveParticipant UserID="martinsmock" UserIsRequestor="true">
+    <RoleIDCode csd-code="110151" codeSystemName="DCM" originalText="Application Launcher"/>
+  </ActiveParticipant>
+  <AuditSourceIdentification AuditSourceID="Husky Test">
+    <AuditSourceTypeCode csd-code="4" codeSystemName="DCM" originalText="Application Server Process or Thread"/>
+  </AuditSourceIdentification>
+</AuditMessage>
+
+<AuditMessage>
+  <EventIdentification EventActionCode="E" EventDateTime="2022-09-13T16:32:40.112761Z" EventOutcomeIndicator="0">
+    <EventID csd-code="110100" codeSystemName="DCM" originalText="Application Activity"/>
+    <EventTypeCode csd-code="110121" codeSystemName="DCM" originalText="Application Stop"/>
+  </EventIdentification>
+  <ActiveParticipant UserID="" UserIsRequestor="false" NetworkAccessPointID="192.168.10.182" NetworkAccessPointTypeCode="2">
+    <RoleIDCode csd-code="110150" codeSystemName="DCM" originalText="Application"/>
+  </ActiveParticipant>
+  <ActiveParticipant UserID="martinsmock" UserIsRequestor="true">
+    <RoleIDCode csd-code="110151" codeSystemName="DCM" originalText="Application Launcher"/>
+  </ActiveParticipant>
+  <AuditSourceIdentification AuditSourceID="Husky Test">
+    <AuditSourceTypeCode csd-code="4" codeSystemName="DCM" originalText="Application Server Process or Thread"/>
+  </AuditSourceIdentification>
+</AuditMessage>

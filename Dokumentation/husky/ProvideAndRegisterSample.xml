@@ -1,4 +1,10 @@
---uuid:b70081c1-8502-42c8-b7ad-b548a80ea671 Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml" Content-Transfer-Encoding: binary Content-ID:
+Target endpoint: http://ehealthsuisse.ihe-europe.net:8280/xdstools7/sim/epr-testing__for_init_gw_testing/rep/prb
+Character set: UTF-8 Accept: */* --uuid:66850f31-8358-4c70-a5f9-91b641fe8486
+Content-Type: application/xop+xml;
+charset=UTF-8;
+type="application/soap+xml"
+Content-Transfer-Encoding: binary Content-ID:
+
 <root.message@cxf.apache.org>
 
   <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
@@ -8,18 +14,18 @@
           xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
           xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          ID="_7d4cd5f7-8bad-40d6-a02d-0e41596434fc"
-          IssueInstant="2022-09-04T10:09:29.504Z"
+          ID="_aff93f8b-926c-4d82-ab2c-a514fe3aef09"
+          IssueInstant="2022-09-13T12:29:32.568Z"
           Version="2.0">
           <saml2:Issuer>https://ehealthsuisse.ihe-europe.net/STS</saml2:Issuer>
           <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
             <ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-              <ds:Reference URI="#_7d4cd5f7-8bad-40d6-a02d-0e41596434fc">
+              <ds:Reference URI="#_aff93f8b-926c-4d82-ab2c-a514fe3aef09">
                 <ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-                <ds:DigestValue>YVGs90xlsNMIocVwMOqXqorsSW0=</ds:DigestValue>
+                <ds:DigestValue>2MUvlVvMfo6aBlppxpIYdGyr2OY=</ds:DigestValue>
               </ds:Reference>
             </ds:SignedInfo>
-            <ds:SignatureValue>VY4a3VnTTxS5otFRAWNB7jy72KtXcbr0MowZJey+CSk7rXTyHuZeit+LqldYPR4Yyx0TiaQBssvSwB0xDae1yrjNIKZJ+T2vJT6U50tUWuHg61Apj9/g7lkYOXgfb+AKzt6V2LFtH1vyFYpdyBBzpUqm/Wta2WcGnzHea9FUeig=</ds:SignatureValue>
+            <ds:SignatureValue>mr78pRJrIWAwm38q2BA9C6Ke6ToW3E+ZtzR87lLYMso6GUPPyr+0XwUjWumG3ZEpqvyCCq5JSRNCwEOSelJdY7KvK1yxpRQkJ6Jq3NLdmMuu6AwmFUpqxEqblbJNPz436BDNitb1+lohWlYGbFIE2g8R9gWyZ8dmCgT66LsjSG0=</ds:SignatureValue>
             <ds:KeyInfo>
               <ds:X509Data>
                 <ds:X509Certificate>MIIDhjCCAu+gAwIBAgIBCzANBgkqhkiG9w0BAQ0FADBFMQswCQYDVQQGEwJDSDEMMAoGA1UECgwD SUhFMSgwJgYDVQQDDB9laGVhbHRoc3Vpc3NlLmloZS1ldXJvcGUubmV0IENBMB4XDTE3MDMyMjE2 MDgyNFoXDTI3MDMyMjE2MDgyNFowQjELMAkGA1UEBhMCQ0gxDDAKBgNVBAoMA0lIRTElMCMGA1UE
@@ -33,14 +39,14 @@
           </ds:Signature>
           <saml2:Subject>
             <saml2:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="urn:gs1:gln">7601002469191</saml2:NameID>
-            <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml2:SubjectConfirmationData InResponseTo="_43ef3e4fefdb03a31781d7ea52617674bcd25a6c26" NotOnOrAfter="2022-09-04T12:09:29.504Z" Recipient="https://sp.community.ch/epd"/></saml2:SubjectConfirmation>
+            <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml2:SubjectConfirmationData InResponseTo="_43ef3e4fefdb03a31781d7ea52617674bcd25a6c26" NotOnOrAfter="2022-09-13T14:29:32.568Z" Recipient="https://sp.community.ch/epd"/></saml2:SubjectConfirmation>
           </saml2:Subject>
-          <saml2:Conditions NotBefore="2022-09-04T10:09:29.504Z" NotOnOrAfter="2022-09-04T12:09:29.504Z">
+          <saml2:Conditions NotBefore="2022-09-13T12:29:32.568Z" NotOnOrAfter="2022-09-13T14:29:32.568Z">
             <saml2:AudienceRestriction>
               <saml2:Audience>urn:e-health-suisse:token-audience:all-communities</saml2:Audience>
             </saml2:AudienceRestriction>
           </saml2:Conditions>
-          <saml2:AuthnStatement AuthnInstant="2022-09-04T10:09:29.504Z" SessionNotOnOrAfter="2022-09-04T12:09:29.504Z">
+          <saml2:AuthnStatement AuthnInstant="2022-09-13T12:29:32.568Z" SessionNotOnOrAfter="2022-09-13T14:29:32.568Z">
             <saml2:AuthnContext>
               <saml2:AuthnContextClassRef>http://bag.admin.ch/LoA/3</saml2:AuthnContextClassRef>
             </saml2:AuthnContext>
@@ -62,7 +68,7 @@
               <saml2:AttributeValue>urn:oid:1.1.4567334.1.6</saml2:AttributeValue>
             </saml2:Attribute>
             <saml2:Attribute Name="urn:oasis:names:tc:xacml:2.0:resource:resource-id">
-              <saml2:AttributeValue>761337610411265304^^^SPID&amp;2.16.756.5.30.1.127.3.10.3&amp;ISO</saml2:AttributeValue>
+              <saml2:AttributeValue>761337610411265304^^^&amp;2.16.756.5.30.1.127.3.10.3&amp;ISO</saml2:AttributeValue>
             </saml2:Attribute>
             <saml2:Attribute Name="urn:oasis:names:tc:xspa:1.0:subject:purposeofuse">
               <saml2:AttributeValue><PurposeOfUse xmlns="urn:hl7-org:v3" code="NORM" codeSystem="2.16.756.5.30.1.127.3.10.5" codeSystemName="eHealth Suisse Verwendungszweck" displayName="Normalzugriff" xsi:type="CE"/></saml2:AttributeValue>
@@ -71,7 +77,7 @@
         </saml2:Assertion>
       </wsse:Security>
       <Action soap:mustUnderstand="true" xmlns="http://www.w3.org/2005/08/addressing">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</Action>
-      <MessageID xmlns="http://www.w3.org/2005/08/addressing">urn:uuid:74040f71-f05b-46bd-98e8-d6a53c681610</MessageID>
+      <MessageID xmlns="http://www.w3.org/2005/08/addressing">urn:uuid:ceeada62-b2d8-4a6a-b6c4-9fc746444216</MessageID>
       <To xmlns="http://www.w3.org/2005/08/addressing">http://ehealthsuisse.ihe-europe.net:8280/xdstools7/sim/epr-testing__for_init_gw_testing/rep/prb</To>
       <ReplyTo xmlns="http://www.w3.org/2005/08/addressing">
         <Address>http://www.w3.org/2005/08/addressing/anonymous</Address>
@@ -87,10 +93,10 @@
         xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
         <ns5:SubmitObjectsRequest><ns3:RequestSlotList/>
           <ns2:RegistryObjectList>
-            <ns2:ExtrinsicObject mimeType="application/fhir+json" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1" id="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4">
+            <ns2:ExtrinsicObject mimeType="application/fhir+json" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1" id="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f">
               <ns2:Slot name="creationTime">
                 <ns2:ValueList>
-                  <ns2:Value>20220904100927</ns2:Value>
+                  <ns2:Value>20220913122930</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
               <ns2:Slot name="languageCode">
@@ -100,11 +106,11 @@
               </ns2:Slot>
               <ns2:Slot name="sourcePatientId">
                 <ns2:ValueList>
-                  <ns2:Value>2342134localid^^^&amp;1.2.3.4&amp;ISO</ns2:Value>
+                  <ns2:Value>waldspital-Id-1234^^^&amp;1.2.3.4.123456.1&amp;ISO</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
               <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Impfung"/></ns2:Name>
-              <ns2:Classification classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4" nodeRepresentation="" id="urn:uuid:9665e89d-db3e-4af3-aeec-3920be03c81d">
+              <ns2:Classification classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f" nodeRepresentation="" id="urn:uuid:736b76be-0a14-404b-99a3-4672c743c2da">
                 <ns2:Slot name="authorPerson">
                   <ns2:ValueList>
                     <ns2:Value>^Müller^Peter^^^Dr. med</ns2:Value>
@@ -115,13 +121,8 @@
                     <ns2:Value>HCP^^^&amp;2.16.756.5.30.1.127.3.10.6&amp;ISO</ns2:Value>
                   </ns2:ValueList>
                 </ns2:Slot>
-                <ns2:Slot name="authorSpecialty">
-                  <ns2:ValueList>
-                    <ns2:Value>^^^&amp;&amp;ISO</ns2:Value>
-                  </ns2:ValueList>
-                </ns2:Slot>
               </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a" classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4" nodeRepresentation="184216000" id="urn:uuid:e8ce74d2-9ab4-4ada-9137-3669aa34829b">
+              <ns2:Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a" classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f" nodeRepresentation="184216000" id="urn:uuid:46d14524-8bb4-4eb7-a14a-7c0d1803566a">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
@@ -131,9 +132,9 @@
               </ns2:Classification>
               <ns2:Classification
                 classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"
-                classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4"
+                classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f"
                 nodeRepresentation="urn:che:epr:EPR_Unstructured_Document"
-                id="urn:uuid:c10284f9-51da-4d12-a242-4e8b970bf962">
+                id="urn:uuid:6cf648cc-dcde-4971-970d-5f344343325d">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.756.5.30.1.127.3.10.10</ns2:Value>
@@ -141,7 +142,7 @@
                 </ns2:Slot>
                 <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Unstructured EPR document"/></ns2:Name>
               </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1" classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4" nodeRepresentation="22232009" id="urn:uuid:3357d742-2a4c-4c7f-9ecc-fa3b55fe28fe">
+              <ns2:Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1" classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f" nodeRepresentation="22232009" id="urn:uuid:8a4d7c67-7bb6-45ad-93aa-c37165a51ad7">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
@@ -149,7 +150,7 @@
                 </ns2:Slot>
                 <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Hospital (environment)"/></ns2:Name>
               </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead" classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4" nodeRepresentation="394802001" id="urn:uuid:cbb85a56-7b4e-4156-b82c-3c029341ae16">
+              <ns2:Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead" classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f" nodeRepresentation="394802001" id="urn:uuid:55a45b00-73e7-4baa-90de-21730c670019">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
@@ -157,7 +158,7 @@
                 </ns2:Slot>
                 <ns2:Name><ns2:LocalizedString charset="UTF-8" value="General medicine (qualifier value)"/></ns2:Name>
               </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983" classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4" nodeRepresentation="41000179103" id="urn:uuid:747259e1-d3ae-4455-9913-ddce7edece0a">
+              <ns2:Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983" classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f" nodeRepresentation="41000179103" id="urn:uuid:a6fe826b-c049-46c6-b8f4-683e557ed805">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
@@ -165,7 +166,7 @@
                 </ns2:Slot>
                 <ns2:Name><ns2:LocalizedString charset="UTF-8" value="Immunization Record (record artifact)"/></ns2:Name>
               </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f" classifiedObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4" nodeRepresentation="17621005" id="urn:uuid:9e8401ef-312f-4279-be3a-58a2f697e6fa">
+              <ns2:Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f" classifiedObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f" nodeRepresentation="17621005" id="urn:uuid:ffdf8207-211c-4c9c-af75-c08714684c1e">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
@@ -174,27 +175,27 @@
                 <ns2:Name><ns2:LocalizedString xml:lang="en-US" charset="UTF-8" value="Normal"/></ns2:Name>
               </ns2:Classification>
               <ns2:ExternalIdentifier
-                registryObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4"
+                registryObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f"
                 identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"
                 value="IHERED-1024^^^&amp;1.3.6.1.4.1.21367.13.20.1000&amp;ISO"
-                id="urn:uuid:2e7430b6-153f-445e-9ec9-0a4dc30ccb67">
+                id="urn:uuid:2b9adfda-0179-405a-93a0-878e4bb4f89a">
                 <ns2:Name><ns2:LocalizedString value="XDSDocumentEntry.patientId"/></ns2:Name>
               </ns2:ExternalIdentifier>
               <ns2:ExternalIdentifier
-                registryObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4"
+                registryObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f"
                 identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"
-                value="2.25.108450059843111226075267709039570298203"
-                id="urn:uuid:30aff9a3-8780-41c8-9b3d-5baccdb86ef5">
+                value="2.25.12380442237176771079740302345962441376"
+                id="urn:uuid:796f732f-00ab-414b-901b-456846d7dcad">
                 <ns2:Name><ns2:LocalizedString value="XDSDocumentEntry.uniqueId"/></ns2:Name>
               </ns2:ExternalIdentifier>
             </ns2:ExtrinsicObject>
-            <ns2:RegistryPackage id="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0">
+            <ns2:RegistryPackage id="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0">
               <ns2:Slot name="submissionTime">
                 <ns2:ValueList>
-                  <ns2:Value>20220904100929</ns2:Value>
+                  <ns2:Value>20220913122932</ns2:Value>
                 </ns2:ValueList>
               </ns2:Slot>
-              <ns2:Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0" nodeRepresentation="" id="urn:uuid:f1d159b3-0b0f-4ea8-8d5d-6bb3857cf1b4">
+              <ns2:Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0" nodeRepresentation="" id="urn:uuid:127b1911-96f1-4e33-88aa-529a6277d5cb">
                 <ns2:Slot name="authorPerson">
                   <ns2:ValueList>
                     <ns2:Value>^Müller^Peter^^^Dr. med</ns2:Value>
@@ -202,11 +203,11 @@
                 </ns2:Slot>
                 <ns2:Slot name="authorRole">
                   <ns2:ValueList>
-                    <ns2:Value>Healthcare professional</ns2:Value>
+                    <ns2:Value>HCP^^^&amp;2.16.756.5.30.1.127.3.10.6&amp;ISO</ns2:Value>
                   </ns2:ValueList>
                 </ns2:Slot>
               </ns2:Classification>
-              <ns2:Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500" classifiedObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0" nodeRepresentation="71388002" id="urn:uuid:b680c3f6-d645-4cd2-a6c9-e078050d0647">
+              <ns2:Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500" classifiedObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0" nodeRepresentation="71388002" id="urn:uuid:aca22da0-2433-4d7e-ac10-4a4825754e22">
                 <ns2:Slot name="codingScheme">
                   <ns2:ValueList>
                     <ns2:Value>2.16.840.1.113883.6.96</ns2:Value>
@@ -215,28 +216,28 @@
                 <ns2:Name><ns2:LocalizedString xml:lang="en-US" charset="UTF-8" value="Procedure (procedure)"/></ns2:Name>
               </ns2:Classification>
               <ns2:ExternalIdentifier
-                registryObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0"
+                registryObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0"
                 identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"
                 value="IHERED-1024^^^&amp;1.3.6.1.4.1.21367.13.20.1000&amp;ISO"
-                id="urn:uuid:8e5044ac-3ab3-4d53-90f6-dfcee5ecb61d">
+                id="urn:uuid:860cc97a-6d76-4ae3-b346-dfdc48cb594a">
                 <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.patientId"/></ns2:Name>
               </ns2:ExternalIdentifier>
               <ns2:ExternalIdentifier
-                registryObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0"
+                registryObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0"
                 identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"
-                value="2.25.48057413557004661971353478968878239402"
-                id="urn:uuid:6823a771-d413-467f-aaf2-bec0e998daf0">
+                value="2.25.254220041394031770988094807609241544398"
+                id="urn:uuid:03a3d672-b483-4ac6-bc37-c14845e6d3b6">
                 <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.uniqueId"/></ns2:Name>
               </ns2:ExternalIdentifier>
-              <ns2:ExternalIdentifier registryObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0" identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832" value="2.16.756.5.30.1.139.1.1.11" id="urn:uuid:22e26a8e-6348-414e-b033-5b948d62ab52">
+              <ns2:ExternalIdentifier registryObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0" identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832" value="2.16.756.5.30.1.139.1.1.11" id="urn:uuid:9cec9619-3886-47cf-a8e7-efa03ff7f508">
                 <ns2:Name><ns2:LocalizedString value="XDSSubmissionSet.sourceId"/></ns2:Name>
               </ns2:ExternalIdentifier>
-            </ns2:RegistryPackage><ns2:Classification classifiedObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0" classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" id="urn:uuid:a64ccab5-72b2-417b-9fb4-3dfa320a03d6"/>
+            </ns2:RegistryPackage><ns2:Classification classifiedObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0" classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" id="urn:uuid:c74d1e14-4174-4cf0-8e17-daf87ac040dd"/>
             <ns2:Association
               associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
-              sourceObject="urn:uuid:dd9432e1-f62e-428e-a434-646f01fab2e0"
-              targetObject="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4"
-              id="urn:uuid:9ae72fed-1fbb-4605-bf63-411d850590b2">
+              sourceObject="urn:uuid:dfd308b3-7f51-4b3b-935e-cf1c1dc8b2f0"
+              targetObject="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f"
+              id="urn:uuid:2ee8c05f-e0d0-42a6-8976-28111331dd7b">
               <ns2:Slot name="SubmissionSetStatus">
                 <ns2:ValueList>
                   <ns2:Value>Original</ns2:Value>
@@ -245,11 +246,11 @@
             </ns2:Association>
           </ns2:RegistryObjectList>
         </ns5:SubmitObjectsRequest>
-        <ns4:Document id="urn:uuid:e2d17201-ca5e-4f0f-a3b1-0e47be4cfbf4"><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:4f1f335e-5bc2-44ce-9cb8-7a9ef3844dc1-1@urn%3Aihe%3Aiti%3Axds-b%3A2007"/></ns4:Document>
+        <ns4:Document id="urn:uuid:437b012c-fbb8-4832-b9bb-aac2a0bae48f"><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:3d63afff-1baa-4093-92e1-5af1ae2cb5e3-1@urn%3Aihe%3Aiti%3Axds-b%3A2007"/></ns4:Document>
       </ns4:ProvideAndRegisterDocumentSetRequest>
     </soap:Body>
   </soap:Envelope>
-  --uuid:b70081c1-8502-42c8-b7ad-b548a80ea671 Content-Type: application/fhir+json Content-Transfer-Encoding: binary Content-ID: <4f1f335e-5bc2-44ce-9cb8-7a9ef3844dc1-1@urn:ihe:iti:xds-b:2007> { "resourceType": "Bundle", "id": "A-D1-P-C1", "meta": {
+  --uuid:66850f31-8358-4c70-a5f9-91b641fe8486 Content-Type: application/fhir+json Content-Transfer-Encoding: binary Content-ID: <3d63afff-1baa-4093-92e1-5af1ae2cb5e3-1@urn:ihe:iti:xds-b:2007> { "resourceType": "Bundle", "id": "A-D1-P-C1", "meta": {
   "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration" ] }, "identifier": { "system": "urn:ietf:rfc:3986", "value": "urn:uuid:e3250dbd-5932-4eac-8054-dc5b9082001d" }, "type": "document", "timestamp":
   "2021-06-01T00:00:00.390+02:00", "entry": [ { "fullUrl": "http://test.fhir.ch/r4/Composition/A-D1-P-C1-Composition", "resource": { "resourceType": "Composition", "id": "A-D1-P-C1-Composition", "meta": { "profile": [
   "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration" ] }, "language": "en-US", "text": { "status": "generated", "div": "<div xmlns="\"http://www.w3.org/1999/xhtml\"" xml:lang="\"en-US\"" lang="\"en-US\"">
@@ -578,50 +579,16 @@
     <p>
       <b>address</b>: Talstrasse 3-5 Münchenbuchsee BE 3053 CH
     </p>
-  </div>"
-        },
-        "identifier": [
-          {
-            "system": "urn:oid:2.51.1.3",
-            "value": "7601001000674"
-          }
-        ],
-        "name": "GlaxoSmithKline AG",
-        "telecom": [
-          {
-            "system": "phone",
-            "value": "tel:+41 31 862 21 11",
-            "use": "work"
-          },
-          {
-            "system": "fax",
-            "value": "fax:+41 31 862 22 00",
-            "use": "work"
-          },
-          {
-            "system": "email",
-            "value": "mailto:swiss.info@gsk.com",
-            "use": "work"
-          },
-          {
-            "system": "url",
-            "value": "https://www.gsk.com",
-            "use": "work"
-          }
-        ],
-        "address": [
-          {
-            "line": [
-              "Talstrasse 3-5"
-            ],
-            "city": "Münchenbuchsee",
-            "state": "BE",
-            "postalCode": "3053",
-            "country": "CH"
-          }
-        ]
-      }
-    }
-  ]
-}
---uuid:b70081c1-8502-42c8-b7ad-b548a80ea671--
+  </div>" }, "identifier": [ { "system": "urn:oid:2.51.1.3", "value": "7601001000674" } ], "name": "GlaxoSmithKline AG", "telecom": [ { "system": "phone", "value": "tel:+41 31 862 21 11", "use": "work" }, { "system": "fax", "value": "fax:+41 31 862 2200", "use": "work" }, { "system": "email", "value": "mailto:swiss.info@gsk.com", "use": "work" }, { "system": "url", "value": "https://www.gsk.com", "use": "work" } ], "address": [ { "line": [ "Talstrasse 3-5" ], "city": "Münchenbuchsee", "state":"BE", "postalCode": "3053", "country": "CH" } ] } } ] } --uuid:66850f31-8358-4c70-a5f9-91b641fe8486--HTTP response code: 200 Character set: UTF-8 connection: keep-alive Content-Length: 812 content-type: multipart/related;boundary=MIMEBoundary112233445566778899; type="application/xop+xml"; start="<doc0@ihexds.nist.gov>";
+    start-info="application/soap+xml" Date: Tue, 13 Sep 2022 12:29:37 GMT Keep-Alive: timeout=20 --MIMEBoundary112233445566778899 Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml" Content-Transfer-Encoding: binary Content-ID:
+    <doc0@ihexds.nist.gov>
+
+      <S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
+        <S:Header>
+          <wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:s="http://www.w3.org/2003/05/soap-envelope" s:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse</wsa:Action>
+          <wsa:RelatesTo xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:ceeada62-b2d8-4a6a-b6c4-9fc746444216</wsa:RelatesTo>
+        </S:Header>
+        <S:Body><rs:RegistryResponse xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success"/></S:Body>
+      </S:Envelope>
+
+      --MIMEBoundary112233445566778899--
