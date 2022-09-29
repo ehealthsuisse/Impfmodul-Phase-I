@@ -334,9 +334,6 @@
         }
       }
     },
-
-    // Immunization here
-
     {
       "fullUrl": "http://test.fhir.ch/r4/Immunization/TCC01-IMMUN1-patient",
       "resource": {
@@ -364,9 +361,6 @@
               "reference": "Medication/TC-IMMUN-MEDIC-HAVRIX1440"
             }
           },
-
-          // the reference to the replaced immunization
-
           {
             "extension": [
               {
