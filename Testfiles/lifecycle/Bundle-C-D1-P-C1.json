@@ -1,6 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "A-D1-P-C1",
+  "id": "C-D1-P-C1",
   "meta": {
     "profile": [
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration"
@@ -8,16 +8,16 @@
   },
   "identifier": {
     "system": "urn:ietf:rfc:3986",
-    "value": "urn:uuid:e3250dbd-5932-4eac-8054-dc5b9082001d"
+    "value": "urn:uuid:6379e0da-49cc-4b29-a5ba-45810bb46fb0"
   },
   "type": "document",
-  "timestamp": "2021-06-01T00:00:00.390+02:00",
+  "timestamp": "2021-06-15T00:00:00.390+02:00",
   "entry": [
     {
-      "fullUrl": "http://test.fhir.ch/r4/Composition/A-D1-P-C1-Composition",
+      "fullUrl": "http://test.fhir.ch/r4/Composition/C-D1-P-C1-Composition",
       "resource": {
         "resourceType": "Composition",
-        "id": "A-D1-P-C1-Composition",
+        "id": "C-D1-P-C1-Composition",
         "meta": {
           "profile": [
             "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration"
@@ -26,7 +26,7 @@
         "language": "en-US",
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D1-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>June 1, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (qualifier value) (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>C-D1-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:fc215e64-c4f4-4e39-b751-f967b84cf106</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>June 15, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (qualifier value) (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr><tr><td>Comments</td></tr></table></div>"
         },
         "extension": [
           {
@@ -37,7 +37,7 @@
         ],
         "identifier": {
           "system": "urn:ietf:rfc:3986",
-          "value": "urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753"
+          "value": "urn:uuid:fc215e64-c4f4-4e39-b751-f967b84cf106"
         },
         "status": "final",
         "type": {
@@ -52,7 +52,7 @@
         "subject": {
           "reference": "Patient/TC-patient"
         },
-        "date": "2021-06-01T00:00:00+02:00",
+        "date": "2021-06-15T00:00:00.390+02:00",
         "author": [
           {
             "reference": "Patient/TC-patient"
@@ -79,6 +79,14 @@
         "custodian": {
           "reference": "Organization/TC-ORG1"
         },
+        "relatesTo": [
+          {
+            "code": "replaces",
+            "targetReference": {
+              "reference": "Composition/A-D1-P-C1-Composition"
+            }
+          }
+        ],
         "section": [
           {
             "id": "administration",
@@ -94,13 +102,30 @@
             },
             "text": {
               "status": "generated",
-              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Hx of Immunization (http://loinc.org#11369-6)</span></p><p><b>Entries:</b></p><table><tr><td><a href=\"Immunization-TCA01-IMMUN1-patient.html\">Immunization/TCA01-IMMUN1-patient</a></td></tr></table></div>"
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Hx of Immunization (http://loinc.org#11369-6)</span></p><p><b>Entries:</b></p><table><tr><td><a href=\"Immunization-TCC01-IMMUN1-patient.html\">Immunization/TCC01-IMMUN1-patient</a></td></tr></table></div>"
             },
             "entry": [
               {
-                "reference": "Immunization/TCA01-IMMUN1-patient"
+                "reference": "Immunization/TCC01-IMMUN1-patient"
               }
             ]
+          },
+          {
+            "id": "Annotation",
+            "title": "Comments",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48767-8",
+                  "display": "Annotation comment Imp"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Annotation comment [Interpretation] Narrative (http://loinc.org#48767-8)</span></p></div>"
+            }
           }
         ]
       }
@@ -117,7 +142,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Patient</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Patient \"TC-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-patient-epr.html\">CH Core Patient EPR</a></p></div><p><b>identifier</b>: Medical record number: 12345678</p><p><b>name</b>: Monika Wegmueller </p><p><b>telecom</b>: ph: tel:+41.32.685.12.34(HOME)</p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1967-02-10</p><p><b>address</b>: Leidensweg 10 Specimendorf 9876 CH </p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TC-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-patient-epr.html\">CH Core Patient EPR</a></p></div><p><b>identifier</b>: Medical record number: 12345678</p><p><b>name</b>: Monika Wegmueller </p><p><b>telecom</b>: ph: tel:+41.32.685.12.34(HOME)</p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1967-02-10</p><p><b>address</b>: Leidensweg 10 Specimendorf 9876 CH </p></div>"
         },
         "identifier": [
           {
@@ -175,7 +200,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Practitioner</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Practitioner \"TC-HCP1-C1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitioner-epr.html\">CH Core Practitioner EPR</a></p></div><p><b>identifier</b>: id: 7601888888884</p><p><b>active</b>: true</p><p><b>name</b>: Peter Müller </p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:allzeit.bereit@gruppenpraxis.ch\">mailto:allzeit.bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zürich 8005 CH </p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TC-HCP1-C1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitioner-epr.html\">CH Core Practitioner EPR</a></p></div><p><b>identifier</b>: id: 7601888888884</p><p><b>active</b>: true</p><p><b>name</b>: Allzeit Bereit </p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:allzeit.bereit@gruppenpraxis.ch\">mailto:allzeit.bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Doktorgasse 2 Musterhausen 8888 CH </p></div>"
         },
         "identifier": [
           {
@@ -186,9 +211,9 @@
         "active": true,
         "name": [
           {
-            "family": "Müller",
+            "family": "Bereit",
             "given": [
-              "Peter"
+              "Allzeit"
             ],
             "prefix": [
               "Dr. med."
@@ -221,10 +246,10 @@
           {
             "type": "physical",
             "line": [
-              "Grabenstrasse 2"
+              "Doktorgasse 2"
             ],
-            "city": "Zürich",
-            "postalCode": "8005",
+            "city": "Musterhausen",
+            "postalCode": "8888",
             "country": "CH"
           }
         ]
@@ -242,15 +267,15 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601777777718</p><p><b>name</b>: Gruppenpraxis Müller</p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:bereit@gruppenpraxis.ch\">mailto:bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zürich ZH 8005 CH </p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TC-ORG1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601888888884</p><p><b>name</b>: Gruppenpraxis CH</p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:bereit@gruppenpraxis.ch\">mailto:bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Doktorgasse 2 Musterhausen ZH 8888 CH </p></div>"
         },
         "identifier": [
           {
             "system": "urn:oid:2.51.1.3",
-            "value": "7601777777718"
+            "value": "7601888888884"
           }
         ],
-        "name": "Gruppenpraxis Müller",
+        "name": "Gruppenpraxis CH",
         "telecom": [
           {
             "system": "phone",
@@ -276,11 +301,11 @@
         "address": [
           {
             "line": [
-              "Grabenstrasse 2"
+              "Doktorgasse 2"
             ],
-            "city": "Zürich",
+            "city": "Musterhausen",
             "state": "ZH",
-            "postalCode": "8005",
+            "postalCode": "8888",
             "country": "CH"
           }
         ]
@@ -298,7 +323,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: PractitionerRole</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource PractitionerRole \"TC-HCP1-ORG1-ROLE-performer\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitionerrole-epr.html\">CH Core PractitionerRole EPR</a></p></div><p><b>active</b>: true</p><p><b>practitioner</b>: <a href=\"#Practitioner_TC-HCP1-C1\">See above (Practitioner/TC-HCP1-C1)</a></p><p><b>organization</b>: <a href=\"#Organization_TC-ORG1\">See above (Organization/TC-ORG1)</a></p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TC-HCP1-ORG1-ROLE-performer\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitionerrole-epr.html\">CH Core PractitionerRole EPR</a></p></div><p><b>active</b>: true</p><p><b>practitioner</b>: <a href=\"#Practitioner_TC-HCP1-C1\">See above (Practitioner/TC-HCP1-C1)</a></p><p><b>organization</b>: <a href=\"#Organization_TC-ORG1\">See above (Organization/TC-ORG1)</a></p></div>"
         },
         "active": true,
         "practitioner": {
@@ -309,11 +334,14 @@
         }
       }
     },
+
+    // Immunization here
+
     {
-      "fullUrl": "http://test.fhir.ch/r4/Immunization/TCA01-IMMUN1-patient",
+      "fullUrl": "http://test.fhir.ch/r4/Immunization/TCC01-IMMUN1-patient",
       "resource": {
         "resourceType": "Immunization",
-        "id": "TCA01-IMMUN1-patient",
+        "id": "TCC01-IMMUN1-patient",
         "meta": {
           "profile": [
             "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization"
@@ -321,7 +349,7 @@
         },
         "text": {
           "status": "extensions",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Immunization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Immunization \"TCA01-IMMUN1-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-immunization.html\">CH VACD Immunization</a></p></div><p><b>CH VACD Extension Immunization Recorder Reference</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>CH VACD Extension Immunization Medication Reference</b>: <a href=\"#Medication_TC-IMMUN-MEDIC-HAVRIX1440\">See above (Medication/TC-IMMUN-MEDIC-HAVRIX1440)</a></p><p><b>identifier</b>: id: acc1f090-5e0c-45ae-b283-521d57c3aa2f</p><p><b>status</b>: completed</p><p><b>vaccineCode</b>: Havrix 1440 <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-swissmedic-cs.html\">Swiss Medic Authorized Vaccines Codesystem</a>#558)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>occurrence</b>: 2021-06-01</p><p><b>recorded</b>: 2021-06-02 12:00:00+0200</p><p><b>lotNumber</b>: AHAVB946A</p><p><b>route</b>: Intramuscular use <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (standardterms.edqm.eu#20035000)</span></p><h3>Performers</h3><table class=\"grid\"><tr><td>-</td><td><b>Actor</b></td></tr><tr><td>*</td><td><a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-performer\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-performer)</a></td></tr></table><p><b>note</b>: Der Patient hat diese Impfung ohne jedwelcher nebenwirkungen gut vertragen. (By Practitioner/TC-HCP1-C1 @2021-06-01)</p><h3>ProtocolApplieds</h3><table class=\"grid\"><tr><td>-</td><td><b>TargetDisease</b></td><td><b>DoseNumber[x]</b></td></tr><tr><td>*</td><td>Viral hepatitis, type A (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#40468003)</span></td><td>1</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TCC01-IMMUN1-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-immunization.html\">CH VACD Immunization</a></p></div><p><b>CH VACD Extension Immunization Recorder Reference</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>CH VACD Extension Immunization Medication Reference</b>: <a href=\"#Medication_TC-IMMUN-MEDIC-HAVRIX1440\">See above (Medication/TC-IMMUN-MEDIC-HAVRIX1440)</a></p><blockquote><p><b>CH VACD Extension Entry Cross Reference</b></p><p><b>value</b>: <a href=\"Immunization-TCA01-IMMUN1-patient.html\">Immunization/TCA01-IMMUN1-patient</a></p><p><b>value</b>: <a href=\"Composition-A-D1-P-C1-Composition.html\">Composition/A-D1-P-C1-Composition</a></p><p><b>value</b>: replaces</p></blockquote><p><b>identifier</b>: id: 375532dc-7e74-40dd-8564-3261e8d26603</p><p><b>status</b>: completed</p><p><b>vaccineCode</b>: Havrix 1440 <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-swissmedic-cs.html\">Swiss Medic Authorized Vaccines Codesystem</a>#558)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>occurrence</b>: 2021-06-02</p><p><b>recorded</b>: 2021-06-15 12:00:00+0200</p><p><b>lotNumber</b>: AHAVB946A</p><p><b>route</b>: Intramuscular use <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (standardterms.edqm.eu#20035000)</span></p><h3>Performers</h3><table class=\"grid\"><tr><td>-</td><td><b>Actor</b></td></tr><tr><td>*</td><td><a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-performer\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-performer)</a></td></tr></table><h3>ProtocolApplieds</h3><table class=\"grid\"><tr><td>-</td><td><b>TargetDisease</b></td><td><b>DoseNumber[x]</b></td></tr><tr><td>*</td><td>Viral hepatitis, type A (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#40468003)</span></td><td>1</td></tr></table></div>"
         },
         "extension": [
           {
@@ -335,12 +363,37 @@
             "valueReference": {
               "reference": "Medication/TC-IMMUN-MEDIC-HAVRIX1440"
             }
+          },
+
+          // the reference to the replaced immunization
+
+          {
+            "extension": [
+              {
+                "url": "entry",
+                "valueReference": {
+                  "reference": "Immunization/TCA01-IMMUN1-patient"
+                }
+              },
+              {
+                "url": "document",
+                "valueReference": {
+                  "reference": "Composition/A-D1-P-C1-Composition"
+                }
+              },
+              {
+                "url": "relationcode",
+                "valueCode": "replaces"
+              }
+            ],
+            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference"
           }
+
         ],
         "identifier": [
           {
             "system": "urn:oid:2.16.756.5.30.1.402.1.3.1.1.1",
-            "value": "acc1f090-5e0c-45ae-b283-521d57c3aa2f"
+            "value": "375532dc-7e74-40dd-8564-3261e8d26603"
           }
         ],
         "status": "completed",
@@ -356,8 +409,8 @@
         "patient": {
           "reference": "Patient/TC-patient"
         },
-        "occurrenceDateTime": "2021-06-01",
-        "recorded": "2021-06-02T00:00:00.390+02:00",
+        "occurrenceDateTime": "2021-06-02",
+        "recorded": "2021-06-15T00:00:00.390+02:00",
         "lotNumber": "AHAVB946A",
         "route": {
           "coding": [
@@ -373,15 +426,6 @@
             "actor": {
               "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-performer"
             }
-          }
-        ],
-        "note": [
-          {
-            "authorReference": {
-              "reference": "Practitioner/TC-HCP1-C1"
-            },
-            "time": "2021-06-01",
-            "text": "Der Patient hat diese Impfung ohne jedwelcher nebenwirkungen gut vertragen."
           }
         ],
         "protocolApplied": [
@@ -414,7 +458,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Medication</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Medication \"TC-IMMUN-MEDIC-HAVRIX1440\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-medication-for-immunization.html\">CH VACD Medication For Immunization</a></p></div><p><b>code</b>: HAVRIX 1440 Inj Susp <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#7680005580054)</span></p><p><b>status</b>: active</p><p><b>manufacturer</b>: <a href=\"#Organization_TC-ORG-GSK\">See above (Organization/TC-ORG-GSK)</a></p><p><b>form</b>: Suspension for injection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://fhir.ch/ig/ch-emed/2.1.0/CodeSystem-edqm-standardterms.html\">EDQM - Standard Terms</a>#11202000)</span></p><p><b>amount</b>: 1 milliliter<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code mL = 'mL')</span>/1 Syringe (unit of presentation)<span style=\"background: LightGoldenRodYellow\"> (Details: SNOMED CT code 733020007 = 'Syringe')</span></p><h3>Ingredients</h3><table class=\"grid\"><tr><td>-</td><td><b>Item[x]</b></td></tr><tr><td>*</td><td>Immunologic substance (substance) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#106181007)</span></td></tr></table><h3>Batches</h3><table class=\"grid\"><tr><td>-</td><td><b>LotNumber</b></td></tr><tr><td>*</td><td>AHAVB946A</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TC-IMMUN-MEDIC-HAVRIX1440\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-medication-for-immunization.html\">CH VACD Medication For Immunization</a></p></div><p><b>code</b>: HAVRIX 1440 Inj Susp <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#7680005580054)</span></p><p><b>status</b>: active</p><p><b>manufacturer</b>: <a href=\"#Organization_TC-ORG-GSK\">See above (Organization/TC-ORG-GSK)</a></p><p><b>form</b>: Suspension for injection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://fhir.ch/ig/ch-emed/2.1.0/CodeSystem-edqm-standardterms.html\">EDQM - Standard Terms</a>#11202000)</span></p><p><b>amount</b>: 1 milliliter<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code mL = 'mL')</span>/1 Syringe (unit of presentation)<span style=\"background: LightGoldenRodYellow\"> (Details: SNOMED CT code 733020007 = 'Syringe')</span></p><h3>Ingredients</h3><table class=\"grid\"><tr><td>-</td><td><b>Item[x]</b></td></tr><tr><td>*</td><td>Immunologic substance (substance) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#106181007)</span></td></tr></table><h3>Batches</h3><table class=\"grid\"><tr><td>-</td><td><b>LotNumber</b></td></tr><tr><td>*</td><td>AHAVB946A</td></tr></table></div>"
         },
         "code": {
           "coding": [
@@ -484,7 +528,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG-GSK\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization.html\">CH Core Organization</a></p></div><p><b>identifier</b>: id: 7601001000674</p><p><b>name</b>: GlaxoSmithKline AG</p><p><b>telecom</b>: ph: tel:+41 31 862 21 11(WORK), fax: fax:+41 31 862 22 00(WORK), <a href=\"mailto:mailto:swiss.info@gsk.com\">mailto:swiss.info@gsk.com</a>, <a href=\"https://www.gsk.com\">https://www.gsk.com</a></p><p><b>address</b>: Talstrasse 3-5 Münchenbuchsee BE 3053 CH </p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TC-ORG-GSK\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization.html\">CH Core Organization</a></p></div><p><b>identifier</b>: id: 7601001000674</p><p><b>name</b>: GlaxoSmithKline AG</p><p><b>telecom</b>: ph: tel:+41 31 862 21 11(WORK), fax: fax:+41 31 862 22 00(WORK), <a href=\"mailto:mailto:swiss.info@gsk.com\">mailto:swiss.info@gsk.com</a>, <a href=\"https://www.gsk.com\">https://www.gsk.com</a></p><p><b>address</b>: Talstrasse 3-5 Münchenbuchsee BE 3053 CH </p></div>"
         },
         "identifier": [
           {

@@ -34,7 +34,7 @@
 
 ### Impfungen
 
-#### Testfile [A-D1-P-C1](../Testfiles/Bundle-A-D1-P-C1.json)
+#### Testfile [A-D1-P-C1](./Bundle-A-D1-P-C1.json)
 
 Bundle Inhalt:
 - date: June 1, 2021
@@ -48,7 +48,7 @@ Performer:
 Inhalt:
 - 1 Impfung
 
-#### Testfile [B-D1-HCP1-C1](../Testfiles/Bundle-B-D1-HCP1-C1.json)
+#### Testfile [B-D1-HCP1-C1](./Bundle-B-D1-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: June 8, 2021
@@ -62,7 +62,7 @@ Performer (beide Impfungen):
 Inhalt:
 - 2 Impfungen
 
-#### Testfile [A-D2-HCP1-C1](../Testfiles/Bundle-A-D2-HCP1-C1.json)
+#### Testfile [A-D2-HCP1-C1](./Bundle-A-D2-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: June 15, 2021
@@ -76,7 +76,7 @@ Performer:
 Inhalt:
 - 1 Impfung
 
-#### Testfile [A-D3-HCP2-C2](../Testfiles/Bundle-A-D3-HCP2-C2.json)
+#### Testfile [A-D3-HCP2-C2](./Bundle-A-D3-HCP2-C2.json)
 
 Bundle Inhalt:
 - date: August 1, 2021
@@ -90,7 +90,7 @@ Performer:
 Inhalt:
 - 1 Impfung
 
-#### Testfile [A-D4-HCP2-C2](../Testfiles/Bundle-A-D4-HCP2-C2.json)
+#### Testfile [A-D4-HCP2-C2](./Bundle-A-D4-HCP2-C2.json)
 
 Bundle Inhalt:
 - date: August 20, 2021
@@ -105,7 +105,7 @@ Inhalt:
 - 1 Impfung als 2te Dosis (zu [A-D1-P-C1](#testfile-a-d1-p-c1))
 
 
-#### Testfile [A-D5-P-C1](../Testfiles/Bundle-A-D5-P-C1.json)
+#### Testfile [A-D5-P-C1](./Bundle-A-D5-P-C1.json)
 
 Bundle Inhalt:
 - date: September 1, 2021
@@ -138,7 +138,7 @@ Inhalt:
 
 ### Unverträglichkeiten (Allergien)
 
-#### Testfile [B-D2-HCP1-C1](../Testfiles/Bundle-B-D2-HCP1-C1.json)
+#### Testfile [B-D2-HCP1-C1](./Bundle-B-D2-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: October 6, 2021
@@ -157,7 +157,7 @@ Inhalt:
 - clinicalStatus: Active
 - verificationStatus: Confirmed
 
-#### Testfile [F_D3_HCP1_C1](../Testfiles/Bundle-F-D3-HCP1-C1.json)
+#### Testfile [F_D3_HCP1_C1](./Bundle-F-D3-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: September 1, 2021
@@ -179,7 +179,7 @@ Inhalt:
 
 ### Durchgemachte Infektionserkankungen
 
-#### Testfile [B-D3-HCP1-C1](../Testfiles/Bundle-B-D3-HCP1-C1.json)
+#### Testfile [B-D3-HCP1-C1](./Bundle-B-D3-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: October 6, 2021
@@ -196,7 +196,7 @@ Inhalt:
 - onset: 2015-05-30
 - recordedDate: 2015-05-30
 
-#### Testfile [F-D5-HCP1-C1](../Testfiles/Bundle-F-D5-HCP1-C1.json)
+#### Testfile [F-D5-HCP1-C1](./Bundle-F-D5-HCP1-C1.json)
 
 Bundle Inhalt:
 - date: October 6, 2021
@@ -216,7 +216,7 @@ Inhalt:
 
 ### Kommentare
 
-#### Testfile [F-D2-HCP1-C1](../Testfiles/Bundle-F-D2-HCP1-C1.json)
+#### Testfile [F-D2-HCP1-C1](./Bundle-F-D2-HCP1-C1.json)
 
 Kommentar zu einer vorab erfassten Impfung
 
@@ -232,7 +232,7 @@ Inhalt:
 - 1 Impfung mit Kommentar (zur Impfung in F-D1-HCP1-C1)
 
 
-#### Testfile [F-D4-HCP1-C1](../Testfiles/Bundle-F-D4-HCP1-C1.json)
+#### Testfile [F-D4-HCP1-C1](./Bundle-F-D4-HCP1-C1.json)
 
 Kommentar zu einer vorab erfassten Unverträglichkeit (in Testfile F-D3-HCP1-C1)
 
@@ -250,7 +250,7 @@ Inhalt:
 - recordedDate: 2021-10-06
 
 
-#### Testfile [F-D6-HCP1-C1](../Testfiles/Bundle-F-D6-HCP1-C1.json)
+#### Testfile [F-D6-HCP1-C1](./Bundle-F-D6-HCP1-C1.json)
 
 Kommentar zu einer vorab erfassten Vorerkrankung (in Testfile F-D5-HCP1-C1)
 
