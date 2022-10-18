@@ -35,7 +35,7 @@ Mit dem Aufruf werden die vom Impfmodul benötigten Daten als http GET Parameter
 * **ufname** - Nachname des Benutzers als String
 * **ugname** - Vorname des Benutzers als String
 * **utitle** - Titel des Benutzers als String
-* **lang** - Sprache des Benutzers im Format <lang>_<local> (z.B. EN_us)
+* **lang** - Sprache des Benutzers im Format {lang}_{locale} (z.B. EN_us)
 * **role** - EPD Rolle des Benutzers aus Value Set { HCP, PAT, ASS, REP }
 * **purpose** - der PurposeOfUse aus Value Set { NORM, EMER}
 * **idp** - Kennung des IdP mit dem sich der Benutzer authentisiert hat als String
