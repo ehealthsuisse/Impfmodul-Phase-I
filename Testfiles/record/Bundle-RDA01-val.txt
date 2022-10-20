@@ -1,0 +1,72 @@
+Last login: Thu Oct 20 09:54:07 on ttys001
+martinsmock@Martins-MBP Testfiles % java -jar validator_cli.jar record/Bundle-RDA01.json -version 4.0 -ig http://fhir.ch/ig/ch-vacd/ImplementationGuide/ch.fhir.ig.ch-vacd
+FHIR Validation tool Version 5.6.72 (Git# 4aeac6332574). Built 2022-10-20T07:12:40.207Z (45 mins old)
+  Java:   17.0.1 from /Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home on x86_64 (64bit). 2048MB available
+  Paths:  Current = /Users/martinsmock/Documents/GitHub/Impfmodul-Phase-I/Testfiles, Package Cache = /Users/martinsmock/.fhir/packages
+  Params: record/Bundle-RDA01.json -version 4.0 -ig http://fhir.ch/ig/ch-vacd/ImplementationGuide/ch.fhir.ig.ch-vacd
+  Jurisdiction: No Jurisdiction
+Loading
+  Load FHIR v4.0 from hl7.fhir.r4.core#4.0.1  Load hl7.terminology.r4#4.0.0 - 4164 resources (00:12.625)
+ - 7383 resources (00:00.001)
+  Load hl7.terminology#4.0.0 - 4164 resources (00:01.656)
+  Load R5 Extensions - 87 resources (00:14.486)
+  Terminology server http://tx.fhir.org - Version 2.0.14 (00:04.715)
+  Load http://fhir.ch/ig/ch-vacd/ImplementationGuide/ch.fhir.ig.ch-vacd+  .. load IG from hl7.terminology.r4#3.1.0
++  .. load IG from ch.fhir.ig.ch-core#2.1.0
++  .. load IG from hl7.terminology.r4#3.1.0
++  .. load IG from ch.fhir.ig.ch-epr-term#2.0.x
++  .. load IG from ihe.formatcode.fhir#1.0.0
++  .. load IG from hl7.fhir.uv.ips#1.0.0
++  .. load IG from ch.fhir.ig.ch-emed#2.1.0
++  .. load IG from hl7.terminology.r4#3.1.0
++  .. load IG from ch.fhir.ig.ch-core#2.1.0
++  .. load IG from hl7.terminology.r4#3.1.0
++  .. load IG from ch.fhir.ig.ch-epr-term#2.0.x
++  .. load IG from ihe.formatcode.fhir#1.0.0
++  .. load IG from ch.fhir.ig.ch-allergyintolerance#1.0.0
++  .. load IG from ch.fhir.ig.ch-core#2.0.0
++  .. load IG from ch.fhir.ig.ch-epr-term#2.0.x
++  .. load IG from ihe.formatcode.fhir#1.0.0
++  .. load IG from hl7.fhir.uv.ips#1.0.0
+ - 3843 resources (00:15.464)
+  Get set...  go (00:00.006)
+Validating
+  Validate record/Bundle-RDA01.json
+Validate Bundle against http://hl7.org/fhir/StructureDefinition/Bundle..........20..........40..........60..........80.........|
+Validate Bundle against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-vaccination-recordValidate Composition against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-vaccination-record|
+Validate Patient against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient|
+Validate Patient against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient-epr|
+Validate Practitioner against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner|
+Validate Practitioner against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr|
+Validate Practitioner against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner|
+Validate Practitioner against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole|
+Validate PractitionerRole against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr|
+Validate Organization against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization|
+Validate Organization against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr|
+Validate Organization against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization|
+Validate Organization against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr|
+Validate Organization against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization|
+Validate Organization against http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization|
+Validate Immunization against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization|
+Validate Immunization against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization|
+Validate Immunization against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization|
+Validate Medication against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medication-for-immunization|
+Validate Medication against http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medication-for-immunization|
+...|
+ 00:10.484
+Done. Times: Loading: 00:49.381, validation: 00:10.485. Memory = 1Gb
+
+Success: 0 errors, 2 warnings, 3 notes
+  Information @ Bundle.entry[0].resource.ofType(Composition).type (line 44, col22): None of the codings provided are in the value set 'FHIR Document Type Codes' (http://hl7.org/fhir/ValueSet/doc-typecodes), and a coding is recommended to come from this value set) (codes = http://snomed.info/sct#41000179103)
+  Information @ Bundle.entry[13].resource.ofType(Medication).code.coding[0] (line 808, col14): Code System URI 'urn:oid:2.51.1.1' is unknown so the code cannot be validated
+  Information @ Bundle.entry[15].resource.ofType(Medication).code.coding[0] (line 934, col14): Code System URI 'urn:oid:2.51.1.1' is unknown so the code cannot be validated
+  Warning @ Bundle.entry[13].resource.ofType(Medication).ingredient[0].item.ofType(CodeableConcept).coding[0] (line 847, col18): The Coding provided (http://snomed.info/sct#106181007) is not in the value set http://fhir.ch/ig/ch-emed/ValueSet/ActivePharmaceuticalIngredient, and a code should come from this value set unless it has no suitable code (note that the validator cannot judge what is suitable).  (error message = Not in value set http://fhir.ch/ig/ch-emed/ValueSet/ActivePharmaceuticalIngredient)
+  Warning @ Bundle.entry[15].resource.ofType(Medication).ingredient[0].item.ofType(CodeableConcept).coding[0] (line 973, col18): The Coding provided (http://snomed.info/sct#106181007) is not in the value set http://fhir.ch/ig/ch-emed/ValueSet/ActivePharmaceuticalIngredient, and a code should come from this value set unless it has no suitable code (note that the validator cannot judge what is suitable).  (error message = Not in value set http://fhir.ch/ig/ch-emed/ValueSet/ActivePharmaceuticalIngredient)
+martinsmock@Martins-MBP Testfiles %

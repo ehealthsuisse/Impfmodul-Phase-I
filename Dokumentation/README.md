@@ -8,6 +8,6 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 4. [Beschreibung der Schnittstellen und API](./4_Schnittstellen.md)
 5. [Authentifizierung](./5_Authentifizierung.md)
 6. [Autorisierung](./6_Autorisierung.md)
-7. Handbuch zur Installation
-8. Betriebshandbuch
-9. 3rd Party Libraries
+7. [Handbuch zur Installation](./7_Installation.md)
+8. [Betriebshandbuch](./8_Betrieb.md)
+9. [3rd Party Libraries](./9_Libraries.md)
