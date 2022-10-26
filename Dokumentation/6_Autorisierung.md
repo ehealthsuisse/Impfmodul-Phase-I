@@ -16,7 +16,9 @@ Primärsystem über den Web Link, übernimmt das Impfmodul die Daten zur
 Authentisierung und nutzt diese zur Abfrage der IdP Assertion.
 
 Das Impfmodul nutzt die IdP Assertion zur Authentisierung der Abfrage der
-X-User Assertion aus dem X-Assertion Provider der Gemeinschaft gemäss EPDV-EDI.
+X-User Assertion aus dem X-Assertion Provider der Gemeinschaft gemäss EPDV-EDI. 
+Der X-Assertion Provider der Gemeinschaft löst die User Id (Name Id der IdP Assertion) 
+zur GLN von Gesundheitsfachpersonen bzw. EPD-SPID von Patienten und Patientinnen auf.   
 
 Das Impfmodul sendet die X-User Assertion im Security Header der Abfragen der
 Impfdokumente Dokumente oder der Dokument Metadaten gemäss EPDV-EDI.
