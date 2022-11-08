@@ -30,7 +30,7 @@ ausschliesslich auf der Basis der Dokumente, welche aus dem EPD der Patienten un
 Patientinnen geladen werden können. Dabei wertet das Impfmodul die Regeln
 des Lifecycles von Impfdokumenten aus.
 
-### Lifecycle
+### Lifecycle Mangement
 
 Die Regeln des Lifecycles von Impfdaten müssen berücksichtigt werden, um den
 Impfausweis im EPD abbilden zu können, insbesondere weil:
@@ -104,6 +104,7 @@ angegeben werden:
 - **extension.url** : Muss den Wert **relationcode** haben.
 - **extension.valueCode** : Muss den Wert **replaces** haben.
 
+
 ##### Beispiel
 
 Siehe Zeile 56 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
@@ -132,7 +133,53 @@ Siehe Zeile 56 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852
 Diese Relation verweist auf eine Immunization Resource in der Composition im [Testbeispiel für die Erstellung](../Testfiles/lifecycle/Create-6214bb05-3858-480c-aa63-2450dde50e25.json).
 
 
-**TODO**
-- Prüfen der Dokumentation
-- Redundanz des Verweises auf die Composition
-- Option der Referenz auf ein Dokument auf Level Composition
+### Anwendung im Impfmodul
+
+Das Impfmodul nutzt die oben genannten Referenzen für das Lifecycle Management der
+Einträge für Impfungen, Allergien und Vorerkrankungen, insbesondere für die Fälle:
+
+- Bearbeiten und Ergänzen von Einträgen
+- Kommentieren von Einträgen
+- Annullierung von Einträgen
+
+#### Bearbeitung und Ergänzen
+
+Bearbeitet oder ergänzt ein Benutzer einen Eintrag für eine Impfung, Allergie oder
+Vorerkrankung, wird vom Impfmodul ein neues Dokument vom Typ
+**ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
+gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem
+neuen Eintrag mit den geänderten Attributen und dem Verweis auf den geänderten
+Eintrag.
+
+Das neue Dokument vom Typ **ImmunizationAdministration** ersetzt bzw. überschreibt
+den bearbeiteten Eintrag und wird mit der Relation **replaces** und dem Verweis auf
+die Composition und die Ressource vom Typ Impfung, Allergie oder Vorerkrankung
+gespeichert.
+
+#### Kommentieren
+
+Fügt ein Benutzer einen Kommentar zu einem Eintrag für eine Impfung, Allergie oder
+Vorerkrankung hinzu, wird vom Impfmodul ein neues Dokument vom Typ
+**ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
+gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem
+neuen Eintrag mit dem erfassten Kommentar und dem Verweis auf den kommentierten
+Eintrag.
+
+Das neue Dokument vom Typ **ImmunizationAdministration** ersetzt bzw. überschreibt
+den bearbeiteten Eintrag und wird mit der Relation **replaces** und dem Verweis auf
+die Composition und die Ressource vom Typ Impfung, Allergie oder Vorerkrankung
+gespeichert.
+
+#### Annullieren
+
+Anulliert ein Benutzer einen Eintrag für eine Impfung, Allergie oder
+Vorerkrankung hinzu, wird vom Impfmodul ein neues Dokument vom Typ
+**ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
+gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem
+neuen Eintrag mit dem Status **enteredInError** und dem Verweis auf den annullierten
+Eintrag.
+
+Das neue Dokument vom Typ **ImmunizationAdministration** ersetzt bzw. überschreibt
+den bearbeiteten Eintrag und wird mit der Relation **replaces** und dem Verweis auf
+die Composition und die Ressource vom Typ Impfung, Allergie oder Vorerkrankung
+gespeichert.
