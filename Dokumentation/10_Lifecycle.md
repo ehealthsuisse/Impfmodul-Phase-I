@@ -106,7 +106,7 @@ angegeben werden:
 
 ##### Beispiel
 
-Siehe Zeile 56 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
+Siehe Zeile 176 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
 
 ```
 "extension": [
