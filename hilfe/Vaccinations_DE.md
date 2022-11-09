@@ -13,7 +13,8 @@
   </ul>
   </p>
   <hr>
-  <p>Dargestellt wird die Liste aller dokumentierten Impfungen geordnet nach dem Datum der Impfung mit den Feldern:
+  <p>In der Darstellung wird die Liste aller dokumentierten Impfungen geordnet nach dem Datum der Impfung und mit den folgenden 
+  Feldern angezeigt:
     <ul>
       <li>Datum: Zeitpunkt der Impfung</li>
       <li>Impfstoff: Der verabreichte Impfstoff</li>
