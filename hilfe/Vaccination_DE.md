@@ -1,0 +1,29 @@
+<body>
+  <h2>Impfung</h2>
+  <p>
+    Detailansicht einer ausgewählten Impfung aus dem EPD der Patientin oder des Patienten.  
+  </p>
+  <p>
+    In der Detailansicht werden die fachlichen Daten einer ausgewöhlten dokumentierten Impfung angezeigt. 
+    Die Detailansicht dient als Startpunkt für die Berarbeitung, Annulierung oder zum Kommentieren eines 
+    augewählten Impfung und unterstützt die Interaktionen: 
+  <ul>
+    <li>Wechsel in den Dialog zur Bearbeitung der Daten der ausgewählten Impfung per Button unten rechts</li>
+    <li>Wechsel in den Dialog zur Annulation von fälschlich eingegebenen Impfungen Button unten rechts</li>
+    <li>Kommentieren einer Impfung Export im Dialog auf der rechten Seite.</li>
+  </ul>
+  </p>
+  <hr>
+  <p>In der Detailansicht werden die folgenden fachlichen Angaben gezeigt: </p>
+  <p>
+    <ul>
+      <li>Datum: Zeitpunkt der Impfung</li>
+      <li>Impfstoff: Der verabreichte Impfstoff</li>
+      <li>Impfschutz: Ein oder mehrere Infektionskrankheiten gegen den der Impfstoff wirkt</li>
+      <li>Dosis: Nummer der verabreichten Impfdosis</li> 
+      <li>Status: Der Status der Dokumentation der Impfung, z.B. verabreicht, vorläufig, fehlerhafte Eingabe, ...</li>
+      <li>Lotnummer: Die Lotnummer des Impfstoffs</li>
+      <li>Geimpft Von: Name, Titel und Organisation der Gesundheitsfachperson, welche die Impfung verabreicht hat</li> 
+    </ul>
+  </p>
+</body>
