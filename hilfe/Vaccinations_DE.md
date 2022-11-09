@@ -5,7 +5,7 @@
     nicht angezeigt werden. 
   </p>
   <p>
-  Diese Darstellung dient zur Prüfung und Korrektur von Ungereimtheiten im Impfausweis und muss nur genutzt werden, um Inkonsitenzen 
+  Diese Darstellung dient zur Prüfung und Korrektur von Inkonsistenzen im Impfausweis und muss nur genutzt werden, um Inkonsitenzen 
   zu erkennen und zu bereinigen. Die Darstellung unterstützt die dazu die Interaktionen: 
   <ul>
     <li>Wechsel zur Detailansicht von Impfungen, Allergien und Vorerkrankungen per Doppelklick auf einen Eintrag</li>
