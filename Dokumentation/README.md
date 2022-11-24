@@ -16,7 +16,7 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 9. [3rd Party Libraries](./10_Libraries.md)
 
 
-### Technische Dokumentation
+### Weiterführende Dokumentation
 
 1. [Lifecyclemanagement der Impfdaten](./101_Lifecycle.md)
 2. [Anzeige der Daten aus dem Austauschformat](./102_VACD.md)
