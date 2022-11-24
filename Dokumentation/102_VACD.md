@@ -15,7 +15,7 @@
 
 siehe [CH VACD Immunization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-immunization.html)
 
-### Allergien
+### Allergien
 
 - Datum - AllergyIntolerance.recordedDate
 - Allergie - AllergyIntolerance.code
@@ -30,7 +30,7 @@ siehe [CH VACD Immunization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-va
 
 siehe [CH VACD AllergyIntolerance](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances.html)
 
-### Vorerkrankungen
+### Vorerkrankungen
 
 - Datum - PastIllness.recordedDate
 - Vorerkrankung - PastIllness.code, gespeichert als CodeableConcept
