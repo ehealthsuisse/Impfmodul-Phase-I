@@ -11,9 +11,9 @@ im EPD mit einem Softwaremodul mit den folgenden Funktionen:
 - Anzeige der Impfdaten in einer Web Benutzeroberfläche
 - Web Formulare zur Erfassung, Bearbeitung und Speicherung von Impfdaten
 
-eHealth Suisse veröffentlicht das Impfmodul quelloffen unter einer
-[MIT Lizenz](./Dokumentation_DE/09_License.md) zur freien und uneingeschränkten Nutzung
-durch die Gemeinschaften.
+eHealth Suisse veröffentlicht den Quellcode und die begleitenden Informationen
+unter einer [MIT Lizenz](./Dokumentation_DE/09_License.md) zur freien und
+uneingeschränkten Nutzung durch die Gemeinschaften.
 
 eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:      
 - [Dokumentation](./Dokumentation_DE)
