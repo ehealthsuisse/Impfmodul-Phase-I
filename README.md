@@ -16,5 +16,5 @@ unter einer [MIT Lizenz](./Dokumentation_DE/09_License.md) zur freien und
 uneingeschränkten Nutzung durch die Gemeinschaften.
 
 eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:      
-- [Dokumentation](./Dokumentation_DE)
-- [Testcases](./Testcases_DE)
+- [Dokumentation](./Dokumentation_DE/README.md)
+- [Testcases](./Testcases_DE/README.md)
