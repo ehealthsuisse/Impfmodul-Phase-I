@@ -1,8 +1,13 @@
 ## Scope des Impfmoduls
 
 ### Überblick
-Die eHealth Suisse verfolgt das Ziel, bis Ende 2022 den elektronischen Impfausweis für alle Einwohner der Schweiz auf der Basis des elektronischen Patientendossiers (EPD) einzuführen.
-Die verteilte Architektur des EPD und die Rechtsgrundlagen zur Autorisierung von Zugriffen sind dabei besondere Herausforderungen, welche sich auf die technische Umsetzung auswirken, insbesondere:
+eHealth Suisse verfolgt das Ziel, in 2023 einen elektronischen Impfausweis für alle
+Einwohner der Schweiz auf der Basis des elektronischen Patientendossiers (EPD)
+einzuführen.
+
+Die verteilte Architektur des EPD und die Rechtsgrundlagen zur Autorisierung von
+Zugriffen sind dabei besondere Herausforderungen, welche sich auf die technische
+Umsetzung auswirken, insbesondere:
 - Gesundheitsfachpersonen speichern Impfdokumente in der Gemeinschaft, an welche sich die Gesundheitsfachpersonen angeschlossen haben. Impfdokumente einer Patientin oder eines Patienten können daher über alle Gemeinschaften verteilt sein, insbesondere Gemeinschaften welche nicht mit der Stammgemeinschaft der Patientin oder des Patienten zusammenfallen.
 - Impfdokumente haben einem Lebenszyklus und können sich gegenseitig aufeinander beziehen (Korrektur, Ergänzung, Kommentar, etc.). Insbesondere können sich Dokumente aus verschiedenen Gemeinschaften aufeinander beziehen.
 - Die Möglichkeiten zur Bearbeitung von Dokumenten über die Grenzen von Gemeinschaften hinaus sind eingeschränkt. Insbesondere können Gesundheitsfachpersonen Dokumente aus anderen Gemeinschaften nicht oder nur eingeschränkt bearbeiten. Z.B. ist das Löschen oder Überschreiben von Dokumenten in anderen Gemeinschaften durch Gesundheitsfachpersonen nicht zulässig.
