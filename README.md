@@ -10,6 +10,7 @@ im EPD mit einem Softwaremodul mit den folgenden Funktionen:
 - Abfrage und Zusammenführung von Impfdaten aus dem EPD
 - Anzeige der Impfdaten in einer Web Benutzeroberfläche
 - Web Formulare zur Erfassung, Bearbeitung und Speicherung von Impfdaten
+- http Schnittstelle zur Intergration in die Portale der Gemeinschaften
 
 eHealth Suisse veröffentlicht den Quellcode und die begleitenden Informationen
 unter einer [MIT Lizenz](./Dokumentation_DE/09_License.md) zur freien und
