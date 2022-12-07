@@ -6,9 +6,9 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 
 1. [Scope des Impfmoduls](./01_Scope.md)
 2. [Klassifikation der Daten](./02_Data.md)
-3. [Systemarchitektur des Impfmoduls](./03_Architektur.md)
-4. [Beschreibung der Schnittstellen und API](./04_Schnittstellen.md)
-5. [Authentifizierung](./05_Authentifizierung.md)
+3. [Systemarchitektur des Impfmoduls](./03_Architecture.md)
+4. [Beschreibung der Schnittstellen und API](./04_Interfaces.md)
+5. [Authentifizierung](./05_Authentication.md)
 6. [Autorisierung](./06_Authorization.md)
 7. [Handbuch zur Installation](./07_Installation.md)
 8. [Betriebshandbuch](./08_Operation.md)

@@ -42,4 +42,4 @@ siehe [CH VACD AllergyIntolerance](http://fhir.ch/ig/ch-vacd/StructureDefinition
 - Organisation - [PastIllness.recorder -> PractitionerRole.organization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recorder), über Referenzen aufgelöst.
 - Kommentar - [PastIllness.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.note) mit time, text und author.name
 
-siehe [CH VACD Past Illness](http://fhihttp://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDater.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses.html)
+siehe [CH VACD Past Illness](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDater.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses.html)
