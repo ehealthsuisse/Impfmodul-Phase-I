@@ -1,0 +1,80 @@
+<div class="table-content">
+  <vm-refresh-indicator class="refresh-indicator" *ngIf="dataLoading!"></vm-refresh-indicator>
+  <table mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8 table-wrapper" #table>
+    <!-- Position Column -->
+    <ng-container [matColumnDef]="columnName" *ngFor="let columnName of displayedColumns">
+      <ng-container
+        *ngIf="
+          columnName === 'recordedDate' || columnName === 'occurrenceDate' || columnName === 'doseNumber' || columnName === 'recorder';
+          else unsortables
+        "
+      >
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ columnName | convertToSnakeCaseTranslation: translationPrefix | translate }}
+        </th>
+      </ng-container>
+      <ng-template #unsortables>
+        <th mat-header-cell *matHeaderCellDef>
+          <ng-container *ngIf="columnName !== 'entryStatus'">
+            {{ columnName | convertToSnakeCaseTranslation: translationPrefix | translate }}
+          </ng-container>
+        </th>
+      </ng-template>
+
+      <ng-container *matCellDef="let element" [ngSwitch]="columnName">
+        <ng-container *ngSwitchCase="'recorder'">
+          <td mat-cell>
+            <span *ngIf="element[columnName]">
+              {{ element[columnName] | translate }}
+            </span>
+            <span *ngIf="!element[columnName]">{{ element.organization | translate }}</span>
+          </td>
+        </ng-container>
+        <ng-container *ngSwitchCase="'targetDiseases'">
+          <td mat-cell>
+            <span class="code" [matTooltip]="element.targetDiseases[0] | translate">
+              {{ element.targetDiseases[0] | translate }}
+              <ng-container *ngIf="element.targetDiseases.length > 1">+{{ element.targetDiseases.length - 1 }}</ng-container>
+            </span>
+          </td>
+        </ng-container>
+        <ng-container *ngSwitchCase="'entryStatus'">
+          <td class="w-60" mat-cell>
+            <div class="icon-wrapper">
+              <mat-icon
+                color="accent"
+                class="validated-icon"
+                [attr.area-label]="'ICONS.RECORD_VALIDATED' | translate"
+                [matTooltip]="'ICONS.RECORD_VALIDATED' | translate"
+                *ngIf="element.validated && canValidated"
+                >check
+              </mat-icon>
+              <mat-icon
+                color="warn"
+                [attr.area-label]="'ICONS.RECORD_DELETED' | translate"
+                [matTooltip]="'ICONS.RECORD_DELETED' | translate"
+                *ngIf="element.deleted"
+                class="deleted-icon"
+                >close
+              </mat-icon>
+              <mat-icon
+                color="accent"
+                [attr.area-label]="'ICONS.RECORD_UPDATED' | translate"
+                [matTooltip]="'ICONS.RECORD_UPDATED' | translate"
+                *ngIf="element.updated"
+                class="warning-icon"
+              >
+                warning
+              </mat-icon>
+            </div>
+          </td>
+        </ng-container>
+
+        <td mat-cell *ngSwitchDefault>{{ element[columnName] | translate }}</td>
+      </ng-container>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row class="selectable data-row" *matRowDef="let row; columns: displayedColumns" (click)="rowClick.emit(row)"></tr>
+  </table>
+</div>

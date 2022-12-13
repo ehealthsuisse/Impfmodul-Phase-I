@@ -1,0 +1,58 @@
+######################
+# Eclipse
+######################
+.project
+.metadata
+tmp/
+bin/
+log/**/*
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+.classpath
+.settings/
+**/rebel.xml
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+######################
+# IntelliJ
+######################
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+classes/
+out/
+
+
+######################
+# Maven
+######################
+/target/
+
+######################
+# Windows
+######################
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+######################
+# Mac OSX
+######################
+.DS_Store
+.svn
+
+# Thumbnails
+._*
+
+# PDF 
+*.pdf

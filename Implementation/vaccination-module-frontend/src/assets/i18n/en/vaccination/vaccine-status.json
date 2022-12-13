@@ -1,0 +1,7 @@
+{
+  "VACCINE_STATUS": {
+    "completed": "Vaccination Done",
+    "not-done": "Vaccination Planned",
+    "entered-in-error": "Entered in Error"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "buttons": {
+    "ADD": "Aggiungi",
+    "EDIT": "Modifica",
+    "SAVE": "Save",
+    "CANCEL": "Annullare",
+    "DELETE": "Delete",
+    "CLOSE": "Close",
+    "OK": "OK",
+    "YES": "Sì",
+    "NO": "No",
+    "NEXT": "Continua",
+    "PREVIOUS": "Indietro",
+    "BACK": "Indietro",
+    "CONTINUE": "Avanti",
+    "VERIFY": "Verifica",
+    "EXPORT": "Esporta",
+    "PRINT": "Stampa",
+    "SAVE_EPD": "Save EPD",
+    "VALIDATE": "Validate",
+    "ADD_ALLERGY": "Aggiungi allergia",
+    "ADD_VACCINATION": "Aggiungi vaccinazione",
+    "ADD_PAST_ILLNESS": "Aggiungi malattia passata",
+    "DOWNLOAD": "scaricare"
+  }
+}

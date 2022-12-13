@@ -1,0 +1,166 @@
+@import 'src/assets/scss/global';
+
+.navbar {
+  padding: 0 5vw 0 5vw;
+  margin: 0;
+  height: 120px;
+  background: white;
+
+  &__logo {
+    height: 60px;
+
+    &__syringe {
+      cursor: pointer;
+      width: 60px;
+      height: 60px;
+    }
+
+    &__toggle {
+      display: none;
+    }
+
+    &__language {
+      display: none;
+    }
+  }
+
+  &__navigation {
+    height: 100%;
+    width: 40vw;
+
+    .active {
+      color: $font-color-dark;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    &__mobile {
+      display: none !important;
+
+      &.active {
+        display: flex !important;
+      }
+    }
+  }
+
+  &__languages {
+    width: 10vw;
+    height: 60px;
+
+    .active {
+      color: $font-color-dark;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    &__mobile {
+      display: none !important;
+
+      &.active {
+        display: flex !important;
+      }
+    }
+  }
+
+  .community-logo {
+    width: 150px;
+    height: 60px;
+    background-image: url('../../../assets/logos/soprasteria.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  .user {
+    width: 150px;
+    height: 20px;
+  }
+
+  &__mobile {
+    display: none !important;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .community-logo {
+    width: auto;
+  }
+  .navbar {
+    &__logo {
+      &__toggle {
+        display: inline-block;
+      }
+
+      &__language {
+        display: inline-block;
+      }
+    }
+
+    &__navigation {
+      display: none !important;
+    }
+
+    &__languages {
+      display: none !important;
+    }
+
+    &__mobile {
+      height: auto;
+
+      &.active {
+        display: flex !important;
+      }
+    }
+  }
+}
+
+/*
+.mat-toolbar {
+  min-width: 100vw;
+  background-color: #fff;
+  height: 6vh;
+
+  .mat-mini-fab {
+    height: 6vh;
+    outline: none;
+    box-shadow: none;
+    border-radius: 0;
+    text-underline: none;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    display: inline-flex;
+    text-transform: capitalize;
+    font-size: 1rem;
+    padding: 0 5px 0 5px;
+  }
+
+  .entity-wrapper {
+    width: 50vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+    .mat-mini-fab {
+      max-width: 150px;
+      min-width: 100px;
+      font-size: 1rem;
+      padding: 0 5px 0 5px;
+    }
+
+    .lang-wrapper {
+      width: 30vw;
+      background: #1affeb;
+      text-transform: uppercase;
+      .mat-mini-fab {
+        max-width: 50px;
+        min-width: 50px;
+        margin-left: 4px;
+        margin-right: 4px;
+        color: red;
+      }
+    }
+  }
+}
+*/

@@ -1,0 +1,19 @@
+{
+  "VACCINATION": {
+    "TITLE": "Impfungen",
+    "NEW_HEADER": "Neue Impfung hinzufügen",
+    "DETAILS_HEADER": "Details der Impfung",
+    "EDIT_HEADER": "Impfung bearbeiten",
+    "VACCINE_CODE": "Impfstoff",
+    "TARGET_DISEASES": "Impfschutz",
+    "DOSE_NUMBER": "Dosis",
+    "OCCURRENCE_DATE": "Datum",
+    "STATUS": "Status",
+    "RECORDER": "Geimpft von",
+    "ORGANIZATION": "Organisation",
+    "VALIDATED": "bewertet",
+    "VACCINATION_REASON": "Grund der Impfung",
+    "LOT_NUMBER": "Lotnummer",
+    "DATE": "Datum"
+  }
+}

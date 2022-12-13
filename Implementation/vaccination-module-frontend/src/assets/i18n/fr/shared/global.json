@@ -1,0 +1,21 @@
+{
+  "GLOBAL": {
+    "ALLERGIES": "Effets Secondaires (EIV)",
+    "PAST_ILLNESSES": "Maladies Infectieuses",
+    "VACCINATIONS": "vaccins",
+    "HOME": "Carnet de Vaccination",
+    "DATE": "date",
+    "NAME": "nom",
+    "TARGET_DISEASES": "maladie cible",
+    "DOSE_NUMBER": "dose",
+    "PERFORMER": "exécutant",
+    "RECORDER": "enregistreur",
+    "CLINICAL_STATUS": "statut clinique",
+    "VERIFICATION_STATUS": "statut de vérification",
+    "VACCINATION_CARD": "Carnet de Vaccination",
+    "COMMENTS": "commentaires",
+    "SEARCH": "recherche",
+    "COMMENT": "Commentaire",
+    "NONE_OPTION": ""
+  }
+}

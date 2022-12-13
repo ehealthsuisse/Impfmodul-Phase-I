@@ -1,0 +1,31 @@
+{
+  "ILLNESSES_CODE": {
+    "38907003": "Windpocken",
+    "14189004": "Masern",
+    "36989005": "Mumps",
+    "36653000": "Röteln",
+    "40468003": "Virale Hepatitis, Typ A",
+    "66071002": "Virale Hepatitis, Typ B",
+    "16901001": "Frühsommer-Meningoenzephalitis (FSME)",
+    "16541001": "Gelbfieber",
+    "76902006": "Starrkrampf",
+    "63650001": "Cholera",
+    "27836007": "Keuchhusten",
+    "398102009": "Akute Poliomyelitis",
+    "18624000": "Rotaviren-Erkrankung",
+    "14168008": "Tollwut",
+    "56717001": "Tuberkulose",
+    "4834000": "Typhus",
+    "709410003": "Infektion mit Haemophilus influenzae Typ B",
+    "397430003": "Diphtherie",
+    "840539006": "COVID-19",
+    "52947006": "Japanische Enzephalitis",
+    "719865001": "Pandemische Influenza",
+    "719590007": "Saisonale Influenza",
+    "67924001": "Pocken",
+    "240532009": "HPV-Erkrankung (Humanes Papillomavirus)",
+    "4740000": "Herpes zoster",
+    "23511006": "Meningokokken-Erkrankung",
+    "16814004": "Pneumokokken-Erkrankung"
+  }
+}

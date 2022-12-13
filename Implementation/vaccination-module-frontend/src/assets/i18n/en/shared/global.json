@@ -1,0 +1,21 @@
+{
+  "GLOBAL": {
+    "ALLERGIES": "Adverse Events",
+    "PAST_ILLNESSES": "Infectious Diseases",
+    "VACCINATIONS": "Vaccinations",
+    "HOME": "Vaccination Record",
+    "DATE": "Date",
+    "NAME": "Name",
+    "TARGET_DISEASES": "Target Diseases",
+    "DOSE_NUMBER": "Dose",
+    "PERFORMER": "Vaccinated by",
+    "RECORDER": "recorder",
+    "CLINICAL_STATUS": "Status",
+    "VERIFICATION_STATUS": "Verified",
+    "VACCINATION_CARD": "Vaccination Record",
+    "COMMENTS": "Comments",
+    "SEARCH": "search",
+    "COMMENT": "Comment",
+    "NONE_OPTION": ""
+  }
+}

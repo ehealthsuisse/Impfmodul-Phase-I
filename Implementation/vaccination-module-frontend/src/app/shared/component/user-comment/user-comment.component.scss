@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.header {
+  font-size: 11px;
+  color: gray;
+  display: flex;
+  justify-content: space-between;
+}
+
+.message {
+  padding: 5px;
+}

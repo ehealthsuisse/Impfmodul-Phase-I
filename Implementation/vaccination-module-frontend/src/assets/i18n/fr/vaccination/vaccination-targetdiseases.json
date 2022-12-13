@@ -1,0 +1,31 @@
+{
+  "vaccination-targetdiseases": {
+    "38907003": "varicella",
+    "14189004": "rougeole",
+    "36989005": "oreillons",
+    "36653000": "rubéole",
+    "40468003": "hépatite virale de type A",
+    "66071002": "hépatite virale de type B",
+    "16901001": "encéphalite à tiques d'Europe centrale",
+    "16541001": "fièvre jaune",
+    "76902006": "tétanos",
+    "63650001": "choléra",
+    "27836007": "coqueluche",
+    "398102009": "poliomyélite aiguë",
+    "18624000": "infection à rotavirus",
+    "14168008": "rage",
+    "56717001": "tuberculose",
+    "4834000": "fièvre typhoïde",
+    "709410003": "infection à Haemophilus influenzae de type b",
+    "397430003": "diphtérie",
+    "840539006": "COVID-19",
+    "52947006": "encéphalite japonaise",
+    "719865001": "grippe pandémique",
+    "719590007": "grippe saisonnière",
+    "67924001": "variole",
+    "240532009": "infection par les HPV (papillomavirus humains)",
+    "4740000": "zona",
+    "23511006": "infection à méningocoques",
+    "16814004": "infection à pneumocoques"
+  }
+}

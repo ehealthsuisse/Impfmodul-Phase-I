@@ -1,0 +1,88 @@
+@startuml
+
+participant Browser
+participant FhirController
+participant HuskyAdapter
+participant FhirAdapter
+participant Husky
+participant XUA
+participant PDQ
+participant DOC
+
+== GlobalPatientId ==
+Browser         -> FhirController  : POST community, oid, localId
+FhirController  -> HuskyAdapter    : community, oid, localId
+activate HuskyAdapter    
+HuskyAdapter    -> HuskyAdapter    : PIXurl, globalOid, spidEprOid = Config(community)
+HuskyAdapter    -> Husky           : PIXurl, oid, localId, globalOid, spidEprOid
+Husky           -> PDQ             : oid, localId, globalOid, spidEprOid
+
+PDQ             -> Husky           : globalId, spidEprId, patientInfo
+Husky           -> HuskyAdapter    : globalId, spidEprId, patientInfo
+deactivate HuskyAdapter    
+HuskyAdapter    -> FhirController  : globalId, spidEprId, patientInfo
+FhirController  -> Browser         : response globalId, spidEprId, patientInfo
+
+== Get Vaccination ==
+Browser         -> FhirController  : POST community, oid, localId, assertion
+FhirController  -> HuskyAdapter    : community, oid, localId, assertion
+group GlobalPatientId 
+  HuskyAdapter    -> Husky         : PIXurl, oid, localId, globalOid, spidEprOid
+  Husky           -> PDQ           : oid, localId, globalOid, spidEprOid
+  PDQ             -> Husky         : globalId, spidEprId, patientInfo
+  Husky           -> HuskyAdapter  : globalId, spidEprId, patientInfo
+end
+
+
+HuskyAdapter    -> FhirAdapter     : VaccinationDTO
+FhirAdapter     -> HuskyAdapter    : json
+
+HuskyAdapter    -> Husky           : url, eprSpid , assertion
+Husky           -> XUA             : eprSpid , assertion
+XUA             -> Husky           : OK/NOK
+Husky           -> HuskyAdapter    : OK/NOK
+HuskyAdapter    -> Husky           : globalId,oid
+Husky           -> DOC             : globalId,oid
+
+DOC             -> Husky           : jsons
+Husky           -> HuskyAdapter    : jsons
+HuskyAdapter    -> FhirAdapter     : jsons
+FhirAdapter     -> HuskyAdapter    : List<vaccinationDTO>
+HuskyAdapter    -> FhirController  : List<vaccinationDTO>
+FhirController  -> Browser         : response List<vaccinationDTO>
+
+
+== Write Vaccination ==
+Browser         -> FhirController  : POST community, oid, localId, assertion, vaccinationDTO
+FhirController  -> HuskyAdapter    : community, oid, localId, assertion,VaccinationDTO
+group GlobalPatientId 
+  HuskyAdapter    -> Husky         : PIXurl, oid, localId, globalOid, spidEprOid
+  Husky           -> PDQ           : oid, localId, globalOid, spidEprOid
+  PDQ             -> Husky         : globalId, spidEprId, patientInfo
+  Husky           -> HuskyAdapter  : globalId, spidEprId, patientInfo
+end
+
+HuskyAdapter    -> HuskyAdapter    : json = fhir(vaccinationDTO) 
+note right                         : FIXME: use FhirAdapter
+HuskyAdapter    -> Husky           : url, eprSpid , assertion
+Husky           -> XUA             : eprSpid , assertion
+XUA             -> Husky           : OK/NOK
+Husky           -> HuskyAdapter    : OK/NOK
+HuskyAdapter    -> Husky           : URL, oid, globalId , json
+Husky           -> DOC             : oid, globalId, json
+
+DOC             -> Husky           : OK/NOK
+Husky           -> HuskyAdapter    : json
+HuskyAdapter    -> FhirController  : json
+note right                         : FIXME: use FhirAdapter
+FhirController  -> Browser         : json
+
+== Delete Vaccination ==
+Browser         -> FhirController  : DELETE, uuid
+FhirController  -> HuskyAdapter    : deleteVaccination(uuid)
+
+HuskyAdapter    -> FhirController  : OK/NOK
+note right                         : To complete
+FhirController  -> Browser         : OK/NOK
+
+@enduml

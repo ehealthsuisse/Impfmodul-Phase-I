@@ -1,0 +1,26 @@
+{
+  "buttons": {
+    "ADD": "Hinzufügen",
+    "EDIT": "Korrigieren",
+    "SAVE": "Speichern",
+    "CANCEL": "Abbrechen",
+    "DELETE": "Annullieren",
+    "CLOSE": "Schließen",
+    "OK": "OK",
+    "YES": "Ja",
+    "NO": "Nein",
+    "NEXT": "Weiter",
+    "PREVIOUS": "Zurück",
+    "BACK": "Zurück",
+    "CONTINUE": "Weiter",
+    "VERIFY": "Verifizieren",
+    "EXPORT": "Exportieren",
+    "PRINT": "Drucken",
+    "SAVE_EPD": "Speichern in EPD",
+    "VALIDATE": "Validieren",
+    "ADD_ALLERGY": "Allergie hinzufügen",
+    "ADD_VACCINATION": "Impfung hinzufügen",
+    "ADD_PAST_ILLNESS": "Vorerkrankungen hinzufügen",
+    "DOWNLOAD": "Herunterladen"
+  }
+}

@@ -1,0 +1,87 @@
+<section class="vaccination-record-wrapper">
+  <main [attr.aria-labelledby]="'mainPage'">
+    <mat-card class="mat-wrapper-card mat-elevation-z0">
+      <mat-card-title>
+        <mat-card-title class="info-title">
+          <h1 class="h3-header" vmTranslate="GLOBAL.VACCINATION_CARD"></h1>
+          <h1 class="h3-header patient-name" *ngIf="patient">
+            {{ patient | performer }}
+          </h1>
+        </mat-card-title>
+        <mat-card-title> </mat-card-title>
+      </mat-card-title>
+      <mat-card-actions class="actions">
+        <vm-generic-button [label]="'buttons.EXPORT'" color="accent" (click)="exportPdf()" class="mat-button"></vm-generic-button>
+        <vm-generic-button [label]="'buttons.SAVE_EPD'" color="accent" (click)="save()" class="mat-button"></vm-generic-button>
+        <button mat-button (click)="download()">
+          <img
+            [attr.area-label]="'buttons.DOWNLOAD' | translate"
+            alt="{{ 'buttons.DOWNLOAD' | translate }}"
+            matTooltip="{{ 'buttons.DOWNLOAD' | translate }}"
+            class="download-icon"
+            src="../../../../assets/images/download.png"
+          />
+        </button>
+
+        <vm-help-button
+          class="mat-button"
+          (click)="dialog.openDialog('HELP.VACCINATION_RECORD.HELP.TITLE', 'HELP.VACCINATION_RECORD.HELP.BODY')"
+        ></vm-help-button>
+      </mat-card-actions>
+    </mat-card>
+  </main>
+
+  <mat-card class="mat-card mat-elevation-z0">
+    <mat-card-content>
+      <div class="table-header-wrapper" fxLayout="row" fxLayoutAlign="space-between center">
+        <h3 class="h3-header" vmTranslate="GLOBAL.VACCINATIONS"></h3>
+        <button mat-icon-button (click)="addVaccination()">
+          <mat-icon matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}">add</mat-icon>
+        </button>
+      </div>
+
+      <vm-table-wrapper
+        [dataSource]="vaccinations | sortByDate: 'occurrenceDate'"
+        [displayedColumns]="vaccinationColumns"
+        [translationPrefix]="'VACCINATION.'"
+        [fullWidth]="'100%'"
+        (rowClick)="navigateToVaccination($event)"
+      >
+      </vm-table-wrapper>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="bottom-wrapper mat-elevation-z0">
+    <mat-card-content class="illness-table">
+      <div class="table-header-wrapper" fxLayout="row" fxLayoutAlign="space-between center">
+        <h3 class="h3-header" vmTranslate="ILLNESS.TITLE"></h3>
+        <button mat-icon-button (click)="addIllness()">
+          <mat-icon matTooltip="{{ 'buttons.ADD_PAST_ILLNESS' | translate }}">add</mat-icon>
+        </button>
+      </div>
+      <vm-table-wrapper
+        [dataSource]="illnesses | sortByDate: 'recordedDate'"
+        [displayedColumns]="illnessesColumns"
+        [translationPrefix]="'ILLNESS.'"
+        [fullWidth]="'100%'"
+        (rowClick)="navigateToIllness($event)"
+      >
+      </vm-table-wrapper>
+    </mat-card-content>
+    <mat-card-content>
+      <div class="table-header-wrapper" fxLayout="row" fxLayoutAlign="space-between center">
+        <h3 class="h3-header" vmTranslate="ALLERGY.TITLE">Allergy</h3>
+        <button mat-icon-button (click)="addAllergy()">
+          <mat-icon matTooltip="{{ 'buttons.ADD_ALLERGY' | translate }}">add</mat-icon>
+        </button>
+      </div>
+      <vm-table-wrapper
+        [dataSource]="allergies | sortByDate: 'occurrenceDate'"
+        [displayedColumns]="allergyColumns"
+        [translationPrefix]="'ALLERGY.'"
+        [fullWidth]="'100%'"
+        (rowClick)="navigateToAllergy($event)"
+      >
+      </vm-table-wrapper>
+    </mat-card-content>
+  </mat-card>
+</section>

@@ -1,0 +1,25 @@
+<section class="detail-wrapper" *ngIf="vaccination!">
+  <mat-card class="mat-card mat-elevation-z10">
+    <mat-card-header class="mat-card-header">
+      <mat-card-title>
+        <h1 vmTranslate="VACCINATION.DETAILS_HEADER" class="h3-header"></h1>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="mat-card-content">
+      <vm-vaccination-detailed-information [vaccination]="vaccination"></vm-vaccination-detailed-information>
+    </mat-card-content>
+
+    <vm-common-card-footer
+      [isDetailsFooter]="true"
+      [dialogTitle]="helpDialogTitle"
+      [dialogBody]="helpDialogBody"
+      (edit)="editRecord(vaccination)"
+      [canValidate]="canValidate"
+      (download)="download(vaccination)"
+      (validate)="validateRecord(vaccination)"
+      (delete)="deleteRecord(vaccination)"
+      [disabled]="!!vaccination.deleted || !!vaccination.updated"
+    ></vm-common-card-footer>
+  </mat-card>
+  <vm-comment [comments]="vaccination.comments!"></vm-comment>
+</section>

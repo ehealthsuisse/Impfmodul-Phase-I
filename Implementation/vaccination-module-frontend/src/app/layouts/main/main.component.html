@@ -1,0 +1,6 @@
+<router-outlet name="navbar"></router-outlet>
+<div class="navigation-content">
+  <mat-progress-spinner *ngIf="spinnerService.IsWait" class="vm-progress-spinner" mode="indeterminate"> </mat-progress-spinner>
+  <router-outlet></router-outlet>
+</div>
+<vm-footer></vm-footer>

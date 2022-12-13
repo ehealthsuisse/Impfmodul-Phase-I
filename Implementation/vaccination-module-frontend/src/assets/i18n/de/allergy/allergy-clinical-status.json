@@ -1,0 +1,7 @@
+{
+  "ALLERGY_CLINICAL_STATUS": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "resolved": "Geheilt"
+  }
+}

@@ -1,0 +1,18 @@
+@import '../../../../assets/scss/global';
+:host {
+  max-width: 50%;
+  border-bottom-style: none;
+  position: absolute;
+  width: 53vw;
+  .mat-label {
+    font-size: 14px;
+    font-weight: 600;
+    padding-left: 30px;
+  }
+  .mat-select {
+    margin-left: 30px;
+    padding-top: 10px;
+    border-bottom: 2px solid $font-color-dark;
+    padding-bottom: 10px;
+  }
+}

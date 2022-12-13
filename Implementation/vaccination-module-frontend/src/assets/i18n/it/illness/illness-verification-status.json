@@ -1,0 +1,8 @@
+{
+  "ALLERGY_VERIFICATION_STATUS": {
+    "unconfirmed": "Non confermato",
+    "confirmed": "Confermato",
+    "refuted": "Refuted",
+    "entered-in-error": "Inserito in errore"
+  }
+}

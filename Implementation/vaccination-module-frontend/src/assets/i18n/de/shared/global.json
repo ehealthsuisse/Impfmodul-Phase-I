@@ -1,0 +1,21 @@
+{
+  "GLOBAL": {
+    "ALLERGIES": "Nebenwirkungen (UIE)",
+    "PAST_ILLNESSES": "Infektionskrankheiten",
+    "VACCINATIONS": "Impfungen",
+    "HOME": "Impfausweis",
+    "DATE": "Datum",
+    "NAME": "Name",
+    "TARGET_DISEASES": "Schützt vor",
+    "DOSE_NUMBER": "Dosis",
+    "PERFORMER": "Geimpft von",
+    "RECORDER": "recorder",
+    "CLINICAL_STATUS": "Status",
+    "VERIFICATION_STATUS": "Verifizierungsstatus",
+    "VACCINATION_CARD": "Impfausweis",
+    "COMMENTS": "Kommentare",
+    "SEARCH": "Suchen",
+    "COMMENT": "Kommentar",
+    "NONE_OPTION": ""
+  }
+}

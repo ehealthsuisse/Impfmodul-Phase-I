@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.navigation-content {
+  position: relative;
+  width: 80vw;
+  height: 100%;
+  flex: 1;
+  margin: 30px auto 30px auto;
+}

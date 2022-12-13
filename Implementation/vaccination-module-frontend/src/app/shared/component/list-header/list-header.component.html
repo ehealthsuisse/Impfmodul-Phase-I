@@ -1,0 +1,18 @@
+<mat-card-header class="mat-elevation-z0" fxLayout="column" *ngIf="toggle">
+  <mat-card-title>
+    <h1 class="h3-header" style="display: inline-flex" [vmTranslate]="title"></h1>
+  </mat-card-title>
+  <mat-card-subtitle style="display: inline-flex; padding: 0 20px 0 30px" class="h3-header" *ngIf="showPatientName"> </mat-card-subtitle>
+
+  <mat-card class="mat-elevation-z0 card-header" fxLayout="row" fxLayoutAlign="space-between center" *ngIf="subtitleVisibility">
+    <mat-form-field appearance="fill" class="search-input-wrapper">
+      <mat-label vmTranslate="GLOBAL.SEARCH"></mat-label>
+      <input matInput #input (keyup)="filterValue($event)" />
+    </mat-form-field>
+    <mat-card-actions fxLayout="row" fxLayoutAlign="center">
+      <vm-generic-button [label]="'buttons.ADD'" (click)="add.emit()" color="accent" [class]="'left'" [isVisible]="isVisible">
+      </vm-generic-button>
+      <vm-help-button class="help-button" (click)="opernHelpDialog($event)"></vm-help-button>
+    </mat-card-actions>
+  </mat-card>
+</mat-card-header>

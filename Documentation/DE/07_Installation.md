@@ -32,6 +32,8 @@ Liegen Ihnen diese Artifakte nicht vor, sind weitere Schritte und Konfiguratione
 3. Kompilieren der Anwendung mittels `mvn clean install -Pwar` 
 4. Das erstellte WAR-Archive befindet sich dann im *target* Subverzeichnis.
 
+**Hinweis**: Wird das Backend ohne ein Profil gebaut (*mvn clean install*), so wird ein lokal startbares Jar generiert. 
+
 Mehr Informationen finden Sie in den jeweiligen [README Dateien](https://github.com/ehealthsuisse/Impfmodul-Phase-I/tree/main/Implementation) der Software Repositories 
 
 ### Installation
@@ -80,10 +82,14 @@ config: ${vaccination_config}
 Powered by Spring Boot 2.7.5
 ``` 
 
-Unterhalb werden zwei Umgebungsparameter angezeigt:
- - *profile*: Gibt an, in welcher Umgebung sich die Applikation befindet.   
+Unterhalb werden zwei der Umgebungsparameter angezeigt:
+ - *spring.profiles.active*: Gibt an, in welcher Umgebung sich die Applikation befindet. Defaultwert *local*   
  Für einen Produktivbetrieb **muss** dieser Wert auf **prod** gesetzt werden. Hierdurch werden z.T. Security Richtlinien sowie Zugriffe auf die Entwicklertools unterbunden.
- - *vaccination_config*: Dieser Parameter gibt an, wo sich der oben genannte Konfigurationsordner befindet. Wir empfehlen diesen Ordner aus Sicherheitsgründen an einen beliebigen Ort ausserhalb des `webroot` Verzeichnisses zu verschieben. 
+ - *vaccination_config*: Dieser Parameter gibt an, wo sich der oben genannte Konfigurationsordner befindet. Wir empfehlen diesen Ordner aus Sicherheitsgründen an einen beliebigen Ort ausserhalb des `webroot` Verzeichnisses zu verschieben. Defaultwert *config* 
+ 
+Weiterhin gibt es noch folgende weitere Parameter:
+ - *server.port*: Gibt an, auf welchem Port die Backendanwendung läuft, default ist 8080.
+ - *FRONTEND_URL*: Gibt an, von welcher Frontend URL auf das Backend zugegriffen werden darf. Kann verwendet werden, um die Sicherheit zu erhöhen. Default * (alle URLs erlauben)
 
 **Konfiguration Testbetrieb**  
 Im Backend ist ein Test- resp. lokaler Betriebsmodus integriert. Dieser kann aktiviert werden, indem das Profil auf *local* gesetzt wird und der Testmodus mit dem GET-Webaufruf *\<backendURL>/utility/setLocalMode/true* aktiviert wird. Der Testmodus is per default **deaktiviert**.

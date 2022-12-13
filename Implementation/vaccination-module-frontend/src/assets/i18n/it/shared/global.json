@@ -1,0 +1,21 @@
+{
+  "GLOBAL": {
+    "ALLERGIES": "Effetti collaterali (EIV)",
+    "PAST_ILLNESSES": "Malattie infettive",
+    "VACCINATIONS": "Vaccinazioni",
+    "HOME": "Tessera Vaccinale",
+    "DATA": "data",
+    "NAME": "nome",
+    "TARGET_DISEASES": "malattia target",
+    "DOSE_NUMBER": "dose",
+    "PERFORMER": "performer",
+    "RECORDER": "registratore",
+    "CLINICAL_STATUS": "Clinical status",
+    "VERIFICATION_STATUS": "Verification status",
+    "VACCINATION_CARD": "Tessera Vaccinale",
+    "COMMENTS": "commenti",
+    "SEARCH": "Cerca",
+    "COMMENT": "Commento",
+    "NONE_OPTION": ""
+  }
+}

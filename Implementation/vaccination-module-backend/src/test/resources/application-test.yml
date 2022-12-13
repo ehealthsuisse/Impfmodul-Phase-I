@@ -1,0 +1,3 @@
+hazelcast:
+  cluster-name: ImpfmoduleTest
+  time-to-live-seconds: 2
