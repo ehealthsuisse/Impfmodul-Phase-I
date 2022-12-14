@@ -9,7 +9,7 @@ Zugriffen auf des EPD gemäss EPDV-EDI.
 Zur Abfrage der Impfdokumente aus der Gemeinschaft benötigt das Impmodul eine
 gültige X-User Assertion zur Autorisierung.
 
-Gemäss EPDV-EDI benötigt das Impfmodul dazu eine gültige IdP Assertion der im
+Gemäss EPDV-EDI benötigt das Impfmodul eine gültige IdP Assertion der im
 Portal oder Primärsystem angemeldeten Benutzers oder der Benutzerin, welche
 das Impfmodul aufgerufen haben. Mit dem Starten aus einem Portal oder
 Primärsystem über den Web Link, übernimmt das Impfmodul die Daten zur
