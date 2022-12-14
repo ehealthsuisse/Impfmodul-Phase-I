@@ -20,6 +20,7 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 
 1. [Lifecyclemanagement der Impfdaten](./101_Lifecycle.md)
 2. [Anzeige der Daten aus dem Austauschformat](./102_VACD.md)
+3. [Value Sets für Auswahllisten](./103_ValueSets.md)
 
 ### Releases
 
