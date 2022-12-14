@@ -20,3 +20,30 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 
 1. [Lifecyclemanagement der Impfdaten](./101_Lifecycle.md)
 2. [Anzeige der Daten aus dem Austauschformat](./102_VACD.md)
+
+### Releases
+
+#### Release 1.0 vom Oktober 2020
+
+Erste Version des Impfmodul mit den Kernfunktionen zur EPD konformen Authentifizierung, sowie zur Kommunikation 
+mit dem EPD und der Zusammenführung der Daten im Impfausweis. 
+
+#### Release 1.1 vom Dezember 2020 (geplant)
+
+Erweiterung des Impfmoduls um die folgenden Funktionen: 
+
+1. Verfeinerung der Benutzeroberflächen und Anpassungen nach Feedback der Fachstellen, 
+2. Implemetierung der Option zum Test des Impfmoduls unabhängig vom EPD, 
+3. Anpassungen zur Web Accessibility, 
+4. Auswahl der Vertraulichkeitstufe bei der Speicherung von Daten
+
+#### Release 1.2 vom März 2023 (geplant)
+
+Erweiterung des Impfmoduls um die folgenden Funktionen: 
+
+1. Responsive Design für handelsübliche Mobile und Tablets 
+2. Erweiterung der angezeigten Daten um Grunderkrankungen 
+3. Java Bibliothek und Programming Interface der Businesslogig der Zusammenführung
+4. Verfeinerung der Benutzeroberflächen und Anpassungen nach Feedback zukünftiger Benutzer 
+
+
