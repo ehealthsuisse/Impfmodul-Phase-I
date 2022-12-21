@@ -16,6 +16,7 @@ eHealth Suisse veröffentlicht den Quellcode und die begleitenden Informationen
 unter einer [MIT Lizenz](./Documentation/DE/09_License.md) zur freien und
 uneingeschränkten Nutzung durch die Gemeinschaften.
 
-eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:      
+eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:
+- [Benutzerhandbuch](./UserGuide/Version-1.1/DE/Benutzerhandbuch-Impfmodul_V1.1_de.pdf)      
 - [Dokumentation](./Documentation/DE/README.md)
 - [Testcases](./Testcases/DE/README.md)
