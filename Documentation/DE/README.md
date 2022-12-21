@@ -11,8 +11,7 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 5. [Authentifizierung](./05_Authentication.md)
 6. [Autorisierung](./06_Authorization.md)
 7. [Handbuch zur Installation](./07_Installation.md)
-8. [Betriebshandbuch](./08_Operation.md)
-9. [Lizenz](./09_License.md)
+8. [Lizenz](./09_License.md)
 9. [3rd Party Libraries](./10_Libraries.md)
 
 
@@ -29,7 +28,7 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 Erste Version des Impfmodul mit den Kernfunktionen zur EPD konformen Authentifizierung, sowie zur Kommunikation
 mit dem EPD und der Zusammenführung der Daten im Impfausweis.
 
-#### Release 1.1 vom Dezember 2020 (geplant)
+#### Release 1.1 vom Dezember 2020
 
 Erweiterung des Impfmoduls um die folgenden Funktionen:
 
