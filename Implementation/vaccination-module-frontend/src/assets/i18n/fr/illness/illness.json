@@ -1,0 +1,18 @@
+{
+  "ILLNESS": {
+    "TITLE": "Maladies Infectieuses",
+    "FILTER": "Chercher",
+    "DETAILS_HEADER": "Détails des Maladies Infectieuses",
+    "EDIT_HEADER": "Modifier les détails de la Maladie Infectieuses",
+    "NEW_HEADER": "Ajouter une Maladies Infectieuses",
+    "ILLNESS_CODE": "Maladie",
+    "CLINICAL_STATUS": "Statut clinique",
+    "VERIFICATION_STATUS": "Vérifié",
+    "RECORDER": "Enregistré par",
+    "RECORDED_DATE": "Créé le",
+    "BEGIN": "Début",
+    "END": "Fin",
+    "RECORDER_CONTACT": "contact enregistré",
+    "ORGANIZATION": "Organisation"
+  }
+}

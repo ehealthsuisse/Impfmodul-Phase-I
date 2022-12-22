@@ -1,0 +1,538 @@
+vaccines-to-targetdiseases:
+  vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html
+  targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs
+  vaccines:
+    - code: 683
+      name: FSME-Immun 0.25 ml Junior
+      target:
+        - code: 16901001
+          name: Central European encephalitis (disorder)
+    - code: 450
+      name: FSME-Immun CC
+      target:
+        - code: 16901001
+          name: Central European encephalitis (disorder)
+    - code: 656
+      name: NeisVac-C
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+    - code: 627
+      name: Encepur N
+      target:
+        - code: 16901001
+          name: Central European encephalitis (disorder)
+    - code: 628
+      name: Encepur N Kinder / Enfants
+      target:
+        - code: 16901001
+          name: Central European encephalitis (disorder)
+    - code: 572
+      name: Epaxal
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 544
+      name: Heprecomb
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 642
+      name: Heprecomb Kinder
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 614
+      name: Inflexal V
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 657
+      name: Menjugate
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+    - code: 533
+      name: Moraten
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 555
+      name: Orochol
+      target:
+        - code: 63650001
+          name: Cholera (disorder)
+    - code: 685
+      name: Rabipur
+      target:
+        - code: 14168008
+          name: Rabies (disorder)
+    - code: 702
+      name: Td-pur
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 686
+      name: Td-Virelon
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 467
+      name: Vivotif
+      target:
+        - code: 4834000
+          name: Typhoid fever (disorder)
+    - code: 637
+      name: Boostrix
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 681
+      name: Boostrix Polio
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 567
+      name: Ditanrix
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 551
+      name: Engerix-B 10
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 534
+      name: Engerix-B 20
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 583
+      name: Fluarix
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 558
+      name: Havrix 1440
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 599
+      name: Havrix 720
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 603
+      name: Hiberix
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 638
+      name: Infanrix (DTPa-IPV)
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 619
+      name: Infanrix (DTPa-IPV+Hib)
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 640
+      name: Infanrix hexa (DTPa-HBV-IPV+Hib)
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 652
+      name: Mencevax ACWY
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+        - code: 860805006
+          name: Encephalomyelitis caused by Neisseria meningitidis (disorder)
+    - code: 669
+      name: Poliorix
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 615
+      name: Priorix
+      target:
+        - code: 36653000
+          name: Rubella (disorder)
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 592
+      name: Twinrix 720/20
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 585
+      name: Varilrix
+      target:
+        - code: 38907003
+          name: Varicella (disorder)
+    - code: 528
+      name: Gen H-B-Vax 10
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 545
+      name: HBVAXPRO 40
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 610
+      name: Gen H-B-Vax 5
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 663
+      name: HBVAXPRO 10
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 268
+      name: MMR-II
+      target:
+        - code: 36653000
+          name: Rubella (disorder)
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 247
+      name: Mumpsvax
+      target:
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 373
+      name: Mutagrip
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 613
+      name: Pentavac
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 509
+      name: Pneumovax-23
+      target:
+        - code: 16814004
+          name: Pneumococcal infectious disease (disorder)
+    - code: 646
+      name: Revaxis
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 520
+      name: Stamaril
+      target:
+        - code: 16541001
+          name: Yellow fever (disorder)
+    - code: 612
+      name: Tetravac
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 417
+      name: Tollwut Impfstoff Mérieux
+      target:
+        - code: 14168008
+          name: Rabies (disorder)
+    - code: 688
+      name: Varivax
+      target:
+        - code: 38907003
+          name: Varicella (disorder)
+    - code: 485
+      name: Influvac
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 660
+      name: Influvac plus
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 654
+      name: Meningitec
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+    - code: 643
+      name: Prevenar-7
+      target:
+        - code: 16814004
+          name: Pneumococcal infectious disease (disorder)
+    - code: 644
+      name: Hexavac
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 711
+      name: DiTe pediatric adsorbed
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 704
+      name: Dukoral
+      target:
+        - code: 63650001
+          name: Cholera (disorder)
+    - code: 417
+      name: Tollwut Impfstoff Mérieux
+      target:
+        - code: 14168008
+          name: Rabies (disorder)
+    - code: 483
+      name: Rimevax
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 707
+      name: Tetanol pur
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+    - code: 57735
+      name: Gardasil
+      target:
+        - code: 240532009
+          name: Human papillomavirus infection (disorder)
+    - code: 709
+      name: Zostavax
+      target:
+        - code: 4740000
+          name: Herpes zoster (disorder)
+    - code: 58158
+      name: Priorix-Tetra
+      target:
+        - code: 38907003
+          name: Varicella (disorder)
+        - code: 36653000
+          name: Rubella (disorder)
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 696
+      name: BCG SSI
+      target:
+        - code: 56717001
+          name: Tuberculosis (disorder)
+    - code: 58317
+      name: Fluad
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 60150
+      name: Rotarix
+      target:
+        - code: 18624000
+          name: Disease caused by Rotavirus (disorder)
+    - code: 703
+      name: MMRVaxPro
+      target:
+        - code: 36653000
+          name: Rubella (disorder)
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 58506
+      name: Measles vaccine live
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 59267
+      name: Agrippal
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 58271
+      name: Optaflu
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 57814
+      name: Cervarix
+      target:
+        - code: 240532009
+          name: Human papillomavirus infection (disorder)
+    - code: 60129
+      name: Prevenar-13
+      target:
+        - code: 16814004
+          name: Pneumococcal infectious disease (disorder)
+    - code: 59147
+      name: Ixiaro
+      target:
+        - code: 52947006
+          name: Japanese encephalitis virus disease (disorder)
+    - code: 62502
+      name: Menveo
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+    - code: 600
+      name: DiTe Anatoxal Erwachsene / Adultes
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 690
+      name: DiTe Anatoxal N Erwachsene / Adultes
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 689
+      name: Te Anatoxal N
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+    - code: 627
+      name: Encepur N
+      target:
+        - code: 16901001
+          name: Central European encephalitis (disorder)
+    - code: 628
+      name: Encepur N Kinder / Enfants
+      target:
+        - code: 16901001
+          name: Central European encephalitis (disorder)
+    - code: 62961
+      name: Fluarix Tetra
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 68267
+      name: Spikevax (COVID-19 Vaccine, Moderna)
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 68225
+      name: Comirnaty (COVID-19 Vaccine, Pfizer)
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 68235
+      name: COVID-19 Vaccine Janssen
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 67987
+      name: Shingrix
+      target:
+        - code: 4740000
+          name: Herpes zoster (disorder)
+    - code: 67482
+      name: Flucelvax Tetra
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 67704
+      name: Efluelda 0.7 ml
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 68003
+      name: Supemtek 0.5 ml
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 66161
+      name: Foclivia (Durchstechflasche)
+      target:
+        - code: 719865001
+          name: Influenza caused by pandemic influenza virus (disorder)
+    - code: 66156
+      name: Foclivia (Fertigspritze)
+      target:
+        - code: 719865001
+          name: Influenza caused by pandemic influenza virus (disorder)
+    - code: 68473
+      name: Nuvaxovid 5 ml, Injektionsdispersion
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+

@@ -1,0 +1,9 @@
+<main [attr.aria-labelledby]="contentId" *ngIf="isMainContent; else elseTpl" [attr.aria-label]="label">
+  <ng-container *ngTemplateOutlet="elseTpl"></ng-container>
+</main>
+
+<ng-template #elseTpl>
+  <div [id]="contentId">
+    <ng-content></ng-content>
+  </div>
+</ng-template>

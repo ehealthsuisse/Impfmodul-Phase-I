@@ -1,0 +1,24 @@
+<section class="detail-wrapper" *ngIf="allergy!">
+  <mat-card class="mat-card mat-elevation-z10">
+    <mat-card-header class="mat-card-header">
+      <mat-card-title>
+        <h1 vmTranslate="ALLERGY.DETAILS_HEADER" class="h3-header"></h1>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="mat-card-content">
+      <vm-allergy-detailed-information [allergy]="allergy"></vm-allergy-detailed-information>
+    </mat-card-content>
+
+    <vm-common-card-footer
+      [isDetailsFooter]="true"
+      [dialogTitle]="helpDialogTitle"
+      [dialogBody]="helpDialogBody"
+      (download)="download(allergy)"
+      (edit)="editRecord(allergy)"
+      (delete)="deleteRecord(allergy)"
+      [disabled]="!!allergy.deleted"
+    ></vm-common-card-footer>
+  </mat-card>
+
+  <vm-comment [comments]="allergy.comments!"></vm-comment>
+</section>

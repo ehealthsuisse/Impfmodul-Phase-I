@@ -1,0 +1,7 @@
+{
+  "ALLERGY_CLINICAL_STATUS": {
+    "active": "Attivo",
+    "inactive": "Non attivo",
+    "resolved": "Guarito"
+  }
+}

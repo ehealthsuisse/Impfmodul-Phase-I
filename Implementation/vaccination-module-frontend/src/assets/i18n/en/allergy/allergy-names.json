@@ -1,0 +1,33 @@
+{
+  "ALLERGY_NAMES": {
+    "716186003": "No known allergy",
+    "213020009": "Allergy to egg protein",
+    "24079001": "Atopic dermatitis",
+    "416098002": "Allergy to drug",
+    "863903001": "Allergy to component of vaccine product",
+    "293104008": "Vaccine adverse reaction",
+    "219082005": "Cholera vaccine adverse reaction",
+    "1142181004": "COVID-19 mRNA vaccine adverse reaction",
+    "1157106007": "COVID-19 non-replicating viral vector vaccine adverse reaction",
+    "1162639000": "Diphtheria and acellular pertussis and Haemophilus influenzae type B and hepatitis B and inactivated poliomyelitis and tetanus vaccine adverse reaction",
+    "293108006": "Diphtheria and tetanus vaccine adverse reaction",
+    "293109003": "Diphtheria, pertussis, and tetanus vaccine adverse reaction",
+    "293127000": "Haemophilus influenzae Type B vaccine adverse reaction",
+    "293126009": "Hepatitis A vaccine adverse reaction",
+    "293110008": "Hepatitis B vaccine adverse reaction",
+    "420113004": "Influenza virus vaccine adverse reaction",
+    "293125008": "Measles and mumps and rubella vaccine adverse reaction",
+    "219096004": "Measles vaccine adverse reaction",
+    "219088009": "Meningococcal vaccine adverse reaction",
+    "293114004": "Mumps vaccine adverse reaction",
+    "293116002": "Pneumococcal vaccine adverse reaction",
+    "293117006": "Poliomyelitis vaccine adverse reaction",
+    "293118001": "Rabies vaccine adverse reaction",
+    "219084006": "Tetanus vaccine adverse reaction",
+    "219076007": "Adverse reaction to component of vaccine product containing Bacillus Calmette-Guerin antigen (disorder)",
+    "293122006": "Typhoid vaccine adverse reaction",
+    "219095000": "Yellow fever vaccine adverse reaction",
+    "1162644007": "COVID-19 recombinant spike protein antigen vaccine adverse reaction",
+    "1217476001": "Anaphylaxis due to vaccine"
+  }
+}

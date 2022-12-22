@@ -1,0 +1,12 @@
+testCases:
+  - config/testfiles/Bundle-A-D1-P-C1.json
+  - config/testfiles/Bundle-B-D2-HCP1-C1.json
+  - config/testfiles/Bundle-B-D3-HCP1-C1.json
+
+baseURL: https://www.e-health-suisse.ch/
+patientRoles:
+  - PAT
+  - REP
+practitionerRoles:
+  - HCP
+  - ASS

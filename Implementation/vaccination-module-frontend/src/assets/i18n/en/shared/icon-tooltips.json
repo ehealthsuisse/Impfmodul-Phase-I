@@ -1,0 +1,7 @@
+{
+  "ICONS": {
+    "RECORD_VALIDATED": "Verified",
+    "RECORD_DELETED": "Deleted",
+    "RECORD_UPDATED": "Updated"
+  }
+}

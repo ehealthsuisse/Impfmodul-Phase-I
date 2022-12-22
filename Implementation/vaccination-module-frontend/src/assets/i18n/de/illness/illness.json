@@ -1,0 +1,18 @@
+{
+  "ILLNESS": {
+    "TITLE": "Infektionskrankheiten",
+    "EDIT_HEADER": "Infektionskrankheit bearbeiten",
+    "NEW_HEADER": "Infektionskrankheit hinzufügen",
+    "DETAILS_HEADER": "Details zur Infektionskrankheit",
+    "FILTER": "suchen",
+    "ILLNESS_CODE": "Infektionskrankheit",
+    "CLINICAL_STATUS": "Klinischer Status",
+    "VERIFICATION_STATUS": "Verifiziert",
+    "RECORDER": "Erfasst von",
+    "RECORDED_DATE": "Datum",
+    "BEGIN": "Beginn",
+    "END": "Ende",
+    "SEVERITY": "Schweregrad",
+    "ORGANIZATION": "Organisation"
+  }
+}

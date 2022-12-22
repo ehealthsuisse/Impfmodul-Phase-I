@@ -1,0 +1,96 @@
+{
+  "HELP": {
+    "HOME": {
+      "TITLE": "Home",
+      "BODY": "<h2>German</h2><p>home page</p>"
+    },
+    "VACCINATION": {
+      "LIST": {
+        "TITLE": "Vaccination List",
+        "BODY": "list of vaccination centers"
+      },
+      "DETAIL": {
+        "TITLE": "Vaccination Detail",
+        "BODY": "vaccination center detail"
+      },
+      "SEARCH": {
+        "TITLE": "Vaccination Search",
+        "BODY": "search vaccination centers"
+      },
+      "ADD": {
+        "TITLE": "Add Vaccination",
+        "BODY": "add vaccination center"
+      },
+      "EDIT": {
+        "TITLE": "Edit Vaccination",
+        "BODY": "edit vaccination center"
+      },
+      "DELETE": {
+        "TITLE": "Delete Vaccination",
+        "BODY": "delete vaccination center"
+      }
+    },
+    "ALLERGY": {
+      "LIST": {
+        "TITLE": "Allergy List",
+        "BODY": "list of allergies"
+      },
+      "DETAIL": {
+        "TITLE": "Allergy Detail",
+        "BODY": "allergy detail"
+      },
+      "SEARCH": {
+        "TITLE": "Allergy Search",
+        "BODY": "search allergies"
+      },
+      "ADD": {
+        "TITLE": "Add Allergy",
+        "BODY": "add allergy"
+      },
+      "EDIT": {
+        "TITLE": "Edit Allergy",
+        "BODY": "edit allergy"
+      },
+      "DELETE": {
+        "TITLE": "Delete Allergy",
+        "BODY": "delete allergy"
+      }
+    },
+    "PAST_ILLNESS": {
+      "LIST": {
+        "TITLE": "Past Illness List",
+        "BODY": "list of past illnesses"
+      },
+      "DETAIL": {
+        "TITLE": "Past Illness Detail",
+        "BODY": "past illness detail"
+      },
+      "SEARCH": {
+        "TITLE": "Past Illness Search",
+        "BODY": "search past illnesses"
+      },
+      "ADD": {
+        "TITLE": "Add Past Illness",
+        "BODY": "add past illness"
+      },
+      "EDIT": {
+        "TITLE": "Edit Past Illness",
+        "BODY": "edit past illness"
+      },
+      "DELETE": {
+        "TITLE": "Delete Past Illness",
+        "BODY": "delete past illness"
+      }
+    },
+    "VACCINATION_RECORD": {
+      "SAVE": {
+        "TITLE": "Enregistrer le carnet de vaccination",
+        "BODY": "Le carnet de vaccination a été enregistré avec succès dans le système"
+      }
+    },
+    "COMMENT": {
+      "TITLE": "Comment",
+      "BODY": "comment"
+    }
+  }
+}

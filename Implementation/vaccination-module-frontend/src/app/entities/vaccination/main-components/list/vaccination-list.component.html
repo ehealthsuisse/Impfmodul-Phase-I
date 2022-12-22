@@ -1,0 +1,20 @@
+<vm-main-wrapper contentId="vaccinationList" [isMainContent]="!isEmbedded" [label]="pageTitle">
+  <vm-list-header
+    class="mat-card mat-elevation-z0"
+    [toggle]="toggleHeader"
+    (filter)="filterVaccinations($event)"
+    [helpTitle]="'HELP.VACCINATION.LIST.TITLE' | translate"
+    [helpBody]="'HELP.VACCINATION.LIST.BODY' | translate"
+    (add)="addNewRecord()"
+    [title]="'VACCINATION.TITLE'"
+  ></vm-list-header>
+
+  <vm-table-wrapper
+    [dataSource]="vaccinations"
+    [displayedColumns]="vaccinationColumns"
+    [translationPrefix]="'VACCINATION.'"
+    [fullWidth]="tableWidth"
+    (rowClick)="navigateToDetails($event)"
+  >
+  </vm-table-wrapper>
+</vm-main-wrapper>

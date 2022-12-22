@@ -1,0 +1,9 @@
+{
+  "USER": {
+    "PREFIX": "prefisso",
+    "FIRSTNAME": "nome",
+    "LASTNAME": "cognome",
+    "BIRTHDATE": "data di nascita",
+    "GENDER": "genere"
+  }
+}

@@ -1,0 +1,89 @@
+<header>
+  <mat-toolbar class="mat-toolbar mat-elevation-z1 navbar" fxLayout="row" fxLayoutAlign="space-between center">
+    <!--  Logo -->
+    <div class="navbar__logo" fxLayout="row" fxLayoutAlign="center center">
+      <img
+        src="../../../assets/logos/spritze.svg"
+        class="navbar__logo__syringe"
+        alt="logo"
+        aria-label="Main"
+        (click)="goHome()"
+        (keydown)="goHome()"
+      />
+      <a href="javascript:void(0);" class="navbar__logo__toggle" (click)="toggleMenu()">
+        <mat-icon>reorder</mat-icon>
+      </a>
+      <a href="javascript:void(0);" class="navbar__logo__language" (click)="toggleLangs()">
+        <mat-icon>language</mat-icon>
+      </a>
+    </div>
+    <!--  Navigation -->
+    <nav class="navbar__navigation entity-wrapper" aria-label="navbar-navigation" fxLayout="row" fxLayoutAlign="space-around center">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="navbar__navigation__link"
+        vmTranslate="GLOBAL.HOME"
+      ></a>
+      <a routerLink="/vaccination" routerLinkActive="active" class="navbar__navigation__link" vmTranslate="GLOBAL.VACCINATIONS"></a>
+      <a routerLink="/allergy" routerLinkActive="active" class="navbar__navigation__link" vmTranslate="GLOBAL.ALLERGIES"></a>
+      <a routerLink="/illnesses" routerLinkActive="active" class="navbar__navigation__link" vmTranslate="GLOBAL.PAST_ILLNESSES"></a>
+    </nav>
+
+    <nav class="navbar__languages" aria-label="lang" fxLayout="row" fxLayoutAlign="space-between center">
+      <a
+        *ngFor="let lang of languages"
+        [class.active]="(currentLang | async) === lang"
+        class="navbar__languages__language"
+        (click)="changeLanguage(lang)"
+        (keydown)="changeLanguage(lang)"
+      >
+        {{ lang | uppercase }}
+      </a>
+    </nav>
+    <div fxLayout="column" fxLayoutAlign="flex-start" style="height: 50px">
+      <div class="community-logo"></div>
+      <div class="user" fxLayout="row" fxLayoutAlign="center center">
+        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="person"></mat-icon>
+        <mat-label>{{ prefix + ' ' + firstName + ' ' + lastName.trim() }}</mat-label>
+      </div>
+    </div>
+  </mat-toolbar>
+  <mat-toolbar
+    class="mat-toolbar mat-elevation-z1 navbar navbar__mobile"
+    [ngClass]="{ active: showMenu || showLangs }"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+  >
+    <nav
+      class="navbar__navigation__mobile entity-wrapper"
+      [ngClass]="{ active: showMenu }"
+      aria-label="navbar-navigation"
+      fxLayout="column"
+      fxLayoutAlign="space-around center"
+    >
+      <a routerLink="/" class="navbar__navigation__link" vmTranslate="GLOBAL.HOME"></a>
+      <a routerLink="/vaccination" routerLinkActive="active" class="navbar__navigation__link" vmTranslate="GLOBAL.VACCINATIONS"></a>
+      <a routerLink="/allergy" routerLinkActive="active" class="navbar__navigation__link" vmTranslate="GLOBAL.ALLERGIES"></a>
+      <a routerLink="/illnesses" routerLinkActive="active" class="navbar__navigation__link" vmTranslate="GLOBAL.PAST_ILLNESSES"></a>
+    </nav>
+
+    <nav
+      class="navbar__languages__mobile"
+      [ngClass]="{ active: showLangs }"
+      aria-label="lang"
+      fxLayout="column"
+      fxLayoutAlign="space-between center"
+    >
+      <a
+        *ngFor="let lang of languages"
+        class="navbar__languages__language active"
+        (click)="changeLanguage(lang)"
+        (keydown)="changeLanguage(lang)"
+      >
+        {{ lang | uppercase }}
+      </a>
+    </nav>
+  </mat-toolbar>
+</header>

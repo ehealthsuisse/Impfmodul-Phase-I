@@ -1,0 +1,54 @@
+@import 'src/assets/scss/global';
+
+.mat-wrapper-card {
+  .info-title {
+    width: 100%;
+    display: flex;
+
+    .patient-name {
+      margin-left: 10px;
+      color: $font-color-base;
+    }
+  }
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.vaccination-record-wrapper {
+  .bottom-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+
+    .mat-table {
+      padding: 0;
+
+      .mat-table {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+
+        .mat-header-row {
+          background-color: #f5f5f5;
+
+          .mat-header-cell {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 16px;
+            color: #000000;
+          }
+        }
+
+        .mat-row {
+          .mat-cell {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 16px;
+            color: #000000;
+          }
+        }
+      }
+    }
+  }
+}

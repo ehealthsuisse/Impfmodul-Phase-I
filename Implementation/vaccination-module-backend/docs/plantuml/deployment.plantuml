@@ -1,0 +1,37 @@
+@startuml
+
+artifact Impfmodule as "vaccination-module-backend.jar" {
+  artifact Husky [
+    husky-communication-gen.jar
+    ====
+    husky-common-gen.jar
+    ....
+    husky-common-ch.jar
+    ....
+    husky-fhir-structures-gen.jar
+    ....
+    husky-xua-gen-api.jar
+    ....
+    husky-xua-gen-impl.jar
+  ]
+
+  artifact fhir [
+    ca.uhn.hapi.fhir
+    ====
+    hapi-fhir-structures-r4
+    ....
+    hapi-fhir-validation-resources-r4
+  ]
+
+  artifact opensaml[
+    org.opensaml
+    ====
+    opensaml-core
+    ....
+    ....
+  ] 
+
+}
+  
+@enduml
+

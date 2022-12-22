@@ -1,0 +1,19 @@
+{
+  "VACCINATION": {
+    "TITLE": "Vaccins",
+    "DETAILS_HEADER": "Détails sur les vaccins",
+    "EDIT_HEADER": "Modifier la vaccination",
+    "NEW_HEADER": "Ajouter la vaccination",
+    "VACCINE_CODE": "Vaccin",
+    "TARGET_DISEASES": "Protection Vaccinale",
+    "DOSE_NUMBER": "Dose",
+    "OCCURRENCE_DATE": "Date",
+    "STATUS": "Statut",
+    "RECORDER": "Vacciné par",
+    "ORGANIZATION": "Organisation",
+    "VALIDATED": "Validé",
+    "VACCINATION_REASON": "Raisons de la vaccination",
+    "LOT_NUMBER": "Numéro de Lot",
+    "DATE": "Date"
+  }
+}

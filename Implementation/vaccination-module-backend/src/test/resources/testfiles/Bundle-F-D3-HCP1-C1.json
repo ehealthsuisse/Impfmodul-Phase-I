@@ -1,0 +1,392 @@
+{
+  "resourceType": "Bundle",
+  "id": "F-D3-HCP1-C1",
+  "meta": {
+    "profile": [
+      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration"
+    ]
+  },
+  "identifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:uuid:d94f0be6-4899-4aa3-90f0-46e567ba8af5"
+  },
+  "type": "document",
+  "timestamp": "2021-10-06T00:00:00.390+02:00",
+  "entry": [
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Composition/F-D3-HCP1-C1-Composition",
+      "resource": {
+        "resourceType": "Composition",
+        "id": "F-D3-HCP1-C1-Composition",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration"
+          ]
+        },
+        "language": "en-US",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D2-HCP1-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:ab0add6e-0049-4567-8609-8d3ffdd84af0</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>June 15, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Practitioner-TC-HCP1-C1.html\">Practitioner/TC-HCP1-C1</a> Bereit Allzeit</p><p><a href=\"Organization-TC-ORG1.html\">Organization/TC-ORG1</a> Gruppenpraxis CH</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (qualifier value) (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr></table></div>"
+        },
+        "extension": [
+          {
+            "id": "versionNumber",
+            "url": "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-versionnumber",
+            "valueUnsignedInt": 1
+          }
+        ],
+        "identifier": {
+          "system": "urn:ietf:rfc:3986",
+          "value": "urn:uuid:98dbfa14-1b2e-40f8-8110-932c631db1df"
+        },
+        "status": "final",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "41000179103",
+              "display": "Immunization record"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/TC-patient"
+        },
+        "date": "2021-10-06T00:00:00.390+02:00",
+        "author": [
+          {
+            "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-author"
+          }
+        ],
+        "title": "Immunization Administration",
+        "confidentiality": "N",
+        "_confidentiality": {
+          "extension": [
+            {
+              "url": "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-confidentialitycode",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://snomed.info/sct",
+                    "code": "17621005",
+                    "display": "Normal (qualifier value)"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "custodian": {
+          "reference": "Organization/TC-ORG1"
+        },
+        "section": [
+          {
+            "id": "allergies",
+            "title": "Allergies",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48765-2",
+                  "display": "Allergies and adverse reactions Document"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Allergies and adverse reactions Document (http://loinc.org#48765-2)</span></p><p><b>Entries:</b></p><table><tr><td><a href=\"AllergyIntolerance-TCF02-ALLINTO2.html\">AllergyIntolerance/TCF02-ALLINTO2</a></td></tr></table></div>"
+            },
+            "entry": [
+              {
+                "reference": "AllergyIntolerance/TCF02-ALLINTO1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Patient/TC-patient",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "TC-patient",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Patient</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Patient \"TC-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-patient-epr.html\">CH Core Patient EPR</a></p></div><p><b>identifier</b>: Medical record number: 12345678</p><p><b>name</b>: Monika Wegmueller </p><p><b>telecom</b>: ph: tel:+41.32.685.12.34(HOME)</p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1967-02-10</p><p><b>address</b>: Leidensweg 10 Specimendorf 9876 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ]
+            },
+            "system": "urn:oid:1.2.3.4",
+            "value": "12345678"
+          }
+        ],
+        "name": [
+          {
+            "family": "Wegmueller",
+            "given": [
+              "Monika"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.685.12.34",
+            "use": "home"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1967-02-10",
+        "address": [
+          {
+            "type": "both",
+            "line": [
+              "Leidensweg 10"
+            ],
+            "city": "Specimendorf",
+            "postalCode": "9876",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Practitioner/TC-HCP1-C1",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "TC-HCP1-C1",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Practitioner</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Practitioner \"TC-HCP1-C1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitioner-epr.html\">CH Core Practitioner EPR</a></p></div><p><b>identifier</b>: id: 7601888888884</p><p><b>active</b>: true</p><p><b>name</b>: Peter Mueller </p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:allzeit.bereit@gruppenpraxis.ch\">mailto:allzeit.bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zuerich 8005 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.51.1.3",
+            "value": "7601888888884"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Mueller",
+            "given": [
+              "Peter"
+            ],
+            "prefix": [
+              "Dr. med."
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.234.55.66",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "fax:+41.32.234.55.67",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "mailto:allzeit.bereit@gruppenpraxis.ch",
+            "use": "work"
+          },
+          {
+            "system": "url",
+            "value": "http://www.gruppenpraxis.ch",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "type": "physical",
+            "line": [
+              "Grabenstrasse 2"
+            ],
+            "city": "Zuerich",
+            "postalCode": "8005",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Organization/TC-ORG1",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "TC-ORG1",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601777777718</p><p><b>name</b>: Gruppenpraxis Mueller</p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:bereit@gruppenpraxis.ch\">mailto:bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zuerich ZH 8005 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.51.1.3",
+            "value": "7601777777718"
+          }
+        ],
+        "name": "Gruppenpraxis Mueller",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.234.55.66",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "fax:+41.32.234.55.67",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "mailto:bereit@gruppenpraxis.ch",
+            "use": "work"
+          },
+          {
+            "system": "url",
+            "value": "http://www.gruppenpraxis.ch",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "Grabenstrasse 2"
+            ],
+            "city": "Zuerich",
+            "state": "ZH",
+            "postalCode": "8005",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/PractitionerRole/TC-HCP1-ORG1-ROLE-performer",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "TC-HCP1-ORG1-ROLE-performer",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: PractitionerRole</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource PractitionerRole \"TC-HCP1-ORG1-ROLE-performer\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitionerrole-epr.html\">CH Core PractitionerRole EPR</a></p></div><p><b>active</b>: true</p><p><b>practitioner</b>: <a href=\"#Practitioner_TC-HCP1-C1\">See above (Practitioner/TC-HCP1-C1)</a></p><p><b>organization</b>: <a href=\"#Organization_TC-ORG1\">See above (Organization/TC-ORG1)</a></p></div>"
+        },
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/TC-HCP1-C1"
+        },
+        "organization": {
+          "reference": "Organization/TC-ORG1"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/PractitionerRole/TC-HCP1-ORG1-ROLE-author",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "TC-HCP1-ORG1-ROLE-author",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: PractitionerRole</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource PractitionerRole \"TC-HCP1-ORG1-ROLE-author\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitionerrole-epr.html\">CH Core PractitionerRole EPR</a></p></div><p><b>active</b>: true</p><p><b>practitioner</b>: <a href=\"#Practitioner_TC-HCP1-C1\">See above (Practitioner/TC-HCP1-C1)</a></p><p><b>organization</b>: <a href=\"#Organization_TC-ORG1\">See above (Organization/TC-ORG1)</a></p></div>"
+        },
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/TC-HCP1-C1"
+        },
+        "organization": {
+          "reference": "Organization/TC-ORG1"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/AllergyIntolerance/TCF02-ALLINTO1",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "TCF02-ALLINTO1",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-allergyintolerances"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: AllergyIntolerance</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource AllergyIntolerance \"TCF02-ALLINTO1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-allergyintolerances.html\">CH VACD AllergyIntolerance</a></p></div><p><b>identifier</b>: id: cbc8c8c1-4f47-4ec3-99a7-ae775b75c621</p><p><b>clinicalStatus</b>: Active <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-allergyintolerance-clinical.html\">AllergyIntolerance Clinical Status Codes</a>#active)</span></p><p><b>verificationStatus</b>: Confirmed <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-allergyintolerance-verification.html\">AllergyIntolerance Verification Status</a>#confirmed)</span></p><p><b>code</b>: Atopic dermatitis (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#24079001)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>onset</b>: 2021-10-06</p><p><b>recordedDate</b>: 2021-10-06</p><p><b>recorder</b>: <a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-author\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-author)</a></p><p><b>lastOccurrence</b>: 2021-10-06</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.16.756.5.30.1.402.1.3.1.1.2",
+            "value": "cbc8c8c1-4f47-4ec3-99a7-ae775b75c621"
+          }
+        ],
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "24079001",
+              "display": "Atopic dermatitis (disorder)"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/TC-patient"
+        },
+        "onsetDateTime": "2021-10-06",
+        "recordedDate": "2021-10-06",
+        "recorder": {
+          "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-author"
+        },
+        "lastOccurrence": "2021-10-06"
+      }
+    }
+  ]
+}

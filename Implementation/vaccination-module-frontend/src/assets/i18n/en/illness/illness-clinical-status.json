@@ -1,0 +1,10 @@
+{
+  "ILLNESS_CLINICAL_STATUS": {
+    "active": "Active",
+    "recurrence": "Recurrence",
+    "relapse": "Relapse",
+    "inactive": "Inactive",
+    "remission": "Remission",
+    "resolved": "Healed"
+  }
+}

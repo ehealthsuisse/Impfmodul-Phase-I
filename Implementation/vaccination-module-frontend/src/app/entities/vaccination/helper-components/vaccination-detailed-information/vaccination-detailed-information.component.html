@@ -1,0 +1,60 @@
+<mat-card-content class="mat-card-content" fxLayout="column" fxLayoutAlign="space-between">
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.DATE"></mat-label>
+    <input matInput value="{{ vaccination?.occurrenceDate | formatDate }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.VACCINE_CODE"></mat-label>
+    <input matInput value="{{ 'vaccination-names.' + vaccination?.vaccineCode?.code | translate }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.TARGET_DISEASES"></mat-label>
+    <input matInput value="{{ vaccination?.targetDiseases | arrayObjectsToFlat: 'name' }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.DOSE_NUMBER"></mat-label>
+    <input matInput value="{{ vaccination?.doseNumber }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.STATUS"></mat-label>
+    <input matInput value="{{ 'VACCINE_STATUS.' + vaccination?.status?.code | translate }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.LOT_NUMBER"></mat-label>
+    <input matInput value="{{ vaccination?.lotNumber }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.VACCINATION_REASON"></mat-label>
+    <input matInput value="{{ 'VACCINATION_REASON.' + vaccination?.reason?.code | translate }}" disabled />
+  </mat-form-field>
+
+  <mat-card class="mat-elevation-z0 group" fxLayout="column" fxLayoutAlign="center">
+    <mat-label class="mat-label" vmTranslate="VACCINATION.RECORDER"></mat-label>
+    <div class="recorder-group">
+      <mat-form-field class="mat-form-field">
+        <input matInput disabled value="{{ vaccination?.recorder?.prefix }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
+      </mat-form-field>
+      <mat-form-field class="mat-form-field">
+        <input matInput disabled value="{{ vaccination?.recorder?.firstName }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
+      </mat-form-field>
+      <mat-form-field class="mat-form-field">
+        <input matInput disabled value="{{ vaccination?.recorder?.lastName }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
+      </mat-form-field>
+    </div>
+  </mat-card>
+  <mat-form-field class="mat-form-field">
+    <mat-label vmTranslate="VACCINATION.ORGANIZATION"></mat-label>
+    <input matInput value="{{ vaccination?.organization }}" disabled />
+  </mat-form-field>
+
+  <mat-form-field class="mat-form-field" *ngIf="vaccination?.commentMessage">
+    <mat-label vmTranslate="GLOBAL.COMMENTS"></mat-label>
+    <input matInput value="{{ vaccination?.commentMessage }}" disabled />
+  </mat-form-field>
+</mat-card-content>

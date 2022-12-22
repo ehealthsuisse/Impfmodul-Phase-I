@@ -1,0 +1,54 @@
+<mat-card class="mat-card mat-elevation-z0" fxLayout="row" fxLayoutAlign="space-between" *ngIf="isDetailsFooter">
+  <vm-generic-button [label]="'buttons.PREVIOUS'" (click)="previous()"></vm-generic-button>
+
+  <section>
+    <vm-generic-button
+      [label]="'buttons.VALIDATE'"
+      [type]="'submit'"
+      color="accent"
+      [disabled]="!item?.validated!"
+      (click)="validateRecord($event)"
+      *ngIf="canValidate"
+      class="mat-button"
+    ></vm-generic-button>
+    <vm-generic-button
+      [label]="'buttons.EDIT'"
+      color="accent"
+      (click)="navigateToEdit(item!)"
+      class="mat-button"
+      [disabled]="disabled"
+    ></vm-generic-button>
+    <vm-generic-button
+      [label]="'buttons.DELETE'"
+      color="warn"
+      (click)="deleteRecord(item!)"
+      [disabled]="disabled"
+      class="mat-button"
+    ></vm-generic-button>
+    <vm-help-button class="mat-button" (click)="openDialog($event)" [disabled]="disabled"></vm-help-button>
+    <button mat-button (click)="downloadRecord($event)" [disabled]="disabled">
+      <img
+        alt="{{ 'buttons.DOWNLOAD' | translate }}"
+        [attr.area-label]="'buttons.DOWNLOAD' | translate"
+        matTooltip="{{ 'buttons.DOWNLOAD' | translate }}"
+        class="download-icon"
+        src="../../../assets/images/download.png"
+      />
+    </button>
+  </section>
+</mat-card>
+
+<mat-card class="mat-card mat-elevation-z0" fxLayout="row" fxLayoutAlign="end" *ngIf="isEditFooter">
+  <section>
+    <vm-generic-button
+      [label]="'buttons.SAVE'"
+      [type]="'submit'"
+      color="accent"
+      [disabled]="disabled"
+      (click)="saveRecord($event)"
+      class="mat-button"
+    ></vm-generic-button>
+    <vm-generic-button [label]="'buttons.CANCEL'" color="warn" (click)="previous()" class="mat-button"></vm-generic-button>
+    <vm-help-button class="mat-button" (click)="openDialog($event)"></vm-help-button>
+  </section>
+</mat-card>

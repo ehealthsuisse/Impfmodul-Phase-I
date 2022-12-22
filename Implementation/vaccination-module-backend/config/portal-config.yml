@@ -1,0 +1,6 @@
+# Keystore used for the weblink
+portal:
+  # Shared secret between portal and vaccination modul to verify webcall signature
+  hmacpresharedkey: "portalKey"
+  # Must be set to true to ensure that web calls are not older than 2 seconds
+  activateTimestampCheck: "true"

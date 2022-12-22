@@ -1,0 +1,8 @@
+{
+  "ALLERGY_CATEGORY": {
+    "medication": "Medication",
+    "food": "Food",
+    "environment": "Environment",
+    "biologics": "Biologics"
+  }
+}

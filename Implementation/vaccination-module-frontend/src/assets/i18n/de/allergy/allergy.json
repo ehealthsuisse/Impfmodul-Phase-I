@@ -1,0 +1,16 @@
+{
+  "ALLERGY": {
+    "TITLE": "Nebenwirkungen (UIE)",
+    "NEW_HEADER": "Nebenwirkung hinzufügen",
+    "EDIT_HEADER": "Nebenwirkung bearbeiten",
+    "DETAILS_HEADER": "Details zur Nebenwirkung",
+    "ALLERGY_CODE": "Nebenwirkung",
+    "CATEGORY": "Kategorie",
+    "CRITICALITY": "Risiko",
+    "CLINICAL_STATUS": "Klinischer Status",
+    "VERIFICATION_STATUS": "Verifiziert",
+    "OCCURRENCE_DATE": "Datum",
+    "RECORDER": "Erfasst von",
+    "ORGANIZATION": "Organisation"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "ALLERGY_SEVERITY": {
+    "low": "Risque faible",
+    "high": "Risque élevé",
+    "unable-to-assess": "Impossible d'évaluer le risque"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "VACCINE_STATUS": {
+    "completed": "Impfung erfolgt",
+    "not-done": "Impfung geplant",
+    "entered-in-error": "Irrtümlich eingegeben"
+  }
+}

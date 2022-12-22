@@ -1,0 +1,15 @@
+<mat-dialog-content *ngIf="data">
+  <mat-card class="mat-card mat-elevation-z0">
+    <mat-card-header>
+      <mat-card-title vmTranslate="{{ data.button }}"></mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="mat-card-content">
+      <vm-vaccination-detailed-information [vaccination]="data.value"></vm-vaccination-detailed-information>
+      <vm-confidentiality></vm-confidentiality>
+    </mat-card-content>
+  </mat-card>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <vm-generic-button [label]="'buttons.CLOSE'" color="accent" [mat-dialog-close]="false" class="mat-button"></vm-generic-button>
+  <vm-generic-button [label]="data.button" color="accent" class="mat-button" [mat-dialog-close]="true"></vm-generic-button>
+</mat-dialog-actions>
