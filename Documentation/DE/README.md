@@ -23,12 +23,12 @@ Die Dokumentation beinhaltet die folgenden Dokumente:
 
 ### Releases
 
-#### Release 1.0 vom Oktober 2020
+#### Release 1.0 vom Oktober 2022
 
 Erste Version des Impfmodul mit den Kernfunktionen zur EPD konformen Authentifizierung, sowie zur Kommunikation
 mit dem EPD und der Zusammenführung der Daten im Impfausweis.
 
-#### Release 1.1 vom Dezember 2020
+#### Release 1.1 vom Dezember 2022
 
 Erweiterung des Impfmoduls um die folgenden Funktionen:
 
