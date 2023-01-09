@@ -43,5 +43,5 @@ Erweiterung des Impfmoduls um die folgenden Funktionen:
 
 1. Responsive Design für handelsübliche Mobile und Tablets
 2. Erweiterung der angezeigten Daten um Grunderkrankungen
-3. Java Bibliothek und Programming Interface der Businesslogig der Zusammenführung
+3. Java Bibliothek und Programming Interface der Businesslogik der Zusammenführung
 4. Verfeinerung der Benutzeroberflächen und Anpassungen nach Feedback zukünftiger Benutzer
