@@ -1,1 +1,0 @@
-Bilder für die Dokumentation
