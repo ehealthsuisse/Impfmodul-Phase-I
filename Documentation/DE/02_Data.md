@@ -38,6 +38,6 @@ Das Impfmodul benötigt die o.g. Personendaten für den Betrieb, insbesondere de
 Abfrage der X-User Assertion aus der Gemeinschaft.  
 
 Das Impfmodul nutzt die o.g. Personendaten nur für die Dauer der Session des
-authentifizierten Benutzers. Nach Ablauf der Session des angeldeten Benutzers werden
+authentifizierten Benutzers. Nach Ablauf der Session des angemeldeten Benutzers werden
 die Personendaten gelöscht. Die Personendaten werden insbesondere nicht
 persistent gespeichert.

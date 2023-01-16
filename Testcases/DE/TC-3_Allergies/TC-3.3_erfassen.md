@@ -37,6 +37,6 @@ Eine neue Unverträglichkeit muss mit den folgenden Attributen erfasst werden k�
 3.	Kritikalität (criticality, optional)
 4.	Status (clinicalStatus, optional)
 5.	Gesundheitsfachperson (recorder)
-6.	Art der Allergie (type, Allergie oder Intoleranz, optional)
+6.	Art der Nebenwirkung (type, Nebenwirkung oder Intoleranz, optional)
 7.	Verifiziert (verificationStatus, optional)
 8.	Kategorie (category, nur Medication)

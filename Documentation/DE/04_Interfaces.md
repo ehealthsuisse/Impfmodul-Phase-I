@@ -40,7 +40,7 @@ Mit dem Aufruf werden die vom Impfmodul benötigten Daten als http GET Parameter
 * **purpose** - der PurposeOfUse aus Value Set { NORM, EMER}
 * **idp** - Kennung des IdP mit dem sich der Benutzer authentisiert hat als String
 * **principalId** - für die Rolle ASS, die GLN der verantwortlichen GFP im GLN Format
-* **principalName** - für die Rolle ASS, der Name der verantworlichen GFP als String
+* **principalName** - für die Rolle ASS, der Name der verantwortlichen GFP als String
 * **timestamp** - Millisekunden seit 01.01.1970 (UTC) als Long
 * **sig** - HMAC SHA-256 Signatur des Query Strings, d.h. substring der URL („?", &sig)
 
@@ -56,5 +56,5 @@ Das Impfmodul ist als Rich Internet Applikation mit Javascript Client Komponente
 
 Zur Kommunikation der Javascript Client Komponenten implementiert das Impfmodul die folgenden Restful API:
 * CRUD API zur Anzeige und Bearbeitung von Impfungen.
-* CRUD API zur Anzeige und Bearbeitung von Unverträglichkeiten (Allergien).
-* CRUD API zur Anzeige und Bearbeitung von Vorerkrankungen.    
+* CRUD API zur Anzeige und Bearbeitung von Unverträglichkeiten (Nebenwirkungen).
+* CRUD API zur Anzeige und Bearbeitung von Infektionskrankheiten.    

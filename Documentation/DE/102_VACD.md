@@ -15,10 +15,10 @@
 
 siehe [CH VACD Immunization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-immunization.html)
 
-### Allergien
+### Nebenwirkungen
 
 - Datum - [AllergyIntolerance.recordedDate](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.recordedDate)
-- Allergie - [AllergyIntolerance.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.code)
+- Nebenwirkung - [AllergyIntolerance.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.code)
 - Kritikalität - [AllergyIntolerance.criticality](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.criticality)
 - Klinischer Status - CodeableConcept, [AllergyIntolerance.clinicalStatus](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.clinicalStatus)
 - Verifiziert - CodeableConcept, [AllergyIntolerance.verificationStatus](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.verificationStatus)
@@ -30,10 +30,10 @@ siehe [CH VACD Immunization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-va
 
 siehe [CH VACD AllergyIntolerance](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances.html)
 
-### Vorerkrankungen
+### Infektionskrankheiten
 
 - Datum - [PastIllness.recordedDate](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDate)
-- Vorerkrankung - CodeableConcept [PastIllness.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDate)
+- Infektionskrankheit - CodeableConcept [PastIllness.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDate)
 - Beginn - [PastIllness.onset[0].onsetDateTime](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.onset)
 - Ende - [PastIllness.abatement[0].abatementDateTime](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.abatement)
 - Klinischer Status - CodeableConcept, [PastIllness.clinicalStatus](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.clinicalStatus)

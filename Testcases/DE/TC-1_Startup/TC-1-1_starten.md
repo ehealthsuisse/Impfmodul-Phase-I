@@ -17,11 +17,11 @@ Der Test wird wie folgt durchgeführt:
 
 Iteration 1:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
-- Verifizieren, dass die Impfungen, Allergien und Kommentare aus dem Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) im Impfmodul angezeigt werden.
+- Verifizieren, dass die Impfungen, Nebenwirkungen und Kommentare aus dem Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) im Impfmodul angezeigt werden.
 
 Iteration 2:
 - Das Impfmodul aus einem EPD Portal für Patienten und Patientinnen mit Patientenkontext und der Rolle PATIENT und REPRESENTATIVE starten.
-- Verifizieren, dass die Impfungen, Allergien und Kommentare aus dem Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) im Impfmodul angezeigt werden.
+- Verifizieren, dass die Impfungen, Nebenwirkungen und Kommentare aus dem Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) im Impfmodul angezeigt werden.
 
 Iteration 3:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und Rolle ADMIN starten.

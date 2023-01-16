@@ -38,6 +38,6 @@ Nebenwirkungen müssen mit den folgenden Attributen angezeigt werden:
 3.	Kritikalität (criticality)
 4.	Status (clinicalStatus)
 5.	Gesundheitsfachperson (recorder)
-6.	Art der Allergie (type)
+6.	Art der Nebenwirkung (type)
 7.	Verifiziert (verificationStatus)
 8.	Kategorie (category, nur Medication)

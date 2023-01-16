@@ -13,7 +13,7 @@ Es müssen die folgenden Value Sets verwendet werden:
 
 ### Nebenwirkungen (Unerwünschte Impferscheinungen)
 
-- Name der unerwünschten Impferscheinung (code) - [AllergiesAndIntolerancesForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-immunization-allergyintolerances-vs.html)
+- Name der unerwünschten Impferscheinung (code) - [NebenwirkungsAndIntolerancesForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-immunization-allergyintolerances-vs.html)
 - Kritikalität (criticality) - [AllergyIntoleranceCriticality](http://hl7.org/fhir/R4/valueset-allergy-intolerance-criticality.html)
 - Status (clinicalStatus) - [AllergyIntoleranceClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-allergyintolerance-clinical.html)
 - Art der unerwünschten Impferscheinung (type) - [AllergyIntoleranceType](http://hl7.org/fhir/R4/valueset-allergy-intolerance-type.html)
