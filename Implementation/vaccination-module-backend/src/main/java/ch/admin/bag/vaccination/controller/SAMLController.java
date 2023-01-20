@@ -18,6 +18,11 @@
  */
 package ch.admin.bag.vaccination.controller;
 
+import ch.admin.bag.vaccination.service.saml.SAMLService;
+import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
+import ch.admin.bag.vaccination.service.saml.SAMLUtils;
+import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
+import ch.fhir.epr.adapter.exception.TechnicalException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
@@ -43,11 +48,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import src.main.java.ch.admin.bag.vaccination.service.saml.SAMLService;
-import src.main.java.ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
-import src.main.java.ch.admin.bag.vaccination.service.saml.SAMLUtils;
-import src.main.java.ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
-import src.main.java.ch.fhir.epr.adapter.exception.TechnicalException;
 
 /**
  * Controller of the SAML implementation.
