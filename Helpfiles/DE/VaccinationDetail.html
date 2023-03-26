@@ -1,16 +1,16 @@
 <body>
   <h2>Impfung</h2>
   <p>
-    Detailansicht einer ausgew&auml;hlten Impfung aus dem EPD der Patientin oder des Patienten.
+    Detailansicht einer ausgew&auml;hlten Impfung aus dem EPD von der Patientin oder des Patienten.
   </p>
   <p>
     In der Detailansicht werden die fachlichen Daten einer ausgew&auml;hlten Impfung angezeigt.
-    Die Detailansicht dient als Startpunkt f&uuml;r die Berarbeitung, Annulierung oder zum Kommentieren eines
+    Die Detailansicht dient als Startpunkt f&uuml;r die Bearbeitung und Kommentierung, zur Annulierung oder zum Download einer
     augew&auml;hlten Impfung und unterst&uuml;tzt die Interaktionen:
   <ul>
-    <li>Wechsel in den Dialog zur Bearbeitung der Daten der ausgew&auml;hlten Impfung per Button unten rechts</li>
-    <li>Wechsel in den Dialog zur Annulation von f&auml;lschlich eingegebenen Impfungen Button unten rechts</li>
-    <li>Kommentieren einer Impfung</li>
+    <li>Wechsel in den Dialog zur Bearbeitung der Daten der ausgew&auml;hlten Impfung</li>
+    <li>Wechsel in den Dialog zur Annulation von f&auml;lschlich eingegebenen Impfungen</li>
+    <li>Download des Datensatzes gem&auml;ss EPD Austauschformat als JSON.</li>
   </ul>
   </p>
   <hr>
@@ -20,10 +20,12 @@
       <li>Datum: Zeitpunkt der Impfung</li>
       <li>Impfstoff: Der verabreichte Impfstoff</li>
       <li>Impfschutz: Ein oder mehrere Infektionskrankheiten gegen den der Impfstoff wirkt</li>
-      <li>Dosis: Nummer der verabreichten Impfdosis</li>
-      <li>Status: Der Status der Dokumentation der Impfung, z.B. verabreicht, vorl&auml;ufig, fehlerhafte Eingabe, ...</li>
+      <li>Dosis: Nummer der verabreichten Impfdosis, x-te Dosis</li>
       <li>Lotnummer: Die Lotnummer des Impfstoffs</li>
-      <li>Geimpft Von: Name, Titel und Organisation der Gesundheitsfachperson, welche die Impfung verabreicht hat</li>
+      <li>Grund der Impfung: Grund, warum die Impfung durchgeführt wurde</li>
+      <li>Geimpft Von: Name der Gesundheitsfachperson, welche die Impfung verabreicht hat</li>
+      <li>Organisation: Name der Organisation, bei der die Impfung durchgeführt wurde.</li>
+      <li>Kommentare: Alle Kommentare zum gew&auml;hlten Eintrag, pro Eintrag wird Name des Erstellers sowie das Datum und Inhalt angezeigt.</li>
     </ul>
   </p>
 </body>
