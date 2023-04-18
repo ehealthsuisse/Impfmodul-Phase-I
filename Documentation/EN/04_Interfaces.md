@@ -1,4 +1,4 @@
-## Interfaces
+## Interfaces and API
 
 The vaccination module implements the following interfaces:
 * EPR compliant interface to certified identity provider.

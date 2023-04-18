@@ -1,47 +1,46 @@
-## Übersicht
+## Overview
 
-Die Dokumentation beinhaltet die folgenden Dokumente:
+This documentation covers the following documents:
 
-### Generelle Dokumentation
+### General documentation
 
-1. [Scope des Impfmoduls](./01_Scope.md)
-2. [Klassifikation der Daten](./02_Data.md)
-3. [Systemarchitektur des Impfmoduls](./03_Architecture.md)
-4. [Beschreibung der Schnittstellen und API](./04_Interfaces.md)
-5. [Authentifizierung](./05_Authentication.md)
-6. [Autorisierung](./06_Authorization.md)
-7. [Handbuch zur Installation](./07_Installation.md)
-8. [Lizenz](./09_License.md)
+1. [Scope of the vaccination module](./01_Scope.md)
+2. [Classification of Data](./02_Data.md)
+3. [Vaccination module architecture](./03_Architecture.md)
+4. [Interfaces and API](./04_Interfaces.md)
+5. [Authentication](./05_Authentication.md)
+6. [Authorization](./06_Authorization.md)
+7. [Installation Guide](./07_Installation.md)
+8. [Lizence](./09_License.md)
 9. [3rd Party Libraries](./10_Libraries.md)
 
 
-### Weiterführende Dokumentation
+### Additional documentation
 
-1. [Lifecyclemanagement der Impfdaten](./101_Lifecycle.md)
-2. [Anzeige der Daten aus dem Austauschformat](./102_VACD.md)
-3. [Value Sets für Auswahllisten](./103_ValueSets.md)
+1. [Lifecycle management of vaccination data](./101_Lifecycle.md)
+2. [Visualization of vaccination data](./102_VACD.md)
+3. [Value Sets](./103_ValueSets.md)
 
 ### Releases
 
-#### Release 1.0 vom Oktober 2022
+#### Release 1.0 from Oktober 2022
 
-Erste Version des Impfmodul mit den Kernfunktionen zur EPD konformen Authentifizierung, sowie zur Kommunikation
-mit dem EPD und der Zusammenführung der Daten im Impfausweis.
+First version of the vaccination module with the core functions for authentication, for the communication with EPR platforms and the visualisation of the vaccination data.
 
-#### Release 1.1 vom Dezember 2022
+#### Release 1.1 from Dezember 2022
 
-Erweiterung des Impfmoduls um die folgenden Funktionen:
+Extension of the vaccination module with the following functions:
 
-1. Verfeinerung der Benutzeroberflächen und Anpassungen nach Feedback der Fachstellen,
-2. Implemetierung der Option zum Test des Impfmoduls unabhängig vom EPD,
-3. Anpassungen zur Web Accessibility,
-4. Auswahl der Vertraulichkeitstufe bei der Speicherung von Daten
+1. UI improvement according to user feedback,
+2. Addition of a test mode with local storage,
+3. Web Accessibility improvement,
+4. Selection of the confidentiality of documents created.
 
-#### Release 1.2 vom März 2023 (geplant)
+#### Release 1.2 from Mai 2023
 
-Erweiterung des Impfmoduls um die folgenden Funktionen:
+Extension of the vaccination module with the following functions:
 
-1. Responsive Design für handelsübliche Mobile und Tablets
-2. Erweiterung der angezeigten Daten um Grunderkrankungen
-3. Java Bibliothek und Programming Interface der Businesslogik der Zusammenführung
-4. Verfeinerung der Benutzeroberflächen und Anpassungen nach Feedback zukünftiger Benutzer
+1. Responsive Design for Mobile und Tablets
+2. Addition of visualisation and editing of medical problems
+3. Java library and API of the business functions
+4. Improvement of the user interfaces according to user feedback
