@@ -5,29 +5,29 @@ The vaccination module uses the following value sets for coded values:
 
 ### Vaccination
 
-- Impfstoff (vaccineCode) - [Swissmedic code for vaccine code](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-vaccines-vs.html)
-- Impfschutz (targetDesease) - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
-- Status (status) - [ImmunizationStatusCodes](http://hl7.org/fhir/R4/valueset-immunization-status.html)
-- Grund für die Impfung (reasonCode) - [ImmunizationReasonCodes](http://hl7.org/fhir/R4/valueset-immunization-reason.html)
+- vaccineCode - [Swissmedic code for vaccine code](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-vaccines-vs.html)
+- targetDesease - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
+- status - [ImmunizationStatusCodes](http://hl7.org/fhir/R4/valueset-immunization-status.html)
+- reasonCode - [ImmunizationReasonCodes](http://hl7.org/fhir/R4/valueset-immunization-reason.html)
 
 
 ### Adverse effects
 
-- Name der unerwünschten Impferscheinung (code) - [NebenwirkungsAndIntolerancesForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-immunization-allergyintolerances-vs.html)
-- Kritikalität (criticality) - [AllergyIntoleranceCriticality](http://hl7.org/fhir/R4/valueset-allergy-intolerance-criticality.html)
-- Status (clinicalStatus) - [AllergyIntoleranceClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-allergyintolerance-clinical.html)
-- Art der unerwünschten Impferscheinung (type) - [AllergyIntoleranceType](http://hl7.org/fhir/R4/valueset-allergy-intolerance-type.html)
-- Verifiziert (verificationStatus) - [AllergyIntoleranceVerificationStatusCodes](http://hl7.org/fhir/R4/valueset-allergyintolerance-verification.html)
-- Kategorie (category, nur Medication) - [AllergyIntoleranceCategory](http://hl7.org/fhir/R4/valueset-allergy-intolerance-category.html)
+- code - [NebenwirkungsAndIntolerancesForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-immunization-allergyintolerances-vs.html)
+- criticality - [AllergyIntoleranceCriticality](http://hl7.org/fhir/R4/valueset-allergy-intolerance-criticality.html)
+- clinicalStatus - [AllergyIntoleranceClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-allergyintolerance-clinical.html)
+- type - [AllergyIntoleranceType](http://hl7.org/fhir/R4/valueset-allergy-intolerance-type.html)
+- verificationStatus - [AllergyIntoleranceVerificationStatusCodes](http://hl7.org/fhir/R4/valueset-allergyintolerance-verification.html)
+- category - [AllergyIntoleranceCategory](http://hl7.org/fhir/R4/valueset-allergy-intolerance-category.html)
 
 
 ### Infectious deseases
 
-- Klinischer Status (Condition.clinicalStatus) - [ConditionClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-condition-clinical.html)
-- Erkrankung (Condition.code) - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
-- Schweregrad (optional, Condition.severity) - [Condition/DiagnosisSeverity](http://hl7.org/fhir/R4/valueset-condition-severity.html)
-- Symptome (optional, Condition.evidence) - [ManifestationAndSymptomCodes](http://hl7.org/fhir/R4/valueset-manifestation-or-symptom.html)
-- Verifizierungsstatus (optional, Condition.verificationStatus) - [ConditionVerificationStatusCodes](http://hl7.org/fhir/R4/valueset-condition-ver-status.html)
+- Condition.clinicalStatus - [ConditionClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-condition-clinical.html)
+- Condition.code - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
+- optional, Condition.severity - [Condition/DiagnosisSeverity](http://hl7.org/fhir/R4/valueset-condition-severity.html)
+- optional, Condition.evidence - [ManifestationAndSymptomCodes](http://hl7.org/fhir/R4/valueset-manifestation-or-symptom.html)
+- optional, Condition.verificationStatus - [ConditionVerificationStatusCodes](http://hl7.org/fhir/R4/valueset-condition-ver-status.html)
 
 ### Medical Problems
 TODO
