@@ -1,41 +1,36 @@
-## Scope des Impfmoduls
+## Scope of the vaccination module
 
-### Überblick
-eHealth Suisse verfolgt das Ziel, in 2023 einen elektronischen Impfausweis für alle
-Einwohner der Schweiz auf der Basis des elektronischen Patientendossiers (EPD)
-einzuführen.
+### Overview
+eHealth Suisse supports the aim to establish an electronic vaccination record for all inhabitants based on the Swiss EPR. Major challenges are the distributed architecture and the EPR compliant authorisation on the document level, especially:  
 
-Die verteilte Architektur des EPD und die Rechtsgrundlagen zur Autorisierung von
-Zugriffen sind dabei besondere Herausforderungen, welche sich auf die technische
-Umsetzung auswirken, insbesondere:
-- Gesundheitsfachpersonen speichern Impfdokumente in der Gemeinschaft, an welche sich die Gesundheitsfachpersonen angeschlossen haben. Impfdokumente einer Patientin oder eines Patienten können daher über alle Gemeinschaften verteilt sein, insbesondere Gemeinschaften welche nicht mit der Stammgemeinschaft der Patientin oder des Patienten zusammenfallen.
-- Impfdokumente haben einem Lebenszyklus und können sich gegenseitig aufeinander beziehen (Korrektur, Ergänzung, Kommentar, etc.). Insbesondere können sich Dokumente aus verschiedenen Gemeinschaften aufeinander beziehen.
-- Die Möglichkeiten zur Bearbeitung von Dokumenten über die Grenzen von Gemeinschaften hinaus sind eingeschränkt. Insbesondere können Gesundheitsfachpersonen Dokumente aus anderen Gemeinschaften nicht oder nur eingeschränkt bearbeiten. Z.B. ist das Löschen oder Überschreiben von Dokumenten in anderen Gemeinschaften durch Gesundheitsfachpersonen nicht zulässig.
+- Health professionals store vaccination document in their community. The vaccination documents of one patient may therefore be distributed over many EPR communities which do all match the patients home community.
+- Vaccination documents can have a lifecyle and can relate each other in the case of correction, addition or when comments are added. In some cases the related documents will be stored in separate communities.
+- The options to modify metadata of the documents are restricted. For example health professionals cannot edit edit metadata of documents stored in remote communities.
 
-Zur konsistenten Zusammenführung von Impfdaten aus dem EPD, der Anzeige für Gesundheitsfachpersonen, Patientinnen und Patienten müssen die Portale der Gemeinschaften und die Primärsysteme:
-- Regeln und Algorithmen implementieren, welche die verschiedenen Quellen (Gemeinschaften) und die Attribute zur Steuerung des Lebenszyklus der Dokumente berücksichtigen.
-- Benutzeroberflächen zur Bearbeitung und Erfassung von Impfdaten implementieren.
-- Die FHIR Profile des Austauschformats für Impfdaten im EPD unterstützen.
+This adds requirements to the portals to consistently combine the data from the various vaccination documents to present the vaccination record to health professionals and patients. Portals must:
+- Implement the rules and algorithms to respect the lifecycle and the relations between the vaccination documents.
+- Provide user interfaces to add and update vaccination data.
+- Support the FHIR profiles for vaccination used in the EPR.
 
-Die Umsetzung der Anforderungen durch die Portale der Gemeinschaften und die Primärsysteme wird durch das Impfmodul erleichtert. Das Impfmodul implementiert
-die o.g. Funktionen und ist so gestaltet, dass es in die Web Benutzeroberflächen der Portale der Gemeinschaften und die Primärsysteme integriert werden kann.
+The implementation of the requirements is simplified by integrating the vaccination module provided by eHealth Suisse, which implements the required functions and can be integrated to the EPR portals:  
 
-![Bild: Skizze der Einbettung des Impfmoduls](Images/scope-1.JPG)
+![Figure: Vaccination module usage](Images/scope-1.JPG)
 
-Bild: Skizze der Einbettung des Impfmoduls
+Figure: Vaccination module usage
 
-### Ziel
-Das Impfmodul ist als Add On zu den Web Portalen der Gemeinschaften und Primärsystemen ausgelegt und implementiert die Funktionen und Benutzeroberflächen für die
-Bearbeitung von Impfdaten im EPD für Gesundheitsfachpersonen, Patientinnen und Patienten, dabei insbesondere:
-- Regeln und Algorithmen, welche die verschiedenen Quellen (Gemeinschaften) und die Attribute zur Steuerung des Lebenszyklus der Dokumente berücksichtigen.
-- Benutzeroberflächen zur Bearbeitung und Erfassung von Impfdaten.
-- FHIR Profile des Austauschformats für Impfdaten im EPD.
-- EPD konforme Schnittstellen zur Abfrage und Speicherung von Dokumenten.
-- EPD konforme Authentisierung mit SAML 2 Single Sign On.
+### Objective
+The vaccination module is an add on to the Web Portals provided by the communities and implements the functions required to combine the vaccination document respecting the document lifecycle and the User Interface to view, edit and update vaccination data.
 
-### Zielgruppe
-Das Impfmodul wird von den Benutzern der Web Portale der Gemeinschaften genutzt, insbesondere:
-1. Gesundheitsfachpersonen
-2. Hilfspersonen
-3. Patienten und Patientinnen
-4. Stellvertretungen von Patienten und Patientinnen
+The vaccination module implements:   
+- The transactions to retrieve and store vaccination documents.
+- The rules and algorithms to combine the data from various documents respecting the document lifecycle.
+- User interfaces the create, update and edit vaccination data in the EPR.
+- FHIR profiles for vaccination data in the EPR.
+- EPR compliant Authentication with SAML 2.0 Single Sign On.
+
+### Intended User
+The vaccination module may be used by the regular user of the Swiss EPR:
+1. Healthcare professionals
+2. Assistants
+3. Patients
+4. Representatives

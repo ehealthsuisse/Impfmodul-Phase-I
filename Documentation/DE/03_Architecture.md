@@ -1,11 +1,11 @@
-## Systemarchitektur
+## Vaccination module architecture
 
-Das Impfmodul ist als Rich Internet Applikation implementiert und erfüllt die folgenden Kriterien:
+The vaccination module is implemented as a Rich Internet Application and matches the following requirements:
 
-1. Die Fach- und Kommunikationslogik wird als Web Applikation auf dem Web Applikationsserver betrieben.
-2. Die Präsentationslogik nutzt Standard Web Browser mit html und Javascript bzw. Angular Komponenten.
-3. Die Angular Komponenten der Präsentationslogik kommunizieren über eine RESTful API mit der Web Fach- und Kommunikationslogik der Web Applikation.   
+1. The business and communication logic is implemented as a Web Application to be run in a Java Web Application Container.
+2. The presentation layer uses Javascript and Angular components and supports standard web browser applications.
+3. The Angular components communicate via a RESTful API with the business and communication logic of the Web Application.
 
-![Bild: Impfmoduls Architektur](Images/ria-1.JPG)
+![Figure: Vaccination module architecture](Images/ria-1.JPG)
 
-Abbildung: Skizze der Architektur des Impfmoduls
+Figure: Vaccination module architecture
