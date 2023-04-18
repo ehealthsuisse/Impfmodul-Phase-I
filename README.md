@@ -18,6 +18,6 @@ uneingeschränkten Nutzung durch die Gemeinschaften.
 
 eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:
 - [Benutzerhandbuch](./UserGuide/Version-1.1/DE/Benutzerhandbuch-Impfmodul_V1.1_de.pdf)      
-- [Dokumentation](./Documentation/DE/README.md)
+- [Dokumentation](./Documentation/EN/README.md)
 - [Testcases](./Testcases/DE/README.md)
-- [Governance Handbuch](./Documentation/DE/GovernanceHandbuch_Impfmodul_D_V01.00.pdf) bzw. [Manuel de gouvernance du module vaccinal DEP](./Documentation/FR/GovernanceHandbuch_Impfmodul_F_V01.00.pdf) 
+- [Governance Handbuch](./Documentation/DE/GovernanceHandbuch_Impfmodul_D_V01.00.pdf) bzw. [Manuel de gouvernance du module vaccinal DEP](./Documentation/FR/GovernanceHandbuch_Impfmodul_F_V01.00.pdf)
