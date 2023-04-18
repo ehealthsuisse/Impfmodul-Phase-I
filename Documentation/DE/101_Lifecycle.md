@@ -25,7 +25,7 @@ ist durch die Autorisierungsmechanismen des EPD geregelt. Dabei gilt:
 visualisieren, für welche sie der Patient oder die Patientin entweder direkt oder
 über eine Gruppe berechtigt hat
 
-Das Impfmodul übrrsteuert die o.g. Regeln nicht und visualisiert die Impfdaten
+Das Impfmodul übersteuert die o.g. Regeln nicht und visualisiert die Impfdaten
 ausschliesslich auf der Basis der Dokumente, welche aus dem EPD der Patienten und
 Patientinnen geladen werden können. Dabei wertet das Impfmodul die Regeln
 des Lifecycles von Impfdokumenten aus.
@@ -172,7 +172,7 @@ gespeichert.
 
 #### Annullieren
 
-Anulliert ein Benutzer einen Eintrag für eine Impfung, Nebenwirkung oder
+Annulliert ein Benutzer einen Eintrag für eine Impfung, Nebenwirkung oder
 Infektionskrankheit hinzu, wird vom Impfmodul ein neues Dokument vom Typ
 **ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
 gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem

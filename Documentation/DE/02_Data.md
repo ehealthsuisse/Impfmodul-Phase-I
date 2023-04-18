@@ -8,14 +8,14 @@ müssen und im Deployment Paket enthalten sind:
 - Metadaten mit den Value Sets für die codierten Attribute des Austauschsformats
 - I18n Dateien für die Übersetzung der Texte in den UI des Impfmoduls
 
-Für die Installation müssen die Konfigurationsdaten für die Gemeischaft vom Betrieber
+Für die Installation müssen die Konfigurationsdaten für die Gemeinschaft vom Betreiber
 passend eingestellt werden.   
 
 ### Bewegungsdaten
 
 Im laufenden Betrieb lädt das Impfmodul die Impfdaten aus dem EPD der Patienten und
 Patientinnen und behält die Impfdaten nur für die Dauer der Session im Arbeitsspeicher.
-Nach Ablauf der Session des angeldeten Benutzers werden die Impfdaten sämtlich
+Nach Ablauf der Session des angemeldeten Benutzers werden die Impfdaten sämtlich
 gelöscht. Die Impfdaten werden insbesondere nicht persistent ausserhalb des EPD
 gespeichert.
 
@@ -26,7 +26,7 @@ aus dem aufrufenden Portal oder Primärsystem und nutzt die Personendaten nur f�
 Dauer der Session des authentifizierten Benutzers.
 
 Das Impfmodul übernimmt die folgenden Personendaten aus dem aufrufenden Portal oder Primärsystem:
-- Die lokale ID des Patienten oder der Patientin im Portal ober Primärsystem
+- Die lokale ID des Patienten oder der Patientin im Portal oder Primärsystem
 - Vor-, Nachname und Titel des authentifizierten Benutzers
 - Die EPD Rolle des Benutzers
 
