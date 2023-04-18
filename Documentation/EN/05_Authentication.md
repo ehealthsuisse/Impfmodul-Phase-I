@@ -1,4 +1,4 @@
-## Authentifizierung
+## Authentication
 
 Zur Abfrage der Impfdokumente aus der Gemeinschaft benötigt das Impmodul eine
 gültige X-User Assertion zur Autorisierung. Gemäss EPDV-EDI benötigt das Impfmodul
