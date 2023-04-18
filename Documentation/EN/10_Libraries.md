@@ -1,8 +1,8 @@
 ## 3rd Party Libraries
 
 ### Client 3rd Party Libraries
-Der Web Client des Impfmoduls nutzt die folgenden Bibliotheken von Drittanbietern
-unter den angegebenen Lizenzen:
+
+The presentation layer of the vaccination module uses the following 3rd party libraries:
 
 - Angular 14.0.6, MIT
 - ngrx 14.0.2, MIT
@@ -19,8 +19,7 @@ unter den angegebenen Lizenzen:
 - zone.js 0.11.4, MIT
 
 ### Web App 3rd Party Libraries
-Die Web App Komponente des Impfmoduls nutzt die folgenden Bibliotheken von Drittanbietern
-unter den angegebenen Lizenzen:
+The business and communication layer of the vaccination module uses the following 3rd party libraries: 
 
 - Lombok 1.18.20.0, MIT
 - Spring Boot Starter Parent 2.7.5, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)

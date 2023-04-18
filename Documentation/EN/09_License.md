@@ -1,10 +1,9 @@
-## Lizenz
+## Lizence
 
-Das Impfmodul wird mit einer MIT Lizenz zur Verfügung gestellt. Diese Lizenz
-erteilt jedem Nutzer die uneingeschränkten Rechte zum Betrieb, zum Kopieren und
-zur Weitergabe in der originalen oder in geänderter Form.   
+The vaccination module is providedd by ehealth Suisse with a MIT Licence. The license gives the user the
+unrestricted right to use, copy and to distribute the vaccination module as original or as changed version.
 
-### Lizenztext
+### Licence Text
 
 Copyright (c) 2022 eHealth Suisse
 
