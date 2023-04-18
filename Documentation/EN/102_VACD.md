@@ -43,3 +43,6 @@ see [CH VACD AllergyIntolerance](http://fhir.ch/ig/ch-vacd/StructureDefinition-c
 - Kommentar - [PastIllness.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.note) with time, text und author.name
 
 see [CH VACD Past Illness](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDater.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses.html)
+
+### Medical Problems 
+TODO

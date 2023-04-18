@@ -1,9 +1,9 @@
 ## Value Sets
 
-Es müssen die folgenden Value Sets verwendet werden:
+The vaccination module uses the following value sets for coded values:
 
 
-### Impfungen
+### Vaccination
 
 - Impfstoff (vaccineCode) - [Swissmedic code for vaccine code](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-vaccines-vs.html)
 - Impfschutz (targetDesease) - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
@@ -11,7 +11,7 @@ Es müssen die folgenden Value Sets verwendet werden:
 - Grund für die Impfung (reasonCode) - [ImmunizationReasonCodes](http://hl7.org/fhir/R4/valueset-immunization-reason.html)
 
 
-### Nebenwirkungen (Unerwünschte Impferscheinungen)
+### Adverse effects
 
 - Name der unerwünschten Impferscheinung (code) - [NebenwirkungsAndIntolerancesForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-immunization-allergyintolerances-vs.html)
 - Kritikalität (criticality) - [AllergyIntoleranceCriticality](http://hl7.org/fhir/R4/valueset-allergy-intolerance-criticality.html)
@@ -21,7 +21,7 @@ Es müssen die folgenden Value Sets verwendet werden:
 - Kategorie (category, nur Medication) - [AllergyIntoleranceCategory](http://hl7.org/fhir/R4/valueset-allergy-intolerance-category.html)
 
 
-### Infektionskrankheiten (impfverhütbare Krankheiten)
+### Infectious deseases
 
 - Klinischer Status (Condition.clinicalStatus) - [ConditionClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-condition-clinical.html)
 - Erkrankung (Condition.code) - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
@@ -29,10 +29,10 @@ Es müssen die folgenden Value Sets verwendet werden:
 - Symptome (optional, Condition.evidence) - [ManifestationAndSymptomCodes](http://hl7.org/fhir/R4/valueset-manifestation-or-symptom.html)
 - Verifizierungsstatus (optional, Condition.verificationStatus) - [ConditionVerificationStatusCodes](http://hl7.org/fhir/R4/valueset-condition-ver-status.html)
 
-### Grunderkrankungen 
+### Medical Problems
 TODO
 
 
-### Kommentare
+### Comments
 
-Keine. Kommentare enthalten keine kodierten Werte. 
+Comments don't use coded data.
