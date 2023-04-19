@@ -1,70 +1,50 @@
-## Lifecyclemanagement der Impfdaten
+## Lifecycle management of vaccination data
 
-Die juristischen und technischen Randbedingungen des EPD stellen besondere
-Anforderungen an das Lifecyclemanagement von Impfdaten.
+The regulatory and technical boundary conditions add special requirements to the implementation of the vaccination module, i.e. :
+- Documents can be stored in the local community only
+- Patients may delete documents from their EPR
+- Patients may reduce the visibility of documents by setting the confidentiality code to restricted or secret
+- Patients must authorise health professionals (or groups of health professionals) to view the patients documents, e.g. the vaccination documents
+- related documents may be distributed over many communities
 
-Das Impfmodul muss daher die folgenden Einschränkungen des EPD berücksichtigen:
-- Dokumente können nicht gemeinschaftsübergreifend gespeichert werden
-- Patienten und Patientinnen sind berechtigt Dokumente zu löschen
-- Patienten und Patientinnen sind berechtigt die Sichtbarkeit der Dokumente
-über die Vertraulichkeitsstufe zu steuern, insbesondere für Dokumente auch die
-Vertraulichkeitsstufe "geheim" einzustellen
-- Patienten und Patientinnen müssen Gesundheitsfachpersonen direkt oder über
-eine Gruppenberechtigung für den Zugriff auf ihr EPD zu berechtigen
+### Implementation
 
-### Funktionsweise
+The vaccination module fulfils the requirements as follows:
 
-Im laufenden Betrieb (z.B. zur Anzeige des Impfausweises) lädt das Impfmodul die
-Impfdaten aus dem EPD der Patienten und Patientinnen und zeigt die Daten in den UI
-des Impfmoduls an.
+When started from a portal or primary system, the vaccination module loads all vaccination documents, evaluates relation and the documents lifecycle and displays the data in UI of the module. The documents retrieved depend on the privacy settings made by the patients, i.e.:
+- Patients always retrieve all vaccination documents from their EPR
+- Health professionals retrieve only the documents the health professional was authorised to view by the patient, either directly or via a groups.
 
-Welche Dokumente dabei aus dem EPD der Patienten und Patientinnen geladen werden
-ist durch die Autorisierungsmechanismen des EPD geregelt. Dabei gilt:
-- Patienten und Patientinnen können alle Impfdokumente im Impfmodul visualisieren
-- Gesundheitsfach- und Hilfspersonen können nur die Impfdokumente im Impfmodul
-visualisieren, für welche sie der Patient oder die Patientin entweder direkt oder
-über eine Gruppe berechtigt hat
+### Lifecycle Management
 
-Das Impfmodul übersteuert die o.g. Regeln nicht und visualisiert die Impfdaten
-ausschliesslich auf der Basis der Dokumente, welche aus dem EPD der Patienten und
-Patientinnen geladen werden können. Dabei wertet das Impfmodul die Regeln
-des Lifecycles von Impfdokumenten aus.
+In addition to the above rules and regulations in the EPR the following restrictions must be taken into account:
 
-### Lifecycle Mangement
+- The vaccination module can store vaccination documents only in the local community
+- EPR documents cannot be changed but only replaced by newer versions and only in the local community
+- Health professionals cannot delete documents and therefore cannot delete vaccination documents
+- Health professionals can update document metadata only in their local community  
 
-Die Regeln des Lifecycles von Impfdaten müssen berücksichtigt werden, um den
-Impfausweis im EPD abbilden zu können, insbesondere weil:
-- Dokumente nicht gemeinschaftsübergreifend gespeichert werden können
-- Dokumente im EPD nicht geändert werden können und mit neuen Versionen überschrieben werden müssen
-- Gesundheitsfach- und Hilfspersonen Dokumente im EPD nicht löschen können
+To visualise the vaccination data the vaccination module must respect the rules and relations of the documents lifecycle.
 
-Impfdokumente aus dem EPD von Patienten und Patientinnen können einen gegenseitigen
-Bezug aufeinander haben, insbesondere:
-- Impfdaten in einem Dokument können die Impfdaten aus einem anderen Dokument
-korrigieren oder ergänzen
-- Impfdaten in einem Dokument können die Impfdaten aus einem anderen Dokument
-annullieren
-- Impfdaten in einem Dokument können die Impfdaten aus einem anderen Dokument
-kommentieren
+The following relations may be established between vaccination documents:
+- Vaccination data in one document may correct or extend vaccination data stored in anther document
+- Vaccination data in one document may nullify vaccination data stored in anther document
+- Vaccination data in one document may add comments to vaccination data stored in anther document
 
-Der Lifecycle von Impfdaten wird daher technisch mit Attributen in den Impfdokumenten
-wie folgt abgebildet:
+This lifecycle information is managed with a specific set of attributes in the FHIR vaccination profile as follows:
 
-#### Level Composition
+#### Composition Level
 
-Eine Datenstruktur vom Typ Composition kann auf eine andere Datenstruktur vom Typ
-Composition verweisen. Der Verweis ist im Element **relatesTo** mit den folgenden
-Attributen angegeben:
+A composition element in the FHIR vaccination profile may refer a composition element in another document. The relation is stored in the **relatesTo** element with the following attributes:
 
-- **relatesTo[0].code** : Im Impfmodul wird nur der Wert **replaces** verwendet
-- **relatesTo[0].targetReference.reference** : Die UUID der Composition auf die verwiesen wird
+- **relatesTo[0].code** : The vaccination module uses  **replaces** only
+- **relatesTo[0].targetReference.reference** : The vaccination module uses the UUID of the composition referred to
 
-Dabei muss der Verweis im Impfmodul eindeutig sein. D.h. eine Composition kann immer
-nur auf genau eine andere Composition verweisen, nicht auf mehrere.  
+The referral must be unique, i.e. one composition may only refer a single composition in another document.
 
-##### Beispiel
+##### Example
 
-Siehe Zeile 56 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
+Siehe line 56 im [update test](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
 
 ```
 "relatesTo": [ {
@@ -75,39 +55,36 @@ Siehe Zeile 56 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852
  } ]
 ```
 
-Diese Relation verweist auf die Composition im [Testbeispiel für die Erstellung](../Testfiles/lifecycle/Create-6214bb05-3858-480c-aa63-2450dde50e25.json).
+The relation in the example refers to the composition in another file [create test](../Testfiles/lifecycle/Create-6214bb05-3858-480c-aa63-2450dde50e25.json).
 
 
-#### Level Immunization Ressource
+#### Immunization Ressource Level
 
-Eine Ressource vom Typ Immunization kann auf eine andere Ressource vom Typ Immunization
-verweisen. Der Verweis ist in einem Element vom Typ **extension** mit den folgenden
-Attributen angegeben:
+A FHIR resource of type Immunization may refer to another FHR resource of type Immunization. The referral is defined in the FHIR **extension** element with the following attributes:
 
-- **url** : Muss den Wert **http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference** haben um als Referenz erkannt zu werden.
+- **url** : Must be equal **http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference** to be understood as referral.
 
-Der Verweis muss in einer untergeordneten **extension** mit den folgenden 3 Elementen
-angegeben werden:
+The referred element must be defined in the **extension** child element with following attributes:
 
 ##### Entry
 
-- **extension.url** : Muss den Wert **entry** haben.
-- **extension.valueReference.reference** : UUID der Ressource vom Typ Immunization auf der Verweis zeigt.
+- **extension.url** : Must be equal to **entry**.
+- **extension.valueReference.reference** : UUID of the FHIR Immunization resource the element refers to.
 
 ##### Document
 
-- **extension.url** : Muss den Wert **document** haben.
-- **extension.valueReference.reference** : Die UUID der Composition auf die der Verweis zeigt.
+- **extension.url** : Must be equal to **document**.
+- **extension.valueReference.reference** : UUID of the FHIR Composition the element refers to.
 
 ##### Relation Code
 
-- **extension.url** : Muss den Wert **relationcode** haben.
-- **extension.valueCode** : Muss den Wert **replaces** haben.
+- **extension.url** : Must be equal to **relationcode**.
+- **extension.valueCode** : Must be equal to **replaces**.
 
 
 ##### Beispiel
 
-Siehe Zeile 176 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
+See line 176 in [update test](../Testfiles/lifecycle/Update-f852a5a7-16ea-46a2-9f0b-e1805b3e96b1.json):
 
 ```
 "extension": [
@@ -130,56 +107,34 @@ Siehe Zeile 176 im [Testbeispiel für Updates](../Testfiles/lifecycle/Update-f85
 ]    
 ```
 
-Diese Relation verweist auf eine Immunization Resource in der Composition im [Testbeispiel für die Erstellung](../Testfiles/lifecycle/Create-6214bb05-3858-480c-aa63-2450dde50e25.json).
+The relation refers to a FHIR Immunization resource in a FHIR Composition in file [create test](../Testfiles/lifecycle/Create-6214bb05-3858-480c-aa63-2450dde50e25.json).
 
 
-### Anwendung im Impfmodul
+### Vaccination module implementation
 
-Das Impfmodul nutzt die oben genannten Referenzen für das Lifecycle Management der
-Einträge für Impfungen, Nebenwirkungen und Infektionskrankheiten, insbesondere für die Fälle:
+The vaccination module uses the above mentioned references for the lifecycle management of the vaccination data, i.e.,
+for the following use cases:
 
-- Bearbeiten und Ergänzen von Einträgen
-- Kommentieren von Einträgen
-- Annullierung von Einträgen
+- Edit and append entries
+- Add comments to entries
+- Nullify entries
 
-#### Bearbeitung und Ergänzen
+#### Edit and Append
 
-Bearbeitet oder ergänzt ein Benutzer einen Eintrag für eine Impfung, Nebenwirkung oder
-Infektionskrankheit, wird vom Impfmodul ein neues Dokument vom Typ
-**ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
-gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem
-neuen Eintrag mit den geänderten Attributen und dem Verweis auf den geänderten
-Eintrag.
+If a user edits or appends a vaccination entry the vaccination module creates a new document of type **ImmunizationAdministration** and stores it in the local community. The document contains a new entry and a referral to the original entry and composition.
 
-Das neue Dokument vom Typ **ImmunizationAdministration** ersetzt bzw. überschreibt
-den bearbeiteten Eintrag und wird mit der Relation **replaces** und dem Verweis auf
-die Composition und die Ressource vom Typ Impfung, Nebenwirkung oder Infektionskrankheit
-gespeichert.
+The new document replaces the changed entry which is referred to with relation **replaces** and the reference to the composition which contains the original entry.
 
-#### Kommentieren
+#### Comments
 
-Fügt ein Benutzer einen Kommentar zu einem Eintrag für eine Impfung, Nebenwirkung oder
-Infektionskrankheit hinzu, wird vom Impfmodul ein neues Dokument vom Typ
-**ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
-gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem
-neuen Eintrag mit dem erfassten Kommentar und dem Verweis auf den kommentierten
-Eintrag.
+If a user comments a vaccination entry the vaccination module creates a new document of type **ImmunizationAdministration** and stores it in the local community. The document contains a new entry and a referral to the original entry and composition.
 
-Das neue Dokument vom Typ **ImmunizationAdministration** ersetzt bzw. überschreibt
-den bearbeiteten Eintrag und wird mit der Relation **replaces** und dem Verweis auf
-die Composition und die Ressource vom Typ Impfung, Nebenwirkung oder Infektionskrankheit
-gespeichert.
+The new document replaces the changed entry which is referred to with relation **replaces** and the reference to the composition which contains the original entry.
 
-#### Annullieren
+#### Nullify
 
-Annulliert ein Benutzer einen Eintrag für eine Impfung, Nebenwirkung oder
-Infektionskrankheit hinzu, wird vom Impfmodul ein neues Dokument vom Typ
-**ImmunizationAdministration** erzeugt und im EPD des Patienten oder der Patientin
-gespeichert. Das Dokument vom Typ **ImmunizationAdministration** enthält einem
-neuen Eintrag mit dem Status **enteredInError** und dem Verweis auf den annullierten
-Eintrag.
+If a user nullifies a vaccination entry the vaccination module creates a new document of type **ImmunizationAdministration** and stores it in the local community. The document contains a new entry and a referral to the original entry and composition.
 
-Das neue Dokument vom Typ **ImmunizationAdministration** ersetzt bzw. überschreibt
-den bearbeiteten Eintrag und wird mit der Relation **replaces** und dem Verweis auf
-die Composition und die Ressource vom Typ Impfung, Nebenwirkung oder Infektionskrankheit
-gespeichert.
+The new entry is marked with status **enteredInError**.
+
+The new document replaces the changed entry and which referred to with relation **replaces** and the reference to the composition which contains the original entry.
