@@ -20,7 +20,7 @@ The vaccination module uses the following value sets for coded values:
 - category - [AllergyIntoleranceCategory](http://hl7.org/fhir/R4/valueset-allergy-intolerance-category.html)
 
 
-### Infectious deseases
+### Infectious desease
 
 - Condition.clinicalStatus - [ConditionClinicalStatusCodes](http://hl7.org/fhir/R4/valueset-condition-clinical.html)
 - Condition.code - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
