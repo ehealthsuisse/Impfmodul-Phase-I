@@ -2,7 +2,6 @@
 
 The vaccination module uses the following value sets for coded values:
 
-
 ### Vaccination
 
 - vaccineCode - [Swissmedic code for vaccine code](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-vaccines-vs.html)

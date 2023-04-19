@@ -23,11 +23,11 @@ This documentation covers the following documents:
 
 ### Releases
 
-#### Release 1.0 from Oktober 2022
+#### Release 1.0, Oktober 2022
 
 First version of the vaccination module with the core functions for authentication, for the communication with EPR platforms and the visualisation of the vaccination data.
 
-#### Release 1.1 from Dezember 2022
+#### Release 1.1, Dezember 2022
 
 Extension of the vaccination module with the following functions:
 
@@ -36,7 +36,7 @@ Extension of the vaccination module with the following functions:
 3. Web Accessibility improvement,
 4. Selection of the confidentiality of documents created.
 
-#### Release 1.2 from Mai 2023
+#### Release 1.2, Mai 2023
 
 Extension of the vaccination module with the following functions:
 
