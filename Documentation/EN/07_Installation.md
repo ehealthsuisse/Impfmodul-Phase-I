@@ -1,72 +1,84 @@
-## Installationshandbuch
-Die Impfmodule Software besteht aus 2 Teilen:
- - einer Angular Frontend Anwendung und
- - einer Java Backend Anwendung
+## Installation Guide
 
-### Voraussetzungen
-Um die Anwendung installieren und starten zu können sind folgende Voraussetzungen zu erfüllen:
- - Bereitstellung eines Application Servers
+The delivery package of the vaccination module consists of two parts:
+ - A front end application based on Angular
+ - A Java based back end application
+
+### Preliminaries
+
+The vaccination module requires the following pre-installed elements:
+ - A Java Web Application Server
  - Java 17 Runtime Environment
- - Integration in eine vollständige EPD Backend Infrastruktur inkl. Identity Provider (IDP)
+ - Network connection to the IdP and the EPR platform
 
-Im Rahmen dieser Anleitung gehen wir davon aus, dass Ihnen beide Anwendungen als fertiges Deployment vorliegen, d.h. Sie haben
- - ein Web Archive (WAR) für die Backend Applikation (z.B. *vaccination-module-\<version\>.war*)
- - ein Distributions Order mit den transkompilierten JavaScript Code für die Frontend Anwendung.
+The vaccination module is provided as the following artefacts:
+ - a Web Archive (WAR) of the Backend Application (z.B. *vaccination-module-\<version\>.war*)
+ - a folder with the JavaScript code of the Frontend part.
 
-Die Software kann sowohl auf Windows als auch auf Unix Systemen deployt werden.
-Für die weitere Anleitung wird zur Einfachheit angenommen, dass ein Apache Tomcat Application Server (Version 9.x.x) auf einer Windows Umgebung verwendet wird.
+The vaccination module can be deployed on a Unix or Windows platform.
 
-#### Manueller Build
-Liegen Ihnen diese Artifakte nicht vor, sind weitere Schritte und Konfigurationen notwendig. Zur Ausführung wird ein Hintergrund in der Software Entwicklung empfohlen.
+This installation guide documents the installation on a Windows system and a Apache Tomcat Application Server (Version 9.x.x). The adaptation for other platforms should be self explaining.
+
+
+#### Build Manually
+
+The vaccination module can be build manually. You may use the following steps for building manually:
 
 **Frontend**
 
-1. Installation von [npm](https://www.npmjs.com/)
-2. Installation der [Angular CLI](https://cli.angular.io/)
-3. Kompilieren der Anwendung mittels `npm run buildProd`
-4. Das Distributionsverzeichnis befindet sich dann im *dist* Subverzeichnis.
+1. Install [npm](https://www.npmjs.com/)
+2. Install of the [Angular CLI](https://cli.angular.io/)
+3. Compile the vaccination module using `npm run buildProd` in the terminal
+4. After compiling the vaccination module software will be stored in the *dist* subfolder.
 
 **Backend**
-1. Installation eines [Java 17 SDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-2. Installation des Build-Tools [Maven](https://maven.apache.org/download.cgi)
-3. Kompilieren der Anwendung mittels `mvn clean install -Pwar`
-4. Das erstellte WAR-Archive befindet sich dann im *target* Subverzeichnis.
+1. Install [Java 17 SDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+2. Install the Build-Tools [Maven](https://maven.apache.org/download.cgi)
+3. Compile the backend component using `mvn clean install -Pwar`
+4. A WAR-Archive file will created and stored in the *target* subfolder.
 
-**Hinweis**: Wird das Backend ohne ein Profil gebaut (*mvn clean install*), so wird ein lokal startbares Jar generiert.
+**Remark**: When using *mvn clean install* a jar file of the vaccination module will be created and stored locally.
 
-Mehr Informationen finden Sie in den jeweiligen [README Dateien](https://github.com/ehealthsuisse/Impfmodul-Phase-I/tree/main/Implementation) der Software Repositories
+You will find additional information in the [README Files](https://github.com/ehealthsuisse/Impfmodul-Phase-I/tree/main/Implementation) of the Software Repositories.
 
-### Installation
-Zur Installation der Anwendung kopieren Sie das WAR-Archive sowie den Vaccination-Module-Frontend-Ordner in das Deployment-Verzeichnis Ihres Application Servers (`%CATALINA_HOME%\webapps`). Der *dist* Ordner sollte zuvor sinnvoll umbenannt werden, da Name des Verzeichnisses unmittelbare Auswirkung auf die URL hat.
 
-Der Application Server deployt dann automatisch sowohl Frontend als auch Backend, jedoch ist weitere Konfiguration notwendig, um die Anwendung verwenden zu können.
+### Install
 
-### Konfiguration
+To install the vaccination module copy the the WAR archive and the Vaccination-Module-Frontend folder to the deployment folder of application server (`%CATALINA_HOME%\webapps`). The folder *dist* should be renamed beforehand  since the name affects the URL of the vaccination module.
+
+After copying the files the application server should deploy the vaccination module software automatically.
+
+### Configuration
+
 #### Frontend  
-Für die Konfiguration des Frontend gibt es eine Konfigurationsdatei. Sie enthält 2 Konfigurationsparamter und befindet sich unter `assets\config.json`
+
+The configuration of the vaccination module frontend is stored in file `assets\config.json`.
+
 ```
 {
   "backendURL": "https://this.is.my.server.url/vaccination-module-backend",
   "communityId": "EPDBackend"
 }
 ```
-Der Parameter *backendURL* gibt an, unter welcher URL das Backend erreichbar ist. \
-Der Parameter *communityId* gibt an, welche EPD Backend Community verwendet werden soll. Die EPD Backend Community ist Teil der folgenden Backend Konfiguration.
+It configs 2 parameter to be configured:
+- *backendURL* : Defines the URL of the vaccination module backend.
+- *communityId* : The OID of the community the vaccination module is connected to.
 
 #### Backend
 
-Das Web Archive des Backends beinhaltet einen vollständigen `config` Ordner verschiedensten Konfigurationen:
- - `config\testfiles` und `config\testfiles\json` werden nur im Testbetrieb benötigt.
- - `config\valuelists` fachliche Konfiguration
- - `fhir.yml` Konfiguration zum FHIR Austauschformat
- - `husky.yml` Konfiguration der Husky Bibliothek
- - `idp-config.yml` Konfiguration der verwendeten Identity Provider
- - `portal-config.yml` Konfiguration der Portal-Schnittstelle.
+The Web Archive of the vaccination module backend uses the following configuration files in the `config` folder:
+ - `config\testfiles` and `config\testfiles\json` required for testing purposes only.
+ - `config\valuelists` configuration of the value sets used.
+ - `fhir.yml` configuration of the FHIR profile for vaccination.
+ - `husky.yml` configuration of the communication components of the Husky Library.
+ - `idp-config.yml` configuration of the Identity Providers to be used.
+ - `portal-config.yml` configuration of the Portal-Interface to start the module.
 
-Weiterhin gibt es zwei Umgebungsparameter, die konfiguriert werden müssen. Im Folgenden werden alle Konfigurationen detaillierter beschrieben.
+There are two additional parameter which must be set as environment variables described below.
 
-**Konfiguration Umgebungsparameter**  
-Wird das Backend gestartet, erscheint im Log zuerst das Banner.
+**Configuration of Environment Variables**  
+
+At startup of the vaccination module backend a banner is displayed as follows.
 
 ```
 ,-----.     ,---.    ,----.      ,--.   ,--.                        ,--.                     ,--.   ,--.                  
@@ -82,31 +94,31 @@ config: ${vaccination_config}
 Powered by Spring Boot 2.7.5
 ```
 
-Unterhalb werden zwei der Umgebungsparameter angezeigt:
- - *spring.profiles.active*: Gibt an, in welcher Umgebung sich die Applikation befindet. Defaultwert *local*   
- Für einen Produktivbetrieb **muss** dieser Wert auf **prod** gesetzt werden. Hierdurch werden z.T. Security Richtlinien sowie Zugriffe auf die Entwicklertools unterbunden.
- - *vaccination_config*: Dieser Parameter gibt an, wo sich der oben genannte Konfigurationsordner befindet. Wir empfehlen diesen Ordner aus Sicherheitsgründen an einen beliebigen Ort ausserhalb des `webroot` Verzeichnisses zu verschieben. Defaultwert *config*
+The following environment variables must be set appropriately:
+ - *spring.profiles.active*: Defines the environment the vaccination module is operated with. The default is set  *local*, which must be changed to **prod** for productive usage. By setting to **prod** the debug and testing functions will be removed to increase the operation security.
+ - *vaccination_config*: Defines the location of the configuration. The default is set to *config*. It's recommended to locate the config folder somewhere outside the `webroot` folder for security reasons.
+ - *server.port*: Port number of the vaccination backend. The default is set to 8080.
+ - *FRONTEND_URL*: Defines which frontend URL may connect to the vaccination backend. The default is set to \* which allows all URL. The value may be set to a specific URL Whitelist for security reasons.
 
-Weiterhin gibt es noch folgende weitere Parameter:
- - *server.port*: Gibt an, auf welchem Port die Backendanwendung läuft, default ist 8080.
- - *FRONTEND_URL*: Gibt an, von welcher Frontend URL auf das Backend zugegriffen werden darf. Kann verwendet werden, um die Sicherheit zu erhöhen. Default * (alle URLs erlauben)
+**Configuration of Test Operation Mode**  
 
-**Konfiguration Testbetrieb**  
-Im Backend ist ein Test- resp. lokaler Betriebsmodus integriert. Dieser kann aktiviert werden, indem das Profil auf *local* gesetzt wird und der Testmodus mit dem GET-Webaufruf *\<backendURL>/utility/setLocalMode/true* aktiviert wird. Der Testmodus is per default **deaktiviert**.
-Im lokalen Betriebsmodus benötigt es keine EPD Infrastruktur und es werden alle beliebige (valide) FHIR-Austauschformate unterhalb der beiden Verzeichnisse
-`config\testfiles` und `config\testfiles\json` als Datenbasis verwendet. Werden neue Einträge gespeichert, so werden diese ebenfalls dort abgelegt.
+The vaccination module supports a test operation mode in which all vaccination documents are read from and written to a specific folder of the local file system to folder `config\testfiles` and `config\testfiles\json` instead of writing or reading documents from the EPR.  
 
-**Konfiguration Wertelisten**  
-Im Subverzeichnis `config\valuelists` liegen alle Wertelisten resp. ValueSets, welche gemäss [FHIR Austauschformat](http://fhir.ch/ig/ch-vacd/terminology.html) für die abgebildeten Entitäten verwendet werden. Eine manuelle Anpassung ist <ins>nicht</ins> notwendig.
+The test mode is activated by setting the profile to *local* and initialized gwithn a GET request to *\<backendURL>/utility/setLocalMode/true*. The default mode is deactivated by default **deaktiviert**.
 
-**Konfiguration FHIR**  
-Diese Konfiguration bildet einige Basiskonfigurationen für das FHIR Austauschformat an. Eine manuelle Anpassung ist <ins>nicht</ins> notwendig.
+**Value Set Configuration**  
 
+The vaccination module uses all value sets stored in folder `config\valuelists` with the [FHIR vaccination profile](http://fhir.ch/ig/ch-vacd/terminology.html).
 
-**Konfiguration Husky**  
-[Husky](https://github.com/project-husky/husky) ist eine Bibliothek zum vereinfachten Zugriff auf die EPD Backend Infrastruktur. Für die korrekte Konfiguration müssen verschiedene Parameter gesetzt werden.
+**FHIR Configuration**
+Configures some aspects of the [FHIR vaccination profile](http://fhir.ch/ig/ch-vacd/terminology.html) used by the vaccination module.
 
-Folgend ist eine vereinfachte Konfiguration dargestellt:
+**Husky Configuration**  
+
+The vaccination module uses the [Husky](https://github.com/project-husky/husky) library to communicate with the EPR platform. To work properly all endpoints of the EPR platform required to operate the vaccination module must be configured.
+
+A simplified configuration example is shown below:   
+
 ```
 epdbackend:
   sender:
@@ -146,26 +158,27 @@ epdbackend:
         - identifier: XUA
           {...]
 ```
-Die einzelnen Parameter haben folgende Bedeutung:
- - sender.applicationOid: Eindeutige OID dieser Anwendung innerhalb des EPD. Über die [refdata](https://oid.refdata.ch/) sind allfällig neue OIDs zu melden.
- - sender.facilityOid: Diese OID kann optional zur feineren Granularität der OID verwendet werden.
- - communities: Das Backend ist funktional so erstellt, dass verschiedene EPD Backend Communities parallel unterstützt werden können. Im Regelfall braucht aber nur eine Community konfiguriert werden, da jede Instanz im Produktivbetrieb aus Performanzgründen nur mit der lokalen EPD Backend Infrastruktur kommunizieren sollte. Pro Community sind verschiedene SOAP Endpunkt zu konfigurieren.
 
- Alle weiteren Parameter beziehen sich auf die Konfiguration einer einzelnen Community:
- - identifier: Eindeutiger Bezeichner einer Community.
- - globalAssigningAuthorityOid: Globale oder Root OID des Master Patient Index, welcher für die jeweilige Community verantwortlich ist.
- - SpidEprOid: Assigning Authority für die SpidEpr
- - repositories: Oberbegriff über die verschiedenen Soap Endpunkte
- - repositories.identifier: **nicht überschreiben**, dienen zur Verbindung zwischen Code und Konfiguration.
- - uri: Pro Endpunkt ist die URL anzugeben, unter die der Endpunkt verfügbar ist.
- - receiver.applicationOid/facilityOid: Pro Endpunkt kann die genaue OID des Receivers hinterlegt werden.
+The parameter in the config file are interpreted as follows:
+ - sender.applicationOid: OID of the vaccination module used in the EPR context.
+ - sender.facilityOid: OID to optionally add a more fine grained information in addition to the vaccination module OID.
+ - communities: Configuration of the community endpoints required to operate the vaccination module.
 
-**Konfiguration IDP**  
-Der IDP wird verwendet, um den Anwender eindeutig zu identifizieren. Im Unterschied zur EPDBackend Konfiguration **muss** das Impfmodul jeden Provider unterstützen, der auch von den Impfportalen, in die die Applikation eingebettet wird, unterstützt wird.
+The community settings are as follows:
+ - identifier: OID of the community.
+ - globalAssigningAuthorityOid: Global oder root OID of the Master Patient Index of the community.
+ - SpidEprOid: Assigning authority of the ZAS for the EPR-SPID.
+ - repositories: Section of endpoints the vaccination module shall connect to.
+ - repositories.identifier: **don't override**, since the value is used internally to link the application code to the configuration.
+ - uri: The URL of the community EPR service endpoint.
+ - receiver.applicationOid/facilityOid: OID of the receiving endpoint.
 
-Hierbei ist die Konfiguration nur mittels expliziter Integration der IDPs möglich, d.h. zwischen Betreiber und IDP müssen Daten ausgetauscht werden (sogeannte SAML-Metadaten). Diese Daten beinhalten die Informationen über die genaue Konfiguration.
 
-Folgend ist eine vereinfachte Konfiguration dargestellt:
+**IdP Configuration**
+
+The vaccination module requires the Identity Provider settings to be able to authenticate users during operation. The configuration covers the SAML Metadata exchanged between the community or platform provider and the Identity Providers. The list of Identity Provider setting is multivalued and the vaccination module supports all Identity Provider configured in the list.
+
+An simplified example of the Identity Provider configuration is shown below.
 ```
 # Identity Provider
 idp:
@@ -191,24 +204,23 @@ sp:
    keystore-password: password
    sp-alias: spkeyAlias
 ```
-Die einzelnen Parameter haben folgende Bedeutung:
-- knownEntityId: Eindeutiger, mit dem IDP vereinbarter Identifier. Wir empfehlen die Zielurl des Systems als Identifier zu verwenden, um die Eindeutigkeit zu gewährleisten.
-- supportedProvider: Oberbegriff über alle Provider
-- supportedProvider.identifier: Eindeutiger Identifier eines Providers.  
-  **Wichtig:** Der Identifier wird während des initialen Webaufrufes vom Portal übergeben, d.h. diese Werte sind mit dem Betreiber der Portalapplikation abzugleichen.
-- supportedProvider.authnrequestURL: URL des Providers unter der dieser das AuthNRequest annimmt.
-- supportedProvider.artifactResolutionServiceURL: URL des Providers, unter der dieser die SAML Artefakte entgegennimmt und gegen die IDP Tokens auflöst.
-- assertionConsumerServiceUrl: URL der Anwendung, um die Antwort eines Providers entgegen zu nehmen.  
-**Wichtig:** Der Suffix */saml/sso* muss bestehen bleiben, nur die Server URL ist anzupassen.
-- keystore: Allgemeine Einstellungen zum Keystore, welcher diese Applikation gegenüber dem IDP identifiziert.
-**Wichtig:** Hier sind sensitive Informationen enthalten, daher nochmals die Empfehlung, den Konfigurationsordner nicht innerhalb des `webroot`-Verzeichnisses zu belassen.
-- keystore.keystore-path: Pfad zur Keystore Datei
-- keystore-password: Passwort des Keystores
-- sp-alias: Alias Name des privaten Schlüssels, der für die Kommunikation zum IDP benötigt wird.
 
-**Konfiguration Portal**  
-Das Impfmodul wird initial von einer Dritt-Applikation aufgerufen, meistens sogenannten Impf-Portalen. Der initiale Aufruf enthält verschiedene Parameter, um beispielsweise den Patienten zu identifizieren.
-Zur Absicherung wird der initiale Webaufruf mit einer HMAC gesichert, um die Integrität des aufrufenden Systems zu prüfen. Weiterhin ist ein Timestamp Check aktiv, der absichert, dass ein Request nicht abgehört und anderweitig eingespielt wird.
+The parameter are interpreted as follows:
+- knownEntityId: A Unique identifier of the Identity Provider in the vaccination module. Should be set to the URL of the Identity Provider endpoint.
+- supportedProvider: Grouping element for Identity Provider settings.
+- supportedProvider.identifier: Label of the Identity Provider which is used in the Portal at vaccination startup.The label is used by the vaccination model to link to the Identity Provider the user logged in the portal.
+- supportedProvider.authnrequestURL: URL of the Identity Provider accepting *AuthNRequest*.
+- supportedProvider.artifactResolutionServiceURL: URL of the Identity Providers accepting the SAML Artefact and returning the IdP Assertion..
+- assertionConsumerServiceUrl: URL of the vaccination module accepting callbacks from the Identity Provider.  
+**Note:** The suffix */saml/sso* is mandatory and only the root address must be set.
+- keystore: Keystore settings.
+- keystore.keystore-path: Path to the Keystore file.
+- keystore-password: Keystore's Password.
+- sp-alias: Alias name of the private key used for the communication with the Identity Provider.
+
+**Portal Configuration**  
+
+The vaccination module is started from the Portal or Primary System with a GET request which conveys a set of parameters, e.g., to identify the patient or time stamp. The startup request is signed with HMAC to verify the integrity and authenticate the calling application, which is configured in the Portal configuration.
 
 ```
 # Keystore used for the weblink
@@ -218,18 +230,19 @@ portal:
   # Must be set to true to ensure that web calls are not older than 2 seconds
   activateTimestampCheck: "true"
 ```
-Die einzelnen Parameter haben folgende Bedeutung:
-- hmacpresharedkey: Eindeutiger Key, welcher zwischen Portal- und Impfmodule Applikation verabredet werden muss. Wird verwendet um eine HMAC Signature an den initialen Webaufruf zu hängen.
-- activateTimestampCheck: Kann zu Testzwecken auf *false* gestellt werden, um die Prüfung der Timestampdaten zu unterdrücken.  
-**Wichtig** Im Produktivbetrieb muss der Wert auf *true* verbleiben.
+The parameter are interpreted as follows:
+- hmacpresharedkey: A unique key shared between the vaccination module and the calling application (e.g., portal). The key is used for the HMAC signature of the startup request.  
+- activateTimestampCheck: For testing purposes the value can be set to *false*, which suppresses the verificatio nof the timestamp. The default is *true* for productive use.
 
-**Konfiguration Security**  
-Neben diesen spezifischen Einstellung sind weitere Einstellung für die Verbindungssicherheit notwendig. Im Rahmen der Kommunikation innerhalb des EPDs wird mit viel mittels digitaler Signaturen abgesichert. Um diese Sicherheit zu gewährleisten, müssen entsprechende Key- und Truststores konfiguriert werden.
 
-Die Stores werden mittels weiterer Umgebungsvariablen definiert:
- - *javax.net.ssl.keyStore*: Pfad zum Keystore für MTLS
- - *javax.net.ssl.keyStorePassword*: Passwort zum o.g. Keystore
- - *javax.net.ssl.trustStore*: Pfad zum Keystore für MTLS
- - *javax.net.ssl.trustStorePassword*: Passwort zum o.g. Keystore
+**Security Configuration**
 
-Im Keystore ist derjenige private Key zu hinterlegen, dessen Public Key in den SAML-Metadaten angegeben wurde. Im Truststore müssen die Zertifikate aller Gegenstellen (IDP, EDP Backend Infrastruktur) hinterlegt werden, damit das MTLS (mutual TLS) akzeptiert wird.
+This configuration file configures the information used by the vaccination module to access the private and public keys used to secure the communication to the EPR platform and the Identity Provider.
+
+The parameter are interpreted as follows:
+ - *javax.net.ssl.keyStore*: Path to the Keystore for securing the TLS connections.
+ - *javax.net.ssl.keyStorePassword*: Password for the Keystore.
+ - *javax.net.ssl.trustStore*: Path to the trustStore for securing the TLS connections.
+ - *javax.net.ssl.trustStorePassword*: Password for the Truststore.
+
+**Note**: The keytore must contain the private key sibling of the public key defined in the SAML-Metadata. The truststore must contain all public keys used for mTLS of the endpoints of the EPR platform and the identity provider.   
