@@ -35,7 +35,15 @@ see [CH VACD AllergyIntolerance](http://fhir.ch/ig/ch-vacd/StructureDefinition-c
 - Organization - [PastIllness.recorder -> PractitionerRole.organization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recorder), resolved per reference.
 - Comments - [PastIllness.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.note) with time, text und author.name
 
-see [CH VACD Past Illness](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.recordedDater.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses.html)
+see [CH VACD Past Illness](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html)
 
 ### Medical Problems
-TODO
+- Date of diagnosis - [MedicalProblems.recordedDate](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.recordedDate)
+- Medical Problem - CodeableConcept [MedicalProblems.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.code)
+- Begin - [MedicalProblems.onset[0].onsetDateTime](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.onset)
+- End - [Medical Problems.abatement[0].abatementDateTime](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.abatement)
+- Recorded by - [Medical Problems.recorder -> PractitionerRole.practitioner](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.recorder), resolved per reference.
+- Organization - [Medical Problems.recorder -> PractitionerRole.organization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.recorder), resolved per reference.
+- Comments - [Medical Problems.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.note) with time, text und author.name
+
+see [CH VACD Medical Problems](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html)
