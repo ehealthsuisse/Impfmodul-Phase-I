@@ -11,7 +11,7 @@ This documentation covers the following documents:
 5. [Authentication](./05_Authentication.md)
 6. [Authorization](./06_Authorization.md)
 7. [Installation Guide](./07_Installation.md)
-8. [Lizence](./09_License.md)
+8. [Licence](./09_License.md)
 9. [3rd Party Libraries](./10_Libraries.md)
 
 
