@@ -1,4 +1,4 @@
-## Lizence
+## Licence
 
 The vaccination module is provided by ehealth Suisse with a MIT Licence. The license gives the user the
 unrestricted right to use, copy and to distribute the vaccination module as original or as changed version.
