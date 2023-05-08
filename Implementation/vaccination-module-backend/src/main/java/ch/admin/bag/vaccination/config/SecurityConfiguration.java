@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.config;
 
+import ch.admin.bag.vaccination.exception.FilterChainExceptionHandler;
 import ch.admin.bag.vaccination.service.saml.SAMLFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
 import javax.servlet.Filter;
@@ -30,6 +31,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -37,7 +39,7 @@ import org.springframework.web.filter.CorsFilter;
  * SAML authentication.
  */
 @Configuration
-@Profile("!test, !local")
+@Profile("!test & !local")
 public class SecurityConfiguration {
 
   @Autowired
@@ -48,6 +50,9 @@ public class SecurityConfiguration {
 
   @Autowired
   private ProfileConfig profileConfig;
+
+  @Autowired
+  private FilterChainExceptionHandler filterChainExceptionHandler;
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -61,11 +66,15 @@ public class SecurityConfiguration {
         // allow access to actuators
         .antMatchers("/actuator/health", "/actuator/health/**").permitAll()
 
+        // allow access to signature service
+        .antMatchers("/signature/**").permitAll()
+
         // forbid swagger
         .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
         .anyRequest().authenticated()
         .and()
         .addFilterBefore(createSAMLFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

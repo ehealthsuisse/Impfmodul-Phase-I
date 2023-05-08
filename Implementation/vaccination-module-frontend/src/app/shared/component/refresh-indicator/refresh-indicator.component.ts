@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -18,16 +18,16 @@
  */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { TranslateDirective } from '../../language/translate.directive';
 
 @Component({
   selector: 'vm-refresh-indicator',
   standalone: true,
-  imports: [MatProgressBarModule, TranslateDirective],
-  template: ` <mat-progress-bar [attr.aria-label]="'Refresh data'" mode="indeterminate"></mat-progress-bar> `,
+  imports: [MatProgressBarModule],
+  template: `<mat-progress-bar role="progressbar" mode="indeterminate" aria-label="Refreshing data"></mat-progress-bar>`,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RefreshIndicatorComponent {
   @Input() isLoading = false;
+  @Input() areaLabeledBy: string = 'Refreshing data';
 }

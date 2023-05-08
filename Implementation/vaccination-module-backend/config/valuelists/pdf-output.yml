@@ -1,0 +1,25 @@
+pdf-output:
+  basicVaccination:
+    keepEmpty: true
+    codes:
+      - 397430003  #Diphtherie
+      - 76902006   #Starrkrampf, Tetanus
+      - 27836007   #Keuchhusten, Pertussis
+      - 398102009  #Akute Poliomyelitis
+      - 709410003  #Infektion mit Haemophilus influenzae Typ B
+      - 66071002   #Virale Hepatitis, Typ B
+      - 16814004   #Pneumokokken-Erkrankung
+      - 14189004   #Masern
+      - 36989005   #Mumps
+      - 36653000   #Röteln
+      - 240532009  #HPV-Erkrankung (Humanes Papillomavirus)
+  otherVaccination:
+    keepEmpty: false
+    codes:
+      - 40468003 # Viral hepatitis, type A (disorder)
+      - 23511006 # Meningokokken-Erkrankung
+      - 16901001 # Frühsommer-Meningoenzephalitis (FSME)
+      - 38907003 # Windpocken/varicelle
+      - 56717001 # Tuberkulose
+      - 4740000  # Herpes zoster
+      - 840539006 # COVID-19

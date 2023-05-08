@@ -29,7 +29,9 @@ import org.springframework.context.annotation.Configuration;
 public class ProfileConfig {
   @Value("${spring.profiles.active}")
   private String activeProfile;
+  @Value("${application.localMode}")
   private boolean localMode = false;
+  @Value("${application.huskyLocalMode}")
   private Boolean huskyLocalMode = false;
   private boolean samlAuthenticationActive = false;
 
@@ -42,7 +44,7 @@ public class ProfileConfig {
   }
 
   public boolean isSamlAuthenticationActive() {
-    return samlAuthenticationActive;
+    return samlAuthenticationActive || isProd();
   }
 
   /**
@@ -51,20 +53,24 @@ public class ProfileConfig {
    * @param localMode true to write local file, false to write in the EPD, null to write nothing
    */
   public void setHuskyLocalMode(Boolean huskyLocalMode) {
-    if (!"prod".equals(activeProfile)) {
+    if (!isProd()) {
       this.huskyLocalMode = huskyLocalMode;
     }
   }
 
   public void setLocalMode(boolean localMode) {
-    if (!"prod".equals(activeProfile)) {
+    if (!isProd()) {
       this.localMode = localMode;
     }
   }
 
   public void setSamlAuthenticationActive(boolean samlAuthentication) {
-    if (!"prod".equals(activeProfile)) {
+    if (!isProd()) {
       this.samlAuthenticationActive = samlAuthentication;
     }
+  }
+
+  private boolean isProd() {
+    return "prod".equalsIgnoreCase(activeProfile);
   }
 }

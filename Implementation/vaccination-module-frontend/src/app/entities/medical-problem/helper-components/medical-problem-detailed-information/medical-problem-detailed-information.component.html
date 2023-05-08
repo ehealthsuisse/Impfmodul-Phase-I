@@ -1,0 +1,99 @@
+<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between">
+  <vm-reusable-date-field
+    [formControl]="problemForm.controls.recordedDate"
+    [labelTranslationKey]="'MEDICAL_PROBLEM.DATE'"
+    [isEditable]="false"
+    [notEditableValue]="problem?.recordedDate | formatDate"
+  ></vm-reusable-date-field>
+
+  <vm-reusable-select-field-with-search
+    [options$]="problemFilteredList"
+    [item]="problem?.code!"
+    [isEditable]="false"
+    [translationKey]="'MEDICAL_PROBLEM_CODE.'"
+    [labelKey]="'MEDICAL_PROBLEM.MEDICAL_PROBLEM_CODE'"
+    [formControl]="problemForm.controls.code"
+    #singleSelect
+  ></vm-reusable-select-field-with-search>
+
+  <div fxLayout="row" fxLayoutAlign="space-between" class="datesWrap">
+    <vm-reusable-date-field
+      [formControl]="problemForm.controls.begin"
+      [labelTranslationKey]="'MEDICAL_PROBLEM.BEGIN'"
+      [isEditable]="false"
+      [notEditableValue]="problem?.begin | formatDate"
+    ></vm-reusable-date-field>
+
+    <vm-reusable-date-field
+      [formControl]="problemForm.controls.end"
+      [labelTranslationKey]="'MEDICAL_PROBLEM.END'"
+      [isEditable]="false"
+      [notEditableValue]="problem?.end | formatDate"
+    ></vm-reusable-date-field>
+  </div>
+
+  <vm-reusable-select-field
+    [formControl]="problemForm.controls.clinicalStatus!"
+    [isEditable]="false"
+    [translationKey]="'MEDICAL_PROBLEM_CLINICAL_STATUS'"
+    [labelTranslationKey]="'MEDICAL_PROBLEM.CLINICAL_STATUS'"
+    [mainValueKey]="'MEDICAL_PROBLEM_CLINICAL_STATUS.' + problem?.clinicalStatus?.code! | translate"
+  ></vm-reusable-select-field>
+
+  <vm-reusable-recorder-field
+    [parentForm]="problemForm"
+    [recorder]="problem?.recorder!"
+    [organization]="problem?.organization!"
+    [isEditable]="false"
+  >
+  </vm-reusable-recorder-field>
+
+  <mat-form-field class="mat-form-field" *ngIf="problem?.commentMessage">
+    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
+    <textarea matInput [attr.aria-label]="problem?.commentMessage" value="{{ problem?.commentMessage }}" disabled></textarea>
+  </mat-form-field>
+
+  <div class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center  " role="group">
+      <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
+      <mat-icon
+        tabindex="0"
+        class="openComments"
+        *ngIf="!commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >add</mat-icon
+      >
+      <mat-icon
+        tabindex="0"
+        class="closeComments"
+        *ngIf="commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >clear</mat-icon
+      >
+    </div>
+
+    <mat-card
+      *ngFor="let comment of problem?.comments"
+      role="article"
+      class="commentsContent_card comment-card mat-elevation-z0"
+      [ngClass]="{ active: commentsOpened }"
+      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
+    >
+      <div class="comment-header">
+        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      </div>
+      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+    </mat-card>
+    <p
+      *ngIf="problem?.comments?.length === 0"
+      vmTranslate="COMMENT.NO_COMMENTS"
+      class="commentsContent_card no-comments"
+      [ngClass]="{ active: commentsOpened }"
+    ></p>
+  </div>
+</mat-card-content>

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,18 +17,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Routes } from '@angular/router';
+import { ValidationGuard } from '../core/guards/validation.guard';
 
 export const ENTITIES_ROUTE: Routes = [
   {
     path: 'vaccination',
     loadChildren: () => import('./vaccination/vaccination-routing').then(r => r.VACCINATION_ROUTE),
+    canActivate: [ValidationGuard],
   },
   {
     path: 'allergy',
-    loadChildren: () => import('./allergy/allergy-routing').then(r => r.ALLERGY_ROUTE),
+    loadChildren: () => import('./adverse_event/adverse-event-routing').then(r => r.ADVERSE_EVENT_ROUTE),
+    canActivate: [ValidationGuard],
   },
   {
-    path: 'illnesses',
-    loadChildren: () => import('./illnesses/illness.routing').then(r => r.ILLNESS_ROUTE),
+    path: 'infectious-diseases',
+    loadChildren: () => import('./infectious_diseases/infectious-diseases-routing').then(r => r.INFECTIOUS_DISEASES_ROUTE),
+    canActivate: [ValidationGuard],
+  },
+
+  {
+    path: 'medical-problem',
+    loadChildren: () => import('./medical-problem/medical-problem.routing').then(r => r.PROBLEM_ROUTE),
+    canActivate: [ValidationGuard],
   },
 ];

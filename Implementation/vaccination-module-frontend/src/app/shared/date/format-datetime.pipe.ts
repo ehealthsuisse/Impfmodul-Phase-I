@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -27,6 +27,6 @@ import { DATE_TIME_FORMAT } from './input.constants';
 })
 export class FormatDateTimePipe implements PipeTransform {
   transform(dateTime: dayjs.Dayjs | null | undefined | string): string {
-    return dateTime ? dayjs(dateTime).format(DATE_TIME_FORMAT) : '';
+    return dateTime ? dayjs(dateTime).format(DATE_TIME_FORMAT) : '-';
   }
 }

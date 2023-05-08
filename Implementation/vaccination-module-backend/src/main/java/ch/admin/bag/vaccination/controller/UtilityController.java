@@ -21,8 +21,11 @@ package ch.admin.bag.vaccination.controller;
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
 import ch.admin.bag.vaccination.service.ValueListService;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Collection;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,17 +34,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/utility")
 @Tag(name = "UtilityController", description = "Controller with utility functionalities")
+@Slf4j
 public class UtilityController {
   @Autowired
   private ValueListService valueListService;
 
   @GetMapping("/getAllValuesLists")
   public List<ValueListDTO> getAllValuesList() {
+    log.info("getAllValuesLists");
     return valueListService.getAllListOfValues();
+  }
+
+  @GetMapping("/targetDiseases")
+  public Collection<ValueDTO> getTargetDiseases() {
+    log.info("getTargetDiseases");
+    return valueListService.getTargetDiseases();
   }
 
   @GetMapping("/vaccinesToTargetDiseases")
   public List<VaccineToTargetDiseasesDTO> getVaccinesToTargetDiseases() {
+    log.info("getVaccinesToTargetDiseases");
     return valueListService.getVaccinesToTargetDiseases();
   }
 }

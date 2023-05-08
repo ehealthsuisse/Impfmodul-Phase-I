@@ -20,7 +20,7 @@ package ch.admin.bag.vaccination.service.husky;
 
 import ch.admin.bag.vaccination.service.husky.config.CommunityConfig;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
-import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.util.List;
 import org.openehealth.ipf.commons.ihe.xds.core.metadata.DocumentEntry;
@@ -37,11 +37,12 @@ public interface HuskyAdapterIfc {
    * @param patientIdentifier contains all the required patientInfo
    * @param formatCodes the expected format codes
    * @param documentType the expected documentType
+   * @param author Author of the transaction
    * @param assertion the assertion
    * @return the list of {@link DocumentEntry}
    */
   List<DocumentEntry> getDocumentEntries(PatientIdentifier patientIdentifier,
-      List<Code> formatCodes, String documentType, Assertion assertion);
+      List<Code> formatCodes, String documentType, AuthorDTO author, Assertion assertion);
 
   /**
    * Get the {@link PatientIdentifier}
@@ -49,13 +50,11 @@ public interface HuskyAdapterIfc {
    * @param communityIdentifier he identifier of the community
    * @param localAssigningAuthorityOid localAssigningAuthorityOid
    * @param localId The local Id of the patient (within the community)
-   * @param assertion the assertion
    *
    * @return The PatientIdentifier
    */
   PatientIdentifier getPatientIdentifier(String communityIdentifier,
-      String localAssigningAuthorityOid,
-      String localId, Assertion assertion);
+      String localAssigningAuthorityOid, String localId);
 
   /**
    * Returns the list of Documents.
@@ -71,13 +70,16 @@ public interface HuskyAdapterIfc {
   /**
    * Generates a Assertion though XUA Connector
    *
+   * @param author Author of the transaction
    * @param idpAssertion the idpAsserstion
    * @param spid spid identificator
-   * @return
+   * @param communityConfig {@link CommunityConfig}
+   * @param uriToAccess uri for which this xua token is requested for
+   * @return {@link Assertion}
    * @throws Exception if any error
    */
-  Assertion getXUserAssertion(Assertion idpAssertion, Identificator spid,
-      CommunityConfig communityConfig) throws Exception;
+  Assertion getXUserAssertion(AuthorDTO author, Assertion idpAssertion, Identificator spid,
+      CommunityConfig communityConfig, String uriToAccess) throws Exception;
 
   /**
    * Write a document in EPD
@@ -92,7 +94,7 @@ public interface HuskyAdapterIfc {
    * @return the status of the write SUCCESS/FAILURE/PARTIAL_SUCCESS
    */
   String writeDocument(PatientIdentifier patientIdentifier, String uuid, String json,
-      HumanNameDTO author, ValueDTO confidentiality, Assertion assertion);
+      AuthorDTO author, ValueDTO confidentiality, Assertion assertion);
 
 
 }

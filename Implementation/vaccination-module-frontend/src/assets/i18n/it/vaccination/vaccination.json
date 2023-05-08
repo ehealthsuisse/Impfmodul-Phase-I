@@ -4,16 +4,15 @@
     "DETAILS_HEADER": "Dettagli sull'vaccinazione",
     "EDIT_HEADER": "Modifica vaccinazione",
     "NEW_HEADER": "Nuova vaccinazione",
-    "VACCINE_CODE": "vaccinazione",
-    "TARGET_DISEASES": "Protezione Vaccinale",
-    "DOSE_NUMBER": "Numero di Dosi",
-    "OCCURRENCE_DATE": "Date",
-    "STATUS": "Stato",
+    "VACCINE_CODE": "Vaccino",
+    "TARGET_DISEASES": "Protezione vaccinale",
+    "DOSE_NUMBER": "Numero di dosi",
+    "OCCURRENCE_DATE": "Data",
     "RECORDER": "Vaccinato da",
     "ORGANIZATION": "Organizzazione",
     "VALIDATED": "Validato",
     "VACCINATION_REASON": "Motivo della vaccinazione",
     "LOT_NUMBER": "Numero di lotto",
-    "DATE": "Data"
+    "DATE": "Data di vaccinazione"
   }
 }

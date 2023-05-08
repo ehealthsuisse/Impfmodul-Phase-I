@@ -1,0 +1,195 @@
+﻿/**
+ * Copyright (c) 2023 eHealth Suisse
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the “Software”), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSelect } from '@angular/material/select';
+import { ActivatedRoute, Router } from '@angular/router';
+import { finalize, Observable, ReplaySubject } from 'rxjs';
+import { IMedicalProblem } from '../../../../model';
+import { FormOptionsService, IValueDTO } from '../../../../shared';
+import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { filterDropdownList, initializeActionData, openSnackBar, setDropDownInitialValue } from '../../../../shared/function';
+import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
+import { SharedDataService } from '../../../../shared/services/shared-data.service';
+import { SharedComponentModule } from '../../../../shared/shared-component.module';
+import { SharedLibsModule } from '../../../../shared/shared-libs.module';
+import { MedicalProblemConfirmComponent } from '../../helper-components/confirm/medical-problem-confirm.component';
+import { MedicalProblemFormService, ProblemFormGroup } from '../../service/medical-problem-form.service';
+import { MedicalProblemService } from '../../service/medical-problem.service';
+import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
+import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
+import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { SessionInfoService } from '../../../../core/security/session-info.service';
+
+@Component({
+  standalone: true,
+  selector: 'vm-problem-update',
+  templateUrl: './medical-problem-form.component.html',
+  styleUrls: ['./medical-problem-form.component.scss'],
+  imports: [
+    SharedLibsModule,
+    SharedComponentModule,
+    FilterPipePipe,
+    ReusableDateFieldComponent,
+    ReusableRecorderFieldComponent,
+    ReusableSelectFieldComponent,
+    ReusableSelectFieldWithSearchComponent,
+  ],
+})
+export class MedicalProblemFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit {
+  problemFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
+  problemStatus: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
+  @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
+  @ViewChild('clinicalStatus', { static: true }) clinicalStatus!: MatSelect;
+  problemFilterControl: FormControl = new FormControl();
+  isSaving = false;
+  problems: IMedicalProblem | null = null;
+  editForm: ProblemFormGroup = inject(MedicalProblemFormService).createProblemFormGroup();
+  formOptionsService: FormOptionsService = inject(FormOptionsService);
+  problem: IMedicalProblem | null = null;
+  router = inject(Router);
+  formOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();
+  activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  problemService: MedicalProblemService = inject(MedicalProblemService);
+  helpDialogTitle = 'HELP.MEDICAL_PROBLEM.DETAIL.TITLE';
+  helpDialogBody = 'HELP.MEDICAL_PROBLEM.DETAIL.BODY';
+  sharedDataService: SharedDataService = inject(SharedDataService);
+  sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  confidentialityService: ConfidentialityService = inject(ConfidentialityService);
+
+  searchControl = new FormControl();
+  private problemFormService: MedicalProblemFormService = inject(MedicalProblemFormService);
+  private matDialog: MatDialog = inject(MatDialog);
+
+  ngOnInit(): void {
+    initializeActionData('', this.sharedDataService);
+    let id = this.activatedRoute.snapshot.params['id'];
+    this.problemService.find(id).subscribe(problem => {
+      if (problem) {
+        this.problem = problem;
+        this.updateForm(this.problem);
+      } else {
+        this.problemService.query().subscribe({
+          next: list => {
+            this.problem = list.find(filteredProblem => filteredProblem.id === id)!;
+            this.updateForm(this.problem);
+          },
+        });
+      }
+    });
+
+    this.problemFilterControl.valueChanges.subscribe(() => {
+      filterDropdownList(this.formOptions.get('medicalProblemCode')!, this.problemFilteredList, this.problemFilterControl);
+    });
+
+    this.processFormOptions();
+  }
+
+  ngAfterViewInit(): void {
+    setDropDownInitialValue(this.problemStatus, this.clinicalStatus);
+    setDropDownInitialValue(this.problemFilteredList, this.singleSelect);
+  }
+
+  save(): void {
+    if (this.editForm.value.commentMessage) {
+      const commentObj = {
+        text: this.editForm.value.commentMessage,
+        author: this.sessionInfoService.author.getValue(),
+      };
+      this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
+      this.editForm.value.comments!.push(commentObj);
+    }
+    const problem = { ...this.problem, ...this.problemFormService.getProblem(this.editForm) };
+    problem.verificationStatus = this.formOptionsService.getOption('conditionVerificationStatus', 'unconfirmed');
+    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
+    this.matDialog
+      .open(MedicalProblemConfirmComponent, {
+        width: '60vw',
+        data: { value: { ...problem }, button: { save: 'buttons.SAVE', saveAndStay: 'buttons.SAVE_AND_STAY' } },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe({
+        next: (result: { action?: string } = {}) => {
+          problem.confidentiality = this.confidentialityService.confidentialityStatus;
+          if (result.action === 'SAVE') {
+            if (problem.id) {
+              this.subscribeToSaveResponse(this.problemService.update(problem), true, true);
+            } else {
+              this.subscribeToSaveResponse(this.problemService.create(problem), true, false);
+            }
+          }
+          if (result.action === 'SAVE_AND_STAY') {
+            this.subscribeToSaveResponse(this.problemService.create(problem), false, false);
+          }
+        },
+      });
+  }
+
+  private processFormOptions(): void {
+    this.formOptionsService.getAllOptions().subscribe({
+      next: options =>
+        options.map(option => {
+          this.formOptions.set(
+            option.name,
+            option.entries!.filter(entry => entry.allowDisplay)
+          );
+          this.problemFilteredList.next(this.formOptions.get('medicalProblemCode')!);
+          this.problemStatus.next(this.formOptions.get('conditionClinicalStatus')!);
+        }),
+    });
+  }
+
+  private onSaveSuccess(navigate: boolean, isUpdate: boolean): void {
+    if (isUpdate) {
+      this.router.navigate(['/medical-problem']);
+    }
+
+    if (navigate) {
+      window.history.back();
+    }
+    if (!navigate) {
+      openSnackBar(this.translateService, this.snackBar, 'HELP.MEDICAL_PROBLEM.SAVE_AND_STAY.BODY');
+    }
+    this.isSaving = false;
+  }
+
+  private updateForm(problems: IMedicalProblem): void {
+    this.problems = problems;
+    this.problemFormService.resetForm(this.editForm, problems);
+  }
+
+  private onSaveFinalize(): void {
+    this.isSaving = false;
+  }
+
+  private subscribeToSaveResponse(result: Observable<IMedicalProblem>, navigate: boolean, isUpdate: boolean): void {
+    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
+      next: () => this.onSaveSuccess(navigate, isUpdate),
+      error: () => this.onSaveError(),
+    });
+  }
+
+  private onSaveError(): void {
+    alert('error');
+  }
+}

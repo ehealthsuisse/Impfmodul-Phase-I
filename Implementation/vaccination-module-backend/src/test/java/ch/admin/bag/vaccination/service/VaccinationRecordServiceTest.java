@@ -23,7 +23,9 @@ import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
@@ -51,9 +53,12 @@ class VaccinationRecordServiceTest {
   @Autowired
   private PastIllnessService pastIllnessService;
   @Autowired
+  private MedicalProblemService medicalProblemService;
+  @Autowired
   private FhirAdapter fhirAdapter;
   @Autowired
   private ProfileConfig profileConfig;
+  AuthorDTO author = new AuthorDTO(new HumanNameDTO("hor", "Aut", "Dr.", null, null), "HCP", "gln:1.2.3.4");
 
   @BeforeEach
   void before() {
@@ -63,14 +68,16 @@ class VaccinationRecordServiceTest {
 
   @Test
   void saveToEPD_validEntries_noExceptions() {
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll("dummy", "dummy", "dummy", null, true);
-    List<AllergyDTO> allergies = allergyService.getAll("dummy", "dummy", "dummy", null, true);
-    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll("dummy", "dummy", "dummy", null, true);
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll("dummy", "dummy", "dummy", author, null, true);
+    List<AllergyDTO> allergies = allergyService.getAll("dummy", "dummy", "dummy", author, null, true);
+    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll("dummy", "dummy", "dummy", author, null, true);
+    List<MedicalProblemDTO> medicalProblems =
+        medicalProblemService.getAll("dummy", "dummy", "dummy", author, null, true);
 
     VaccinationRecordDTO record =
-        new VaccinationRecordDTO(createAuthor(), null, allergies, pastIllnesses, vaccinations);
+        new VaccinationRecordDTO(createAuthor(), null, allergies, pastIllnesses, vaccinations, medicalProblems);
     String json = vaccinationRecordService.create("EPDPLAYGROUND", "dummy", "dummy", record, null);
-    log.error("created record + json");
+    log.error("created record + json {}", json);
 
     Bundle parsedBundle = fhirAdapter.unmarshallFromString(json);
     assertThat(parsedBundle.getMeta().getProfile().get(0).getValue()).isEqualTo(FhirUtils.VACCINATION_RECORD_TYPE_URL);
@@ -84,7 +91,7 @@ class VaccinationRecordServiceTest {
     assertThat(pastIllnessesResult.size()).isEqualTo(pastIllnesses.size());
   }
 
-  private HumanNameDTO createAuthor() {
-    return new HumanNameDTO("Test Firstname", "Test Lastname", "Test Prefix", LocalDate.now(), "MALE");
+  private AuthorDTO createAuthor() {
+    return new AuthorDTO(new HumanNameDTO("Test Firstname", "Test Lastname", "Test Prefix", LocalDate.now(), "MALE"));
   }
 }

@@ -21,32 +21,38 @@ package ch.admin.bag.vaccination.service;
 import java.util.Locale;
 
 /**
- * 
+ *
  * i18n key to generate PDF in several pieces of language
  *
  */
 public enum I18nKey {
+  VACCINATION_RECORD("Vaccination Record", "Impfausweis", "Carnet de vaccination", "Libretto delle vaccinazioni"), //
+  BASIC_VACCINATION("Basic vaccinations", "Basisimpfungen", "Vaccinations de base", "Vaccinazioni di base"), //
+  OTHER_VACCINATION("Other vaccinations", "Andere Impfungen", "Autres vaccinations", "Altere vaccinazioni"), //
+  ADVERSE_EVENTS("Adverse Events", "Nebenwirkungen (UIE)", "Effets secondaires (EIV)",
+      "Effetti indesiderati delle vaccinazioni (EIV)"), //
+  PASTILLNESSES("Infectious Diseases", "Infektionskrankheiten", "Maladies infectieuses", "Malattie infettive"), //
+  MEDICAL_PROBLEMS("Medical Problems", "Grundkrankheiten", "Maladies chroniques", "Malattie croniche"), //
+  PASTILLNESS("Infectious Disease", "Infektionskrankheit", "Maladie", "Malattie"), //
+  MEDICAL_PROBLEM("Medical Problem", "Grundkrankheit", "Maladie", "Malattie"), //
 
-  VACCINATION_RECORD("Vaccination Record", "Impfausweis", "Carnet de vaccination", ""), //
-  VACCINATION("Vaccination", "Impfung", "Vaccination", ""), //
-  ALLERGY("Allergy", "Allergie", "Allergie", ""), //
-  PASTILLNESS("PastIllness", "Vorerkrankungen", "maladie préexistante", ""), //
+  FIRSTNAME("First name", "Vorname", "Prénom", "Nome"), //
+  LASTNAME("Last name", "Name", "Nom", "Cognome"), //
+  BIRTHDAY("Birthday", "Geburtsdatum", "Date de naissance", "Data di nascita"), //
+  GENDER("Gender", "Geschlecht", "Genre", "Genere"), //
 
-  FIRSTNAME("First name", "Vorname", "Prénom", ""), //
-  LASTNAME("Last name", "Name", "Nom", ""), //
-  BIRTHDAY("Birthday", "Geburtsdatum", "Date de naissance", ""), //
-  GENDER("Gender", "Gender", "Genre", ""), //
-
-  DATE("Date", "Datum", "Date", ""), //
-  CLINICAL_STATUS("Clinical Status", "Klinischer Status", "Status Clinique", ""), //
-  VACCINE("Vaccine", "Impfstoff", "Vaccin", ""), //
-  DISEASE("Disease", "Imfschutz", "Maladie", ""), //
-  DOSE("Dose", "Dosis", "Dose", ""), //
-  TREATING("Treating", "Behandelnder", "Traitant", ""), //
-
-  DATE_FORMAT("dd MMMM yyyy", "dd MMMM yyyy", "dd MMMM yyyy", "dd MMMM yyyy"),
-
-  DUMMY("", "", "", "");
+  DATE("Date", "Datum", "Date", "Data"), //
+  BEGIN("Begin", "Beginn", "Début", "Data di inizio"), //
+  END("End", "Ende", "Fin", "Data di fine"), //
+  CLINICAL_STATUS("Clinical Status", "Klinischer Status", "Status Clinique", "Stato Clinico"), //
+  VACCINE("Vaccine", "Impfstoff", "Vaccin", "Vaccino"), //
+  DISEASE("Disease", "Impfschutz", "Maladie", "Malattia"), //
+  DOSE("Dose", "Dosis", "Dose", "Dose"), //
+  TREATING("Performer", "Geimpft Von", "Vacciné Par", "Vaccinato da"), //
+  VALIDATED("Validated", "Validiert", "Validé", "Validato"), //
+  PRINTED1("EPR Vaccination record", "EPD Impfausweis", "DEP carnet de vaccination",
+      "CCE libretto delle vaccinazioni"), //
+  PRINTED2("Printed on: ", "Gedruckt am: ", "Imprimé sur: ", "Stampato su: ");
 
   private String en;
   private String de;
@@ -59,23 +65,6 @@ public enum I18nKey {
     this.fr = fr;
     this.it = it;
   }
-
-  public String getTranslation(String lang) {
-    if (lang == null) {
-      return en;
-    }
-    switch (lang) {
-      case "de":
-        return de;
-      case "fr":
-        return fr;
-      case "it":
-        return it;
-      default:
-        return en;
-    }
-  }
-
 
   public Locale getLocale(String lang) {
     if (lang == null) {
@@ -90,6 +79,23 @@ public enum I18nKey {
         return Locale.ITALIAN;
       default:
         return Locale.ENGLISH;
+    }
+  }
+
+
+  public String getTranslation(String lang) {
+    if (lang == null) {
+      return en;
+    }
+    switch (lang) {
+      case "de":
+        return de;
+      case "fr":
+        return fr;
+      case "it":
+        return it;
+      default:
+        return en;
     }
   }
 }

@@ -19,17 +19,22 @@
 package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.service.AllergyService;
+import ch.admin.bag.vaccination.service.MedicalProblemService;
 import ch.admin.bag.vaccination.service.PastIllnessService;
 import ch.admin.bag.vaccination.service.PdfService;
 import ch.admin.bag.vaccination.service.VaccinationRecordService;
 import ch.admin.bag.vaccination.service.VaccinationService;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.InputStream;
@@ -38,12 +43,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.projecthusky.xua.saml2.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,27 +76,43 @@ public class VaccinationRecordController {
   private PastIllnessService pastIllnessService;
 
   @Autowired
+  private MedicalProblemService medicalProblemService;
+
+  @Autowired
   private VaccinationRecordService vaccinationRecordService;
 
   @Autowired
   private PdfService pdfService;
 
   @PostMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}")
-  @Operation(summary = "Create a vaccination record")
+  @Operation(summary = "Create a vaccination record",
+      parameters = {
+          @Parameter(in = ParameterIn.HEADER, name = "ufname", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "ugname", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "utitle", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "lang", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "role", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "purpose", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "ugln", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "principalId", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "principalName", required = false) //
+      })
   public void create(
+      @RequestHeader HttpHeaders headers,
       @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier,
       @Schema(example = "1.2.3.4.123456.1") @PathVariable String oid,
       @Schema(example = "waldspital-Id-1234") @PathVariable String localId,
       @RequestBody VaccinationRecordDTO record) {
-    Assertion assertion = AssertionUtils.getAssertion();
-
+    AuthorDTO author = HttpHeadersUtils.getAuthor(headers);
+    Assertion assertion = AssertionUtils.getAssertionFromSession();
+    record.setAuthor(author);
     vaccinationRecordService.create(communityIdentifier, oid, localId, record, assertion);
   }
 
   @PostMapping("/exportToPDF")
   @Operation(summary = "Build a PDF out of the records")
   public ResponseEntity<?> exportToPDF(@RequestBody VaccinationRecordDTO record) {
-    log.debug("exportToPDF {}", record);
+    log.info("exportToPDF {}", record);
 
     InputStream inputStream = pdfService.create(record);
 
@@ -101,24 +124,52 @@ public class VaccinationRecordController {
   }
 
   @GetMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}")
-  @Operation(summary = "Get the data of the vaccination record")
+  @Operation(summary = "Get the data of the vaccination record",
+      parameters = {
+          @Parameter(in = ParameterIn.HEADER, name = "ufname", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "ugname", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "utitle", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "lang", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "role", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "purpose", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "ugln", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "principalId", required = false), //
+          @Parameter(in = ParameterIn.HEADER, name = "principalName", required = false) //
+      })
   public VaccinationRecordDTO getAll(
+      @RequestHeader HttpHeaders headers,
       @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier,
       @Schema(example = "1.2.3.4.123456.1") @PathVariable String oid,
       @Schema(example = "waldspital-Id-1234") @PathVariable String localId) {
-    Assertion assertion = AssertionUtils.getAssertion();
+    AuthorDTO author = HttpHeadersUtils.getAuthor(headers);
+    Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier =
-        vaccinationService.getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+        vaccinationService.getPatientIdentifier(communityIdentifier, oid, localId);
 
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, assertion, true);
-    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, assertion, true);
-    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll(patientIdentifier, assertion, true);
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, author, assertion, true);
+    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, author, assertion, true);
+    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll(patientIdentifier, author, assertion, true);
+    List<MedicalProblemDTO> medicalProblems = medicalProblemService.getAll(patientIdentifier, author, assertion, true);
 
-    HumanNameDTO author = new HumanNameDTO("generated by", "system", "document", null, null);
+    AuthorDTO createAuthor = new AuthorDTO(new HumanNameDTO("generated by", "system", "document", null, null));
 
     VaccinationRecordDTO record =
-        new VaccinationRecordDTO(author, patientIdentifier.getPatientInfo(), allergies, pastIllnesses, vaccinations);
+        new VaccinationRecordDTO(createAuthor, patientIdentifier.getPatientInfo(), allergies, pastIllnesses,
+            vaccinations,
+            medicalProblems);
     record.setJson(vaccinationRecordService.create(patientIdentifier, record));
     return record;
   }
+
+  @GetMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/name")
+  @Operation(summary = "Get full name of a patient")
+  public String getPatientName(
+      @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier,
+      @Schema(example = "1.2.3.4.123456.1") @PathVariable String oid,
+      @Schema(example = "waldspital-Id-1234") @PathVariable String localId) {
+    PatientIdentifier patientIdentifier = vaccinationService.getPatientIdentifier(communityIdentifier, oid, localId);
+
+    return patientIdentifier.getPatientInfo().getFullName();
+  }
+
 }

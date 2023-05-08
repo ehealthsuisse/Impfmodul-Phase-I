@@ -28,4 +28,5 @@ public class RepositoryConfig {
   private String uri;
   private OidConfig receiver;
   private String homeCommunityOid;
+  private XuaConfig xua;
 }

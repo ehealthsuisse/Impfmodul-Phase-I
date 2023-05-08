@@ -34,7 +34,8 @@ The GET request uses the following parameters:
 * **laaoid** - OID of the Patient Local Assigning Authority used by the portal or primary system
 * **ufname** - Name of the User as String
 * **ugname** - Surname of the User as String
-* **utitle** - Titel of the user as String
+* **utitle** - Title of the user as String
+* **ugln** - Gln of the user, used for HCP and ASS
 * **lang** - Language {lang}_{locale} (z.B. EN_us)
 * **role** - EPR role of the user taken from Value Set { HCP, PAT, ASS, REP }
 * **purpose** - The users PurposeOfUse from Value Set { NORM, EMER}
@@ -58,4 +59,4 @@ The business logic implements the as Restful API for the UI components:
 * CRUD API to display and edit vaccination entries.
 * CRUD API to display and edit adverse effects.
 * CRUD API to display and edit infectious diseases.
-* CRUD API to display and edit medical problems.    
+* CRUD API to display and edit medical problems.

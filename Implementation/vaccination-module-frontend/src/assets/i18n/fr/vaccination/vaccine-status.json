@@ -2,6 +2,6 @@
   "VACCINE_STATUS": {
     "completed": "Vaccination Faite",
     "not-done": "Vaccination Prévue",
-    "entered-in-error": "Entré par erreur"
+    "entered-in-error": "Saisi par erreur"
   }
 }

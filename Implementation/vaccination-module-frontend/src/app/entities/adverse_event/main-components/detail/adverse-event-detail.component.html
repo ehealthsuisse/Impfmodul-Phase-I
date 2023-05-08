@@ -1,0 +1,16 @@
+<section *ngIf="adverseEvent!" [ngClass]="isMobile ? 'mobile-detail-wrapper' : 'detail-wrapper'">
+  <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0' : 'mat-elevation-z10'">
+    <mat-card-header class="detail-wrapper__card-title mat-card-title">
+      <mat-card-title vmTranslate="ALLERGY.DETAILS_HEADER" [attr.aria-label]="'ALLERGY.DETAILS_HEADER' | translate"></mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="detail-wrapper__card-content mat-card-content">
+      <vm-adverse-event-detailed-information [adverseEvent]="adverseEvent"></vm-adverse-event-detailed-information>
+    </mat-card-content>
+    <vm-details-action
+      [canEdit]="adverseEvent.updated! || adverseEvent.deleted!"
+      *ngIf="!isMobile"
+      class="details__action"
+    ></vm-details-action>
+  </mat-card>
+  <vm-comment class="detail-wrapper__comment" [comments]="adverseEvent.comments!"></vm-comment>
+</section>

@@ -1,0 +1,15 @@
+<section *ngIf="problem!" [ngClass]="isMobile ? 'mobile-detail-wrapper' : 'detail-wrapper'">
+  <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0' : 'mat-elevation-z10'">
+    <mat-card-header class="detail-wrapper__card-title mat-card-title">
+      <mat-card-title
+        vmTranslate="MEDICAL_PROBLEM.DETAILS_HEADER"
+        [attr.aria-label]="'MEDICAL_PROBLEM.DETAILS_HEADER' | translate"
+      ></mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="detail-wrapper__card-content mat-card-content">
+      <vm-problem-detailed-information [problem]="problem"></vm-problem-detailed-information>
+    </mat-card-content>
+    <vm-details-action [canEdit]="problem.updated! || problem.deleted!" *ngIf="!isMobile" class="details__action"></vm-details-action>
+  </mat-card>
+  <vm-comment class="detail-wrapper__comment" [comments]="problem.comments!"></vm-comment>
+</section>

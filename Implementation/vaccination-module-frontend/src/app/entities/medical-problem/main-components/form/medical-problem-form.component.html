@@ -1,0 +1,86 @@
+<div class="detail-wrapper">
+  <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0' : 'mat-elevation-z10'">
+    <mat-card-header class="detail-wrapper__card-title mat-card-title">
+      <mat-card-title
+        *ngIf="problem"
+        vmTranslate="MEDICAL_PROBLEM.EDIT_HEADER"
+        [attr.aria-label]="'MEDICAL_PROBLEM.EDIT_HEADER' | translate"
+      ></mat-card-title>
+      <mat-card-title
+        *ngIf="!problem"
+        vmTranslate="MEDICAL_PROBLEM.NEW_HEADER"
+        [attr.aria-label]="'MEDICAL_PROBLEM.NEW_HEADER' | translate"
+      ></mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="detail-wrapper__card-content form-wrapper">
+      <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form-wrapper__form" role="form">
+        <vm-reusable-date-field
+          [formControl]="editForm.controls.recordedDate"
+          [labelTranslationKey]="'MEDICAL_PROBLEM.DATE'"
+          [isEditable]="true"
+          formControlName="recordedDate"
+        ></vm-reusable-date-field>
+
+        <vm-reusable-select-field-with-search
+          [options$]="problemFilteredList"
+          [item]="problem?.code!"
+          [isEditable]="true"
+          [translationKey]="'MEDICAL_PROBLEM_CODE.'"
+          [labelKey]="'MEDICAL_PROBLEM.MEDICAL_PROBLEM_CODE'"
+          [formControl]="editForm.controls.code"
+          #singleSelect
+        ></vm-reusable-select-field-with-search>
+
+        <mat-card class="mat-elevation-z0 form-wrapper__form-date-range" fxLayout="row" fxLayoutAlign="space-between">
+          <vm-reusable-date-field
+            [formControl]="editForm.controls.begin"
+            [labelTranslationKey]="'MEDICAL_PROBLEM.BEGIN'"
+            [isEditable]="true"
+            formControlName="begin"
+          >
+          </vm-reusable-date-field>
+
+          <vm-reusable-date-field
+            [formControl]="editForm.controls.end"
+            [labelTranslationKey]="'MEDICAL_PROBLEM.END'"
+            [isEditable]="true"
+            formControlName="end"
+          >
+          </vm-reusable-date-field>
+        </mat-card>
+
+        <vm-reusable-select-field
+          [formControl]="editForm.controls.clinicalStatus!"
+          [isEditable]="true"
+          [options$]="problemStatus"
+          [translationKey]="'MEDICAL_PROBLEM_CLINICAL_STATUS'"
+          [labelTranslationKey]="'MEDICAL_PROBLEM.CLINICAL_STATUS'"
+          [mainValueKey]="'MEDICAL_PROBLEM_CLINICAL_STATUS.' + problem?.clinicalStatus?.code! | translate"
+        ></vm-reusable-select-field>
+
+        <vm-reusable-recorder-field
+          [parentForm]="editForm"
+          [recorder]="problem?.recorder!"
+          [organization]="problem?.organization!"
+          [isEditable]="true"
+        >
+        </vm-reusable-recorder-field>
+
+        <mat-form-field class="detailed-card-content__form-field">
+          <mat-label [attr.aria-label]="'GLOBAL.COMMENT' | translate" class="mat-label" vmTranslate="GLOBAL.COMMENT"></mat-label>
+          <textarea [attr.aria-label]="'GLOBAL.COMMENT' | translate" matInput formControlName="commentMessage"></textarea>
+        </mat-form-field>
+
+        <vm-common-card-footer
+          [isEditFooter]="true"
+          [dialogTitle]="helpDialogTitle | translate"
+          [dialogBody]="helpDialogBody | translate"
+          (edit)="save()"
+          [disabled]="editForm.invalid || isSaving"
+        ></vm-common-card-footer>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  <vm-comment class="detail-wrapper__comment" [comments]="problem?.comments!"></vm-comment>
+</div>

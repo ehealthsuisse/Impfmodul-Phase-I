@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service.husky.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.admin.bag.vaccination.service.VaccinationConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +95,6 @@ class VaccinationConfigTest {
         .getSpidEprOid()).isEqualTo("2.16.756.5.30.1.127.3.10.3");
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
         .getSpidEprNamespace()).isEqualTo("SPID");
-
   }
 
   @Test
@@ -102,5 +102,13 @@ class VaccinationConfigTest {
     assertThat(senderConfig).isNotNull();
     assertThat(senderConfig.getSender()).isNotNull();
     assertThat(senderConfig.getSender().getApplicationOid()).isEqualTo("1.2.3.4");
+  }
+
+  @Test
+  void xuaConfig() {
+    XuaConfig xuaConfig = communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
+        .getRepositoryConfig(EPDRepository.XUA.name()).getXua();
+    assertThat(xuaConfig).isNotNull();
+    assertThat(xuaConfig.getClientKeyStoreType()).isEqualTo("jks");
   }
 }

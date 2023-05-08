@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,26 +16,43 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectorRef, Component, inject, OnInit, AfterViewChecked } from '@angular/core';
-import { Router } from '@angular/router';
-import { ValidationService } from '../../core/config/security/validation.service';
+import { AfterViewChecked, ChangeDetectorRef, Component, inject, Inject } from '@angular/core';
 import { SpinnerService } from '../../shared/services/spinner.service';
+import { TranslateService } from '@ngx-translate/core';
+import { DOCUMENT } from '@angular/common';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'vm-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
 })
-export class MainComponent implements OnInit, AfterViewChecked {
-  validate: ValidationService = inject(ValidationService);
-  router: Router = inject(Router);
+export class MainComponent implements AfterViewChecked {
+  isMobile: boolean = false;
+  isDesktop: boolean = false;
   spinnerService: SpinnerService = inject(SpinnerService);
 
-  constructor(private cdr: ChangeDetectorRef) {}
-  ngOnInit(): void {
-    this.validate.validateSignature();
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private translateService: TranslateService,
+    @Inject(DOCUMENT) private document: Document,
+    private breakpointObserver: BreakpointObserver
+  ) {
+    this.breakpointObserver.observe(['(max-width: 600px)']).subscribe({
+      next: result => {
+        this.isMobile = result.matches;
+      },
+    });
+
+    this.breakpointObserver.observe(['(min-width: 601px)']).subscribe({
+      next: result => {
+        this.isDesktop = result.matches;
+      },
+    });
   }
+
   ngAfterViewChecked(): void {
     this.cdr.detectChanges();
+    this.document.documentElement.lang = this.translateService.currentLang;
   }
 }

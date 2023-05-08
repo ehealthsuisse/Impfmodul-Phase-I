@@ -1,0 +1,96 @@
+<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" *ngIf="infectiousDiseases">
+  <vm-reusable-date-field
+    [formControl]="infectiousDiseasesForm.controls.recordedDate"
+    [labelTranslationKey]="'ILLNESS.DATE'"
+    [isEditable]="false"
+    [notEditableValue]="infectiousDiseases.recordedDate | formatDate"
+  ></vm-reusable-date-field>
+
+  <vm-reusable-select-field-with-search
+    [options$]="infectiousDiseasesFilteredList"
+    [item]="infectiousDiseases.code!"
+    [isEditable]="false"
+    [translationKey]="'ILLNESSES_CODE.'"
+    [labelKey]="'ILLNESS.ILLNESS_CODE'"
+    [formControl]="infectiousDiseasesForm.controls.code"
+    #singleSelect
+  ></vm-reusable-select-field-with-search>
+
+  <div fxLayout="row" fxLayoutAlign="space-between" class="datesWrap">
+    <vm-reusable-date-field
+      [formControl]="infectiousDiseasesForm.controls.begin"
+      [labelTranslationKey]="'ILLNESS.BEGIN'"
+      [isEditable]="false"
+      [notEditableValue]="infectiousDiseases.begin | formatDate"
+    ></vm-reusable-date-field>
+
+    <vm-reusable-date-field
+      [formControl]="infectiousDiseasesForm.controls.end"
+      [labelTranslationKey]="'ILLNESS.END'"
+      [isEditable]="false"
+      [notEditableValue]="infectiousDiseases.end | formatDate"
+    ></vm-reusable-date-field>
+  </div>
+
+  <vm-reusable-recorder-field
+    [parentForm]="infectiousDiseasesForm"
+    [recorder]="infectiousDiseases.recorder!"
+    [organization]="infectiousDiseases.organization!"
+    [isEditable]="false"
+  >
+  </vm-reusable-recorder-field>
+
+  <mat-form-field class="detailed-card-content__form-field" *ngIf="infectiousDiseases.commentMessage">
+    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
+    <textarea
+      matInput
+      [attr.aria-label]="infectiousDiseases.commentMessage"
+      value="{{ infectiousDiseases.commentMessage }}"
+      disabled
+    ></textarea>
+  </mat-form-field>
+
+  <div class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center  " role="group">
+      <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
+      <mat-icon
+        tabindex="0"
+        class="openComments"
+        *ngIf="!commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >add</mat-icon
+      >
+      <mat-icon
+        tabindex="0"
+        class="closeComments"
+        *ngIf="commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >clear</mat-icon
+      >
+    </div>
+
+    <mat-card
+      *ngFor="let comment of infectiousDiseases?.comments"
+      role="article"
+      class="commentsContent_card comment-card mat-elevation-z0"
+      [ngClass]="{ active: commentsOpened }"
+      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
+    >
+      <div class="comment-header">
+        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      </div>
+      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+    </mat-card>
+    <p
+      *ngIf="infectiousDiseases?.comments?.length === 0"
+      vmTranslate="COMMENT.NO_COMMENTS"
+      class="commentsContent_card no-comments"
+      [ngClass]="{ active: commentsOpened }"
+    ></p>
+  </div>
+</mat-card-content>

@@ -1,0 +1,20 @@
+<mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
+  <mat-label class="mat-label">{{ labelTranslationKey | translate }}</mat-label>
+  <mat-select
+    [compareWith]="compareFn"
+    [placeholder]="labelTranslationKey | translate"
+    required="true"
+    [formControl]="formControl"
+    ngDefaultControl
+    [attr.aria-label]="placeholder | translate"
+  >
+    <mat-option *ngFor="let option of options$ | async" [value]="option" [attr.aria-label]="option.code | translate">
+      {{ translationKey + '.' + option.code | translate }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field *ngIf="!isEditable" class="detailed-card-content__form-field">
+  <mat-label vmTranslate="{{ labelTranslationKey | translate }}" [attr.aria-label]="labelTranslationKey | translate"></mat-label>
+  <input *ngIf="!isMobile" matInput [attr.aria-label]="mainValueKey" value="{{ mainValueKey }}" disabled />
+  <textarea *ngIf="isMobile" matInput [attr.aria-label]="mainValueKey" value="{{ mainValueKey }}" disabled></textarea>
+</mat-form-field>

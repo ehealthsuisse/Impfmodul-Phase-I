@@ -24,8 +24,9 @@ import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.config.FhirConfig;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
-import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -66,7 +67,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
   public T create(String communityIdentifier, String oid, String localId,
       T newDTO, Assertion assertion) {
     log.debug("create {} {} {}", communityIdentifier, oid, localId);
-    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
 
     Bundle createdBundle = fhirAdapter.create(patientIdentifier, newDTO);
     if (createdBundle != null) {
@@ -82,21 +83,26 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
   @Override
   public T delete(String communityIdentifier, String oid,
-      String localId, String toDeleteUuid, Assertion assertion) {
+      String localId, String toDeleteUuid, ValueDTO confidentiality, AuthorDTO author, Assertion assertion) {
     log.debug("delete {} {} {} {}", communityIdentifier, oid, localId, toDeleteUuid);
-    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
 
-    List<String> jsons = getData(patientIdentifier, assertion);
+    List<String> jsons = getData(patientIdentifier, author, assertion);
     for (String json : jsons) {
       Bundle bundleToDelete = fhirAdapter.unmarshallFromString(json);
 
       T dto = fhirAdapter.getDTO(getDtoClass(), bundleToDelete, toDeleteUuid);
       if (dto != null) {
-        Bundle deletedBundle = fhirAdapter.delete(patientIdentifier, dto, bundleToDelete);
+        if (confidentiality != null) {
+          dto.setConfidentiality(confidentiality);
+          dto.setAuthor(author);
+        }
+
+        Bundle deletedBundle = fhirAdapter.delete(patientIdentifier, dto, bundleToDelete, toDeleteUuid);
         if (deletedBundle != null) {
           String deletedJson = fhirAdapter.convertBundleToJson(deletedBundle);
           huskyAdapter.writeDocument(patientIdentifier, getUuidFromBundle(deletedBundle), deletedJson,
-              dto.getAuthor(), dto.getConfidentiality(), assertion);
+              author, dto.getConfidentiality(), assertion);
           cache.putData(patientIdentifier, deletedJson);
           T result = fhirAdapter.getDTOs(getDtoClass(), deletedBundle).get(0);
           result.setDeleted(true);
@@ -110,9 +116,10 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<T> getAll(PatientIdentifier patientIdentifier, Assertion assertion, boolean isLifecycleActive) {
+  public List<T> getAll(PatientIdentifier patientIdentifier, AuthorDTO author, Assertion assertion,
+      boolean isLifecycleActive) {
     List<T> dtos = new ArrayList<>();
-    List<String> jsons = getData(patientIdentifier, assertion);
+    List<String> jsons = getData(patientIdentifier, author, assertion);
 
     for (String json : jsons) {
       Bundle bundle = fhirAdapter.unmarshallFromString(json);
@@ -126,37 +133,36 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
   @Override
   public List<T> getAll(String communityIdentifier,
-      String oid, String localId, Assertion assertion) {
-    return getAll(communityIdentifier, oid, localId, assertion, true);
+      String oid, String localId, AuthorDTO author, Assertion assertion) {
+    return getAll(communityIdentifier, oid, localId, author, assertion, true);
   }
 
   @Override
-  public List<T> getAll(String communityIdentifier, String oid, String localId, Assertion assertion,
+  public List<T> getAll(String communityIdentifier, String oid, String localId, AuthorDTO author, Assertion assertion,
       boolean isLifecycleActive) {
-    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
 
-    return getAll(patientIdentifier, assertion, isLifecycleActive);
+    return getAll(patientIdentifier, author, assertion, isLifecycleActive);
   }
 
-  public PatientIdentifier getPatientIdentifier(String communityIdentifier, String oid, String localId,
-      Assertion assertion) {
-    return huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+  public PatientIdentifier getPatientIdentifier(String communityIdentifier, String oid, String localId) {
+    return huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId);
   }
 
   @Override
   public T update(String communityIdentifier, String oid, String localId,
       String toUpdateUuid, T newDto, Assertion assertion) {
     log.debug("update {} {} {} {}", communityIdentifier, oid, localId, toUpdateUuid);
-    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+    PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
 
-    List<String> jsons = getData(patientIdentifier, assertion);
+    List<String> jsons = getData(patientIdentifier, newDto.getAuthor(), assertion);
     for (String json : jsons) {
       Bundle bundleToUpdate = fhirAdapter.unmarshallFromString(json);
 
       T dto = fhirAdapter.getDTO(getDtoClass(), bundleToUpdate, toUpdateUuid);
       if (dto != null && toUpdateUuid.equals(dto.getId())) {
         Bundle updatedBundle =
-            fhirAdapter.update(patientIdentifier, newDto, bundleToUpdate);
+            fhirAdapter.update(patientIdentifier, newDto, bundleToUpdate, toUpdateUuid);
         if (updatedBundle != null) {
           String updatedJson = fhirAdapter.convertBundleToJson(updatedBundle);
           huskyAdapter.writeDocument(patientIdentifier, getUuidFromBundle(updatedBundle), updatedJson,
@@ -176,10 +182,6 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
       Assertion assertion) {
     log.debug("validate {} {} {} {}", communityIdentifier, oid, localId, toUpdateUuid);
 
-    if (getDtoClass() != VaccinationDTO.class) {
-      throw new TechnicalException("validate not supported!");
-    }
-
     if (!fhirConfig.isPractitioner(newDto.getAuthor().getRole())) {
       throw new TechnicalException("HCP or ASS role required!");
     }
@@ -189,7 +191,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
   protected abstract Class<T> getDtoClass();
 
-  private List<String> getData(PatientIdentifier patientIdentifier, Assertion assertion) {
+  private List<String> getData(PatientIdentifier patientIdentifier, AuthorDTO author, Assertion assertion) {
     List<String> data = new ArrayList<>();
 
     if (!cache.dataCacheMiss(patientIdentifier)) {
@@ -201,7 +203,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     } else {
       List<DocumentEntry> documentEntries =
           huskyAdapter.getDocumentEntries(patientIdentifier,
-              vaccinationConfig.getFormatCodes(), vaccinationConfig.getDocumentType(), assertion);
+              vaccinationConfig.getFormatCodes(), vaccinationConfig.getDocumentType(), author, assertion);
 
       List<RetrievedDocument> retrievedDocuments =
           huskyAdapter.getRetrievedDocuments(patientIdentifier.getCommunityIdentifier(),

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -18,11 +18,11 @@
  */
 import { Route } from '@angular/router';
 import { VaccinationRecordComponent } from './record/vaccination-record.component';
+import { ValidationGuard } from '../../core/guards/validation.guard';
 
 export const VACCINATION_RECORD_ROUTING: Route = {
   path: '',
   component: VaccinationRecordComponent,
-  data: {
-    pageTitle: 'GLOBAL.HOME',
-  },
+  title: 'GLOBAL.HOME',
+  canActivate: [ValidationGuard],
 };

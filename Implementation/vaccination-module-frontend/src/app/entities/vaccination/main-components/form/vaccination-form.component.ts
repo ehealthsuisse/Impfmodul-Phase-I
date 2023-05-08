@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,38 +17,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 import _ from 'lodash';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { finalize, map, Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { GenericButtonComponent } from 'src/app/shared/component/generic-button/generic-button.component';
-import { Vaccination } from '../../../../model';
-import {
-  CommentComponent,
-  CommonCardFooterComponent,
-  FormOptionsService,
-  IValueDTO,
-  MainWrapperComponent,
-  PageTitleTranslateComponent,
-} from '../../../../shared';
-import { filterDropdownList, setDropDownInitialValue } from '../../../../shared/function';
+import { IVaccination } from '../../../../model';
+import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValueDTO, MainWrapperComponent } from '../../../../shared';
+import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { filterDropdownList, initializeActionData, openSnackBar, setDropDownInitialValue } from '../../../../shared/function';
 import { VaccinePredefinedDiseases } from '../../../../shared/interfaces/vaccination-with-disease.interface';
+import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
-import { ConfirmComponent } from '../../helper-components/confirm/confirm.component';
 import { VaccinationFormGroup, VaccinationFormService } from '../../services/vaccination-form.service';
 import { VaccinationService } from '../../services/vaccination.service';
 import { ChipsHandler } from './chips-handler';
+import { VaccinationConfirmComponent } from '../../helper-components/confirm/vaccination-confirm.component';
+import { SessionInfoService } from '../../../../core/security/session-info.service';
+import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
 
 @Component({
   standalone: true,
@@ -56,26 +46,10 @@ import { ChipsHandler } from './chips-handler';
   templateUrl: './vaccination-form.component.html',
   styleUrls: ['./vaccination-form.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    SharedLibsModule,
-    ReactiveFormsModule,
-    MatDatepickerModule,
-    GenericButtonComponent,
-    MatDialogModule,
-    MatChipsModule,
-    TranslateModule,
-    MatCheckboxModule,
-    MatSelectModule,
-    CommonCardFooterComponent,
-    NgxMatSelectSearchModule,
-    MatMomentDateModule,
-    MainWrapperComponent,
-    CommentComponent,
-  ],
+  imports: [SharedLibsModule, MainWrapperComponent, CommonCardFooterComponent, CommentComponent, FilterPipePipe],
 })
-export class VaccinationFormComponent extends PageTitleTranslateComponent implements OnInit, AfterViewInit, OnDestroy {
+export class VaccinationFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   vaccinationFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
-  vaccinationStatuses: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   reasons: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   diseases: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   vaccinationFilterControl: FormControl = new FormControl();
@@ -84,13 +58,13 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
   @ViewChild('status', { static: true }) staus!: MatSelect;
   @ViewChild('reason', { static: true }) reason!: MatSelect;
   @ViewChild('diseasesChipsList', { static: true }) diseasesList!: MatSelect;
+  searchControl = new FormControl();
 
   isSaving = false;
-  vaccinations: Vaccination | null = null;
   editForm: VaccinationFormGroup = inject(VaccinationFormService).createVaccinationFormGroup();
   formOptionsService: FormOptionsService = inject(FormOptionsService);
-  vaccination: Vaccination | null = null;
-  diseasesChips = new ChipsHandler('disease');
+  vaccination: IVaccination | null = null;
+  diseasesChips = new ChipsHandler('disease', this.translateService);
   router = inject(Router);
   formOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
@@ -98,8 +72,9 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
   sharedDataService: SharedDataService = inject(SharedDataService);
   helpDialogTitle = 'HELP.VACCINATION.DETAIL.TITLE';
   helpDialogBody = 'HELP.VACCINATION.DETAIL.BODY';
-  isEmbedded!: boolean;
   canValidated!: boolean;
+  sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  confidentialityService: ConfidentialityService = inject(ConfidentialityService);
 
   private vaccinationFormService: VaccinationFormService = inject(VaccinationFormService);
   private matDialog: MatDialog = inject(MatDialog);
@@ -108,6 +83,7 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
 
   ngOnInit(): void {
     this.getDropdownData();
+    initializeActionData('', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
     this.vaccinationService.find(id).subscribe(vaccine => {
       if (vaccine) {
@@ -126,7 +102,7 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
       filterDropdownList(this.formOptions.get('immunizationVaccineCode')!, this.vaccinationFilteredList, this.vaccinationFilterControl);
     });
 
-    this.canValidated = this.sharedDataService.storedData['role'] === 'HCP' || this.sharedDataService.storedData['role'] === 'ASS';
+    this.canValidated = this.sessionInfoService.canValidate();
     this.processFormOptions();
     this.editForm
       .get('vaccineCode')
@@ -136,9 +112,11 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
 
         this.diseasesChips.selected = [];
         this.editForm.get('targetDiseases')?.setValue([]);
-        targetDiseases.forEach((disease: any) =>
-          this.diseasesChips.select({ option: { value: disease } } as MatAutocompleteSelectedEvent, this.editForm)
-        );
+        targetDiseases.forEach((disease: unknown) => {
+          if (this.diseasesChips) {
+            this.diseasesChips.select({ option: { value: disease } } as MatAutocompleteSelectedEvent, this.editForm);
+          }
+        });
       });
     if (this.vaccination!?.targetDiseases.length > 0) {
       this.diseasesChips.assign(this.editForm);
@@ -147,7 +125,6 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
 
   ngAfterViewInit(): void {
     setDropDownInitialValue(this.vaccinationFilteredList, this.singleSelect);
-    setDropDownInitialValue(this.vaccinationStatuses, this.staus);
     setDropDownInitialValue(this.reasons, this.reason);
     setDropDownInitialValue(this.diseases, this.diseasesList);
   }
@@ -156,52 +133,62 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
     if (this.editForm.value.commentMessage) {
       const commentObj = {
         text: this.editForm.value.commentMessage,
-        author: {
-          firstName: this.sharedDataService.storedData['ufname']!,
-          lastName: this.sharedDataService.storedData['ugname']!,
-          prefix: this.sharedDataService.storedData['utitle']!,
-          role: this.sharedDataService.storedData['role']!,
-        },
+        author: this.sessionInfoService.author.getValue(),
       };
       this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
       this.editForm.value.comments!.push(commentObj);
     }
     const vaccination = { ...this.vaccination, ...this.vaccinationFormService.getVaccination(this.editForm) };
-    if (!vaccination.lotNumber) {
-      vaccination.lotNumber = '-';
-    }
+    vaccination.status = this.formOptionsService.getOption('immunizationStatusCode', 'completed');
+    vaccination.lotNumber = vaccination.lotNumber || '-';
+    vaccination.validated = this.sessionInfoService.canValidate();
+
     /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.matDialog
-      .open(ConfirmComponent, {
+      .open(VaccinationConfirmComponent, {
         width: '60vw',
-        data: { value: { ...vaccination }, button: 'buttons.SAVE' },
+        data: { value: { ...vaccination }, button: { save: 'buttons.SAVE', saveAndStay: 'buttons.SAVE_AND_STAY' } },
         disableClose: true,
       })
       .afterClosed()
-      .subscribe((confirmed: boolean) => {
-        if (confirmed) {
-          vaccination.confidentiality = this.baseServices.confidentialityStatus;
-          vaccination.validated = this.canValidated || vaccination.validated;
-          if (vaccination.id) {
-            this.subscribeToSaveResponse(this.vaccinationService.update(vaccination));
-          } else {
-            this.subscribeToSaveResponse(this.vaccinationService.create(vaccination));
+      .subscribe({
+        next: (res: { action?: string } = {}) => {
+          vaccination.confidentiality = this.confidentialityService.confidentialityStatus;
+          if (res.action === 'SAVE') {
+            if (vaccination.id) {
+              this.subscribeToSaveResponse(this.vaccinationService.update(vaccination), true, true);
+            } else {
+              this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), true, false);
+            }
           }
-        }
+          if (res.action === 'SAVE_AND_STAY') {
+            this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), false, false);
+          }
+        },
       });
   }
 
-  override ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    super.ngOnDestroy();
   }
 
-  protected onSaveSuccess(): void {
-    this.router.navigate(['vaccination']);
+  protected onSaveSuccess(navigate: boolean, isUpdate: boolean): void {
+    if (isUpdate) {
+      this.router.navigate(['/vaccination']);
+      return;
+    }
+
+    if (navigate) {
+      window.history.back();
+    }
+    if (!navigate) {
+      openSnackBar(this.translateService, this.snackBar, 'HELP.VACCINATION.SAVE_AND_STAY.BODY');
+    }
+    this.isSaving = false;
   }
 
-  protected updateForm(vaccination: Vaccination): void {
+  protected updateForm(vaccination: IVaccination): void {
     this.vaccination = vaccination;
     this.vaccinationFormService.resetForm(this.editForm, vaccination);
     this.vaccination?.targetDiseases.forEach(() => this.diseasesChips?.assign(this.editForm));
@@ -211,9 +198,9 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
     this.isSaving = false;
   }
 
-  protected subscribeToSaveResponse(result: Observable<Vaccination>): void {
+  protected subscribeToSaveResponse(result: Observable<IVaccination>, navigate: boolean, isUpdate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
+      next: () => this.onSaveSuccess(navigate, isUpdate),
       error: () => this.onSaveError(),
     });
   }
@@ -222,9 +209,11 @@ export class VaccinationFormComponent extends PageTitleTranslateComponent implem
     this.formOptionsService.getAllOptions().subscribe({
       next: options =>
         options.map(option => {
-          this.formOptions.set(option.name, option.entries!);
+          this.formOptions.set(
+            option.name,
+            option.entries!.filter(entry => entry.allowDisplay)
+          );
           this.vaccinationFilteredList.next(this.formOptions.get('immunizationVaccineCode')!);
-          this.vaccinationStatuses.next(this.formOptions.get('immunizationStatusCode')!);
           this.reasons.next(this.formOptions.get('immunizationReasonCode')!);
           this.diseases.next(this.formOptions.get('immunizationTargetDesease')!);
         }),

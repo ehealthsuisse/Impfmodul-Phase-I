@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,10 +17,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { DialogService } from '../../services';
 import { SharedLibsModule } from '../../shared-libs.module';
-import { HelpButtonComponent } from '../help-button/help-button.component';
-import { GenericButtonComponent } from '../generic-button/generic-button.component';
-import { DialogService } from '../../services/dialog.service';
+import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
 
 /**
  * Used for the banner on top of the tables containig the title, searchbar, add- and help-button.
@@ -28,11 +27,11 @@ import { DialogService } from '../../services/dialog.service';
 @Component({
   selector: 'vm-list-header',
   standalone: true,
-  imports: [SharedLibsModule, HelpButtonComponent, GenericButtonComponent],
+  imports: [SharedLibsModule],
   templateUrl: './list-header.component.html',
   styleUrls: ['./list-header.component.scss'],
 })
-export class ListHeaderComponent<T> {
+export class ListHeaderComponent<T> extends BreakPointSensorComponent {
   @Input() showPatientName: boolean = false;
   @Input() subtitleVisibility: boolean = true;
 
@@ -53,8 +52,8 @@ export class ListHeaderComponent<T> {
     this.filter.emit(event);
   };
 
-  opernHelpDialog(evet: Event): void {
+  openHelpDialog(event: Event): void {
     this.dialog.openDialog(this.helpTitle, this.helpBody);
-    this.help.emit(evet);
+    this.help.emit(event);
   }
 }

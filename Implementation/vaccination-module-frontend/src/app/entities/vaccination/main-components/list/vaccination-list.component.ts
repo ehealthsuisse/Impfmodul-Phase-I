@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,52 +17,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 import { combineLatest } from 'rxjs';
-import { ApplicationConfigService } from '../../../../core';
-import { Vaccination } from '../../../../model';
-import {
-  DialogService,
-  GenericButtonComponent,
-  HelpButtonComponent,
-  ListHeaderComponent,
-  MainWrapperComponent,
-  MapperService,
-  PageTitleTranslateComponent,
-  TableWrapperComponent,
-  trackLangChange,
-} from '../../../../shared';
+import { filterPredicateExcludeJSONField, initializeActionData } from 'src/app/shared/function/functions';
+import { ListHeaderComponent, MainWrapperComponent, MapperService, TableWrapperComponent, trackLangChange } from '../../../../shared';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { VaccinationService } from '../../services/vaccination.service';
+import { IVaccination } from '../../../../model';
+import { SharedDataService } from '../../../../shared/services/shared-data.service';
+import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
 
 @Component({
   selector: 'vm-vaccination-list',
   templateUrl: './vaccination-list.component.html',
   styleUrls: ['./vaccination-list.component.scss'],
   standalone: true,
-  imports: [
-    SharedLibsModule,
-    TableWrapperComponent,
-    GenericButtonComponent,
-    TranslateModule,
-    HelpButtonComponent,
-    ListHeaderComponent,
-    MainWrapperComponent,
-    MatSortModule,
-  ],
+  imports: [SharedLibsModule, TableWrapperComponent, ListHeaderComponent, MainWrapperComponent],
 })
-export class VaccinationListComponent extends PageTitleTranslateComponent implements OnInit {
-  router: Router = inject(Router);
-  dialog = inject(DialogService);
-  appConfig = inject(ApplicationConfigService);
-  vaccinations!: MatTableDataSource<Vaccination>;
-  vaccinationService: VaccinationService = inject(VaccinationService);
-  mapper: MapperService = inject(MapperService);
-  vaccinationData$ = combineLatest([this.vaccinationService.query(), trackLangChange()]);
-  canValidated!: boolean;
+export class VaccinationListComponent extends BreakPointSensorComponent implements OnInit {
+  vaccinations!: MatTableDataSource<IVaccination>;
+  sharedDataService: SharedDataService = inject(SharedDataService);
 
   @Input() toggleHeader: boolean = true;
   @Input() vaccinationColumns: string[] = ['entryStatus', 'occurrenceDate', 'vaccineCode', 'targetDiseases', 'doseNumber', 'recorder'];
@@ -73,10 +48,18 @@ export class VaccinationListComponent extends PageTitleTranslateComponent implem
   @Input() isUpdated: boolean = true;
   @Input() tableWidth: string = '80vw';
 
+  router: Router = inject(Router);
+  vaccinationService: VaccinationService = inject(VaccinationService);
+  mapper: MapperService = inject(MapperService);
+  vaccinationData$ = combineLatest([this.vaccinationService.query(), trackLangChange()]);
+
   ngOnInit(): void {
-    this.vaccinationData$.subscribe(
-      ([v]) => (this.vaccinations = new MatTableDataSource<Vaccination>(this.mapper.vaccinationTranslateMapper(v)))
-    );
+    initializeActionData('', this.sharedDataService);
+    this.vaccinationData$.subscribe(([v]) => {
+      this.vaccinations = new MatTableDataSource<IVaccination>(this.mapper.vaccinationTranslateMapper(v));
+      this.vaccinations.filterPredicate = filterPredicateExcludeJSONField;
+      return this.vaccinations;
+    });
   }
 
   addNewRecord(): void {
@@ -88,12 +71,7 @@ export class VaccinationListComponent extends PageTitleTranslateComponent implem
     this.vaccinations.filter = filterValue.trim().toLowerCase();
   }
 
-  navigateToDetails(row: Vaccination): void {
+  navigateToDetails(row: IVaccination): void {
     this.router.navigate(['vaccination', row.id, 'detail']);
-  }
-
-  filter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
-    this.vaccinations.filter = filterValue.trim().toLowerCase();
   }
 }

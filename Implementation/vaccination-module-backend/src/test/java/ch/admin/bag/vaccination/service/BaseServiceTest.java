@@ -45,11 +45,11 @@ class BaseServiceTest {
 
   @Test
   void create_invalidPatientInformation_throwException() {
-    assertThrows(NullPointerException.class, () -> allergyService.getAll(null, null, null, null));
-    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", null, null, null));
-    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", "laaoid", null, null));
+    assertThrows(NullPointerException.class, () -> allergyService.getAll(null, null, null, null, null));
+    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", null, null, null, null));
+    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", "laaoid", null, null, null));
     // all parameters are set, however we do not have a valid community, a different exception is thrown
-    assertThrows(TechnicalException.class, () -> allergyService.getAll("communityId", "laaoid", "localId", null));
+    assertThrows(TechnicalException.class, () -> allergyService.getAll("communityId", "laaoid", "localId", null, null));
   }
 
 

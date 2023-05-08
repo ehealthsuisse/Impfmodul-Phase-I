@@ -1,169 +1,189 @@
-<vm-main-wrapper contentId="vaccinationList" [isMainContent]="!isEmbedded" [label]="pageTitle">
-  <div class="main-wrapper">
-    <mat-card class="mat-card mat-elevation-z5 mat-card-details mat-card-content" fxLayout="column" fxLayoutAlign="space-between">
-      <mat-card-header>
-        <mat-card-title>
-          <h1 class="h3-header" *ngIf="vaccination" vmTranslate="VACCINATION.EDIT_HEADER"></h1>
-          <h1 class="h3-header" *ngIf="!vaccination" vmTranslate="VACCINATION.NEW_HEADER"></h1>
-        </mat-card-title>
-      </mat-card-header>
+<div class="detail-wrapper">
+  <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0 mobile-detail-wrapper' : 'mat-elevation-z10'">
+    <mat-card-header class="detail-wrapper__card-title mat-card-title">
+      <mat-card-title
+        *ngIf="vaccination"
+        [attr.aria-label]="'VACCINATION.EDIT_HEADER' | translate"
+        vmTranslate="VACCINATION.EDIT_HEADER"
+      ></mat-card-title>
+      <mat-card-title
+        *ngIf="!vaccination"
+        [attr.aria-label]="'VACCINATION.NEW_HEADER' | translate"
+        vmTranslate="VACCINATION.NEW_HEADER"
+      ></mat-card-title>
+    </mat-card-header>
 
-      <mat-card-content>
-        <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form">
-          <mat-form-field class="mat-form-field mat-form-field-width-100 date">
-            <input
-              matInput
-              [placeholder]="'VACCINATION.DATE' | translate | titlecase"
-              (click)="picker.open()"
-              [matDatepicker]="picker"
-              required
-              formControlName="occurrenceDate"
-            />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
+    <mat-card-content class="detail-wrapper__card-content form-wrapper">
+      <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form-wrapper__form" role="form">
+        <mat-form-field class="detailed-card-content__form-field">
+          <input
+            matInput
+            [placeholder]="'VACCINATION.DATE' | translate"
+            [attr.aria-label]="'VACCINATION.DATE' | translate"
+            (click)="picker.open()"
+            [matDatepicker]="picker"
+            required
+            formControlName="occurrenceDate"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
 
-          <mat-form-field>
-            <mat-select
-              [placeholder]="'VACCINATION.VACCINE_CODE' | translate | titlecase"
-              #singleSelect
-              formControlName="vaccineCode"
-              required="true"
-              [formControl]="vaccinationFilterControl"
-              ngDefaultControl
+        <mat-form-field [attr.aria-label]="'VACCINATION.STATUS' | translate" class="detailed-card-content__form-field">
+          <mat-select
+            [placeholder]="'VACCINATION.VACCINE_CODE' | translate"
+            [attr.aria-label]="'VACCINATION.VACCINE_CODE' | translate"
+            #singleSelect
+            formControlName="vaccineCode"
+            required="true"
+            [formControl]="vaccinationFilterControl"
+            ngDefaultControl
+          >
+            <mat-option>
+              <ngx-mat-select-search [formControl]="searchControl"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option
+              *ngFor="let vaccine of vaccinationFilteredList | async | filterPipe : searchControl.value : 'vaccination-names.'"
+              [attr.aria-label]="'vaccination-names.' + vaccine.code | translate"
+              vmTranslate="{{ 'vaccination-names.' + vaccine.code }}"
+              [value]="vaccine"
             >
-              <mat-option>
-                <ngx-mat-select-search [formControl]="vaccinationFilterControl"></ngx-mat-select-search>
-              </mat-option>
-              <mat-option
-                *ngFor="let vaccine of vaccinationFilteredList | async"
-                vmTranslate="{{ 'vaccination-names.' + vaccine.code }}"
-                [value]="vaccine"
-              >
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field>
-            <input
-              matInput
-              placeholder="{{ 'VACCINATION.TARGET_DISEASES' | translate | titlecase }}"
-              required="true"
-              formControlName="targetDiseases"
-              [formControl]="diseasesChips.ctrl"
-              [matAutocomplete]="autoDiseases"
-              [matChipInputFor]="diseasesChipsList"
-            />
-            <mat-chip-list #diseasesChipsList>
-              <mat-chip
-                *ngFor="let i of diseasesChips.selected"
-                [removable]="true"
-                (removed)="diseasesChips.remove(i, editForm)"
-                color="accent"
-              >
-                {{ 'vaccination-targetdiseases.' + i.code | translate }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
-            </mat-chip-list>
-            <mat-autocomplete #autoDiseases="matAutocomplete" (optionSelected)="diseasesChips.select($event, editForm)">
-              <mat-option *ngFor="let v of diseasesChips.filtered | async" [value]="v">
-                <mat-checkbox [checked]="v.selected"> {{ 'vaccination-targetdiseases.' + v.code | translate }}</mat-checkbox>
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-
-          <mat-form-field class="mat-form-field mat-form-field-width-100 dose">
-            <input
-              matInput
-              type="number"
-              formControlName="doseNumber"
-              required="true"
-              [placeholder]="'VACCINATION.DOSE_NUMBER' | translate | titlecase"
-            />
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-select
-              [placeholder]="'VACCINATION.STATUS' | translate | titlecase"
-              required="true"
-              formControlName="status"
-              #status
-              ngDefaultControl
+        <mat-form-field [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate" class="detailed-card-content__form-field">
+          <input
+            matInput
+            placeholder="{{ 'VACCINATION.TARGET_DISEASES' | translate }}"
+            [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate"
+            required="true"
+            formControlName="targetDiseases"
+            [formControl]="diseasesChips.ctrl"
+            [matAutocomplete]="autoDiseases"
+            [matChipInputFor]="diseasesChipsList"
+          />
+          <mat-chip-list #diseasesChipsList>
+            <mat-chip
+              *ngFor="let i of diseasesChips.selected"
+              [removable]="true"
+              (removed)="diseasesChips.remove(i, editForm)"
+              [attr.aria-label]="'vaccination-targetdiseases.' + i.code | translate"
+              color="accent"
             >
-              <mat-option
-                *ngFor="let state of vaccinationStatuses | async"
-                vmTranslate="{{ 'VACCINE_STATUS.' + state.code }}"
-                [value]="state"
-              >
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field class="mat-form-field mat-form-field-width-100">
-            <input matInput formControlName="lotNumber" [placeholder]="'VACCINATION.LOT_NUMBER' | translate | titlecase" />
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-select
-              #reason
-              [placeholder]="'VACCINATION.VACCINATION_REASON' | translate | titlecase"
-              required="false"
-              formControlName="reason"
-              ngDefaultControl
+              {{ 'vaccination-targetdiseases.' + i.code | translate }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+          <mat-autocomplete #autoDiseases="matAutocomplete" (optionSelected)="diseasesChips.select($event, editForm)">
+            <mat-option
+              *ngFor="let v of diseasesChips.filtered | async"
+              [value]="v"
+              [attr.aria-label]="'vaccination-targetdiseases.' + v.code | translate"
             >
-              <mat-option [value]="null">{{ 'GLOBAL.NONE_OPTION' | translate }}</mat-option>
-              <mat-option *ngFor="let reason of reasons | async" vmTranslate="{{ 'VACCINATION_REASON.' + reason.code }}" [value]="reason">
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+              <mat-checkbox [attr.aria-label]="'vaccination-targetdiseases.' + v.code | translate" [checked]="v.selected">
+                {{ 'vaccination-targetdiseases.' + v.code | translate }}</mat-checkbox
+              >
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-          <mat-card class="mat-elevation-z0 group" fxLayout="column" fxLayoutAlign="center">
-            <mat-label class="mat-label" vmTranslate="VACCINATION.RECORDER"></mat-label>
-            <div class="recorder-group" formGroupName="recorder">
-              <mat-form-field class="mat-form-field">
-                <mat-label vmTranslate="USER.PREFIX"></mat-label>
-                <input matInput formControlName="prefix" />
-              </mat-form-field>
+        <mat-form-field class="detailed-card-content__form-field">
+          <input
+            matInput
+            type="number"
+            [attr.aria-label]="'VACCINATION.DOSE_NUMBER' | translate"
+            formControlName="doseNumber"
+            required="true"
+            [placeholder]="'VACCINATION.DOSE_NUMBER' | translate"
+          />
+        </mat-form-field>
 
-              <mat-form-field class="mat-form-field">
-                <mat-label vmTranslate="USER.FIRSTNAME">First Name</mat-label>
-                <input matInput formControlName="firstName" #fName [required]="!org.value" />
-              </mat-form-field>
+        <mat-form-field class="detailed-card-content__form-field">
+          <input
+            matInput
+            [attr.aria-label]="'VACCINATION.LOT_NUMBER' | translate"
+            formControlName="lotNumber"
+            [placeholder]="'VACCINATION.LOT_NUMBER' | translate"
+          />
+        </mat-form-field>
 
-              <mat-form-field class="mat-form-field">
-                <mat-label vmTranslate="USER.LASTNAME">Last Name</mat-label>
-                <input matInput formControlName="lastName" [required]="!org.value || !!fName.value" />
-              </mat-form-field>
-            </div>
-          </mat-card>
+        <mat-form-field class="detailed-card-content__form-field">
+          <mat-select
+            #reason
+            [placeholder]="'VACCINATION.VACCINATION_REASON' | translate"
+            [attr.aria-label]="'VACCINATION.VACCINATION_REASON' | translate"
+            required="false"
+            formControlName="reason"
+            ngDefaultControl
+          >
+            <mat-option [value]="null">{{ 'GLOBAL.NONE_OPTION' | translate }}</mat-option>
+            <mat-option
+              *ngFor="let reason of reasons | async"
+              [attr.aria-label]="'VACCINATION_REASON.' + reason.code | translate"
+              vmTranslate="{{ 'VACCINATION_REASON.' + reason.code }}"
+              [value]="reason"
+            >
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field class="mat-form-field mat-form-field-width-100 dose">
-            <input
-              matInput
-              type="text"
-              formControlName="organization"
-              required="true"
-              #org
-              [required]="!fName.value"
-              [placeholder]="'ALLERGY.ORGANIZATION' | translate | titlecase"
-            />
-          </mat-form-field>
-          <mat-form-field class="mat-form-field mat-form-field-width-100">
-            <mat-label class="mat-label" vmTranslate="GLOBAL.COMMENT"></mat-label>
-            <textarea matInput formControlName="commentMessage"></textarea>
-          </mat-form-field>
+        <mat-card class="mat-elevation-z0 form-wrapper__form-recorder" fxLayout="column" fxLayoutAlign="center">
+          <mat-label
+            class="form-wrapper__form-recorder__label"
+            [attr.aria-label]="'VACCINATION.RECORDER' | translate"
+            vmTranslate="VACCINATION.RECORDER"
+          ></mat-label>
+          <div formGroupName="recorder" [ngClass]="isMobile ? 'mobile-recorder--fields' : 'recorder--fields'">
+            <mat-form-field class="recorder-form-field">
+              <mat-label [attr.aria-label]="'USER.PREFIX' | translate" vmTranslate="USER.PREFIX"></mat-label>
+              <input [attr.aria-label]="'USER.PREFIX' | translate" matInput formControlName="prefix" />
+            </mat-form-field>
 
-          <vm-common-card-footer
-            [isEditFooter]="true"
-            [dialogTitle]="helpDialogTitle"
-            [dialogBody]="helpDialogBody"
-            (edit)="save()"
-            [disabled]="editForm.invalid || isSaving"
-            [canValidate]="canValidated"
-          ></vm-common-card-footer>
-        </form>
-      </mat-card-content>
-    </mat-card>
-    <vm-comment [comments]="vaccination?.comments!"></vm-comment>
-  </div>
-</vm-main-wrapper>
+            <mat-form-field class="recorder-form-field">
+              <mat-label [attr.aria-label]="'USER.FIRSTNAME' | translate" vmTranslate="USER.FIRSTNAME">First Name </mat-label>
+              <input matInput [attr.aria-label]="'USER.FIRSTNAME' | translate" formControlName="firstName" #fName [required]="!org.value" />
+            </mat-form-field>
+
+            <mat-form-field class="recorder-form-field">
+              <mat-label [attr.aria-label]="'USER.LASTNAME' | translate" vmTranslate="USER.LASTNAME">Last Name </mat-label>
+              <input
+                matInput
+                [attr.aria-label]="'USER.LASTNAME' | translate"
+                formControlName="lastName"
+                [required]="!org.value || !!fName.value"
+              />
+            </mat-form-field>
+          </div>
+        </mat-card>
+
+        <mat-form-field class="detailed-card-content__form-field">
+          <input
+            matInput
+            type="text"
+            formControlName="organization"
+            [attr.aria-label]="'USER.ORGANIZATION' | translate"
+            required="true"
+            #org
+            [required]="!fName.value"
+            [placeholder]="'ALLERGY.ORGANIZATION' | translate"
+          />
+        </mat-form-field>
+        <mat-form-field class="detailed-card-content__form-field">
+          <mat-label [attr.aria-label]="'GLOBAL.COMMENT' | translate" class="mat-label" vmTranslate="GLOBAL.COMMENT"></mat-label>
+          <textarea [attr.aria-label]="'GLOBAL.COMMENT' | translate" matInput formControlName="commentMessage"></textarea>
+        </mat-form-field>
+
+        <vm-common-card-footer
+          [isEditFooter]="true"
+          [dialogTitle]="helpDialogTitle | translate"
+          [dialogBody]="helpDialogBody | translate"
+          (edit)="save()"
+          [disabled]="editForm.invalid || isSaving"
+          [canValidate]="canValidated"
+        ></vm-common-card-footer>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  <vm-comment class="detail-wrapper__comment" [comments]="vaccination?.comments!"></vm-comment>
+</div>

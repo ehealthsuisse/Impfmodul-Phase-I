@@ -20,7 +20,6 @@ package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -54,16 +53,16 @@ public class LifeCycleServiceTest {
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
     vaccinationDTOs[0] = new VaccinationDTO("1", new ValueDTO("1", "1", "testsystem"), null, null, 1,
         LocalDate.now(), new HumanNameDTO("Victor1", "Frankenstein1", "Dr.", null, null), null,
-        "lotNumber1", null, status, true);
+        "lotNumber1", null, status);
     vaccinationDTOs[1] = new VaccinationDTO("2", new ValueDTO("2", "2", "testsystem"), null, null, 2,
         LocalDate.now(), new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null), null,
-        "lotNumber2", null, status, true);
+        "lotNumber2", null, status);
     vaccinationDTOs[2] = new VaccinationDTO("3", new ValueDTO("3", "3", "testsystem"), null, null, 3,
         LocalDate.now(), new HumanNameDTO("Victor3", "Frankenstein3", "Dr.", null, null), null,
-        "lotNumber3", null, status, true);
+        "lotNumber3", null, status);
     vaccinationDTOs[3] = new VaccinationDTO("4", new ValueDTO("4", "4", "testsystem"), null, null, 4,
         LocalDate.now(), new HumanNameDTO("Victor4", "Frankenstein4", "Dr.", null, null), null,
-        "lotNumber4", null, status, true);
+        "lotNumber4", null, status);
 
     vaccinationDTOs[0].setCreatedAt(LocalDateTime.now());
     vaccinationDTOs[1].setCreatedAt(LocalDateTime.now().plusSeconds(1));
@@ -78,7 +77,7 @@ public class LifeCycleServiceTest {
   void test_chained_deletion() {
     vaccinationDTOs[2].setRelatedId("2");
     vaccinationDTOs[3].setRelatedId("3");
-    vaccinationDTOs[3].setStatus(createErrorStatus());
+    vaccinationDTOs[3].setDeleted(true);
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
 
@@ -90,7 +89,7 @@ public class LifeCycleServiceTest {
   void test_chained_deletion_withoutLifecycle() {
     vaccinationDTOs[2].setRelatedId("2");
     vaccinationDTOs[3].setRelatedId("3");
-    vaccinationDTOs[3].setStatus(createErrorStatus());
+    vaccinationDTOs[3].setDeleted(true);
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), true);
 
@@ -162,7 +161,7 @@ public class LifeCycleServiceTest {
   @Test
   void test_deletion() {
     vaccinationDTOs[2].setRelatedId("2");
-    vaccinationDTOs[2].setStatus(createErrorStatus());
+    vaccinationDTOs[2].setDeleted(true);
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
 
@@ -179,7 +178,7 @@ public class LifeCycleServiceTest {
     vaccinationDTOs[1].setRelatedId("1");
     vaccinationDTOs[2].setRelatedId("2");
     vaccinationDTOs[3].setRelatedId("3");
-    vaccinationDTOs[3].setStatus(createErrorStatus());
+    vaccinationDTOs[3].setDeleted(true);
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
 
@@ -206,9 +205,9 @@ public class LifeCycleServiceTest {
    */
   @Test
   void testBrokenExtrapolation() {
-    vaccinationDTOs[1].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
-    vaccinationDTOs[2].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
-    vaccinationDTOs[3].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
+    vaccinationDTOs[1].setCode(vaccinationDTOs[0].getCode());
+    vaccinationDTOs[2].setCode(vaccinationDTOs[0].getCode());
+    vaccinationDTOs[3].setCode(vaccinationDTOs[0].getCode());
 
     vaccinationDTOs[1].setOccurrenceDate(LocalDate.now().minusDays(2));
     vaccinationDTOs[1].setRelatedId("1");
@@ -225,9 +224,9 @@ public class LifeCycleServiceTest {
 
   @Test
   void testExtrapolatedPrevious() {
-    vaccinationDTOs[1].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
-    vaccinationDTOs[2].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
-    vaccinationDTOs[3].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
+    vaccinationDTOs[1].setCode(vaccinationDTOs[0].getCode());
+    vaccinationDTOs[2].setCode(vaccinationDTOs[0].getCode());
+    vaccinationDTOs[3].setCode(vaccinationDTOs[0].getCode());
 
     vaccinationDTOs[0].setCreatedAt(LocalDateTime.now().minusDays(3));
     vaccinationDTOs[1].setCreatedAt(LocalDateTime.now().minusDays(2));
@@ -249,9 +248,9 @@ public class LifeCycleServiceTest {
    */
   @Test
   void testExtrapolation() {
-    vaccinationDTOs[1].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
-    vaccinationDTOs[2].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
-    vaccinationDTOs[3].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
+    vaccinationDTOs[1].setCode(vaccinationDTOs[0].getCode());
+    vaccinationDTOs[2].setCode(vaccinationDTOs[0].getCode());
+    vaccinationDTOs[3].setCode(vaccinationDTOs[0].getCode());
     vaccinationDTOs[1].setRelatedId("1");
     vaccinationDTOs[2].setRelatedId("2");
     // intermediate is missing
@@ -265,7 +264,7 @@ public class LifeCycleServiceTest {
   @Test
   void testIsPreviousCandidate() {
     assertThat(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1])).isFalse();
-    vaccinationDTOs[1].setVaccineCode(vaccinationDTOs[0].getVaccineCode());
+    vaccinationDTOs[1].setCode(vaccinationDTOs[0].getCode());
     assertThat(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1])).isTrue();
     vaccinationDTOs[0].setCreatedAt(LocalDateTime.now().minusDays(2));
     assertThat(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1])).isTrue();
@@ -305,9 +304,5 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(1).getId()).isEqualTo("3");
     assertThat(managedList.get(2).getId()).isEqualTo("2");
     assertThat(managedList.get(3).getId()).isEqualTo("1");
-  }
-
-  private ValueDTO createErrorStatus() {
-    return new ValueDTO(FhirConverterIfc.ENTERED_IN_ERROR, FhirConverterIfc.ENTERED_IN_ERROR, "testsystem");
   }
 }

@@ -1,38 +1,89 @@
 @import 'src/assets/scss/global';
 
-.table-content {
-  position: relative;
+// distribute angular material table styles to all tables
+// this is a workaround for the fact that angular material
 
-  .refresh-indicator {
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
+// does not support table styling
+// see
 
-  .table-wrapper {
-    width: 100%;
+mat-table {
+  display: table;
+  width: 100%;
+  min-width: 80vw;
+  vertical-align: middle !important;
+  text-align-all: center;
+  font-size: calc($font-size-base * 0.75);
+  line-height: $font-size-base * 0.8;
 
-    .data-row {
-      cursor: pointer;
-      border-bottom: 1px solid red !important;
+  mat-header-cell,
+  th {
+    color: var(--text-color-base);
+    font-weight: 600;
+    padding-left: 30px;
+    padding-right: 30px;
+
+    @for $i from 1 through 10 {
+      &:nth-child(#{ $i }) {
+        @if ($i == 1) {
+          width: 20%;
+        }
+        @if ($i == 2) {
+          width: 30%;
+          line-height: 3;
+        }
+        @if ($i == 5) {
+          width: 20%;
+        }
+      }
     }
   }
-
-  th.mat-header-cell:first-of-type,
-  td.mat-cell:first-of-type,
-  td.mat-footer-cell:first-of-type {
-    padding: 10px;
-    padding-right: 24px;
-    width: 50px;
-    .icon-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      place-items: center;
+  td {
+    color: var(--text-color-secondary);
+    font-weight: 400;
+    padding-left: 30px;
+    padding-right: 30px;
+    @for $i from 1 through 10 {
+      &:nth-child(#{ $i }) {
+        line-height: $font-size-base * 1.2;
+        @if ($i == 1) {
+          width: 20%;
+        }
+        @if ($i == 2) {
+          width: 30%;
+        }
+        @if ($i == 5) {
+          width: 20%;
+        }
+      }
     }
   }
 }
 
-.hidden {
-  display: none;
+.mat-row {
+  cursor: pointer;
+}
+
+.warning-icon {
+  color: #915704;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.deleted-icon {
+  color: #bb150a;
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.validated-icon {
+  color: #026560;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+@include media-breakpoint(tm) {
+  .table-content {
+    overflow-x: auto;
+    white-space: pre;
+  }
 }

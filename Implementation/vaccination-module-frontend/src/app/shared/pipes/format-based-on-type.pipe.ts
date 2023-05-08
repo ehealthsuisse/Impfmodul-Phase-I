@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -19,7 +19,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../date/input.constants';
-import '../../core/config/dayjs';
+import '../date/dayjs';
 
 @Pipe({
   name: 'formatBasedOnType',

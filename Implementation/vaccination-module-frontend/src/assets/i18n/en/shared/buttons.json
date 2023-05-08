@@ -1,7 +1,7 @@
 {
   "buttons": {
     "ADD": "Add",
-    "EDIT": "modify",
+    "EDIT": "Edit",
     "DELETE": "Delete",
     "CANCEL": "Cancel",
     "SAVE": "Save",
@@ -14,13 +14,14 @@
     "BACK": "Back",
     "CONTINUE": "Continue",
     "VERIFY": "Verify",
-    "EXPORT": "Export",
-    "PRINT": "Print",
-    "SAVE_EPD": "Save in EPD",
+    "EXPORT": "Export/Print",
     "VALIDATE": "Validate",
-    "ADD_ALLERGY": "Add Allergy",
-    "ADD_VACCINATION": "Add Vaccination",
-    "ADD_PAST_ILLNESS": "Add Past Illness",
-    "DOWNLOAD": "Download"
+    "ADD_ALLERGY": "Add adverse event",
+    "ADD_VACCINATION": "Add vaccination",
+    "ADD_PAST_ILLNESS": "Add infectious disease",
+    "ADD_MEDICAL_PROBLEMS": "Add medical problem",
+    "DOWNLOAD": "Download",
+    "HELP": "Help",
+    "SAVE_AND_STAY": "Save and create another"
   }
 }

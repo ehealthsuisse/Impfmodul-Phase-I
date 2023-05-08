@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -21,13 +21,14 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { map, Observable, startWith } from 'rxjs';
 import { VaccinationFormGroup } from '../../services/vaccination-form.service';
 import { IValueDTO } from '../../../../shared';
+import { TranslateService } from '@ngx-translate/core';
 export class ChipsHandler {
   list: IValueDTO[] = [];
   selected: IValueDTO[] = [];
   filtered!: Observable<IValueDTO[]>;
   ctrl = new FormControl('');
   private type: 'reason' | 'disease';
-  constructor(type: 'reason' | 'disease') {
+  constructor(type: 'reason' | 'disease', private translateService: TranslateService) {
     this.type = type;
   }
   select(item: MatAutocompleteSelectedEvent, form: VaccinationFormGroup): void {
@@ -39,7 +40,9 @@ export class ChipsHandler {
     }
     const formCtrl = this.getFormCtrl(form);
     this.selected = formCtrl.value ? [...formCtrl.value, i] : [i];
-    this.list.filter(x => x.code === i.code)[0].selected = true;
+    if (this.list.length > 0) {
+      this.list.filter(x => x.code === i.code)[0].selected = true;
+    }
     formCtrl.setValue(this.selected);
     this.ctrl.setValue(null);
   }
@@ -49,7 +52,9 @@ export class ChipsHandler {
     formCtrl.setValue(this.selected);
     this.ctrl.setValue(null);
     this.selected.forEach(element => {
-      this.list.filter(x => x.code === element.code)[0].selected = true;
+      if (this.list.length > 0) {
+        this.list.filter(x => x.code === element.code)[0].selected = true;
+      }
     });
     this.filtered = this.ctrl.valueChanges.pipe(
       startWith(null),
@@ -74,6 +79,9 @@ export class ChipsHandler {
   }
   private _filter(value: any, array: IValueDTO[]): IValueDTO[] {
     const filterValue = value.name ? value.name.toLowerCase() : value.toLowerCase();
-    return array.filter(i => i.name.toLowerCase().includes(filterValue));
+    return array.filter(i => {
+      const translatedName = this.translateService.instant('vaccination-targetdiseases.' + i.code);
+      return translatedName.toLowerCase().includes(filterValue);
+    });
   }
 }

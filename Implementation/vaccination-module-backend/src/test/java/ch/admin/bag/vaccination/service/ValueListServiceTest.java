@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,23 @@ public class ValueListServiceTest {
 
   @Autowired
   private ValueListService valueListService;
+
+  @Test
+  void getAllListOfValues_conditionClinicalStatusList_doOnlyDisplayActiveInactive() {
+    List<ValueListDTO> valueListDTO = valueListService.getAllListOfValues();
+    boolean foundResult = false;
+
+    for (ValueListDTO list : valueListDTO) {
+      if (ValueListService.CONDITION_CLINICAL_STATUS.equals(list.getName())) {
+        foundResult = true;
+        list.getEntries().forEach(entry -> {
+          assertThat(entry.isAllowDisplay()).isEqualTo(entry.getCode().contains("active"));
+        });
+      }
+    }
+
+    assertThat(foundResult).isTrue();
+  }
 
   @Test
   void getAllListOfValues_returnValues() {

@@ -1,3 +1,16 @@
+epdbackend:
+  activateSoapLogging: true
+  soapLoggingPath: log/
+  
 hazelcast:
   cluster-name: ImpfmoduleTest
   time-to-live-seconds: 2
+
+ipf:
+  atna:
+    audit-enabled: true
+    audit-repository-host: localhost
+    audit-repository-port: 9898
+    audit-repository-transport: UDP
+    audit-source-id: SopraSteria-Impfmodule
+    audit-enterprise-site-id: www.soprasteria.com

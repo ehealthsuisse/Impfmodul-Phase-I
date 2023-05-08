@@ -115,22 +115,25 @@ legend left
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} RequestBody VaccinationDTO //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody VaccinationDTO //
   POST // /validate/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody VaccinationDTO //
-  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} //
+  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody ValueDTO (confidentiality) //
   -- /allergy--
   GET // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} RequestBody AllergyDTO //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody AllergyDTO //
-  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} //
+  POST // /validate/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody AllergyDTO //
+  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody ValueDTO (confidentiality) //
   -- /pastillness--
   GET // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} RequestBody PastIllnessDTO //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody PastIllnessDTO //
-  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} //
+  POST // /validate/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody PastIllnessDTO //
+  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody ValueDTO (confidentiality) //
   -- /medicalProblem--
   GET // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} RequestBody MedicalProblemDTO //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody MedicalProblemDTO //
-  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} //
+  POST // /validate/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody MedicalProblemDTO //
+  DELETE // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid} RequestBody ValueDTO (confidentiality) //
   -- /vaccinationRecord --
   GET // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} //
   POST // /communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId} RequestBody VaccinationRecordDTO //

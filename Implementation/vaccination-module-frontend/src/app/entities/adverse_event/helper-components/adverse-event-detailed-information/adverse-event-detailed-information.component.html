@@ -1,0 +1,74 @@
+<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between">
+  <!--  occurrenceDate  -->
+  <vm-reusable-date-field
+    [formControl]="adverseEventForm.controls.occurrenceDate"
+    [labelTranslationKey]="'ALLERGY.OCCURRENCE_DATE'"
+    [isEditable]="false"
+    [notEditableValue]="adverseEvent?.occurrenceDate | formatDate"
+  ></vm-reusable-date-field>
+
+  <vm-reusable-select-field
+    [formControl]="adverseEventForm.controls.code!"
+    [isEditable]="false"
+    [translationKey]="'ALLERGY.CODE'"
+    [labelTranslationKey]="'ALLERGY.CODE'"
+    [mainValueKey]="'ALLERGY_CODE.' + adverseEvent?.code?.code! | translate"
+  ></vm-reusable-select-field>
+
+  <vm-reusable-recorder-field
+    [parentForm]="adverseEventForm"
+    [recorder]="adverseEvent?.recorder!"
+    [organization]="adverseEvent?.organization!"
+    [isEditable]="false"
+  >
+  </vm-reusable-recorder-field>
+
+  <mat-form-field class="detailed-card-content__form-field" *ngIf="adverseEvent?.commentMessage">
+    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
+    <textarea matInput [attr.aria-label]="adverseEvent?.commentMessage" value="{{ adverseEvent?.commentMessage }}" disabled></textarea>
+  </mat-form-field>
+
+  <div class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
+      <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
+      <mat-icon
+        tabindex="0"
+        class="openComments"
+        *ngIf="!commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >add</mat-icon
+      >
+      <mat-icon
+        tabindex="0"
+        class="closeComments"
+        *ngIf="commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >clear</mat-icon
+      >
+    </div>
+
+    <mat-card
+      *ngFor="let comment of adverseEvent?.comments"
+      role="article"
+      class="commentsContent_card comment-card mat-elevation-z0"
+      [ngClass]="{ active: commentsOpened }"
+      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDateTime }}'"
+    >
+      <div class="comment-header">
+        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      </div>
+      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+    </mat-card>
+    <p
+      *ngIf="adverseEvent?.comments?.length === 0"
+      vmTranslate="COMMENT.NO_COMMENTS"
+      class="commentsContent_card no-comments"
+      [ngClass]="{ active: commentsOpened }"
+    ></p>
+  </div>
+</mat-card-content>

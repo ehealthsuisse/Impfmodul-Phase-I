@@ -1,0 +1,25 @@
+.save-and-stay {
+  margin-left: 10px;
+}
+.mobile-mat-dialog-content {
+  max-height: 90%;
+  height: 85% !important;
+}
+.mobile-mat-dialog-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    .mat-button {
+      width: calc(50% - 5px);
+    }
+  }
+  .mobile-save-and-stay {
+    margin-top: 20px;
+    width: 100%;
+  }
+}

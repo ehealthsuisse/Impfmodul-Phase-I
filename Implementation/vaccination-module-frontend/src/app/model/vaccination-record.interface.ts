@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,18 +16,19 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { Allergy } from './allergy.interface';
-import { IIllnesses } from './illnesses.interface';
-import { Vaccination } from './vaccination.interface';
-import { IBaseDTO } from '../shared/interfaces/baseDTO.interface';
-import { Author } from '../shared/interfaces/author';
-import { IHumanDTO } from '../shared/interfaces/humanDTO.interface';
+import { Author, IBaseDTO, IHumanDTO, IValueDTO } from '../shared';
+import { IAdverseEvent } from './adverse-event.interface';
+import { IInfectiousDiseases } from './infectious-diseases.interface';
+import { IMedicalProblem } from './medical-problem.interface';
+import { IVaccination } from './vaccination.interface';
 
 export interface IVaccinationRecord extends IBaseDTO {
   lang: string;
-  allergies: Allergy[];
-  pastIllnesses: IIllnesses[];
-  vaccinations: Vaccination[];
+  allergies: IAdverseEvent[];
+  pastIllnesses: IInfectiousDiseases[];
+  vaccinations: IVaccination[];
+  medicalProblems: IMedicalProblem[];
+  i18nTargetDiseases: IValueDTO[];
   patient: IHumanDTO;
   author?: Author;
 }

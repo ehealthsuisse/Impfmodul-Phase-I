@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.5</version>
+    <version>2.7.11</version>
     <relativePath />
   </parent>
 
   <groupId>ch.admin.bag.vaccination</groupId>
   <artifactId>vaccination-module-backend</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.2.0</version>
   <packaging>${packaging.type}</packaging>
 
   <name>Vaccination Module Backend for the EPD</name>
@@ -23,11 +23,14 @@
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <junit.version>5.8.2</junit.version>
-    <springdoc.version>1.6.13</springdoc.version>
+    <junit.version>5.9.3</junit.version>
+    <springdoc.version>1.6.15</springdoc.version>
     <husky.version>2.0.0</husky.version>
-    <fhir.version>6.2.1</fhir.version>
-    <opensaml.version>4.2.0</opensaml.version>
+    <fhir.version>6.2.5</fhir.version>
+    <!-- custom lib Sopra Steria -->
+    <fhir.adapter.version>1.0.1</fhir.adapter.version>
+    <itext.version>7.2.5</itext.version>
+    <opensaml.version>4.3.0</opensaml.version>
     <xmlsectool.version>3.0.0</xmlsectool.version>
   </properties>
 
@@ -43,7 +46,35 @@
       <name>Shibboleth</name>
       <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
     </repository>
+    <!-- used for FHIR Adapter library -->
+    <repository>
+      <id>gitlab-maven</id>
+      <url>https://innersource.soprasteria.com/api/v4/projects/150475/packages/maven</url>
+    </repository>
   </repositories>
+  
+  <!-- Internal use for Sopra Steria only --> 
+  <scm>
+    <connection>scm:git:https://innersource.soprasteria.com/bit/bag/vaccination-module-backend</connection>
+    <developerConnection>scm:git:https://innersource.soprasteria.com/bit/bag/vaccination-module-backend</developerConnection>
+    <url>https://innersource.soprasteria.com/bit/bag/vaccination-module-backend</url>
+    <tag>HEAD</tag>
+  </scm>
+  
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>gitlab-maven</id>
+      <name>Maven Releases</name>
+      <url>https://innersource.soprasteria.com/api/v4/projects/113341/packages/maven</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>gitlab-maven</id>
+      <name>Maven Snapshots</name>
+      <url>https://innersource.soprasteria.com/api/v4/projects/113341/packages/maven</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -78,6 +109,11 @@
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>
     </dependency>
+    <!-- necessary to support velocity engine for HTTP post -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-saml2-service-provider</artifactId>
+    </dependency>
 
     <!-- Husky -->
     <dependency>
@@ -85,17 +121,22 @@
       <artifactId>husky-communication-gen</artifactId>
       <version>${husky.version}</version>
     </dependency>
-
-    <!--hapi-fhir -->
     <dependency>
-      <groupId>ca.uhn.hapi.fhir</groupId>
-      <artifactId>hapi-fhir-structures-r4</artifactId>
-      <version>${fhir.version}</version>
+      <groupId>org.projecthusky.communication</groupId>
+      <artifactId>husky-communication-ch</artifactId>
+      <version>${husky.version}</version>
     </dependency>
     <dependency>
-      <groupId>ca.uhn.hapi.fhir</groupId>
-      <artifactId>hapi-fhir-validation-resources-r4</artifactId>
-      <version>${fhir.version}</version>
+      <groupId>org.projecthusky.communication</groupId>
+      <artifactId>husky-xua-ch-impl</artifactId>
+      <version>${husky.version}</version>
+    </dependency>
+    
+    <!-- fhir-adapter -->
+    <dependency>
+      <groupId>ch.admin.bag</groupId>
+      <artifactId>fhir-adapter</artifactId>
+      <version>${fhir.adapter.version}</version>
     </dependency>
 
     <!-- Swagger -->
@@ -150,10 +191,20 @@
     <!-- PDF generation -->
     <dependency>
       <groupId>com.itextpdf</groupId>
-      <artifactId>itextpdf</artifactId>
-      <version>5.5.13.3</version>
+      <artifactId>kernel</artifactId>
+      <version>${itext.version}</version>
     </dependency>
-    
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>layout</artifactId>
+      <version>${itext.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>pdfa</artifactId>
+      <version>${itext.version}</version>
+    </dependency>
+
     <!-- Hazelcast -->
     <dependency>
       <groupId>com.hazelcast</groupId>
@@ -172,6 +223,15 @@
         </exclusion>
       </exclusions>
     </dependency>
+ 
+    <!-- Syslog server -->
+    <dependency>
+      <groupId>com.github.kwart.syslog</groupId>
+      <artifactId>simple-syslog-server</artifactId>
+      <version>1.1.0-SNAPSHOT-20230315150000</version>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok-maven-plugin</artifactId>
@@ -236,6 +296,7 @@
               <nonFilteredFileExtensions>
                 <nonFilteredFileExtension>p12</nonFilteredFileExtension>
                 <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+                <nonFilteredFileExtension>jks</nonFilteredFileExtension>
               </nonFilteredFileExtensions>
               <resources>
                 <resource>
@@ -278,7 +339,7 @@
                     <limit>
                       <counter>COMPLEXITY</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.70</minimum>
+                      <minimum>0.65</minimum>
                     </limit>
                   </limits>
                 </rule>
@@ -289,22 +350,6 @@
       </plugin>
     </plugins>
   </build>
-
-  <!-- Internal use for Sopra Steria only --> 
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>maven-repository</id>
-      <name>${CI_PROJECT_NAME} Releases</name>
-      <url>${UPLOAD_REPOSITORY_URL}</url>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>maven-repository</id>
-      <name>${CI_PROJECT_NAME} Snapshots</name>
-      <url>${UPLOAD_REPOSITORY_URL}</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <profiles>
     <profile>

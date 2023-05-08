@@ -1,16 +1,19 @@
-<mat-card class="mat-elevation-z5 mat-card">
-  <mat-card-header class="mat-card-header">
-    <mat-card-title>
-      <h2 vmTranslate="GLOBAL.COMMENTS" class="h3-header"></h2>
-    </mat-card-title>
+<mat-card role="region" class="mat-elevation-z5 mat-card">
+  <mat-card-header>
+    <mat-card-title [attr.aria-label]="'GLOBAL.COMMENTS' | translate" vmTranslate="GLOBAL.COMMENTS"></mat-card-title>
   </mat-card-header>
-  <mat-card-content class="mat-card-content">
-    <mat-list class="comments-list" *ngIf="comments && comments.length > 0">
-      <mat-list-item role="listitem" *ngFor="let comment of comments">
-        <vm-user-comment [userName]="comment.author" [commentMessage]="comment.text" [commentDate]="comment.date | formatDateTime">
-        </vm-user-comment>
-      </mat-list-item>
-    </mat-list>
-    <p *ngIf="comments && comments.length === 0" vmTranslate="COMMENT.NO_COMMENTS" class="no-comments"></p>
+  <mat-card-content>
+    <mat-card
+      *ngFor="let comment of comments"
+      role="article"
+      class="comment-card mat-elevation-z0"
+      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
+    >
+      <div class="comment-header">
+        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      </div>
+      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+    </mat-card>
   </mat-card-content>
 </mat-card>

@@ -28,14 +28,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
 
 /**
- * Local security config which is not using SAML authentication.
+ * Local, non productive, security config which is not using SAML authentication.
  *
  * <p>
- * <b>Attention</b> Running the local profile is a security risk as all services are exposed.
+ * <b>Attention</b> Running the non productive profile is a security risk as all services are
+ * exposed.
  * </p>
  */
 @Configuration
-@Profile("local")
+@Profile("local | test")
 public class LocalSecurityConfiguration {
 
   @Autowired

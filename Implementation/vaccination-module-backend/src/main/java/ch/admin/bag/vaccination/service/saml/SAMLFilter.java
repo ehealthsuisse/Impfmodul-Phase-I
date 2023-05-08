@@ -21,13 +21,13 @@ package ch.admin.bag.vaccination.service.saml;
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.filter.GenericFilterBean;
@@ -37,6 +37,7 @@ import org.springframework.web.filter.GenericFilterBean;
  *
  * It ignores utility or saml endpoints, all other endpoints are secured.
  */
+@Slf4j
 public class SAMLFilter extends GenericFilterBean {
 
   private SAMLServiceIfc samlService;
@@ -48,10 +49,8 @@ public class SAMLFilter extends GenericFilterBean {
   }
 
   @Override
-  public void doFilter(
-      ServletRequest request,
-      ServletResponse response,
-      FilterChain chain) throws IOException, ServletException {
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
@@ -73,9 +72,12 @@ public class SAMLFilter extends GenericFilterBean {
       samlService.validateSecurityContext(httpServletRequest.getSession(),
           authenticatedSecurityContext);
     } else if (isToBeAuthenticated) {
-      String idpIdentifier = getIdpIdentifierFromCookie(httpServletRequest);
-      setGotoURLOnSession(httpServletRequest);
-      redirectUserForAuthentication(idpIdentifier, httpServletResponse);
+      String idpIdentifier = httpServletRequest.getHeader("idp");
+      if (idpIdentifier != null) {
+        log.info("User needs to be authenticated. Forwarding to IDP {}.", idpIdentifier);
+        redirectUserForAuthentication(idpIdentifier, httpServletResponse);
+      }
+
       return; // stop security processing
     }
 
@@ -84,16 +86,8 @@ public class SAMLFilter extends GenericFilterBean {
 
   private void checkSAMLAuthenticationState(HttpServletRequest request) {
     if (!profileConfig.isSamlAuthenticationActive()) {
-      samlService.createDummyAuthentication(request, "DUMMY"); // TODO Param or PractionerName
+      samlService.createDummyAuthentication(request);
     }
-  }
-
-  private String getIdpIdentifierFromCookie(HttpServletRequest request) {
-    return List.of(request.getCookies()).stream()
-        .filter(cookie -> cookie.getName().equals(SAMLService.IDP_IDENTIFIER_ATTRIBUTE))
-        .findAny()
-        .orElseThrow(() -> new TechnicalException("Cookie containing Idp identifier not found."))
-        .getValue();
   }
 
   private boolean isToBeAuthenticated(HttpServletRequest httpServletRequest) {
@@ -102,16 +96,13 @@ public class SAMLFilter extends GenericFilterBean {
     return !(uri.startsWith("/swagger")
         || uri.startsWith("/v3/api-docs")
         || uri.startsWith("/actuator")
+        || uri.startsWith("/signature")
         || uri.startsWith("/saml/"));
   }
 
   private void redirectUserForAuthentication(String idpIdentifier,
       HttpServletResponse httpServletResponse) {
     samlService.redirectToIdp(idpIdentifier, httpServletResponse);
-  }
-
-  private void setGotoURLOnSession(HttpServletRequest request) {
-    request.getSession().setAttribute("gotoURL", request.getRequestURL().toString());
   }
 
 }

@@ -19,7 +19,6 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +43,7 @@ class SignatureServiceTest {
   @Autowired
   private SignatureService signatureService;
 
-  // only executable if correct keystore is configured in idp-config.yml.
-  // @Test
+  @Test
   void getSamlCredentials_noInput_noExceptionOccures_validCertificate() {
     assertThat(signatureService.getSamlSPCredential()).isNotNull();
   }

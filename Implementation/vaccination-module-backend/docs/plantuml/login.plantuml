@@ -1,0 +1,63 @@
+@startuml
+skinparam handwritten false
+
+participant Browser
+participant PortalFE
+participant PortalBE
+participant ImpfmodulFE
+participant ImpfmodulBE
+participant IdP
+'participant EPD
+
+== Login ==
+Browser         -> PortalFE            : login
+PortalFE        -> PortalBE            : /signature/createQueryString
+PortalBE        -> PortalFE            : queryString
+activate ImpfmodulFE  
+PortalFE        -> ImpfmodulFE         : webCall(queryString)
+ImpfmodulFE     -> ImpfmodulBE         : /signature/validate (queryString)
+alt OK
+ImpfmodulBE     -> ImpfmodulFE         : OK
+ImpfmodulFE     -> ImpfmodulFE         : parse queryString
+ImpfmodulFE     -> Browser             : logged
+
+else NOK Timestamp > 2s or wrong signature
+
+ImpfmodulBE     -> ImpfmodulFE         : NOK
+ImpfmodulFE     -> Browser             : error
+
+deactivate ImpfmodulFE
+
+end
+
+== Logout ==
+IdP             -> ImpfmodulBE         : /logout
+
+' == SAML ==
+
+'ImpfmodulFE     -> ImpfmodulBE         : /saml/sso Artifact
+'ImpfmodulBE     -> IdP                 : SOAP Artifact
+
+legend left
+
+__queryString__
+- idp=magpar
+- laaoid=Portal
+- lang=EN_us
+- lpid=IHEBLUE-2599
+- purpose=NORM
+- role=PAT
+- timestamp=1675326031107
+- ufname=Max
+- ugname=Mustermann
+- utitle=Dr.Med
+- principalId=xxx
+- principalName=yyy
+- gln=zzz
+- sig=UBlmw7OLasBEcf8GCHEdaohY%20xPDuI7ADaoaUCR6ny4%3D
+
+Das Etikett //sig// must das letzte sein.
+
+end legend
+
+@enduml

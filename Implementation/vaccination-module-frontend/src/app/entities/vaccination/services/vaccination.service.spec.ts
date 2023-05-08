@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,22 +16,25 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import dayjs from 'dayjs';
+import { IVaccination } from '../../../model/vaccination.interface';
 import { VaccinationService } from './vaccination.service';
-import { Vaccination } from '../../../model/vaccination.interface';
+import { RouterTestingModule } from '@angular/router/testing';
+import { IValueDTO } from '../../../shared';
 
 describe('Vaccination Service', () => {
   let service: VaccinationService;
   let httpMock: HttpTestingController;
-  let elemDefault: Vaccination;
-  let expectedResult: Vaccination | Vaccination[] | boolean | null;
+  let elemDefault: IVaccination;
+  let expectedResult: IVaccination | IVaccination[] | boolean | null;
   let currentDate: dayjs.Dayjs;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [VaccinationService, RouterTestingModule],
     });
     expectedResult = null;
     service = TestBed.inject(VaccinationService);
@@ -41,6 +44,7 @@ describe('Vaccination Service', () => {
     elemDefault = {
       id: '1',
       vaccineCode: { code: '', name: 'AAAAAAA' },
+      code: { code: '', name: 'AAAAAAA' },
       confidentiality: { code: 'AAAAA', name: 'AAAAA' },
       targetDiseases: [{ code: '', name: 'AAAAAAA' }],
       doseNumber: '1',
@@ -90,7 +94,7 @@ describe('Vaccination Service', () => {
         returnedFromService
       );
 
-      service.create({} as Vaccination).subscribe(resp => (expectedResult = resp));
+      service.create({} as IVaccination).subscribe(resp => (expectedResult = resp));
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
       expect(expectedResult).toEqual(expected);
@@ -166,7 +170,7 @@ describe('Vaccination Service', () => {
     });
 
     it('should delete a Vaccination', () => {
-      service.delete('123').subscribe(resp => (expectedResult = resp.ok));
+      service.deleteWithBody('123', {} as IValueDTO).subscribe((resp: any) => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ status: 200 });

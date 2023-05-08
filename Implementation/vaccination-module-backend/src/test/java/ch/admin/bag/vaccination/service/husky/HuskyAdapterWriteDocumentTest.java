@@ -19,9 +19,11 @@
 package ch.admin.bag.vaccination.service.husky;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,10 +47,9 @@ class HuskyAdapterWriteDocumentTest {
     String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
     String uuid = UUID.randomUUID().toString();
     PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.2.3.4",
-            "localId", null);
+        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.2.3.4", "localId");
     String ret = huskyAdapter.writeDocument(patientIdentifier, uuid,
-        json, new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null), null, null);
+        json, new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null, null);
     assertThat(ret).isEqualTo("TEST");
   }
 
@@ -57,10 +58,9 @@ class HuskyAdapterWriteDocumentTest {
     profileConfig.setHuskyLocalMode(true);
     String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
     PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.2.3.4",
-            "localId", null);
+        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.2.3.4", "localId");
     String ret = huskyAdapter.writeDocument(patientIdentifier,
-        "testfile", json, new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null), null, null);
+        "testfile", json, new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null, null);
     Files.delete(Paths.get("config", "testfiles", "json", "testfile.json"));
     assertThat(ret).isEqualTo("SUCCESS");
   }

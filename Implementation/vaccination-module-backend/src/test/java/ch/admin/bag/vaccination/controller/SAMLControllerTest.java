@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.saml.IdPAdapter;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
@@ -37,7 +38,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -45,7 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * 
+ *
  * Test the {@link SAMLController}
  *
  */
@@ -53,7 +53,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class SAMLControllerTest {
 
-  private static final String IDP_COOKIE = "idpIdentifier=GAZELLE";
   private static final String SAML_ART = "1234567890";
 
   @Autowired
@@ -75,25 +74,19 @@ public class SAMLControllerTest {
     artifactResponse.setIssueInstant(Instant.now());
     when(idPAdapter.sendAndReceiveArtifactResolve(any(), any())).thenReturn(artifactResponse);
 
-    assertThat(samlService.getSessionNumber()).isEqualTo(0);
+    assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
     sendSamlArtifact(SAML_ART);
-    assertThat(samlService.getSessionNumber()).isEqualTo(1);
+    assertThat(samlService.getNumberOfSessions()).isEqualTo(1);
     sendSamlLogoutRequest();
-    assertThat(samlService.getSessionNumber()).isEqualTo(0);
+    assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
     sendSamlLogoutRequest();
-    assertThat(samlService.getSessionNumber()).isEqualTo(0);
-  }
-
-  private HttpHeaders createCookieHeader() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add(HttpHeaders.COOKIE, IDP_COOKIE);
-
-    return headers;
+    assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
   }
 
   private void sendSamlArtifact(String samlArtifact) throws Exception {
-    RequestEntity<Void> entity = new RequestEntity<>(createCookieHeader(), HttpMethod.GET,
-        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT + "?SAMLart=" + samlArtifact));
+    RequestEntity<Void> entity = new RequestEntity<>(HttpMethod.GET,
+        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT.replace("{idp}", "gazelle") + "?SAMLart="
+            + samlArtifact));
     ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
   }

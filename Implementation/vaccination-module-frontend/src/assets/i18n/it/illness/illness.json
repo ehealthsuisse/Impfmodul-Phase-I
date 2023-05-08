@@ -1,18 +1,16 @@
 {
   "ILLNESS": {
-    "TITLE": "Malattie Infettive",
+    "TITLE": "Malattie infettive",
     "FILTER": "Cercando",
-    "DETAILS_HEADER": "Dettagli della Malattia Infettive",
-    "EDIT_HEADER": "Modifica Malattia Infettive",
-    "NEW_HEADER": "Nuova Malattia Infettive",
-    "ILLNESS_CODE": "Malattia Infettive",
-    "CLINICAL_STATUS": "Stato clinico",
-    "VERIFICATION_STATUS": "Verificato",
-    "RECORDER": "Catturare da",
-    "RECORDER_CONTACT": "Contatto del registratore",
-    "CREATED_AT": "Data di creazione",
+    "DETAILS_HEADER": "Dettagli della malattia infettive",
+    "EDIT_HEADER": "Modifica malattia infettive",
+    "NEW_HEADER": "Nuova malattia infettive",
+    "ILLNESS_CODE": "Malattia infettive",
+    "RECORDER": "Registrato da",
+    "RECORDED_DATE": "Data",
     "BEGIN": "Data di inizio",
     "END": "Data di fine",
-    "ORGANIZATION": "Organizzazione"
+    "ORGANIZATION": "Organizzazione",
+    "DATE": "Data di diagnosi"
   }
 }

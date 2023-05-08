@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -24,30 +24,21 @@ import { ErrorComponent } from './error.component';
  */
 export const ERROR_ROUTE: Routes = [
   {
+    path: 'access-denied',
+    component: ErrorComponent,
+    title: 'GLOBAL.ERROR',
+    data: {
+      errorCode: 403,
+      errorMessage: 'GLOBAL.ERROR_403',
+    },
+  },
+  {
     path: 'error',
     component: ErrorComponent,
+    title: 'GLOBAL.ERROR',
     data: {
-      pageTitle: 'error.title',
+      errorCode: 403,
+      errorMessage: 'GLOBAL.ERROR_403',
     },
-  },
-  {
-    path: 'accessdenied',
-    component: ErrorComponent,
-    data: {
-      pageTitle: 'error.title',
-      errorMessage: 'error.http.403',
-    },
-  },
-  {
-    path: '404',
-    component: ErrorComponent,
-    data: {
-      pageTitle: 'error.title',
-      errorMessage: 'error.http.404',
-    },
-  },
-  {
-    path: '**',
-    redirectTo: '/404',
   },
 ];

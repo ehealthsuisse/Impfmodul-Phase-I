@@ -42,6 +42,19 @@ public class VaccinationRecordService {
   protected FhirAdapterIfc fhirAdapter;
 
   /**
+   * Create a json of a {@link VaccinationRecordDTO}
+   *
+   * @param patientIdentifier the PatientIdentifier
+   * @param record the VaccinationRecord
+   * @return the json
+   */
+  public String create(PatientIdentifier patientIdentifier, VaccinationRecordDTO record) {
+    Bundle bundle = fhirAdapter.create(patientIdentifier, record);
+    String json = fhirAdapter.convertBundleToJson(bundle);
+    return json;
+  }
+
+  /**
    * Creates a vaccination record in the EPD containing the given vaccinations, allergies and past
    * illnesses.
    *
@@ -55,8 +68,7 @@ public class VaccinationRecordService {
    */
   public String create(String communityIdentifier, String oid, String localId, VaccinationRecordDTO record,
       Assertion assertion) {
-    PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId, assertion);
+    PatientIdentifier patientIdentifier = huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId);
 
     Bundle bundle = fhirAdapter.create(patientIdentifier, record);
     String jsonToWrite = fhirAdapter.convertBundleToJson(bundle);
@@ -65,19 +77,6 @@ public class VaccinationRecordService {
         record.getConfidentiality(), assertion);
 
     return jsonToWrite;
-  }
-
-  /**
-   * Create a json of a {@link VaccinationRecordDTO}
-   * 
-   * @param patientIdentifier the PatientIdentifier
-   * @param record the VaccinationRecord
-   * @return the json
-   */
-  public String create(PatientIdentifier patientIdentifier, VaccinationRecordDTO record) {
-    Bundle bundle = fhirAdapter.create(patientIdentifier, record);
-    String json = fhirAdapter.convertBundleToJson(bundle);
-    return json;
   }
 
 }

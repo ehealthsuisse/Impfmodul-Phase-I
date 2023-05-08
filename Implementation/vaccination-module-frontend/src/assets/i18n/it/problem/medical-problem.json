@@ -1,0 +1,17 @@
+{
+  "MEDICAL_PROBLEM": {
+    "TITLE": "Malattie croniche",
+    "FILTER": "Cercando",
+    "DETAILS_HEADER": "Dettagli della malattie croniche",
+    "EDIT_HEADER": "Modifica malattie croniche",
+    "NEW_HEADER": "Nuova malattie croniche",
+    "MEDICAL_PROBLEM_CODE": "Malattie croniche",
+    "CLINICAL_STATUS": "Stato clinico",
+    "RECORDER": "Registrato da",
+    "RECORDED_DATE": "Data",
+    "BEGIN": "Data di inizio",
+    "END": "Data di fine",
+    "ORGANIZATION": "Organizzazione",
+    "DATE": "Data di diagnosi"
+  }
+}

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -21,7 +21,4 @@
 // If you change the values in the webpack config files, you need to re run webpack to update the application
 
 declare const __DEBUG_INFO_ENABLED__: boolean;
-declare const __VERSION__: string;
-
-export const VERSION = __VERSION__;
 export const DEBUG_INFO_ENABLED = __DEBUG_INFO_ENABLED__;

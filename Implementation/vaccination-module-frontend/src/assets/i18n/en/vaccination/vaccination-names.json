@@ -1,6 +1,5 @@
 {
   "vaccination-names": {
-    "123456789": "playground vaccination",
     "683": "FSME-Immun 0.25 ml Junior",
     "450": "FSME-Immun CC",
     "656": "NeisVac-C",
@@ -54,6 +53,8 @@
     "643": "Prevenar-7",
     "644": "Hexavac",
     "711": "DiTe pediatric adsorbed",
+    "711-01": "Diphtherie- und Tetanus-Adsorbatimpfstoff für Kinder unter 8 Jahren",
+    "711-02": "Diphtherie- und Tetanus-Adsorbatimpfstoff für Kinder unter 8 Jahren",
     "704": "Dukoral",
     "483": "Rimevax",
     "707": "Tetanol pur",
@@ -77,9 +78,9 @@
     "62961": "Fluarix Tetra",
     "66037": "Menjugate liquid",
     "699": "ProQuad",
-    "66427": "Vaxigrip Tetra",
     "65387": "Gardasil 9",
     "66940": "Vaxelis",
+    "66427": "Vaxigrip Tetra",
     "65730": "Bexsero",
     "68087": "Influvac Tetra",
     "68267": "Spikevax (COVID-19 Vaccine, Moderna)",
@@ -92,6 +93,15 @@
     "66161": "Foclivia (Durchstechflasche)",
     "66156": "Foclivia (Fertigspritze)",
     "68473": "Nuvaxovid 5 ml, Injektionsdispersion",
+    "68358": "Ervebo",
+    "68710-01": "Comirnaty® 30 Mikrogramm/Dosis, für Personen ab 12 Jahren",
+    "68710-02": "Comirnaty® 10 Mikrogramm/Dosis",
+    "68473": "Nuvaxovid 5 ml",
+    "68462": "Fluenz Tetra",
+    "69009": "Spikevax Bivalent Original / Omicron",
+    "68110": "Adacel-Polio 0.5 ml",
+    "68317": "Adacel 0.5 ml",
+    "68221": "MenQuadfi",
     "14": "MoRu-Viraten",
     "17": "Poliomyelitis Impfstoff Berna",
     "23": "Triviraten",
@@ -209,6 +219,9 @@
     "1119349007": "COVID-19 mRNA vaccine",
     "29061000087103": "COVID-19 non-replicating viral vector vaccine",
     "1162643001": "COVID-19 recombinant spike protein antigen vaccine",
-    "1209197008": "Human papillomavirus 6, 11, 16, 18, 31, 33, 45, 52 and 58 vaccine"
+    "1209197008": "Human papillomavirus 6, 11, 16, 18, 31, 33, 45, 52 and 58 vaccine",
+    "1981000221108": "Meningitis B vaccine",
+    "836389008": "Vaccinia virus antigen-containing vaccine product",
+    "1119220001": "Pneumococcal 23-valent vaccine"
   }
 }

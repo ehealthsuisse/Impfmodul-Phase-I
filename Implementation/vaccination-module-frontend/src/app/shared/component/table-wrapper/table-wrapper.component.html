@@ -1,20 +1,28 @@
 <div class="table-content">
-  <vm-refresh-indicator class="refresh-indicator" *ngIf="dataLoading!"></vm-refresh-indicator>
-  <table mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8 table-wrapper" #table>
+  <vm-refresh-indicator
+    class="refresh-indicator"
+    [attr.aria-labelledby]="'REFRESH_INDICATOR.LOADING' | translate"
+    *ngIf="dataLoading!"
+  ></vm-refresh-indicator>
+  <mat-table
+    mat-table
+    matSort
+    [dataSource]="dataSource"
+    class="mat-elevation-z8 table-wrapper"
+    #table
+    [attr.aria-label]="tableName"
+    [attr.aria-labelledby]="tableName"
+    [ngClass]="isMobile ? 'mobile-app-template' : 'desktop-app-template'"
+  >
     <!-- Position Column -->
     <ng-container [matColumnDef]="columnName" *ngFor="let columnName of displayedColumns">
-      <ng-container
-        *ngIf="
-          columnName === 'recordedDate' || columnName === 'occurrenceDate' || columnName === 'doseNumber' || columnName === 'recorder';
-          else unsortables
-        "
-      >
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <ng-container *ngIf="isSortable(columnName); else unsortables">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header role="cell" scope="col">
           {{ columnName | convertToSnakeCaseTranslation: translationPrefix | translate }}
         </th>
       </ng-container>
       <ng-template #unsortables>
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef role="cell" scope="col">
           <ng-container *ngIf="columnName !== 'entryStatus'">
             {{ columnName | convertToSnakeCaseTranslation: translationPrefix | translate }}
           </ng-container>
@@ -23,7 +31,7 @@
 
       <ng-container *matCellDef="let element" [ngSwitch]="columnName">
         <ng-container *ngSwitchCase="'recorder'">
-          <td mat-cell>
+          <td mat-cell role="row">
             <span *ngIf="element[columnName]">
               {{ element[columnName] | translate }}
             </span>
@@ -31,35 +39,35 @@
           </td>
         </ng-container>
         <ng-container *ngSwitchCase="'targetDiseases'">
-          <td mat-cell>
-            <span class="code" [matTooltip]="element.targetDiseases[0] | translate">
+          <td mat-cell role="cell">
+            <span class="code">
               {{ element.targetDiseases[0] | translate }}
               <ng-container *ngIf="element.targetDiseases.length > 1">+{{ element.targetDiseases.length - 1 }}</ng-container>
             </span>
           </td>
         </ng-container>
         <ng-container *ngSwitchCase="'entryStatus'">
-          <td class="w-60" mat-cell>
+          <td class="w-60" mat-cell role="gridcell">
             <div class="icon-wrapper">
               <mat-icon
                 color="accent"
                 class="validated-icon"
-                [attr.area-label]="'ICONS.RECORD_VALIDATED' | translate"
+                [attr.aria-label]="'ICONS.RECORD_VALIDATED' | translate"
                 [matTooltip]="'ICONS.RECORD_VALIDATED' | translate"
-                *ngIf="element.validated && canValidated"
+                *ngIf="!element.deleted && !element.updated && element.validated && canValidated"
                 >check
               </mat-icon>
               <mat-icon
                 color="warn"
-                [attr.area-label]="'ICONS.RECORD_DELETED' | translate"
+                [attr.aria-label]="'ICONS.RECORD_DELETED' | translate"
                 [matTooltip]="'ICONS.RECORD_DELETED' | translate"
-                *ngIf="element.deleted"
+                *ngIf="element.deleted && !element.updated"
                 class="deleted-icon"
                 >close
               </mat-icon>
               <mat-icon
                 color="accent"
-                [attr.area-label]="'ICONS.RECORD_UPDATED' | translate"
+                [attr.aria-label]="'ICONS.RECORD_UPDATED' | translate"
                 [matTooltip]="'ICONS.RECORD_UPDATED' | translate"
                 *ngIf="element.updated"
                 class="warning-icon"
@@ -70,11 +78,11 @@
           </td>
         </ng-container>
 
-        <td mat-cell *ngSwitchDefault>{{ element[columnName] | translate }}</td>
+        <td mat-cell *ngSwitchDefault role="gridcell">{{ element[columnName] | translate }}</td>
       </ng-container>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row class="selectable data-row" *matRowDef="let row; columns: displayedColumns" (click)="rowClick.emit(row)"></tr>
-  </table>
+  </mat-table>
 </div>

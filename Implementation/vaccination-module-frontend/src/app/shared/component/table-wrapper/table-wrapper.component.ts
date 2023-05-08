@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -26,41 +26,39 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { ConvertToSnakeCaseTranslationPipe, FormatBasedOnTypePipe } from '../../pipes';
-import { SharedLibsModule } from '../../shared-libs.module';
-import { RefreshIndicatorComponent } from '../refresh-indicator';
 import { parseStringToDate } from '../../function';
+import { TranslateDirective } from '../../language';
+import { MaterialModule } from '../../material.module';
+import { ConvertToSnakeCaseTranslationPipe } from '../../pipes';
 import { SharedDataService } from '../../services/shared-data.service';
+import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
+import { ListHeaderComponent } from '../list-header';
+import { RefreshIndicatorComponent } from '../refresh-indicator';
 
 @Component({
   selector: 'vm-table-wrapper',
   standalone: true,
   imports: [
     CommonModule,
-    ConvertToSnakeCaseTranslationPipe,
-    FormatBasedOnTypePipe,
-    SharedLibsModule,
+    MaterialModule,
     RefreshIndicatorComponent,
-    MatInputModule,
     TranslateModule,
-    MatSortModule,
-    MatIconModule,
+    TranslateDirective,
+    ConvertToSnakeCaseTranslationPipe,
+    ListHeaderComponent,
   ],
   templateUrl: './table-wrapper.component.html',
   styleUrls: ['./table-wrapper.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TableWrapperComponent<T> implements OnDestroy, OnChanges, AfterViewInit, OnInit {
+export class TableWrapperComponent<T> extends BreakPointSensorComponent implements OnDestroy, OnChanges, AfterViewInit {
   @Input() displayedColumns!: string[];
   @Input() translationPrefix!: string;
   @Input() columnsPrefix: string = '';
@@ -68,23 +66,22 @@ export class TableWrapperComponent<T> implements OnDestroy, OnChanges, AfterView
   @Input() dataSource!: MatTableDataSource<T>;
   @Input() fullWidth = '80vw';
 
+  @Input() tableName = '';
+
   @Output() rowClick: EventEmitter<T> = new EventEmitter<T>();
 
   @ViewChild('table') table!: MatTable<T>;
 
-  @ViewChild(MatSort) sort!: MatSort;
-
+  sortables: string[] = ['recordedDate', 'occurrenceDate', 'doseNumber', 'recorder', 'vaccineCode'];
   canValidated!: boolean;
 
+  sharedDataService: SharedDataService = inject(SharedDataService);
   unsubscribe: Subject<void> = new Subject<void>();
 
-  protected sharedDataService: SharedDataService = inject(SharedDataService);
-
-  ngOnInit(): void {
-    this.canValidated = this.sharedDataService.storedData['role'] === 'HCP' || this.sharedDataService.storedData['role'] === 'ASS';
-  }
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit(): void {
+    this.canValidated = this.sharedDataService.storedData['role'] === 'HCP' || this.sharedDataService.storedData['role'] === 'ASS';
     if (this.dataSource) {
       this.dataSource.sort = this.sort;
     }
@@ -99,6 +96,10 @@ export class TableWrapperComponent<T> implements OnDestroy, OnChanges, AfterView
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
+
+  isSortable = (col: string): boolean => {
+    return this.sortables.includes(col);
+  };
 }
 
 const sortingDataAccessorCustom = <T>(data: T, sortHeaderId: string): string | number => {

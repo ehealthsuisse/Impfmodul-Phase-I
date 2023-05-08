@@ -1,0 +1,21 @@
+<div [ngClass]="isMobile ? 'mobile-list-wrapper' : 'list-wrapper'">
+  <vm-list-header
+    class="mat-card mat-elevation-z0"
+    [toggle]="toggleHeader"
+    (filter)="filter($event)"
+    [helpTitle]="'HELP.ALLERGY.LIST.TITLE' | translate"
+    [helpBody]="'HELP.ALLERGY.LIST.BODY' | translate"
+    (add)="addNewRecord()"
+    [title]="'ALLERGY.TITLE'"
+  >
+  </vm-list-header>
+  <vm-table-wrapper
+    [dataSource]="allergies"
+    [displayedColumns]="displayedColumns"
+    [translationPrefix]="'ALLERGY.'"
+    [fullWidth]="tableWidth"
+    (rowClick)="navigateToDetails($event)"
+    [tableName]="'ALLERGY.TITLE' | translate"
+  >
+  </vm-table-wrapper>
+</div>

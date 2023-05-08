@@ -2,7 +2,7 @@
   "buttons": {
     "ADD": "Aggiungi",
     "EDIT": "Modifica",
-    "SAVE": "Save",
+    "SAVE": "Salvare",
     "CANCEL": "Annullare",
     "DELETE": "Delete",
     "CLOSE": "Close",
@@ -14,13 +14,15 @@
     "BACK": "Indietro",
     "CONTINUE": "Avanti",
     "VERIFY": "Verifica",
-    "EXPORT": "Esporta",
+    "EXPORT": "Esporta/Stampa",
     "PRINT": "Stampa",
-    "SAVE_EPD": "Save EPD",
     "VALIDATE": "Validate",
     "ADD_ALLERGY": "Aggiungi allergia",
     "ADD_VACCINATION": "Aggiungi vaccinazione",
     "ADD_PAST_ILLNESS": "Aggiungi malattia passata",
-    "DOWNLOAD": "scaricare"
+    "ADD_PROBLEM": "Aggiungi Malattie Croniche",
+    "DOWNLOAD": "scaricare",
+    "HELP": "Aiuto",
+    "SAVE_AND_STAY": "Salva e crea un altro"
   }
 }

@@ -18,9 +18,9 @@
  */
 package ch.admin.bag.vaccination.service;
 
-import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.util.ArrayList;
@@ -111,20 +111,26 @@ public class LifeCycleService {
 
     if (candidate instanceof VaccinationDTO dto1 &&
         entry instanceof VaccinationDTO dto2) {
-      if (!dto1.getVaccineCode().equals(dto2.getVaccineCode()) ||
+      if (!dto1.getCode().equals(dto2.getCode()) ||
           !dto1.getOccurrenceDate().equals(dto2.getOccurrenceDate())) {
         return false;
       }
     } else if (candidate instanceof PastIllnessDTO dto1 &&
         entry instanceof PastIllnessDTO dto2) {
-      if (!dto1.getIllnessCode().equals(dto2.getIllnessCode()) ||
+      if (!dto1.getCode().equals(dto2.getCode()) ||
           !dto1.getRecordedDate().equals(dto2.getRecordedDate())) {
         return false;
       }
     } else if (candidate instanceof AllergyDTO dto1 &&
         entry instanceof AllergyDTO dto2) {
-      if (!dto1.getAllergyCode().equals(dto2.getAllergyCode()) ||
+      if (!dto1.getCode().equals(dto2.getCode()) ||
           !dto1.getOccurrenceDate().equals(dto2.getOccurrenceDate())) {
+        return false;
+      }
+    } else if (candidate instanceof MedicalProblemDTO dto1 &&
+        entry instanceof MedicalProblemDTO dto2) {
+      if (!dto1.getCode().equals(dto2.getCode()) ||
+          !dto1.getRecordedDate().equals(dto2.getRecordedDate())) {
         return false;
       }
     } else {
@@ -173,14 +179,7 @@ public class LifeCycleService {
 
   private boolean checkDeletedFlag(Map<String, BaseDTO> map, BaseDTO current,
       boolean keepModifiedEntries) {
-    boolean isDeleted = (current instanceof VaccinationDTO vaccination
-        && FhirConverterIfc.ENTERED_IN_ERROR.equals(vaccination.getStatus().getCode()))
-        || (current instanceof AllergyDTO allergy
-            && FhirConverterIfc.ENTERED_IN_ERROR.equals(allergy.getVerificationStatus().getCode()))
-        || (current instanceof PastIllnessDTO pastIllness
-            && FhirConverterIfc.ENTERED_IN_ERROR.equals(pastIllness.getVerificationStatus().getCode()));
-
-    current.setDeleted(isDeleted);
+    boolean isDeleted = current.isDeleted();
     if (!keepModifiedEntries && isDeleted) {
       remove(map, current);
     }

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -18,21 +18,16 @@
  */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MaterialModule } from './material.module';
 import { RouterModule } from '@angular/router';
-import { TranslateDirective } from './language/translate.directive';
-import { PerformerToStringPipe } from './pipes/performer-to-string.pipe';
-import { FormatDatePipe } from './date/format-date.pipe';
-import { FormatDateTimePipe } from './date/format-datetime.pipe';
-import { RefreshIndicatorComponent } from './component/refresh-indicator/refresh-indicator.component';
+import { TranslateDirective } from './language';
+import { FormatDatePipe, FormatDateTimePipe, SortByDatePipe } from './date';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatNativeDateModule } from '@angular/material/core';
 import { DatepickerTranslationDirective } from './directives/datepicker-translation.directive';
-import { SortByDatePipe } from './date';
+import { FormatBasedOnTypePipe, PerformerToStringPipe } from './pipes';
 
 @NgModule({
   imports: [
@@ -43,12 +38,12 @@ import { SortByDatePipe } from './date';
     FormatDateTimePipe,
     SortByDatePipe,
     FormatDatePipe,
+    ReactiveFormsModule,
     TranslateDirective,
     PerformerToStringPipe,
-    RefreshIndicatorComponent,
     FlexLayoutModule,
-    MatDialogModule,
-    MatNativeDateModule,
+    FormatBasedOnTypePipe,
+    TranslateModule,
   ],
   declarations: [DatepickerTranslationDirective],
   exports: [
@@ -61,10 +56,11 @@ import { SortByDatePipe } from './date';
     SortByDatePipe,
     TranslateDirective,
     PerformerToStringPipe,
-    RefreshIndicatorComponent,
     FlexLayoutModule,
     TranslateModule,
     DatepickerTranslationDirective,
+    FormatBasedOnTypePipe,
+    ReactiveFormsModule,
   ],
 })
 export class SharedLibsModule {}

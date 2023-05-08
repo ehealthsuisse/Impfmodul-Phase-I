@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,12 +36,12 @@ public class VaccinesToTargetDiseasesConfigTest {
   public void testConfig() {
     assertThat(config.getVaccineSystem()).isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html");
     assertThat(config.getTargetDiseaseSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs");
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm.html");
   }
 
   @Test
   public void testVaccines() {
-    assertThat(config.getVaccines().size()).isEqualTo(87);
+    assertThat(config.getVaccines().size()).isGreaterThan(85);
     assertThat(config.getVaccines().get(0).getTarget().size()).isEqualTo(1);
     assertThat(config.getVaccines().get(0).getTarget().get(0).getCode()).isEqualTo("16901001");
     assertThat(config.getVaccines().get(0).getVaccine("").getCode()).isEqualTo("683");

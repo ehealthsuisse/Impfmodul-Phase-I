@@ -1,4 +1,34 @@
+@import 'src/assets/scss/global';
+
 .mat-card {
   padding: 30px;
   margin: 0;
+  column-gap: 10px;
+  .saveBtn {
+    color: white;
+  }
+
+  .helpBtn {
+    box-shadow: none;
+  }
+
+  @include media-breakpoint(tm) {
+    flex-direction: row !important;
+    align-items: center !important;
+    place-content: center !important;
+    height: 100%;
+    row-gap: 10px;
+    .previousBtn {
+      display: none;
+    }
+    .actionBtns {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      column-gap: 10px;
+    }
+    vm-common-card-footer {
+      height: 100%;
+    }
+  }
 }

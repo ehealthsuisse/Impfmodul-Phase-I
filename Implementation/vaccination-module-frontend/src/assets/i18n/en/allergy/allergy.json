@@ -1,18 +1,13 @@
 {
   "ALLERGY": {
-    "TITLE": "Adverse Events",
-    "NEW_HEADER": "Add Adverse Event",
-    "EDIT_HEADER": "Edit Adverse Event",
-    "DETAILS_HEADER": "Adverse Event Details",
-    "ALLERGY_CODE": "Adverse Event",
-    "TYPE": "Kind",
-    "CATEGORY": "Category",
-    "CRITICALITY": "Risk",
-    "CLINICAL_STATUS": "clinical status",
-    "VERIFICATION_STATUS": "Verified",
-    "RECORDER": "Recorded By",
-    "RECORDER_CONTACT": "Recorder Contact",
-    "OCCURRENCE_DATE": "Occurrence Date",
-    "ORGANIZATION": "Organisation"
+    "TITLE": "Adverse events",
+    "NEW_HEADER": "Add adverse event",
+    "EDIT_HEADER": "Edit adverse event",
+    "DETAILS_HEADER": "Adverse event details",
+    "CODE": "Adverse effect with",
+    "RECORDER": "Recorded by",
+    "ORGANIZATION": "Organisation",
+    "OCCURRENCE_DATE": "Date",
+    "DATE": "Date of determination"
   }
 }

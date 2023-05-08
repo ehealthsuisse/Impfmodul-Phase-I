@@ -1,33 +1,38 @@
-@import './_variables';
 @import './_breakpoints';
+@import './vendor';
 
-body {
+*,
+body,
+html {
   margin: 0;
   box-sizing: border-box;
+}
+
+:root {
+  --text-color-base: rgba(0, 0, 0, 1);
+  --text-color-secondary: rgba(0, 0, 0, 0.8);
+  --accent-color: rgba(2, 101, 96, 1);
+  --alert-color: rgba(204, 29, 16, 1);
+  --background-color: rgb(255, 255, 255);
+
+  --font-size-base: 1rem;
 }
 
 /* =============== variables  ================= */
 
 /* =============== fonts sizes  ================= */
 $font-size-base: 1rem;
-$font-size-sm: calc($font-size-base * 0.75);
-$font-size-lg: calc($font-size-base * 1.125);
-$font-size-xl: calc($font-size-base * 1.5);
-$font-size-2xl: calc($font-size-base * 2);
 
 /* =============== fonts colors ================= */
-$font-color-dark: rgba(0, 0, 0, 0.87);
-$font-color-base: rgba(0, 0, 0, 0.54);
-/* =============== fonts styles ================= */
-$transform-uppercase: uppercase;
-$transform-italic: italic;
 
-$background-color-base: #fff;
+$line-height-base: 16px;
 
 /* ========= spacer using padding and margin */
 
 $padding: 16px;
 $padding-left-right-50: 0 50px 0 50px;
+$recorder-label-padding-left: 30px;
+$form-field-padding: 0 30px 0 30px;
 
 /* =============== mixin  ================= */
 
@@ -40,94 +45,214 @@ $padding-left-right-50: 0 50px 0 50px;
 
 /* =============== classes ================= */
 
-.group {
-  padding: 0;
-  margin: 0;
+/*================= Entity detailed Component ========================*/
+.detail-wrapper {
+  display: grid;
+  grid-template-columns: repeat(19, calc(5vw - 10px));
+  grid-template-rows: auto;
+  grid-gap: 10px;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  align-items: center;
+  margin-top: 50px;
 
-  .mat-label {
-    font-size: 12px;
-    padding-left: 30px;
+  &__card {
+    grid-column-start: 2;
+    grid-column-end: 13;
+    &-title {
+      color: var(--text-color-secondary);
+      font-style: italic;
+      transform: translateX(-16px);
+    }
+  }
+  &__comment {
+    grid-column-start: 13;
+    grid-column-end: 18;
+    grid-row-start: 1;
+    grid-row-end: auto;
   }
 
-  .recorder-group {
-    display: grid;
-    grid-template-columns: 1fr 2fr 2fr;
+  @include media-breakpoint(tm) {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
   }
 }
 
-// =============== Navbar =================
+.detailed-card-content {
+  .mat-form-field-autofill-control {
+    color: var(--text-color-base);
+  }
+  .recorder {
+    padding: 0;
+    display: inline-flex;
+    justify-content: space-evenly;
+    &__label {
+      font-size: calc($font-size-base * 0.75);
+    }
 
-.syringe-logo {
-  width: 150px;
-  height: 100%;
-  cursor: pointer;
+    &--fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      column-gap: 30px;
+      max-width: 100%;
+      padding-right: 25px;
+      @include media-breakpoint(tm) {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding-right: 0;
+      }
+    }
+  }
+}
+.mobile-detail-wrapper {
+  width: 100vw;
+  padding: 5vw;
+  & .details__action {
+    display: none;
+  }
+  & vm-comment {
+    display: none;
+  }
+  .recorder {
+    &--fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(3, 1fr);
+      row-gap: -50px !important;
+    }
+
+    &__label {
+      font-size: calc($font-size-base * 0.75);
+    }
+  }
 }
 
-.list-item {
-  font-size: $font-size-base;
-  text-transform: capitalize;
+@include media-breakpoint(tm) {
+  .datesWrap {
+    flex-direction: column !important;
+  }
 }
+/*================= Entity form Component ========================*/
+.detail-wrapper {
+  .form-wrapper {
+    &__form {
+      display: flex;
+      flex-direction: column;
+      &-date-range {
+        padding: 0;
+      }
 
-.h2-header {
-  font-size: $font-size-2xl;
-  font-weight: 700;
-  color: $font-color-dark;
-  text-transform: capitalize;
-}
+      &-recorder {
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
 
-.h3-header {
-  font-size: $font-size-lg;
-  color: #343a40;
-  text-transform: capitalize;
-  font-style: italic;
-}
+        &__label {
+          font-size: calc(1rem * 0.75);
+          padding-bottom: 10px;
+          padding-top: 10px;
+        }
 
-.collapse-name {
-  .code {
-    display: inline-block;
-    max-width: 12ch;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+        & > *:nth-child(2) {
+          padding: 0;
+          display: inline-flex;
+          justify-content: space-between;
+        }
+      }
+    }
 
-    + .code {
-      &::before {
-        content: '|';
-        padding-left: 10px;
-        padding-right: 10px;
+    .mobile-recorder {
+      &--fields {
+        display: flex;
+        flex-direction: column;
+        padding-top: 10px;
       }
     }
   }
 }
 
-.mat-header-row {
-  text-transform: capitalize;
+/*================= Entity list Component ========================*/
+
+.list-wrapper {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  column-gap: 10px;
+  height: calc(100vh - 200px);
+
+  & > :nth-child(1) {
+    grid-column: 1 / 10;
+    grid-row: 1 / 2;
+    grid-column-start: 2;
+    grid-row-start: 1;
+  }
+
+  & > :nth-child(2) {
+    grid-column: 1 / 10;
+    grid-row: 3 / 4;
+    grid-column-start: 2;
+    grid-row-start: 2;
+    mat-header-cell,
+    th {
+      @for $i from 1 through 10 {
+        width: calc(100% / $i) !important;
+        &:nth-child(#{ $i }) {
+          @if ($i == 1) {
+            width: 1% !important;
+          }
+          @if ($i == 2) {
+            width: 5% !important;
+          }
+        }
+      }
+    }
+    td {
+      @for $i from 1 through 10 {
+        width: calc(100% / $i) !important;
+        &:nth-child(#{ $i }) {
+          @if ($i == 1) {
+            width: 1% !important;
+          }
+          @if ($i == 2) {
+            width: 5% !important;
+          }
+        }
+      }
+    }
+  }
+}
+.mobile-list-wrapper {
+  display: block;
+  padding: 15px;
+}
+
+// =============== Navbar =================
+
+.h3-header {
+  font-size: calc($font-size-base * 1.125);
+  color: var(--text-color-secondary);
+  font-style: italic;
 }
 
 a {
   text-decoration: none;
-  color: $font-color-base;
+  color: var(--text-color-base);
   font-size: $font-size-base;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 350;
-  text-transform: capitalize;
   cursor: pointer;
 }
 
-.button-text {
-  text-transform: capitalize;
-  font-size: $font-size-base;
-}
-
 .active {
-  color: $font-color-dark;
+  color: var(--text-color-base);
   font-weight: 400;
 }
 
 mat-label {
   font-size: $font-size-base;
-  color: $font-color-base;
-  text-transform: capitalize;
+  color: var(--text-color-secondary);
 }
 
 .vm-progress-spinner {
@@ -141,10 +266,11 @@ mat-label {
   display: flex !important;
   justify-content: center;
   align-items: center;
+
   svg {
     position: relative;
     circle {
-      stroke: #079992;
+      stroke: var(--accent-color);
     }
   }
 }
@@ -165,7 +291,7 @@ mat-label {
       }
 
       & mat-form-field {
-        width: 90%;
+        width: 100%;
       }
 
       &-actions {
@@ -186,9 +312,11 @@ mat-label {
         max-height: none !important;
       }
     }
+
     &table {
       &-wrapper {
         overflow-x: auto;
+
         table {
           min-width: 600px;
         }
@@ -197,29 +325,60 @@ mat-label {
   }
 }
 
-.warning-icon {
-  color: #ff9800;
-  grid-column: 2;
-  grid-row: 1;
-}
-.deleted-icon {
-  color: #f44336;
-  grid-column: 3;
-  grid-row: 1;
-}
-
-.validated-icon {
-  grid-column: 1;
-  grid-row: 1;
-}
-
 .download-icon {
   font-size: 1.5rem;
   cursor: pointer;
   width: 25px;
   height: 25px;
+  vertical-align: middle;
+}
+.help-icon {
+  vertical-align: middle;
 }
 
-.mat-row {
+.commentsContent {
+  display: none;
+
+  background: var(--background-color-base);
+  @include media-breakpoint(tm) {
+    display: block;
+    max-width: 100vw;
+  }
+  &_card {
+    display: none;
+    @include media-breakpoint(tm) {
+      padding: 0;
+      .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+
+        .comment-header__title {
+          font-size: 1.5rem;
+          font-weight: 400;
+          padding-left: 0;
+        }
+      }
+      &.active {
+        display: block;
+        margin-bottom: 15px;
+        pre {
+          word-break: break-word;
+          white-space: pre-line;
+        }
+      }
+    }
+  }
+}
+.openComments,
+.closeComments {
+  margin: 1em 0;
   cursor: pointer;
+}
+
+@include media-breakpoint(tm) {
+  vm-comment {
+    display: none !important;
+  }
 }

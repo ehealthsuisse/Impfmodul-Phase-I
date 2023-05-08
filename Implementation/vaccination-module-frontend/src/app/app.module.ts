@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,23 +16,43 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
-import { inject, LOCALE_ID, NgModule } from '@angular/core';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateService } from '@ngx-translate/core';
-import { ORDERED_APP_INITIALIZER, ORDERED_APP_PROVIDER } from 'ngx-ordered-initializer';
 import { NgxWebstorageModule } from 'ngx-webstorage';
-import { catchError, of, tap } from 'rxjs';
 import { AppRoutingModule } from './app-routing.module';
-import { ApplicationConfigService, FooterComponent, MainComponent, NavbarComponent } from './core';
-import './core/config/dayjs';
-import { SessionInfoService } from './core/config/session-info.service';
+import { ErrorInterceptor, FooterComponent, MainComponent, NavbarComponent, PortalParameterInterceptor } from './core';
 import { TranslationModule } from './shared';
 import { SharedModule } from './shared/shared.module';
-import { ErrorInterceptor } from './core/config/error.interceptor';
+import { TitleStrategy } from '@angular/router';
+import { CustomPageTitleStrategy } from './shared/language/CustomPageTitleStrategy';
+
+import { ValidationService } from './core/security/validation.service';
+import { ConfigService } from './core/config/config.service';
+import { SessionInfoService } from './core/security/session-info.service';
+import { SamlInterceptor } from './core/interceptor/saml.interceptor';
+
+export function initializeConfigApp(configService: ConfigService): any {
+  return () => configService.initialize();
+}
+
+export function initializeApp(appConfigService: ConfigService, validationService: ValidationService) {
+  return () => {
+    const initConfig = initializeConfigApp(appConfigService);
+    return initConfig().then(() => {
+      return appConfigService.initialize().then(() => {
+        return validationService.validate(appConfigService.endpointPrefix)!;
+      });
+    });
+  };
+}
+export function initializeSessionInfo(sessionInfoService: SessionInfoService) {
+  return () => sessionInfoService.initializeSessionInfo();
+}
 
 @NgModule({
   declarations: [MainComponent],
@@ -54,51 +74,31 @@ import { ErrorInterceptor } from './core/config/error.interceptor';
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: TranslateService },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: MAT_DATE_LOCALE, useValue: 'fr-CH' },
+    { provide: HTTP_INTERCEPTORS, useClass: SamlInterceptor, multi: true },
     {
-      // Force an ordered use of the initializer to ensure that the applicationConfigService
-      // is initialized before the formOptionService, otherwise the environment variables are undefined due to race conditions.
-      provide: ORDERED_APP_INITIALIZER,
-      useFactory: () => {
-        const appConfigService = inject(ApplicationConfigService);
-        const http: HttpClient = inject(HttpClient);
-        const setting = require('../assets/config.json');
-        return () => {
-          return new Promise(resolve => {
-            if (process.env['NODE_ENV'] === 'production') {
-              http
-                .get('/assets/config.json')
-                .pipe(
-                  tap((config: any) => {
-                    appConfigService.endpointPrefix = config.backendURL;
-                    appConfigService.communityId = config.communityId;
-                    resolve(true);
-                  }),
-                  catchError(() => {
-                    appConfigService.endpointPrefix = setting.backendURL;
-                    appConfigService.communityId = setting.communityId;
-                    resolve(true);
-                    return of(null);
-                  })
-                )
-                .subscribe();
-            } else {
-              appConfigService.endpointPrefix = 'http://localhost:8080';
-              appConfigService.communityId = setting.communityId;
-              resolve(true);
-            }
-          });
-        };
-      },
+      provide: HTTP_INTERCEPTORS,
+      useClass: PortalParameterInterceptor,
+      multi: true,
+    },
+    { provide: TitleStrategy, useClass: CustomPageTitleStrategy },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [ConfigService, ValidationService],
+      multi: true,
+    },
+    SessionInfoService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeSessionInfo,
+      deps: [SessionInfoService, ConfigService, ValidationService],
       multi: true,
     },
     {
-      provide: ORDERED_APP_INITIALIZER,
-      useFactory: (sessionInfo: SessionInfoService) => sessionInfo.sessionInfo(),
+      provide: MAT_DATE_LOCALE,
+      useFactory: (sessionInfoService: SessionInfoService) => sessionInfoService.queryParams.lang,
       deps: [SessionInfoService],
-      multi: true,
     },
-    ORDERED_APP_PROVIDER,
   ],
 })
 export class AppModule {}

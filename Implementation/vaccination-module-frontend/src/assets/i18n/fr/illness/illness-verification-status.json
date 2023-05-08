@@ -1,6 +1,8 @@
 {
   "ILLNESS_VERIFICATION_STATUS": {
     "unconfirmed": "Non-confirmé",
+    "differential": "différentiel",
+    "provisional": "provisoire",
     "confirmed": "Confirmé",
     "refuted": "Refusé",
     "entered-in-error": "Saisi par erreur"

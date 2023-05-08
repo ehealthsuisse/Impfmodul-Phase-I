@@ -18,27 +18,50 @@
  */
 package ch.admin.bag.vaccination.config;
 
+import java.nio.file.Paths;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.openehealth.ipf.commons.ihe.ws.cxf.payload.DisablePayloadCollectingDeactivationInterceptor;
+import org.openehealth.ipf.commons.ihe.ws.cxf.payload.InPayloadLoggerInterceptor;
+import org.openehealth.ipf.commons.ihe.ws.cxf.payload.OutPayloadLoggerInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 /**
  * xml exchange message interceptor for log
  */
 @Configuration
 @EnableAutoConfiguration
-@Profile("!test")
+@Slf4j
 public class IpfApplicationConfig {
 
+  @Value("${epdbackend.activateSoapLogging}")
+  Boolean activeSoapLogging = false;
+
+  @Value("${epdbackend.soapLoggingPath}")
+  String soapLoggingPath;
+
   @Bean
-  DisablePayloadCollectingDeactivationInterceptor serverInLogger() {
+  AbstractPhaseInterceptor<?> serverInLogger() {
+    if (activeSoapLogging) {
+      log.info("Logging soap incoming messages to {}", soapLoggingPath);
+      return new InPayloadLoggerInterceptor(Paths.get(soapLoggingPath, "incomingSoapMessages.log").toString());
+    }
+
+    log.info("Logging of soap incoming messages is disabled.");
     return new DisablePayloadCollectingDeactivationInterceptor();
   }
 
   @Bean
-  DisablePayloadCollectingDeactivationInterceptor serverOutLogger() {
+  AbstractPhaseInterceptor<?> serverOutLogger() {
+    if (activeSoapLogging) {
+      log.info("Logging soap outgoing messages to {}", soapLoggingPath);
+      return new OutPayloadLoggerInterceptor(Paths.get(soapLoggingPath, "outgoingSoapMessages.log").toString());
+    }
+
+    log.info("Logging of soap outgoing messages is disabled.");
     return new DisablePayloadCollectingDeactivationInterceptor();
   }
 

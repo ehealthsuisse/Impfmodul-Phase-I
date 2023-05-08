@@ -13,6 +13,9 @@ $breakpoints: (
   gt-sm: 'screen and (min-width: 960px)',
   gt-md: 'screen and (min-width: 1280px)',
   gt-lg: 'screen and (min-width: 1920px)',
+  ds: 'screen and (min-width: 1800px)',
+  t-ls: 'screen and (min-width: 800px) and (max-width: 1799px)',
+  tm: 'screen and  (max-width: 799px)',
 ) !default;
 
 // Re-map the breakpoints for the helper classes

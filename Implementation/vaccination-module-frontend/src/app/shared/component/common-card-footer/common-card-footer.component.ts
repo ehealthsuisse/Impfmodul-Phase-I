@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,12 +16,15 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { SharedLibsModule } from '../../shared-libs.module';
-import { GenericButtonComponent } from '../generic-button/generic-button.component';
-import { HelpButtonComponent } from '../help-button/help-button.component';
-import { DialogService } from '../../services/dialog.service';
-import { IBaseDTO } from '../../interfaces/baseDTO.interface';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, Output } from '@angular/core';
+import { DialogService } from '../../services';
+import { IBaseDTO } from '../../interfaces';
+import { MaterialModule } from '../../material.module';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { TranslateDirective } from '../../language';
+import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
+import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
 
 /**
  * Used to structure all buttons in the details and edit components.
@@ -29,11 +32,12 @@ import { IBaseDTO } from '../../interfaces/baseDTO.interface';
 @Component({
   selector: 'vm-common-card-footer',
   standalone: true,
-  imports: [SharedLibsModule, GenericButtonComponent, HelpButtonComponent],
+  imports: [CommonModule, MaterialModule, FlexLayoutModule, TranslateDirective, TranslateModule],
   templateUrl: './common-card-footer.component.html',
   styleUrls: ['./common-card-footer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommonCardFooterComponent<T extends IBaseDTO> {
+export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSensorComponent implements OnDestroy {
   @Output() edit: EventEmitter<T> = new EventEmitter<T>();
   @Output() delete: EventEmitter<T> = new EventEmitter<T>();
   @Output() help: EventEmitter<Event> = new EventEmitter<Event>();
@@ -51,6 +55,7 @@ export class CommonCardFooterComponent<T extends IBaseDTO> {
   @Input() canValidate!: boolean;
   @Input() disabled!: boolean;
   @Input() IsNewRecord!: boolean;
+  @Input() canEdit: boolean = true;
 
   dialog = inject(DialogService);
 
@@ -67,4 +72,8 @@ export class CommonCardFooterComponent<T extends IBaseDTO> {
   validateRecord = (event: Event): void => this.validate.emit(event);
 
   downloadRecord = (event: Event): void => this.download.emit(event);
+
+  ngOnDestroy(): void {
+    this.help.unsubscribe();
+  }
 }

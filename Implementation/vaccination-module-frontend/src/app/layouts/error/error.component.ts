@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -28,12 +28,17 @@ import { SharedLibsModule } from '../../shared/shared-libs.module';
 @Component({
   selector: 'vm-error',
   templateUrl: './error.component.html',
+  styles: [
+    '.error-wrapper { height: 100vh; width: 100vw; display: grid; place-items: center; position: absolute; top: 0px; left: 0px }',
+    '.content { display: grid; place-items: center; }',
+  ],
   standalone: true,
   imports: [SharedLibsModule],
 })
 export class ErrorComponent implements OnInit, OnDestroy {
   errorMessage?: string;
   errorKey?: string;
+  errorCode?: number;
   langChangeSubscription?: Subscription;
 
   constructor(private translateService: TranslateService, private route: ActivatedRoute) {}
@@ -42,6 +47,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     this.route.data.subscribe(routeData => {
       if (routeData['errorMessage']) {
         this.errorKey = routeData['errorMessage'];
+        this.errorCode = routeData['errorCode'];
         this.getErrorMessageTranslation();
         this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => this.getErrorMessageTranslation());
       }

@@ -1,9 +1,19 @@
 @startuml
 
+artifact SpringbootParent [
+  spring-boot-starter-parent
+  2.7.1
+  ====
+]
+
 artifact Impfmodule as "vaccination-module-backend.jar" {
   artifact Husky [
-    husky-communication-gen.jar
+    husky-communication-ch.jar
+    husky-xua-ch-impl.jar
+    2.0.0
     ====
+    husky-xua-ch-impl.jar
+    ....
     husky-common-gen.jar
     ....
     husky-common-ch.jar
@@ -15,23 +25,21 @@ artifact Impfmodule as "vaccination-module-backend.jar" {
     husky-xua-gen-impl.jar
   ]
 
-  artifact fhir [
-    ca.uhn.hapi.fhir
+  artifact fhir_adapter [
+    ch.admin.bag.fhir-adapter.jar
+    SNAPSHOT 1.0.0
     ====
-    hapi-fhir-structures-r4
-    ....
-    hapi-fhir-validation-resources-r4
   ]
 
   artifact opensaml[
     org.opensaml
     ====
     opensaml-core
-    ....
-    ....
   ] 
 
 }
-  
+
+SpringbootParent <-r- Impfmodule
+
 @enduml
 

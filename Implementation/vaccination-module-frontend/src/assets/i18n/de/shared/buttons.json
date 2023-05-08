@@ -14,13 +14,15 @@
     "BACK": "Zurück",
     "CONTINUE": "Weiter",
     "VERIFY": "Verifizieren",
-    "EXPORT": "Exportieren",
+    "EXPORT": "Exportieren/Drucken",
     "PRINT": "Drucken",
-    "SAVE_EPD": "Speichern in EPD",
     "VALIDATE": "Validieren",
     "ADD_ALLERGY": "Allergie hinzufügen",
     "ADD_VACCINATION": "Impfung hinzufügen",
     "ADD_PAST_ILLNESS": "Vorerkrankungen hinzufügen",
-    "DOWNLOAD": "Herunterladen"
+    "ADD_PROBLEM": "Grunderkrankungen hinzufügen",
+    "DOWNLOAD": "Herunterladen",
+    "HELP": "Hilfe",
+    "SAVE_AND_STAY": "Speichern und weiter hinzufügen"
   }
 }

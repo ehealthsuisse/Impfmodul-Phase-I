@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,22 +17,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
+import { IValueDTO } from 'src/app/shared';
+import { IVaccination } from '../../../../model';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
-import { TranslateModule } from '@ngx-translate/core';
-import { ArrayObjectsToFlatPipe } from '../../../../shared/pipes/array-objects-to-flat.pipe';
-import { FormatDatePipe } from '../../../../shared/date/format-date.pipe';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { Vaccination } from '../../../../model/vaccination.interface';
 
 @Component({
   selector: 'vm-vaccination-detailed-information',
   standalone: true,
-  imports: [CommonModule, SharedLibsModule, TranslateModule, ArrayObjectsToFlatPipe, FormatDatePipe, FlexLayoutModule],
+  imports: [SharedLibsModule],
   templateUrl: './vaccination-detailed-information.component.html',
   styleUrls: ['./vaccination-detailed-information.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VaccinationDetailedInformationComponent {
-  @Input() vaccination: Vaccination | null = null;
+  @Input() vaccination: IVaccination | null = null;
+  commentsOpened: boolean = false;
+  constructor(private translateService: TranslateService) {}
+
+  toggleComments(): void {
+    this.commentsOpened = !this.commentsOpened;
+  }
+
+  translateAndConcatenate(targetDiseases: IValueDTO[] | undefined): string | undefined {
+    if (!!targetDiseases) {
+      return targetDiseases.map(dto => this.translateService.instant('vaccination-targetdiseases.' + dto.code)).join('; ');
+    }
+    return undefined;
+  }
 }

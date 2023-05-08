@@ -18,8 +18,13 @@
  */
 package ch.admin.bag.vaccination.controller;
 
+import ch.admin.bag.vaccination.service.saml.SAMLService;
 import javax.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.projecthusky.xua.saml2.Assertion;
+import org.projecthusky.xua.saml2.impl.AssertionBuilderImpl;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -27,16 +32,28 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * Utility class to handle Assertion
  *
  */
-public class AssertionUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
+public final class AssertionUtils {
 
   /**
-   * Get the assertion
-   * 
-   * @return
+   * Get the assertion from session and transforms it to be compatible with the husky framework.
+   *
+   * @return {@link Assertion}
    */
-  public static Assertion getAssertion() {
+  public static org.projecthusky.xua.saml2.Assertion getAssertionFromSession() {
     HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    Assertion assertion = (Assertion) request.getSession().getAttribute(request.getSession().getId());
-    return assertion;
+    org.opensaml.saml.saml2.core.Assertion assertion =
+        (org.opensaml.saml.saml2.core.Assertion) request.getSession()
+            .getAttribute(SAMLService.IDP_ASSERTION);
+
+    if (assertion == null) {
+      // could be occuring during initial call but should not.
+      log.warn("No idp assertion available, might indicate a misbehaviour.");
+      return null;
+    }
+
+    org.projecthusky.xua.saml2.Assertion huskyIdpAssertion = new AssertionBuilderImpl().create(assertion);
+    return huskyIdpAssertion;
   }
 }

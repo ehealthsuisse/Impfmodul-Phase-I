@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -21,11 +21,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
-import { ApplicationConfigService } from '../../../core';
-import { Vaccination } from '../../../model';
+import { IVaccination } from '../../../model';
 import { IComment, IValueDTO } from '../../../shared';
-import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
+import { SessionInfoService } from '../../../core/security/session-info.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -38,35 +37,33 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  * Type for createFormGroup and resetForm argument.
  * It accepts IVaccination for edit and NewVaccinationFormGroupInput for create.
  */
-type VaccinationFormGroupInput = Vaccination | PartialWithRequiredKeyOf<TNewEntity<Vaccination>>;
+type VaccinationFormGroupInput = IVaccination | PartialWithRequiredKeyOf<TNewEntity<IVaccination>>;
 
-type VaccinationFormDefaults = Pick<TNewEntity<Vaccination>, 'id'>;
+type VaccinationFormDefaults = Pick<TNewEntity<IVaccination>, 'id'>;
 
 type VaccinationFormGroupContent = {
-  vaccineCode: FormControl<Vaccination['vaccineCode']>;
-  targetDiseases: FormControl<Vaccination['targetDiseases']>;
-  doseNumber: FormControl<Vaccination['doseNumber']>;
-  occurrenceDate: FormControl<Vaccination['occurrenceDate']>;
-  lotNumber: FormControl<Vaccination['lotNumber']>;
-  validated: FormControl<Vaccination['validated']>;
-  reason: FormControl<Vaccination['reason']>;
-  status: FormControl<Vaccination['status']>;
-  recorder: FormControl<Vaccination['recorder']>;
-  author: FormControl<Vaccination['recorder']>;
-  organization: FormControl<Vaccination['organization']>;
+  vaccineCode: FormControl<IVaccination['vaccineCode']>;
+  targetDiseases: FormControl<IVaccination['targetDiseases']>;
+  doseNumber: FormControl<IVaccination['doseNumber']>;
+  occurrenceDate: FormControl<IVaccination['occurrenceDate']>;
+  lotNumber: FormControl<IVaccination['lotNumber']>;
+  validated: FormControl<IVaccination['validated']>;
+  reason: FormControl<IVaccination['reason']>;
+  recorder: FormControl<IVaccination['recorder']>;
+  author: FormControl<IVaccination['recorder']>;
+  organization: FormControl<IVaccination['organization']>;
   comments: FormControl<IComment[]>;
   commentMessage: FormControl;
 };
 
 export type VaccinationFormGroup = FormGroup<VaccinationFormGroupContent>;
+
 /**
  * A service for creating and resetting form groups.
  */
 @Injectable({ providedIn: 'root' })
 export class VaccinationFormService {
-  appConfig: ApplicationConfigService = inject(ApplicationConfigService);
-  sharedDataService: SharedDataService = inject(SharedDataService);
-
+  sessionInfo: SessionInfoService = inject(SessionInfoService);
   validated: boolean = false;
 
   getFormDefaults(): VaccinationFormDefaults {
@@ -74,12 +71,18 @@ export class VaccinationFormService {
       id: null,
     };
   }
+
   createVaccinationFormGroup(vaccination: VaccinationFormGroupInput = { id: null }): VaccinationFormGroup {
     const vaccinationRawValue = {
       ...this.getFormDefaults(),
       ...vaccination,
     };
-    this.validated = this.sharedDataService.storedData['role'] === 'HCP' || this.sharedDataService.storedData['role'] === 'ASS';
+
+    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
+    this.validated = isHCP || this.sessionInfo.queryParams.role === 'ASS';
+
+    const authorInfo = this.sessionInfo.author.getValue();
+
     return new FormGroup<VaccinationFormGroupContent>({
       id: new FormControl(
         { value: vaccinationRawValue.id, disabled: true },
@@ -95,12 +98,11 @@ export class VaccinationFormService {
       lotNumber: new FormControl(),
       reason: new FormControl(),
       validated: new FormControl(this.validated),
-      status: new FormControl(null, Validators.required),
       vaccineCode: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(),
-        lastName: new FormControl(),
-        prefix: new FormControl(),
+        firstName: new FormControl(authorInfo.firstName),
+        lastName: new FormControl(authorInfo.lastName),
+        prefix: new FormControl(authorInfo.prefix),
       }),
       organization: new FormControl(),
       comments: new FormControl([]),
@@ -108,15 +110,15 @@ export class VaccinationFormService {
     } as any);
   }
 
-  getVaccination(form: VaccinationFormGroup): Vaccination | TNewEntity<Vaccination> {
-    const vaccination: Vaccination = form.value as Vaccination;
+  getVaccination(form: VaccinationFormGroup): IVaccination | TNewEntity<IVaccination> {
+    const vaccination: IVaccination = form.value as IVaccination;
     vaccination.status = vaccination.status as unknown as IValueDTO;
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     vaccination.occurrenceDate = dayjs.utc(vaccination.occurrenceDate).tz('Europe/Berlin').startOf('date').add(10, 'hours');
     return { ...vaccination };
   }
 
-  resetForm(form: VaccinationFormGroup, vaccination: Vaccination | null): void {
+  resetForm(form: VaccinationFormGroup, vaccination: IVaccination | null): void {
     const vaccinationRawValue = { ...this.getFormDefaults(), ...vaccination };
 
     form.patchValue(

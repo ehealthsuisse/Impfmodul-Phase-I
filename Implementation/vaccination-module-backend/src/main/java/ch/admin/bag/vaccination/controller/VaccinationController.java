@@ -20,15 +20,7 @@ package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.service.VaccinationService;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.projecthusky.xua.saml2.Assertion;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,19 +36,5 @@ public class VaccinationController extends BaseController<VaccinationDTO> {
 
   public VaccinationController(VaccinationService vaccinationService) {
     super(vaccinationService);
-  }
-
-  @PostMapping("/validate/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid}")
-  @Operation(description = "Validate a Vaccination entry")
-  public ResponseEntity<VaccinationDTO> validate(
-      @Schema(example = "GAZELLE") @PathVariable String communityIdentifier,
-      @Schema(example = "1.3.6.1.4.1.21367.13.20.3000") @PathVariable String oid,
-      @Schema(example = "CHPAM4489") @PathVariable String localId,
-      @Schema(example = "uuu-uuu-iii-ddd") @PathVariable String uuid,
-      @RequestBody VaccinationDTO newDTO) {
-    Assertion assertion = AssertionUtils.getAssertion();
-
-    VaccinationDTO result = service.validate(communityIdentifier, oid, localId, uuid, newDTO, assertion);
-    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 }
