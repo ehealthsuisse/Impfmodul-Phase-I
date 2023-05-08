@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -22,29 +22,30 @@ export const VACCINATION_ROUTE: Routes = [
   {
     path: '',
     loadComponent: () => import('./main-components').then(c => c.VaccinationListComponent),
-    data: {
-      pageTitle: 'VACCINATION.TITLE',
-    },
+    title: 'VACCINATION.TITLE',
   },
   {
     path: ':id/detail',
     loadComponent: () => import('./main-components').then(c => c.VaccinationDetailComponent),
+    title: 'VACCINATION.DETAILS_HEADER',
     data: {
-      pageTitle: 'VACCINATION.DETAILS_HEADER',
+      type: 'vaccination',
     },
   },
   {
     path: ':id/edit',
     loadComponent: () => import('./main-components').then(c => c.VaccinationFormComponent),
+    title: 'VACCINATION.EDIT_HEADER',
     data: {
-      pageTitle: 'VACCINATION.EDIT_HEADER',
+      type: 'vaccination',
     },
   },
   {
     path: 'new',
     loadComponent: () => import('./main-components').then(c => c.VaccinationFormComponent),
+    title: 'VACCINATION.NEW_HEADER',
     data: {
-      pageTitle: 'VACCINATION.NEW_HEADER',
+      type: 'vaccination',
     },
   },
 ];

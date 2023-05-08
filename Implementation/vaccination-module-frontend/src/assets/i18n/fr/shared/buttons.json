@@ -10,17 +10,18 @@
     "YES": "Oui",
     "NO": "Non",
     "NEXT": "Suivant",
-    "PREVIOUS": "Retour",
+    "PREVIOUS": "Précédant",
     "BACK": "Retour",
     "CONTINUE": "Suivant",
     "VERIFY": "Vérifier",
-    "EXPORT": "Exporter",
-    "PRINT": "Imprimer",
-    "SAVE_EPD": "Enregistrer in EPD",
+    "EXPORT": "Exporter/Imprimer",
     "VALIDATE": "Valider",
     "ADD_ALLERGY": "Ajouter une allergie",
     "ADD_VACCINATION": "Ajouter une Vaccination",
-    "ADD_PAST_ILLNESS": "Ajouter une maladie passée",
-    "DOWNLOAD": "Télécharger"
+    "ADD_PAST_ILLNESS": "Ajouter une maladie antérieure",
+    "ADD_PROBLEM": "Ajouter une maladie chroniques",
+    "DOWNLOAD": "Télécharger",
+    "HELP": "Aider",
+    "SAVE_AND_STAY": "Enregistrer et créer un autre"
   }
 }

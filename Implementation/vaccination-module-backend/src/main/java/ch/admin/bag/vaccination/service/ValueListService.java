@@ -28,7 +28,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +43,16 @@ import org.springframework.stereotype.Service;
 public class ValueListService {
   public static final String SWISSMEDIC_CS_SYSTEM = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs";
   public static final String IMMUNIZATION_VACCINE_CODE_VALUELIST = "immunizationVaccineCode";
+  public static final String CONDITION_CLINICAL_STATUS = "conditionClinicalStatus";
 
   @Autowired
   private VaccinesToTargetDiseasesConfig vaccinesToTargetDiseasesConfig;
 
-  @Value("${vaccination.valueListPath}")
+  @Value("${application.valueListPath}")
   String folderPathValueListProperties;
 
   public List<ValueListDTO> getAllListOfValues() {
+    log.info("Read valuelists from folder {}", folderPathValueListProperties);
     List<ValueListDTO> codeSystemValueList = new ArrayList<>();
     try (DirectoryStream<Path> streamFiles =
         Files.newDirectoryStream(Paths.get(folderPathValueListProperties))) {
@@ -65,6 +70,16 @@ public class ValueListService {
     return codeSystemValueList;
   }
 
+
+  public Collection<ValueDTO> getTargetDiseases() {
+    Map<String, ValueDTO> values = new HashMap<>();
+    for (VaccineToTargetDiseases v2td : vaccinesToTargetDiseasesConfig.getVaccines()) {
+      for (ValueDTO targetDisease : v2td.getTarget()) {
+        values.putIfAbsent(targetDisease.getCode(), targetDisease);
+      }
+    }
+    return values.values();
+  }
 
   public List<VaccineToTargetDiseasesDTO> getVaccinesToTargetDiseases() {
     List<VaccineToTargetDiseasesDTO> dtos = new ArrayList<>();
@@ -104,6 +119,11 @@ public class ValueListService {
     if (IMMUNIZATION_VACCINE_CODE_VALUELIST.equals(createdValueList.getName())) {
       createdValueList.getEntries().stream()
           .filter(entry -> !SWISSMEDIC_CS_SYSTEM.equals(entry.getSystem()))
+          .forEach(entry -> entry.setAllowDisplay(false));
+    } else if (CONDITION_CLINICAL_STATUS.equals(createdValueList.getName())) {
+      // allow only active and inactive
+      createdValueList.getEntries().stream()
+          .filter(entry -> !entry.getCode().toLowerCase().contains("active"))
           .forEach(entry -> entry.setAllowDisplay(false));
     }
   }

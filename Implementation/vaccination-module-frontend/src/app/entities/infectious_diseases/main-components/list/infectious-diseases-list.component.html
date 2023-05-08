@@ -1,0 +1,21 @@
+<div [ngClass]="isMobile ? 'mobile-list-wrapper' : 'list-wrapper'">
+  <vm-list-header
+    class="mat-card mat-elevation-z0"
+    [toggle]="toggleHeader"
+    (filter)="filter($event)"
+    [helpTitle]="'HELP.PAST_ILLNESS.LIST.TITLE' | translate"
+    [helpBody]="'HELP.PAST_ILLNESS.LIST.BODY' | translate"
+    (add)="addNewRecord()"
+    [title]="'ILLNESS.TITLE'"
+  >
+  </vm-list-header>
+  <vm-table-wrapper
+    [dataSource]="infectiousDiseases"
+    [displayedColumns]="displayedColumns"
+    [translationPrefix]="'ILLNESS.'"
+    [fullWidth]="tableWidth"
+    (rowClick)="navigateToDetails($event)"
+    [tableName]="'ILLNESS.TITLE' | translate"
+  >
+  </vm-table-wrapper>
+</div>

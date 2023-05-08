@@ -1,6 +1,9 @@
+# https://fhir.ch/ig/ch-vacd/0.1.0/ValueSet-ch-vacd-illnesses-undergone-for-immunizaion-vs.html
+# https://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html
+
 vaccines-to-targetdiseases:
   vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html
-  targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs
+  targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm.html
   vaccines:
     - code: 683
       name: FSME-Immun 0.25 ml Junior
@@ -535,4 +538,101 @@ vaccines-to-targetdiseases:
       target:
         - code: 840539006
           name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
-
+    - code: 68358
+      name: Ervebo, Injektionslösung
+      target:
+        - code: 37109004
+          name: Ebola virus disease (disorder)
+    - code: 68710-01
+      name: Comirnaty® 30 Mikrogramm/Dosis
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 68710-02
+      name: Comirnaty® 10 Mikrogramm/Dosis
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 68462
+      name: Fluenz Tetra
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 69009
+      name: Spikevax Bivalent Original / Omicron
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)      
+    - code: 68110
+      name: Adacel-Polio 0.5 ml
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 68317
+      name: Adacel 0.5 ml
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 68221
+      name: MenQuadfi
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+        - code: 860805006
+          name: Encephalomyelitis caused by Neisseria meningitidis (disorder)
+    - code: 66427
+      name: VaxigripTetra
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 65387
+      name: Gardasil 9
+      target:
+        - code: 240532009
+          name: Human papillomavirus infection (disorder)
+    - code: 66940
+      name: Vaxelis
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 68087
+      name: Influvac Tetra
+      target:
+        - code: 719590007
+          name: Influenza caused by seasonal influenza virus (disorder)
+    - code: 66037
+      name: Menjugate liquid
+      target:
+        - code: 860805006
+          name: Encephalomyelitis caused by Neisseria meningitidis (disorder)
+    - code: 699
+      name: ProQuad
+      target:
+        - code: 36653000
+          name: Rubella (disorder)
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+        - code: 38907003
+          name: Varicella (disorder)

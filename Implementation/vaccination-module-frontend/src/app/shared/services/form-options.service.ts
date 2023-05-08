@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,31 +16,34 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ApplicationConfigService } from '../../core';
-import { IValueListDTO } from '../interfaces/valueListDTO.interface';
+import { inject, Injectable } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { IValueDTO } from '../interfaces';
 import { VaccineWithDiseases } from '../interfaces/vaccination-with-disease.interface';
+import { ConfigService } from '../../core/config/config.service';
 
 @Injectable({ providedIn: 'root' })
 export class FormOptionsService {
-  get data(): Map<string, IValueListDTO[]> {
-    return this._data;
-  }
-
-  set data(value: Map<string, IValueListDTO[]>) {
-    this._data = value;
-  }
   http: HttpClient = inject(HttpClient);
-  appConfig: ApplicationConfigService = inject(ApplicationConfigService);
-  formOptions!: Observable<IValueListDTO[]>;
+  appConfig: ConfigService = inject(ConfigService);
 
-  private _data = new Map<string, IValueListDTO[]>();
+  private _data = new Map<string, IValueDTO[]>();
+
+  getOption(valuelistName: string, code: string): IValueDTO {
+    let entries: IValueDTO[] = this._data.get(valuelistName) || [];
+    let result = entries.find(entry => entry.code === code);
+    if (result) {
+      return result;
+    } else {
+      throw new Error('Option value not found');
+    }
+  }
 
   getAllOptions(): Observable<IValueDTO[]> {
-    return this.http.get<IValueDTO[]>(`${this.appConfig.endpointPrefix}/utility/getAllValuesLists`);
+    return this.http
+      .get<IValueDTO[]>(`${this.appConfig.endpointPrefix}/utility/getAllValuesLists`)
+      .pipe(tap(options => options.map(option => this._data.set(option.name, option.entries!))));
   }
 
   getVaccinationsWithDiseases(): Observable<VaccineWithDiseases[]> {

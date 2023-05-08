@@ -1,6 +1,6 @@
 {
   "name": "vaccination-module-frontend",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "build": "ng build --base-href=/",
@@ -27,7 +27,7 @@
     "@angular/flex-layout": "^14.0.0-beta.40",
     "@angular/forms": "^14.0.6",
     "@angular/material": "^14.0.4",
-    "@angular/material-moment-adapter": "^14.2.6",
+    "@angular/material-moment-adapter": "^14.2.7",
     "@angular/platform-browser": "^14.0.6",
     "@angular/platform-browser-dynamic": "^14.0.6",
     "@angular/router": "^14.0.6",
@@ -61,7 +61,7 @@
     "@types/node": "^18.7.18",
     "@typescript-eslint/eslint-plugin": "5.29.0",
     "@typescript-eslint/parser": "5.29.0",
-    "browser-sync": "2.27.10",
+    "browser-sync": "^2.29.0",
     "browser-sync-webpack-plugin": "2.3.0",
     "copy-webpack-plugin": "11.0.0",
     "eslint": "8.22.0",
@@ -94,6 +94,6 @@
     "node_modules"
   ],
   "overrides": {
-    "webpack": "5.71.0"
+    "webpack": "5.76.2"
   }
 }

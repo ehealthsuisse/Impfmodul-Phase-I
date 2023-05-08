@@ -1,0 +1,20 @@
+<div class="list-wrapper">
+  <vm-list-header
+    class="mat-card mat-elevation-z0"
+    [toggle]="toggleHeader"
+    (filter)="filter($event)"
+    [helpTitle]="'HELP.MEDICAL_PROBLEM.LIST.TITLE' | translate"
+    [helpBody]="'HELP.MEDICAL_PROBLEM.LIST.BODY' | translate"
+    (add)="addNewRecord()"
+    [title]="'MEDICAL_PROBLEM.TITLE'"
+  >
+  </vm-list-header>
+  <vm-table-wrapper
+    [dataSource]="problems"
+    [displayedColumns]="displayedColumns"
+    [translationPrefix]="'MEDICAL_PROBLEM.'"
+    [fullWidth]="tableWidth"
+    (rowClick)="navigateToDetails($event)"
+  >
+  </vm-table-wrapper>
+</div>

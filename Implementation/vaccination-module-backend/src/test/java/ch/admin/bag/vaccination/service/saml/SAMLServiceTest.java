@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
@@ -42,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -81,13 +83,13 @@ public class SAMLServiceTest {
     profileConfig.setSamlAuthenticationActive(false);
     HttpServletRequest request = createMockRequest("/husky", createMockSession());
 
-    samlService.createDummyAuthentication(request, "DUMMY");
+    samlService.createDummyAuthentication(request);
 
     SecurityContext securityContext = SecurityContextHolder.getContext();
     assertNotNull(securityContext);
     assertNotNull(securityContext.getAuthentication());
-    assertEquals("DUMMY", securityContext.getAuthentication().getName());
-    assertEquals("DUMMY",
+    assertEquals("Dummy", securityContext.getAuthentication().getName());
+    assertEquals("Dummy",
         ((SAMLAuthentication) securityContext.getAuthentication()).getSaml2Response());
   }
 
@@ -101,8 +103,26 @@ public class SAMLServiceTest {
   }
 
   @Test
+  void logout() {
+    MockHttpServletRequest request1 = new MockHttpServletRequest();
+    request1.setSession(new MockHttpSession(null, "session1"));
+
+    assertEquals(samlService.getNumberOfSessions(), 0);
+    samlService.createAuthenticatedSession(request1, "saml2Reponse1", createAssertion("name1"));
+    assertEquals(samlService.getNumberOfSessions(), 1);
+
+    LogoutRequest logoutRequest = mock(LogoutRequest.class);
+    NameID nameID = mock(NameID.class);
+    when(nameID.getValue()).thenReturn("name2");
+    when(logoutRequest.getNameID()).thenReturn(nameID);
+    samlService.logout("name1");
+    assertEquals(samlService.getNumberOfSessions(), 0);
+  }
+
+  @Test
   void redirectToIdp_validResponse_noException() {
-    samlService.redirectToIdp(IdpProvider.GAZELLE_IDP_IDENTIFIER, mock(HttpServletResponse.class));
+    HttpServletResponse mock = new MockHttpServletResponse();
+    samlService.redirectToIdp(IdpProvider.GAZELLE_IDP_IDENTIFIER, mock);
   }
 
   @Test
@@ -136,23 +156,6 @@ public class SAMLServiceTest {
 
     assertThrows(TechnicalException.class,
         () -> samlService.validateSecurityContext(session, null));
-  }
-
-  @Test
-  void logout() {
-    MockHttpServletRequest request1 = new MockHttpServletRequest();
-    request1.setSession(new MockHttpSession(null, "session1"));
-
-    assertEquals(samlService.getSessionNumber(), 0);
-    samlService.createAuthenticatedSession(request1, "saml2Reponse1", createAssertion("name1"));
-    assertEquals(samlService.getSessionNumber(), 1);
-
-    LogoutRequest logoutRequest = mock(LogoutRequest.class);
-    NameID nameID = mock(NameID.class);
-    when(nameID.getValue()).thenReturn("name2");
-    when(logoutRequest.getNameID()).thenReturn(nameID);
-    samlService.logout("name1");
-    assertEquals(samlService.getSessionNumber(), 0);
   }
 
   private Assertion createAssertion() {

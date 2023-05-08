@@ -1,96 +1,75 @@
 {
   "HELP": {
-    "HOME": {
-      "TITLE": "Home",
-      "BODY": "<h2>German</h2><p>home page</p>"
-    },
     "VACCINATION": {
       "LIST": {
-        "TITLE": "Vaccination List",
-        "BODY": "list of vaccination centers"
+        "TITLE": "<h2>Lista delle vaccinazioni</h2>",
+        "BODY": "<p>Elenco di tutti i record salvati nella Carta di vaccinazione della paziente e del paziente relativi alle vaccinazioni. Verranno mostrati anche i record che  sono stati corretti, commentati o annullati da altri record e quindi non visualizzati nella cartella vaccinale. </p>  <p>Questa visualizzazione serve per verificare e correggere le incongruenze nella cartella vaccinale e deve essere utilizzata solo per rilevare e   risolvere le incongruenze. La visualizzazione supporta le seguenti interazioni:   <ul>    <li>Passaggio alla vista dettagliata delle vaccinazioni, allergie e malattie pregresse con und clic su una voce </li>    <li>Aggiunta di nuovi dati vaccinali</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione, l'elenco di tutte le vaccinazioni documentate viene ordinato in base alla data della vaccinazione e mostrato con i seguenti campi:   <ul>    <li>Data: momento della vaccinazione </li>    <li>Protezione vaccinale: una o più malattie infettive contro le quali il vaccino è efficace</li>    <li>Vaccino: il vaccino somministrato </li>    <li>Dose: numero della dose vaccinale somministrata </li>    <li>Vaccinato da: nome del professionista sanitario che ha somministrato la vaccinazione</li>  </ul>  </p>"
       },
       "DETAIL": {
-        "TITLE": "Vaccination Detail",
-        "BODY": "vaccination center detail"
+        "TITLE": "<h2>Dettagli vaccinazione</h2>",
+        "BODY": "<p>Visualizzazione dettagliata di una vaccinazione selezionata dalla Carta di vaccinazione del paziente. </p>  <p>Nella visualizzazione dettagliata vengono visualizzati i dati tecnici di una vaccinazione selezionata. La vista dettagliata serve come punto di partenza   per la modifica e i commenti, l'annullamento o il download di una vaccinazione selezionata e supporta le seguenti interazioni:   <ul>    <li>Passaggio alla finestra di dialogo per modificare i dati della vaccinazione selezionata</li>    <li>Passaggio alla finestra di dialogo per annullare le vaccinazioni inserite in modo errato</li>    <li>Download del set di dati secondo il formato di scambio EPD come JSON.</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione dettagliata vengono visualizzate le seguenti informazioni tecniche:  <ul>    <li>Data: momento della vaccinazione </li>    <li>Protezione vaccinale: una o più malattie infettive contro le quali il vaccino è efficace </li>    <li>Vaccino: il vaccino somministrato </li>    <li>Dose: numero della dose vaccinale somministrata </li>    <li>Stato: lo stato della documentazione della vaccinazione, ad esempio somministrata, provvisoria, input errato, ... </li>    <li>Numero di lotto: numero di lotto del vaccino </li>    <li>Vaccinato da: nome e titolo del professionista sanitario che ha somministrato la vaccinazione</li>    <li>Organizzazione: nome dell'organizzazione in cui è stata effettuata la vaccinazione.</li>  </ul>  </p>"
       },
-      "SEARCH": {
-        "TITLE": "Vaccination Search",
-        "BODY": "search vaccination centers"
+      "SAVE_AND_STAY": {
+        "TITLE": "<h2>Salva e rimani</h2>",
+        "BODY": "vaccinazione è stata salvata con successo."
       },
-      "ADD": {
-        "TITLE": "Add Vaccination",
-        "BODY": "add vaccination center"
-      },
-      "EDIT": {
-        "TITLE": "Edit Vaccination",
-        "BODY": "edit vaccination center"
-      },
-      "DELETE": {
-        "TITLE": "Delete Vaccination",
-        "BODY": "delete vaccination center"
-      }
-    },
-    "ALLERGY": {
-      "LIST": {
-        "TITLE": "Allergy List",
-        "BODY": "list of allergies"
-      },
-      "DETAIL": {
-        "TITLE": "Allergy Detail",
-        "BODY": "allergy detail"
-      },
-      "SEARCH": {
-        "TITLE": "Allergy Search",
-        "BODY": "search allergies"
-      },
-      "ADD": {
-        "TITLE": "Add Allergy",
-        "BODY": "add allergy"
-      },
-      "EDIT": {
-        "TITLE": "Edit Allergy",
-        "BODY": "edit allergy"
-      },
-      "DELETE": {
-        "TITLE": "Delete Allergy",
-        "BODY": "delete allergy"
+      "ALLERGY": {
+        "LIST": {
+          "TITLE": "<h2>Effetti collaterali</h2>",
+          "BODY": "<p>Elenco di tutti i record salvati nella Carta di vaccinazione del paziente relativi agli effetti indesiderati delle vaccinazioni (UIE) di un paziente.   Verranno mostrati anche i record che sono stati corretti, commentati o annullati da altri record e quindi visualizzati nella cartella vaccinale.   </p>  <p>Questa visualizzazione serve per verificare e correggere le incongruenze nella cartella vaccinale e deve essere utilizzata solo per rilevare e risolvere   le incongruenze. La visualizzazione supporta le seguenti interazioni:   <ul>    <li>Passaggio alla vista dettagliata degli effetti indesiderati delle vaccinazioni con un clic su una voce </li>    <li>Aggiunta di nuovi effetti indesiderati delle vaccinazioni</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione, l'elenco di tutti gli effetti indesiderati delle vaccinazioni documentati viene ordinato in base alla data dell'effetto indesiderato   e mostrato con i seguenti campi:   <ul>    <li>Data: momento dell'effetto indesiderato </li>    <li>Malattia: la denominazione dell'effetto indesiderato </li>    <li>Registrato da: nome della persona che ha inserito le informazioni sull'effetto indesiderato</li>  </ul>  </p>"
+        },
+        "DETAIL": {
+          "TITLE": "<h2>Effetti collaterali</h2>",
+          "BODY": "<p>Visualizzazione dettagliata di un'allergia delle vaccinazioni selezionato nella Carta di vaccinazione del paziente.  Nella visualizzazione dettagliata vengono visualizzati i dati tecnici di un'allergia delle vaccinazioni selezionato.  La vista dettagliata serve come punto di partenza per la modifica e i commenti, l'annullamento o il download di un'allergia indesiderato   delle vaccinazioni selezionato e supporta le seguenti interazioni:   <ul>    <li>Passaggio alla finestra di dialogo per modificare i dati dell'effetto indesiderato delle vaccinazioni selezionato</li>    <li>Passaggio alla finestra di dialogo per annullare gli effetti indesiderati delle vaccinazioni inseriti in modo errato</li>    <li>Download del set di dati secondo il formato di scambio EPD come JSON.</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione dettagliata vengono visualizzate le seguenti informazioni tecniche: </p>  <ul>    <li>Data: momento dell un'allergia indesiderato </li>    <li>Malattia: la denominazione dell un'allergia indesiderato </li>    <li>Registrato da: nome della persona che ha inserito le informazioni sull un'allergia indesiderato </li>    <li>Organizzazione: nome dell'organizzazione in cui è stata effettuata la vaccinazione.</li>  </ul>  </p>"
+        },
+        "SAVE_AND_STAY": {
+          "TITLE": "<h2>Effetti collaterali</h2>",
+          "BODY": "L'effetto collaterale è stato salvato con successo."
+        }
       }
     },
     "PAST_ILLNESS": {
       "LIST": {
-        "TITLE": "Past Illness List",
-        "BODY": "list of past illnesses"
+        "TITLE": "<h2>Malattie infettive</h2>",
+        "BODY": "<p>Elenco di tutti i record salvati nel EPD relativi alle malattie prevenibili da vaccino di un paziente. Vengono inoltre mostrati i record che sono stati  corretti, commentati o annullati da altri record e che quindi vengono visualizzati nel libretto di vaccinazione. </p>  <p>Questa visualizzazione serve per la verifica e la correzione di incongruenze nel libretto di vaccinazione e deve essere utilizzata   solo per rilevare e risolvere le incongruenze. La visualizzazione supporta le seguenti interazioni:   <ul>    <li>Passaggio alla visualizzazione dettagliata delle malattie prevenibili tramite vaccino con un clic su una voce</li>    <li>Aggiunta di nuove malattie prevenibili tramite vaccino</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione viene mostrato l'elenco di tutte le malattie prevenibili tramite vaccino documentate ordinate per data di insorgenza e con i seguenti campi:   <ul>    <li>Data: momento in cui si è verificata la malattia prevenibile tramite vaccino</li>    <li>Malattia: denominazione della malattia prevenibile tramite vaccino</li>    <li>Stato clinico: lo stato clinico, ad esempio attivo, completato, ricaduta, ...</li>    <li>Verificato: stato della verifica clinica della malattia prevenibile tramite vaccino</li>    <li>Registrato da: nome della persona che ha inserito le informazioni sulla malattia prevenibile tramite vaccino</li>  </ul>  </p>"
       },
       "DETAIL": {
-        "TITLE": "Past Illness Detail",
-        "BODY": "past illness detail"
+        "TITLE": "<h2>Malattie infettive</h2>",
+        "BODY": "<p>Visualizzazione dettagliata di una Malattia infettiva tramite vaccino selezionata dal EPD del paziente. </p>  <p>Nella visualizzazione dettagliata vengono visualizzati i dati specialistici di una Malattia infettiva tramite vaccino selezionata.   La visualizzazione dettagliata serve come punto di partenza per la modifica e i commenti, l'annullamento o il download di una malattia prevenibile   tramite vaccino e supporta le seguenti interazioni:   <ul>    <li>Passaggio alla finestra di dialogo per la modifica dei dati della Malattia infettiva tramite vaccino</li>    <li>Passaggio alla finestra di dialogo per l'annullamento della Malattia infettiva tramite vaccino immessa in modo errato</li>    <li>Download del set di dati secondo il formato di scambio EPD come JSON.</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione dettagliata vengono mostrate le seguenti informazioni specialistiche: </p>  <p>  <ul>    <li>Data: momento della diagnosi della Malattia infettiva tramite vaccino</li>    <li>Malattia: la Malattia infettiva tramite vaccino</li>    <li>Inizio: momento dell'insorgenza dei sintomi della Malattia infettiva tramite vaccino</li>    <li>Fine: momento della guarigione</li>    <li>Stato clinico: lo stato clinico, ad esempio attivo, completato, ricaduta, ...</li>    <li>Verificato: stato della verifica clinica della Malattia infettiva tramite vaccino</li>    <li>Registrato da: nome della persona che ha inserito le informazioni sulla Malattia infettiva tramite vaccino</li>    <li>Organizzazione: nome dell'organizzazione in cui è stata effettuata la vaccinazione.</li>  </ul>  </p>"
       },
-      "SEARCH": {
-        "TITLE": "Past Illness Search",
-        "BODY": "search past illnesses"
-      },
-      "ADD": {
-        "TITLE": "Add Past Illness",
-        "BODY": "add past illness"
-      },
-      "EDIT": {
-        "TITLE": "Edit Past Illness",
-        "BODY": "edit past illness"
-      },
-      "DELETE": {
-        "TITLE": "Delete Past Illness",
-        "BODY": "delete past illness"
+      "SAVE_AND_STAY": {
+        "TITLE": "<h2>Malattie infettive</h2>",
+        "BODY": "La malattia infettiva è stata salvata con successo."
       }
     },
+    "MEDICAL_PROBLEM": {
+      "LIST": {
+        "TITLE": "<h2>Malattie croniche</h2>",
+        "BODY": "<p>Elenco di tutti i record salvati nel EPD relativi alle malattie croniche di un paziente. Vengono inoltre mostrati i record che sono stati corretti,   commentati o annullati da altri record e che quindi vengono visualizzati nel documento medico. </p>  <p>Questa visualizzazione serve per la verifica e la correzione di incongruenze nel documento medico e deve essere utilizzata solo per rilevare e   risolvere le incongruenze. La visualizzazione supporta le seguenti interazioni:   <ul>    <li>Passaggio alla visualizzazione dettagliata delle malattie croniche tramite un clic su una voce</li>    <li>Aggiunta di nuove malattie croniche</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione viene mostrato l'elenco di tutte le malattie croniche documentate ordinate per data di insorgenza e con i seguenti campi:   <ul>    <li>Data: momento in cui si è verificata la malattia cronicha</li>    <li>Malattia: denominazione della malattia cronicha</li>    <li>Stato clinico: lo stato clinico, ad esempio attivo, completato, ricaduta, ...</li>    <li>Verificato: stato della verifica clinica della malattia cronicha</li>    <li>Registrato da: nome della persona che ha inserito le informazioni sulla malattia cronicha</li>  </ul>  </p>"
+      },
+      "DETAIL": {
+        "TITLE": "<h2>Malattie croniche</h2>",
+        "BODY": "<p>Visualizzazione dettagliata di una malattia cronicha selezionata dal EPD del paziente.</p>  <p>Nella visualizzazione dettagliata vengono mostrati i dati medici di una malattia cronicha selezionata. La visualizzazione dettagliata serve   come punto di partenza per la modifica e i commenti, l'annullamento o il download di una malattia cronicha e supporta le seguenti interazioni:   <ul>    <li>Passaggio alla finestra di dialogo per la modifica dei dati della malattia cronicha</li>    <li>Passaggio alla finestra di dialogo per l'annullamento di una malattia cronicha inserita in modo errato</li>    <li>Download del set di dati secondo il formato di scambio EPD come JSON.</li>  </ul>  </p>  <hr>  <p>Nella visualizzazione dettagliata vengono mostrati i seguenti dati medici:  <ul>    <li>Data: momento della diagnosi della malattia cronicha</li>    <li>Malattia: la malattia cronicha</li>    <li>Inizio: momento in cui compaiono i sintomi della malattia cronicha</li>    <li>Fine: momento della guarigione</li>    <li>Stato clinico: lo stato clinico, ad esempio attivo, completato, ricaduta, ...</li>    <li>Verificato: stato della verifica clinica della malattia cronicha</li>    <li>Registrato da: nome della persona che ha inserito le informazioni sulla malattia cronicha</li>    <li>Organizzazione: nome dell'organizzazione in cui è stata effettuata la vaccinazione.</li>  </ul>  </p>"
+      },
+      "SAVE_AND_STAY": {
+        "TITLE": "<h2>Malattie croniche</h2>",
+        "BODY": "La malattia cronicha è stata salvata con successo."
+      }
+    },
+
     "VACCINATION_RECORD": {
       "SAVE": {
         "TITLE": "Salva record di vaccinazione",
-        "BODY": "La scheda di vaccinazione è stata salvata con successo nel sistema"
+        "BODY": "La scheda di vaccinazione è stata salvata con successo nel sistema."
+      },
+      "HELP": {
+        "TITLE": "<h2>Carta di vaccinazione</h2>",
+        "BODY": "<p>Rappresentazione generale dei dati di vaccinazione dalla cartella clinica di un paziente. Per mostrare il certificato di vaccinazione     vengono richiesti tutti i documenti di vaccinazione dalla cartella clinica del paziente e vengono uniti in conformità alla normativa     per i dati di vaccinazione nella cartella clinica elettronica.  </p>  <p>  Il certificato di vaccinazione serve come punto di partenza per la gestione dei dati di vaccinazione dei pazienti nella cartella clinica elettronica e supporta   le seguenti interazioni:   <ul>    <li>Passare alla visualizzazione dettagliata delle vaccinazioni, allergie e patologie pregresse facendo doppio clic su un'entrata</li>    <li>Esportare il certificato di vaccinazione come documento PDF tramite il pulsante in alto a destra.</li>    <li>Salvare il certificato di vaccinazione come istantanea all'istante attuale nel formato di scambio VACD tramite il pulsante in alto a destra.</li>  </ul>  </p>  <hr>  <p>Nel certificato di vaccinazione vengono visualizzati i seguenti dati di vaccinazione: </p>  <h3>Vaccinazioni</h3>  <p>Elenco di tutte le vaccinazioni documentate ordinate per data di vaccinazione con i campi:    <ul>      <li>Data: momento della vaccinazione</li>      <li>Vaccino: il vaccino somministrato</li>      <li>Protezione dalla vaccinazione: una o più malattie infettive contro cui il vaccino è efficace</li>      <li>Dose: numero della dose di vaccinazione somministrata</li>      <li>Vaccinato da: nome del professionista sanitario che ha somministrato la vaccinazione</li>    </ul>  </p>  <h3>Malattie infettive</h3>  <p>Elenco di tutte le malattie prevenibili dalla vaccinazione contratte dal paziente,     ordinate per data di diagnosi con i campi:  <ul>    <li>Data: momento della diagnosi della malattia prevenibile dalla vaccinazione</li>    <li>Malattia: la malattia prevenibile dalla vaccinazione contratta</li>    <li>Stato clinico: lo stato clinico, ad esempio attivo, completato, ricaduta,...</li>  </ul>  </p>"
       }
     },
     "COMMENT": {
-      "TITLE": "Comment",
-      "BODY": "comment"
+      "TITLE": "Commento",
+      "BODY": "Commento"
     }
   }
 }

@@ -1,13 +1,43 @@
-@import 'src/assets/scss/global';
-
-.card-header {
+.mobile-mat-card {
+  max-width: 100%;
   padding: 0;
+  margin: 0;
+  mat-card,
+  mat-card-title {
+    transform: translateX(-20px);
+  }
+  .mat-card-header,
+  .mat-card-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .search-input-wrapper {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
 }
 
-.help-button {
-  margin-left: 20px;
-}
+.desktop-mat-card {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  mat-card-title {
+    padding: 0;
+    margin-left: -20px;
+  }
 
-.search-input-wrapper {
-  width: 400px;
+  .search-input-wrapper {
+    width: 400px;
+  }
+
+  .mat-card-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }

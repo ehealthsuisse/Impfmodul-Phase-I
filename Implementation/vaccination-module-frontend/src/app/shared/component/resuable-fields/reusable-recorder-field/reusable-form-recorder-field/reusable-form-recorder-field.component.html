@@ -1,0 +1,38 @@
+<mat-card *ngIf="parentForm" [formGroup]="parentForm" class="mat-elevation-z0 recorder">
+  <mat-label id="recorder-label" class="recorder__label" vmTranslate="MEDICAL_PROBLEM.RECORDER"></mat-label>
+  <div formGroupName="recorder" [ngClass]="isMobile ? 'mobile-recorder--fields' : 'recorder--fields'">
+    <mat-form-field>
+      <input matInput formControlName="prefix" [placeholder]="'USER.PREFIX' | translate" [attr.aria-labelledby]="'recorder-label'" />
+    </mat-form-field>
+    <mat-form-field>
+      <input
+        matInput
+        formControlName="firstName"
+        #fName
+        [required]="!org.value"
+        [placeholder]="'USER.FIRSTNAME' | translate"
+        [attr.aria-labelledby]="'recorder-label'"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <input
+        matInput
+        formControlName="lastName"
+        [required]="!org.value || !!fName.value"
+        [placeholder]="'USER.LASTNAME' | translate"
+        [attr.aria-labelledby]="'recorder-label'"
+      />
+    </mat-form-field>
+  </div>
+  <mat-form-field class="organization">
+    <input
+      matInput
+      type="text"
+      formControlName="organization"
+      #org
+      [required]="!fName.value"
+      [placeholder]="'MEDICAL_PROBLEM.ORGANIZATION' | translate"
+      [attr.aria-labelledby]="'recorder-label'"
+    />
+  </mat-form-field>
+</mat-card>

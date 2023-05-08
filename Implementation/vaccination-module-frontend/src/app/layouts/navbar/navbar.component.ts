@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,21 +16,19 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { Component, inject, OnInit } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SessionStorageService } from 'ngx-webstorage';
-import { SharedLibsModule } from '../../shared/shared-libs.module';
-import { LANGUAGES } from '../../shared';
-import { Router, RouterModule } from '@angular/router';
-import { MatListModule } from '@angular/material/list';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { ApplicationConfigService } from '../../core';
-import { map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ConfigService } from '../../core/config/config.service';
+import { SessionInfoService } from '../../core/security/session-info.service';
+import { DetailsActionComponent } from '../../entities/common/details-action/details-action.component';
+import { PatientActionComponent } from '../../entities/common/patient-action/patient-action.component';
+import { changeLang, IHumanDTO, LANGUAGES } from '../../shared';
+import { PatientComponent } from '../../shared/component/patient/patient.component';
 import { SharedDataService } from '../../shared/services/shared-data.service';
+import { SharedLibsModule } from '../../shared/shared-libs.module';
 
 /**
  * Used to display the top bar.
@@ -40,64 +38,73 @@ import { SharedDataService } from '../../shared/services/shared-data.service';
   selector: 'vm-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
-  imports: [
-    SharedLibsModule,
-    RouterModule,
-    MatListModule,
-    MatToolbarModule,
-    MatCardModule,
-    MatTabsModule,
-    MatSidenavModule,
-    FlexLayoutModule,
-  ],
+  imports: [SharedLibsModule, PatientComponent, PatientActionComponent, DetailsActionComponent],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, AfterViewInit {
   languages = LANGUAGES;
   currentLanguage!: string;
   translateService: TranslateService = inject(TranslateService);
   sessionStorageService: SessionStorageService = inject(SessionStorageService);
-  router: Router = inject(Router);
-  appConfig = inject(ApplicationConfigService);
   sharedDataService: SharedDataService = inject(SharedDataService);
+  configService: any = inject(ConfigService);
+  canVisit$!: Observable<boolean>;
 
-  prefix = '';
-  firstName = '';
-  lastName = '';
+  user: IHumanDTO = {} as IHumanDTO;
 
-  currentLang = this.translateService.onLangChange.pipe(map(change => change.lang));
+  sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  showMobileMenu: boolean = false;
+  showActionMenu: boolean = false;
+  showTabletMenu: boolean = false;
+  canEdit: boolean = false;
+  isMobile: boolean = false;
 
-  data: Map<string, string> = new Map<string, string>();
+  public getScreenWidth: any;
 
-  showLangs: boolean = false;
-  showMenu: boolean = false;
-
-  ngOnInit(): void {
-    this.translateService.use(this.sharedDataService.storedData['lang']?.toLocaleLowerCase().slice(0, 2)! || 'de');
-    this.getUsername();
+  constructor(private breakpointObserver: BreakpointObserver) {
+    this.getScreenWidth = window.innerWidth;
+    this.isMobile = this.breakpointObserver.isMatched(Breakpoints.Handset);
   }
 
-  getUsername(): void {
-    const utitle = this.sharedDataService.storedData['utitle'];
-    const ufname = this.sharedDataService.storedData['ufname'];
-    const ugname = this.sharedDataService.storedData['ugname'];
+  ngOnInit(): void {
+    this.translateService.use(this.sessionInfoService.queryParams.lang?.toLocaleLowerCase().slice(0, 2)! || 'de');
+    this.currentLanguage = this.sessionInfoService.queryParams.lang?.toLocaleLowerCase().slice(0, 2)! || 'de';
+    this.user = this.sessionInfoService.author.getValue();
+  }
 
-    this.prefix = !utitle || utitle === 'null' ? '' : utitle;
-    this.firstName = !ufname || ufname === 'null' ? '' : ufname;
-    this.lastName = !ugname || ugname === 'null' ? '' : ugname;
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.canVisit$ = this.configService.canActivate;
+      this.ngOnInit();
+    }, 100);
   }
 
   changeLanguage = (languageKey: string): void => {
-    this.sessionStorageService.store('locale'.slice(0, 2).toLocaleLowerCase(), languageKey);
-    this.translateService.use(languageKey.slice(0, 2).toLocaleLowerCase());
-    this.currentLanguage = languageKey.slice(0, 2);
+    this.currentLanguage = changeLang(
+      languageKey,
+      this.sessionInfoService,
+      this.translateService,
+      this.sessionStorageService,
+      this.currentLanguage
+    );
   };
 
-  toggleMenu(): void {
-    this.showMenu = !this.showMenu;
-  }
-  toggleLangs(): void {
-    this.showLangs = !this.showLangs;
-  }
-
-  goHome = (): any => this.router.navigateByUrl('/');
+  toggleMenu = (): boolean => {
+    this.sharedDataService.showActionMenu = false;
+    this.showTabletMenu = false;
+    this.showMobileMenu = !this.showMobileMenu;
+    return this.showMobileMenu;
+  };
+  toggleTabletMenu = (): boolean => (this.showTabletMenu = !this.showTabletMenu);
+  toggleActionMenu = (): boolean => {
+    this.showMobileMenu = false;
+    this.showTabletMenu = false;
+    this.sharedDataService.showActionMenu = !this.sharedDataService.showActionMenu;
+    return this.sharedDataService.showActionMenu;
+  };
+  closeMenu = (): void => {
+    this.showMobileMenu = false;
+    this.showActionMenu = false;
+    this.showTabletMenu = false;
+    this.sharedDataService.showActionMenu = false;
+  };
 }

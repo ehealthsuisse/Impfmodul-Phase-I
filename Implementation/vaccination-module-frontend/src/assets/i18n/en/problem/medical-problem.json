@@ -1,0 +1,18 @@
+{
+  "MEDICAL_PROBLEM": {
+    "TITLE": "Medical Problems",
+    "FILTER": "Filter",
+    "DETAILS_HEADER": "Medical problem details",
+    "EDIT_HEADER": "Edit medical problem",
+    "NEW_HEADER": "Add medical problem",
+    "MEDICAL_PROBLEM_CODE": "Medical problem",
+    "CLINICAL_STATUS": "Clinical status",
+    "RECORDER": "Recorded by",
+    "SEVERITY": "Severity",
+    "RECORDED_DATE": "Date",
+    "BEGIN": "Begin",
+    "END": "End",
+    "ORGANIZATION": "Organisation",
+    "DATE": "Date of diagnosis"
+  }
+}

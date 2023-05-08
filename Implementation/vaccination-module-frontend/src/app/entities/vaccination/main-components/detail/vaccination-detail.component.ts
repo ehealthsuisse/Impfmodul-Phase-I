@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,60 +17,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Component, inject, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatListModule } from '@angular/material/list';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommentComponent, IHumanDTO } from 'src/app/shared';
-import { ApplicationConfigService } from '../../../../core';
-import { Vaccination } from '../../../../model';
-import {
-  ArrayObjectsToFlatPipe,
-  CommonCardFooterComponent,
-  DialogService,
-  FormatDatePipe,
-  GenericButtonComponent,
-  HelpButtonComponent,
-  PageTitleTranslateComponent,
-} from '../../../../shared';
+import { IVaccination } from '../../../../model';
+import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { initializeActionData } from '../../../../shared/function';
+import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
-import { ConfirmComponent } from '../../helper-components/confirm/confirm.component';
+import { DetailsActionComponent } from '../../../common/details-action/details-action.component';
 import { VaccinationDetailedInformationComponent } from '../../helper-components/vaccination-detailed-information/vaccination-detailed-information.component';
 import { VaccinationService } from '../../services/vaccination.service';
-import { downloadRecordValue } from '../../../../shared/function';
-import { SharedDataService } from '../../../../shared/services/shared-data.service';
 
 @Component({
   selector: 'vm-vaccination-detail',
   templateUrl: './vaccination-detail.component.html',
   styleUrls: ['./vaccination-detail.component.scss'],
-  imports: [
-    SharedLibsModule,
-    GenericButtonComponent,
-    MatListModule,
-    ArrayObjectsToFlatPipe,
-    TranslateModule,
-    FormatDatePipe,
-    VaccinationDetailedInformationComponent,
-    HelpButtonComponent,
-    CommonCardFooterComponent,
-    CommentComponent,
-  ],
+  imports: [SharedLibsModule, VaccinationDetailedInformationComponent, DetailsActionComponent, CommentComponent],
   standalone: true,
 })
-export class VaccinationDetailComponent extends PageTitleTranslateComponent implements OnInit {
-  vaccination: Vaccination | null = null;
+export class VaccinationDetailComponent extends BreakPointSensorComponent implements OnInit {
+  vaccination: IVaccination | null = null;
   vaccinationService = inject(VaccinationService);
-  router: Router = inject(Router);
-  dialog = inject(DialogService);
-  matDialog: MatDialog = inject(MatDialog);
-  appConfig: ApplicationConfigService = inject(ApplicationConfigService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sharedDataService: SharedDataService = inject(SharedDataService);
-
-  canValidate: boolean = false;
-  helpDialogTitle = 'HELP.VACCINATION.DETAIL.TITLE';
-  helpDialogBody = 'HELP.VACCINATION.DETAIL.BODY';
 
   get patient(): IHumanDTO {
     return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
@@ -81,57 +50,20 @@ export class VaccinationDetailComponent extends PageTitleTranslateComponent impl
     this.vaccinationService.find(id).subscribe(vaccine => {
       if (vaccine) {
         this.vaccination = vaccine;
+        this.sharedDataService.storedData['detailedItem'] = this.vaccination;
+        this.sharedDataService.canEdit = this.vaccination.updated! || this.vaccination.deleted!;
       } else {
         this.vaccinationService.query().subscribe({
           next: list => {
             this.vaccination = list.find(filteredVaccine => filteredVaccine.id === id)!;
+            this.sharedDataService.storedData['detailedItem'] = this.vaccination;
+            this.sharedDataService.canEdit = this.vaccination.updated! || this.vaccination.deleted!;
+            this.sharedDataService.setSessionStorage();
           },
         });
       }
     });
 
-    let role = this.sharedDataService.storedData['role'];
-    this.canValidate = role === 'HCP' || role === 'ASS';
-  }
-
-  editRecord(vaccination: Vaccination): void {
-    this.router.navigate([`vaccination`, vaccination.id, 'edit']);
-  }
-
-  deleteRecord(vaccination: Vaccination): void {
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
-    this.matDialog
-      .open(ConfirmComponent, {
-        width: '60vw',
-        data: { value: { ...vaccination }, button: 'buttons.DELETE' },
-      })
-      .afterClosed()
-      .subscribe({
-        next: (confirmed: boolean) => {
-          vaccination.confidentiality = this.baseServices.confidentialityStatus;
-          if (confirmed) {
-            this.vaccinationService.delete(vaccination.id!).subscribe({
-              next: () => {
-                window.history.back();
-              },
-            });
-          }
-        },
-      });
-  }
-
-  download = (vaccination: Vaccination): void => downloadRecordValue<Vaccination>(vaccination, this.patient);
-
-  validateRecord(vaccination: Vaccination): void {
-    let vaccinationCopy: Vaccination = {
-      ...vaccination,
-      author: {
-        firstName: this.sharedDataService.storedData['ufname']!,
-        lastName: this.sharedDataService.storedData['ugname']!,
-        prefix: this.sharedDataService.storedData['utitle']!,
-        role: this.sharedDataService.storedData['role']!,
-      },
-    };
-    this.vaccinationService.validate(vaccinationCopy).subscribe(() => window.history.back());
+    initializeActionData('details', this.sharedDataService);
   }
 }

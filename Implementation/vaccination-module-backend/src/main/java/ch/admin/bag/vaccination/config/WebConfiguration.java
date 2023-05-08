@@ -44,7 +44,7 @@ public class WebConfiguration implements ServletContextInitializer {
   /**
    * Configurable frontend URL to avoid cors problems.
    */
-  @Value("${vaccination.frontendUrl}")
+  @Value("${application.frontendUrl}")
   private String frontendUrl;
 
   public WebConfiguration(Environment environment) {

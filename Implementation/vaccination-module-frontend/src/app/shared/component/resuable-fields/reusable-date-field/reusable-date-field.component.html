@@ -1,0 +1,24 @@
+<mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
+  <mat-label [attr.aria-label]="'MEDICAL_PROBLEM.DATE' | translate" class="detailed-card-content__label">{{
+    labelTranslationKey | translate
+  }}</mat-label>
+  <input
+    matInput
+    [formControl]="formControl"
+    [matDatepicker]="picker"
+    [tabIndex]="isEditable ? 0 : -1"
+    (focus)="picker.open()"
+    [placeholder]="'MEDICAL_PROBLEM.DATE' | translate"
+    [attr.aria-label]="'MEDICAL_PROBLEM.DATE' | translate"
+    [attr.aria-required]="true"
+  />
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+
+<mat-form-field *ngIf="!isEditable" class="detailed-card-content__form-field">
+  <mat-label class="detailed-card-content__label" [attr.aria-label]="'MEDICAL_PROBLEM.DATE' | translate">{{
+    labelTranslationKey | translate
+  }}</mat-label>
+  <input matInput [attr.aria-label]="notEditableValue" value="{{ notEditableValue }}" disabled />
+</mat-form-field>

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,17 +17,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Component, Input } from '@angular/core';
+import { IComment } from '../../interfaces';
 import { SharedLibsModule } from '../../shared-libs.module';
-import { UserCommentComponent } from '../user-comment/user-comment.component';
-import { MatListModule } from '@angular/material/list';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { GenericButtonComponent } from '../generic-button/generic-button.component';
-import { IComment } from '../../interfaces/commentDTO.interface';
 
 @Component({
   selector: 'vm-comment',
   standalone: true,
-  imports: [SharedLibsModule, UserCommentComponent, MatListModule, MatGridListModule, GenericButtonComponent],
+  imports: [SharedLibsModule],
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.scss'],
 })

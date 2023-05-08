@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,14 +17,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Dayjs } from 'dayjs';
+import { Author } from './author';
+import { IComment } from './commentDTO.interface';
 import { IHumanDTO } from './humanDTO.interface';
 import { IValueDTO } from './valueDTO.interface';
-import { IComment } from './commentDTO.interface';
-import { Author } from './author';
 
 export interface IBaseDTO {
   id: string | null;
-  code?: IValueDTO;
+  code: IValueDTO;
   confidentiality: IValueDTO;
   organization?: string | null;
   validated?: boolean | null;

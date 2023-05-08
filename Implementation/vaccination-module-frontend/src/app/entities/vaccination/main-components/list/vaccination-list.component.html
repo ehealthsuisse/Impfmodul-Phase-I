@@ -1,4 +1,4 @@
-<vm-main-wrapper contentId="vaccinationList" [isMainContent]="!isEmbedded" [label]="pageTitle">
+<div [ngClass]="isMobile ? 'mobile-list-wrapper' : 'list-wrapper'">
   <vm-list-header
     class="mat-card mat-elevation-z0"
     [toggle]="toggleHeader"
@@ -6,7 +6,6 @@
     [helpTitle]="'HELP.VACCINATION.LIST.TITLE' | translate"
     [helpBody]="'HELP.VACCINATION.LIST.BODY' | translate"
     (add)="addNewRecord()"
-    [title]="'VACCINATION.TITLE'"
   ></vm-list-header>
 
   <vm-table-wrapper
@@ -15,6 +14,7 @@
     [translationPrefix]="'VACCINATION.'"
     [fullWidth]="tableWidth"
     (rowClick)="navigateToDetails($event)"
+    [tableName]="'VACCINATION.TITLE' | translate"
   >
   </vm-table-wrapper>
-</vm-main-wrapper>
+</div>

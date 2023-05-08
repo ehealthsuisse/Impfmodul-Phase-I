@@ -19,6 +19,8 @@
 package ch.admin.bag.vaccination.service;
 
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.util.List;
 import org.projecthusky.xua.saml2.Assertion;
 
@@ -33,15 +35,16 @@ public interface BaseServiceIfc<T> {
       T newDto, Assertion assertion);
 
   public T delete(String commununityIdentifier, String oid, String localId,
-      String uuid, Assertion assertion);
+      String uuid, ValueDTO confidentiality, AuthorDTO author, Assertion assertion);
 
-  public List<T> getAll(PatientIdentifier patientIdentifier, Assertion assertion, boolean isLifecycleActive);
-
-  public List<T> getAll(String commununityIdentifier, String oid,
-      String localId, Assertion assertion);
+  public List<T> getAll(PatientIdentifier patientIdentifier, AuthorDTO author, Assertion assertion,
+      boolean isLifecycleActive);
 
   public List<T> getAll(String commununityIdentifier, String oid,
-      String localId, Assertion assertion, boolean isLifecycleActive);
+      String localId, AuthorDTO author, Assertion assertion);
+
+  public List<T> getAll(String commununityIdentifier, String oid,
+      String localId, AuthorDTO author, Assertion assertion, boolean isLifecycleActive);
 
   public T update(String communityIdentifier, String oid, String localId,
       String uuid, T newDto, Assertion assertion);

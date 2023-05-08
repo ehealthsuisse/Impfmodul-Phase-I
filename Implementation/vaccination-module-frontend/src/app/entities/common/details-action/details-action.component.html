@@ -1,0 +1,176 @@
+<mat-card *ngIf="!isMobile" class="mat-card mat-elevation-z0" fxLayoutAlign="space-between">
+  <button
+    mat-raised-button
+    type="button"
+    [attr.aria-label]="'buttons.PREVIOUS | translate'"
+    class="mat-button previousBtn"
+    (click)="previous()"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.PREVIOUS'"></span>
+    </ng-container>
+  </button>
+
+  <section class="actionBtns">
+    <button
+      mat-raised-button
+      [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-button'"
+      type="button"
+      color="accent"
+      (click)="validateRecord()"
+      [attr.aria-label]="'buttons.VALIDATE' | translate"
+      [disabled]="!canValidate"
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.VALIDATE'"></span>
+      </ng-container>
+    </button>
+
+    <button
+      mat-raised-button
+      [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-button'"
+      type="button"
+      color="accent"
+      (click)="editRecord()"
+      [attr.aria-label]="'buttons.EDIT' | translate"
+      [disabled]="canEdit"
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.EDIT'"></span>
+      </ng-container>
+    </button>
+
+    <button
+      mat-raised-button
+      [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-button'"
+      type="button"
+      color="warn"
+      (click)="deleteRecord()"
+      [attr.aria-label]="'buttons.DELETE' | translate"
+      [disabled]="canEdit"
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.DELETE'"></span>
+      </ng-container>
+    </button>
+
+    <button
+      type="button"
+      mat-raised-button
+      [color]="!isMobile ? undefined : 'accent'"
+      [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-action-button'"
+      [attr.aria-label]="'buttons.DOWNLOAD'"
+      (click)="download()"
+      [matTooltip]="'buttons.DOWNLOAD' | translate"
+    >
+      <ng-template [ngIf]="isMobile">
+        <span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span>
+      </ng-template>
+      <ng-template [ngIf]="!isMobile">
+        <img
+          [attr.aria-label]="'buttons.DOWNLOAD' | translate"
+          alt="{{ 'buttons.DOWNLOAD' | translate }}"
+          class="download-icon"
+          src="./assets/images/download.png"
+        />
+      </ng-template>
+    </button>
+
+    <button
+      type="button"
+      mat-raised-button
+      [color]="!isMobile ? undefined : 'accent'"
+      [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-action-button'"
+      [attr.aria-label]="'buttons.HELP' | translate"
+      (click)="this.openHelpDialog()"
+      [matTooltip]="'buttons.HELP' | translate"
+    >
+      <ng-template [ngIf]="isMobile">
+        <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
+      </ng-template>
+      <ng-template [ngIf]="!isMobile">
+        <mat-icon class="mat-icon help-icon">help</mat-icon>
+      </ng-template>
+    </button>
+  </section>
+</mat-card>
+<mat-card-actions class="actions" *ngIf="isMobile">
+  <button
+    mat-raised-button
+    type="button"
+    [attr.aria-label]="'buttons.PREVIOUS | translate'"
+    class="mat-button previousBtn"
+    (click)="previous()"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.PREVIOUS'"></span>
+    </ng-container>
+  </button>
+
+  <button
+    mat-raised-button
+    [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-button'"
+    type="button"
+    color="accent"
+    (click)="editRecord()"
+    [attr.aria-label]="'buttons.EDIT' | translate"
+    [disabled]="canEdit"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.EDIT'"></span>
+    </ng-container>
+  </button>
+
+  <button
+    mat-raised-button
+    [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-button'"
+    type="button"
+    color="warn"
+    (click)="deleteRecord()"
+    [attr.aria-label]="'buttons.DELETE' | translate"
+    [disabled]="canEdit"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.DELETE'"></span>
+    </ng-container>
+  </button>
+
+  <button
+    type="button"
+    mat-raised-button
+    [color]="!isMobile ? undefined : 'accent'"
+    [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-action-button'"
+    [attr.aria-label]="'buttons.DOWNLOAD'"
+    (click)="download()"
+    [matTooltip]="'buttons.DOWNLOAD' | translate"
+  >
+    <ng-template [ngIf]="isMobile">
+      <span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span>
+    </ng-template>
+    <ng-template [ngIf]="!isMobile">
+      <img
+        [attr.aria-label]="'buttons.DOWNLOAD' | translate"
+        alt="{{ 'buttons.DOWNLOAD' | translate }}"
+        class="download-icon"
+        src="./assets/images/download.png"
+      />
+    </ng-template>
+  </button>
+
+  <button
+    type="button"
+    mat-raised-button
+    [color]="!isMobile ? undefined : 'accent'"
+    [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-action-button'"
+    [attr.aria-label]="'buttons.HELP' | translate"
+    (click)="this.openHelpDialog()"
+    [matTooltip]="'buttons.HELP' | translate"
+  >
+    <ng-template [ngIf]="isMobile">
+      <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
+    </ng-template>
+    <ng-template [ngIf]="!isMobile">
+      <mat-icon class="mat-icon help-icon">help</mat-icon>
+    </ng-template>
+  </button>
+</mat-card-actions>

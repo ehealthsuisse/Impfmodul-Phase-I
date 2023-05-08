@@ -1,0 +1,5 @@
+{
+  "backendURL": "https://vaccination-module-backend-demo.apps.ocp4.innershift.sodigital.io",
+  "communityId": "GAZELLE",
+  "allowStartWithoutInitialCall": true
+}

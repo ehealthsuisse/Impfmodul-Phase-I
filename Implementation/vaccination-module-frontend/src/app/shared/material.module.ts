@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -26,12 +26,23 @@ import { MatTableModule } from '@angular/material/table';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [],
@@ -45,12 +56,26 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatMenuModule,
     MatTabsModule,
     MatInputModule,
-    ReactiveFormsModule,
     MatFormFieldModule,
     MatAutocompleteModule,
     MatSelectModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatListModule,
+    MatSidenavModule,
+    MatDialogModule,
+    MatListModule,
+    MatSortModule,
+    MatDialogModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
+    NgxMatSelectSearchModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatSidenavModule,
+    MatSnackBarModule,
   ],
   exports: [
     MatToolbarModule,
@@ -62,12 +87,27 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatMenuModule,
     MatTabsModule,
     MatInputModule,
-    ReactiveFormsModule,
     MatFormFieldModule,
     MatAutocompleteModule,
     MatSelectModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    MatListModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatDialogModule,
+    MatListModule,
+    MatProgressBarModule,
+    MatSortModule,
+    MatDialogModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
+    NgxMatSelectSearchModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatSidenavModule,
+    MatSnackBarModule,
   ],
 })
 export class MaterialModule {}

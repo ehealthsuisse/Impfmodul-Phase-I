@@ -19,7 +19,11 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.service.SignatureService;
+import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
+import javax.net.ssl.SSLContext;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
+import net.shibboleth.utilities.java.support.httpclient.TLSSocketFactory;
+import org.apache.http.client.HttpClient;
 import org.opensaml.messaging.context.InOutOperationContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.pipeline.httpclient.BasicHttpClientMessagePipeline;
@@ -30,6 +34,7 @@ import org.opensaml.saml.saml2.binding.decoding.impl.HttpClientResponseSOAP11Dec
 import org.opensaml.saml.saml2.binding.encoding.impl.HttpClientRequestSOAP11Encoder;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
+import org.opensaml.security.credential.Credential;
 import org.opensaml.soap.client.http.AbstractPipelineHttpSOAPClient;
 import org.opensaml.soap.common.SOAPException;
 import org.opensaml.xmlsec.SignatureSigningParameters;
@@ -48,7 +53,8 @@ public class IdPAdapter {
   @Autowired
   private SignatureService signatureService;
 
-  public ArtifactResponse sendAndReceiveArtifactResolve(String url, ArtifactResolve artifactResolve) {
+  public ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig,
+      ArtifactResolve artifactResolve) {
     try {
       MessageContext contextout = new MessageContext();
       contextout.setMessage(artifactResolve);
@@ -72,9 +78,9 @@ public class IdPAdapter {
         }
       };
 
-      HttpClientBuilder clientBuilder = new HttpClientBuilder();
-      soapClient.setHttpClient(clientBuilder.buildClient());
-      soapClient.send(url, context);
+      HttpClient httpClient = createHttpClient();
+      soapClient.setHttpClient(httpClient);
+      soapClient.send(idpConfig.getArtifactResolutionServiceURL(), context);
 
       return (ArtifactResponse) context.getInboundMessageContext().getMessage();
     } catch (Exception e) {
@@ -82,13 +88,28 @@ public class IdPAdapter {
     }
   }
 
-  private void setSigningParameters(MessageContext contextout) {
-    SignatureSigningParameters paramters = new SignatureSigningParameters();
-    paramters.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
-    paramters.setSigningCredential(signatureService.getSamlSPCredential());
-    paramters.setSignatureCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+  private HttpClient createHttpClient() throws Exception {
+    HttpClientBuilder clientBuilder = new HttpClientBuilder();
+    clientBuilder.setTLSSocketFactory(new TLSSocketFactory(SSLContext.getDefault()));
+    return clientBuilder.buildClient();
+  }
 
-    SecurityParametersContext context = contextout.getSubcontext(SecurityParametersContext.class, true);
-    context.setSignatureSigningParameters(paramters);
+  private Credential getServiceProviderSignatureCredential() {
+    return signatureService.getSamlSPCredential();
+  }
+
+  private void setSigningParameters(MessageContext contextout) {
+    SignatureSigningParameters signatureSigningParameters = new SignatureSigningParameters();
+    signatureSigningParameters
+        .setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+    signatureSigningParameters
+        .setSigningCredential(getServiceProviderSignatureCredential());
+    signatureSigningParameters
+        .setSignatureCanonicalizationAlgorithm(
+            SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+
+    SecurityParametersContext securityParametersContext = contextout
+        .getSubcontext(SecurityParametersContext.class, true);
+    securityParametersContext.setSignatureSigningParameters(signatureSigningParameters);
   }
 }

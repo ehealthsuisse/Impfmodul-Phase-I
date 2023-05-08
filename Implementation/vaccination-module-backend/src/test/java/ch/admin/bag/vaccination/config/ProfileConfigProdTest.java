@@ -19,11 +19,12 @@
 package ch.admin.bag.vaccination.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(properties = {"SPRING_CLOUDPROFILES_ACTIVE=prod"})
+@SpringBootTest(properties = {"SPRING_CLOUDPROFILES_ACTIVE=prod", "LOCALMODE=false", "HUSKYLOCALMODE=false"})
 public class ProfileConfigProdTest {
   @Autowired
   private ProfileConfig profileConfig;
@@ -37,9 +38,9 @@ public class ProfileConfigProdTest {
 
   @Test
   public void testSamlAuthenticationActive() {
-    assertThat(profileConfig.isSamlAuthenticationActive()).isFalse();
-    profileConfig.setSamlAuthenticationActive(true);
-    assertThat(profileConfig.isSamlAuthenticationActive()).isFalse();
+    assertThat(profileConfig.isSamlAuthenticationActive()).isTrue();
+    profileConfig.setSamlAuthenticationActive(false);
+    assertThat(profileConfig.isSamlAuthenticationActive()).isTrue();
   }
 
 }

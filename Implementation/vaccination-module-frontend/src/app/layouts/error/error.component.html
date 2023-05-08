@@ -1,15 +1,8 @@
-<div>
-  <div class="row">
-    <div class="col-md-4">
-      <span class="hipster img-fluid rounded"></span>
-    </div>
-
-    <div class="col-md-8">
-      <h1>Error page!</h1>
-
-      <div *ngIf="errorMessage">
-        <div class="alert alert-danger">{{ errorMessage }}</div>
-      </div>
+<div class="error-wrapper">
+  <div class="content" style="max-width: 90ch; text-align: center">
+    <h1 class="mat-error" style="font-size: 2.5rem">{{ errorCode }}</h1>
+    <div *ngIf="errorMessage">
+      <div class="mat-error" style="font-size: 2rem">{{ errorMessage }}</div>
     </div>
   </div>
 </div>

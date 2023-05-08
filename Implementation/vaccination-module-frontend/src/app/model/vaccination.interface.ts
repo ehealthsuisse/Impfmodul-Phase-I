@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,19 +17,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import dayjs from 'dayjs';
-import { IBaseDTO } from '../shared/interfaces/baseDTO.interface';
-import { IValueDTO } from '../shared/interfaces/valueDTO.interface';
-import { IHumanDTO } from '../shared/interfaces/humanDTO.interface';
-import { Author } from '../shared';
+import { Author, IBaseDTO, IHumanDTO, IValueDTO } from '../shared';
 
-export interface Vaccination extends IBaseDTO {
+export interface IVaccination extends IBaseDTO {
   targetDiseases: IValueDTO[];
   doseNumber: string;
   occurrenceDate: dayjs.Dayjs | string;
   lotNumber: string | null;
   reason: IValueDTO;
   status: IValueDTO;
-  validated: boolean | null;
+  validated: boolean;
   vaccineCode: IValueDTO;
   performer: IHumanDTO;
   author?: Author;

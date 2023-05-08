@@ -19,11 +19,12 @@
 package ch.admin.bag.vaccination.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(properties = {"SPRING_CLOUDPROFILES_ACTIVE=local"})
+@SpringBootTest(properties = {"SPRING_CLOUDPROFILES_ACTIVE=local", "LOCALMODE=false", "HUSKYLOCALMODE=false"})
 public class ProfileConfigNotProdTest {
   @Autowired
   private ProfileConfig profileConfig;

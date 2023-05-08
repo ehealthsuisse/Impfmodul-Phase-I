@@ -1,0 +1,3 @@
+<h3 class="h3-header patient-name nav-patient" *ngIf="patient$" [ngClass]="{ nav_patient: isMobile }" [attr.aria-label]="'Patient name'">
+  {{ patient$ | async }}
+</h3>

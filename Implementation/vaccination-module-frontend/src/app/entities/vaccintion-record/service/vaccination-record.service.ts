@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,26 +17,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { map, Observable } from 'rxjs';
-import { ApplicationConfigService } from '../../../core';
+import { map, Observable, tap } from 'rxjs';
 import { IVaccinationRecord } from '../../../model';
-import { SharedDataService } from '../../../shared/services/shared-data.service';
+import { IValueDTO } from '../../../shared';
+import { ConfigService } from '../../../core/config/config.service';
+import { SessionInfoService } from '../../../core/security/session-info.service';
+import { SpinnerService } from '../../../shared/services/spinner.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VaccinationRecordService {
-  sharedDataService: SharedDataService = inject(SharedDataService);
+  resource = ``;
+  prefix = 'vaccinationRecord';
   private _vaccinationRecord!: IVaccinationRecord;
-  private config: ApplicationConfigService = inject(ApplicationConfigService);
-  private translateService: TranslateService = inject(TranslateService);
-  private http = inject(HttpClient);
-  private resource: string = `vaccinationRecord/communityIdentifier/${this.config.communityId}/oid/${this.sharedDataService.storedData['laaoid']}/localId/${this.sharedDataService.storedData['lpid']}`;
 
-  get vaccinationRecord(): IVaccinationRecord {
-    return this._vaccinationRecord;
+  constructor(
+    private translateService: TranslateService,
+    private configService: ConfigService,
+    private http: HttpClient,
+    private sessionInfoService: SessionInfoService,
+    private spinnerService: SpinnerService
+  ) {
+    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${this.sessionInfoService.queryParams.laaoid || '1.3.6.1.4.1.21367.13.20.30'}/localId/${this.sessionInfoService.queryParams.lpid || 'CHPAM4489'}`;
   }
 
   set vaccinationRecord(value: IVaccinationRecord) {
@@ -44,32 +49,44 @@ export class VaccinationRecordService {
   }
 
   queryOneRecord(): Observable<IVaccinationRecord> {
-    return this.http
-      .get<IVaccinationRecord>(`${this.config.endpointPrefix}/${this.resource}`)
-      .pipe(map((response: IVaccinationRecord) => (this.vaccinationRecord = response)));
+    this.spinnerService.show();
+    return this.http.get<IVaccinationRecord>(`${this.configService.endpointPrefix}/${this.resource}`).pipe(
+      map(record => {
+        record.allergies.map((allergy: any) => delete allergy.allergyCode);
+        return {
+          ...record,
+          lang: this.translateService.currentLang,
+          author: this.sessionInfoService.author.getValue(),
+        };
+      }),
+      tap(() => this.spinnerService.hide())
+    );
   }
 
   exportPdf(body: IVaccinationRecord): Observable<Blob> {
-    let currentLanguage = this.translateService.currentLang;
-    body.lang = currentLanguage;
-    body.author = {
-      firstName: this.sharedDataService.storedData['ufname']!,
-      lastName: this.sharedDataService.storedData['ugname']!,
-      prefix: this.sharedDataService.storedData['utitle']!,
-    };
-    return this.http.post<Blob>(`${this.config.endpointPrefix}/vaccinationRecord/exportToPDF`, body, {
-      responseType: 'blob' as 'json',
-    });
+    this.spinnerService.show();
+    return this.http
+      .post<Blob>(`${this.configService.endpointPrefix}/vaccinationRecord/exportToPDF`, body, {
+        responseType: 'blob' as 'json',
+      })
+      .pipe(tap(() => this.spinnerService.hide()));
   }
 
   saveRecord(record: IVaccinationRecord): Observable<IVaccinationRecord> {
-    record.author = {
-      firstName: this.sharedDataService.storedData['ufname']!,
-      lastName: this.sharedDataService.storedData['ugname']!,
-      prefix: this.sharedDataService.storedData['utitle']!,
-    };
-    return this.http.post<IVaccinationRecord>(`${this.config.endpointPrefix}/${this.resource}`, record, {
-      responseType: 'json',
-    });
+    this.spinnerService.show();
+    record.author = this.sessionInfoService.author.getValue();
+    return this.http
+      .post<IVaccinationRecord>(`${this.configService.endpointPrefix}/${this.resource}`, record, {
+        responseType: 'json',
+      })
+      .pipe(tap(() => this.spinnerService.hide()));
+  }
+
+  fetchTargetDisease(): Observable<IValueDTO[]> {
+    return this.http.get<IValueDTO[]>(`${this.configService.endpointPrefix}/utility/targetDiseases`);
+  }
+
+  getPatient(): Observable<string> {
+    return this.http.get(`${this.configService.endpointPrefix}/${this.resource}/name`, { responseType: 'text' });
   }
 }

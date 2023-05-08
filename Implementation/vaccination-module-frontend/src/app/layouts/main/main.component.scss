@@ -1,12 +1,22 @@
-:host {
-  display: flex;
-  flex-direction: column;
+.header {
+  height: 120px;
 }
 
-.navigation-content {
-  position: relative;
-  width: 80vw;
-  height: 100%;
-  flex: 1;
-  margin: 30px auto 30px auto;
+.mobile-header {
+  height: 50px;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
+.mobile-main-content {
+  //display: grid;
+  place-items: center;
+  width: 100%;
+  margin-top: 5px;
 }

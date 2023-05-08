@@ -1,0 +1,10 @@
+{
+  "MEDICAL_PROBLEM_VERIFICATION_STATUS": {
+    "unconfirmed": "Unbestätigt",
+    "differential": "Differenzialdiagnose",
+    "provisional": "Vorläufig",
+    "confirmed": "Bestätigt",
+    "refuted": "Widerlegt",
+    "entered-in-error": "Irrtümlich eingegeben"
+  }
+}

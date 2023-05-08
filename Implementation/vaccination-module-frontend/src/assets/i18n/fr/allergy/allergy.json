@@ -1,18 +1,13 @@
 {
   "ALLERGY": {
-    "TITLE": "Effets Secondaires (EIV)",
-    "DETAILS_HEADER": "Détails de l'Effet Secondaire",
-    "NEW_HEADER": "Ajouter un Effet Secondaire",
-    "EDIT_HEADER": "Modifier l'Effet Secondaire",
-    "ALLERGY_CODE": "Effets Secondaire",
-    "TYPE": "Sorte",
-    "CATEGORY": "Catégorie",
-    "CRITICALITY": "Risque",
-    "CLINICAL_STATUS": "Statut clinique",
-    "VERIFICATION_STATUS": "Vérifié",
+    "TITLE": "Effets secondaires (EIV)",
+    "DETAILS_HEADER": "Détails de l'effet secondaire",
+    "NEW_HEADER": "Ajouter un effet secondaire",
+    "EDIT_HEADER": "Modifier l'effet secondaire",
+    "CODE": "Effet indésirable chez",
     "RECORDER": "Enregistré par",
-    "RECORDER_CONTACT": "contact enregistré",
     "ORGANIZATION": "Organisation",
-    "OCCURRENCE_DATE": "Date de l'événement"
+    "OCCURRENCE_DATE": "Date",
+    "DATE": "Date de la constatation"
   }
 }

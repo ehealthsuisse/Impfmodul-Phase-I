@@ -18,16 +18,12 @@
  */
 package ch.admin.bag.vaccination.controller;
 
-import ch.admin.bag.vaccination.service.saml.SAMLService;
 import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
 import ch.admin.bag.vaccination.service.saml.SAMLUtils;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
-import ch.fhir.epr.adapter.exception.TechnicalException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
-import java.util.List;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -57,9 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "SAML Controller", description = "Controller used to handle SAML request")
 public class SAMLController {
-  public static final String SAML_AUTHENTICATION_ACTIVE = "/saml/authentication/{active}";
-  public static final String SSO_ENDPOINT = "/saml/sso";
-  public static final String SSO_LOGIN_ENDPOINT = "/saml/login/{idpIdentifier}";
+  public static final String SSO_ENDPOINT = "/saml/{idp}/sso";
 
   @Autowired
   private SAMLServiceIfc samlService;
@@ -91,30 +85,6 @@ public class SAMLController {
   }
 
   /**
-   * Sets the idp-identifier in a Cookie.
-   *
-   * @param idpIdentifier the IdP-Identifier
-   * @param request the HttpServletRequest
-   * @param response the HttpServletResponse
-   *
-   * @return An info string
-   */
-  @RequestMapping(value = SSO_LOGIN_ENDPOINT, method = RequestMethod.GET)
-  @Operation(description = "Sets the idp-identifier in a Cookie")
-  public String setIdpIdentifierInCookie(@PathVariable String idpIdentifier,
-      HttpServletRequest request, HttpServletResponse response) {
-    Cookie cookie = new Cookie("idpIdentifier", idpIdentifier);
-    cookie.setDomain(request.getServerName());
-    cookie.setPath("/");
-    int oneMinute = 60;
-    cookie.setMaxAge(oneMinute);
-
-    response.addCookie(cookie);
-
-    return "Cookie was successfully set for " + idpIdentifier;
-  }
-
-  /**
    * <p>
    * Implements the step 5 of the SAML-Authentication. Pushes the SAML-Artifact to the SP.
    * </p>
@@ -132,11 +102,10 @@ public class SAMLController {
    */
   @RequestMapping(value = SSO_ENDPOINT, method = RequestMethod.GET)
   @Operation(description = "Pushes the SAML-Artifact to the SP")
-  public void ssoArtifact(@RequestParam(name = "SAMLart") String samlArtifact,
+  public void ssoArtifact(@RequestParam(name = "SAMLart") String samlArtifact, @PathVariable String idp,
       HttpServletRequest request, HttpServletResponse response) {
 
-    IdentityProviderConfig idpConfig =
-        samlService.getIdpConfig(getIdpIdentifierFromCookie(request));
+    IdentityProviderConfig idpConfig = samlService.getIdpConfig(idp);
     log.debug("Artifact received");
     Artifact artifact = buildArtifactFromRequest(samlArtifact);
     log.debug("Artifact: " + artifact.getValue());
@@ -173,14 +142,6 @@ public class SAMLController {
   private Assertion getAssertion(ArtifactResponse artifactResponse) {
     Response response = (Response) artifactResponse.getMessage();
     return response.getAssertions().get(0);
-  }
-
-  private String getIdpIdentifierFromCookie(HttpServletRequest request) {
-    return List.of(request.getCookies()).stream()
-        .filter(cookie -> cookie.getName().equals(SAMLService.IDP_IDENTIFIER_ATTRIBUTE))
-        .findAny()
-        .orElseThrow(() -> new TechnicalException("Cookie containing Idp identifier not found."))
-        .getValue();
   }
 
   private void logAssertionAttributes(Assertion assertion) {

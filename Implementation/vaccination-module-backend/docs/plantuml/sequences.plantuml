@@ -8,6 +8,7 @@ participant Husky
 participant XUA
 participant PDQ
 participant DOC
+participant ATNA
 
 == GlobalPatientId ==
 Browser         -> FhirController  : POST community, oid, localId
@@ -18,6 +19,8 @@ HuskyAdapter    -> Husky           : PIXurl, oid, localId, globalOid, spidEprOid
 Husky           -> PDQ             : oid, localId, globalOid, spidEprOid
 
 PDQ             -> Husky           : globalId, spidEprId, patientInfo
+Husky           -> ATNA            : sysLogEvent
+ATNA            -> Husky
 Husky           -> HuskyAdapter    : globalId, spidEprId, patientInfo
 deactivate HuskyAdapter    
 HuskyAdapter    -> FhirController  : globalId, spidEprId, patientInfo
@@ -45,6 +48,8 @@ HuskyAdapter    -> Husky           : globalId,oid
 Husky           -> DOC             : globalId,oid
 
 DOC             -> Husky           : jsons
+Husky           -> ATNA            : sysLogEvent
+ATNA            -> Husky
 Husky           -> HuskyAdapter    : jsons
 HuskyAdapter    -> FhirAdapter     : jsons
 FhirAdapter     -> HuskyAdapter    : List<vaccinationDTO>
@@ -62,20 +67,23 @@ group GlobalPatientId
   Husky           -> HuskyAdapter  : globalId, spidEprId, patientInfo
 end
 
-HuskyAdapter    -> HuskyAdapter    : json = fhir(vaccinationDTO) 
-note right                         : FIXME: use FhirAdapter
+HuskyAdapter    -> FhirAdapter     : vaccinationDTO 
+FhirAdapter     -> HuskyAdapter    : json
 HuskyAdapter    -> Husky           : url, eprSpid , assertion
 Husky           -> XUA             : eprSpid , assertion
 XUA             -> Husky           : OK/NOK
+Husky           -> ATNA            : sysLogEvent
+ATNA            -> Husky
 Husky           -> HuskyAdapter    : OK/NOK
 HuskyAdapter    -> Husky           : URL, oid, globalId , json
 Husky           -> DOC             : oid, globalId, json
 
 DOC             -> Husky           : OK/NOK
 Husky           -> HuskyAdapter    : json
-HuskyAdapter    -> FhirController  : json
-note right                         : FIXME: use FhirAdapter
-FhirController  -> Browser         : json
+HuskyAdapter    -> FhirAdapter     : json
+FhirAdapter     -> HuskyAdapter    : List<vaccinationDTO>
+HuskyAdapter    -> FhirController  : List<vaccinationDTO>
+FhirController  -> Browser         : response List<vaccinationDTO>
 
 == Delete Vaccination ==
 Browser         -> FhirController  : DELETE, uuid

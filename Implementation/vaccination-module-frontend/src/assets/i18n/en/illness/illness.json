@@ -2,18 +2,15 @@
   "ILLNESS": {
     "TITLE": "Infectious Diseases",
     "FILTER": "Filter",
-    "DETAILS_HEADER": "Disease Details",
-    "EDIT_HEADER": "Edit Disease",
-    "NEW_HEADER": "Add Disease",
+    "DETAILS_HEADER": "Disease details",
+    "EDIT_HEADER": "Edit disease",
+    "NEW_HEADER": "Add disease",
     "ILLNESS_CODE": "Disease",
-    "CLINICAL_STATUS": "clinical status",
-    "VERIFICATION_STATUS": "Verified",
-    "RECORDER": "Recorded By",
-    "RECORDER_CONTACT": "Recorder Contact",
-    "SEVERITY": "Severity",
+    "RECORDER": "Recorded by",
     "RECORDED_DATE": "Date",
-    "begin": "started",
-    "end": "ended",
-    "ORGANIZATION": "Organisation"
+    "BEGIN": "Begin",
+    "END": "End",
+    "ORGANIZATION": "Organisation",
+    "DATE": "Date of diagnosis"
   }
 }

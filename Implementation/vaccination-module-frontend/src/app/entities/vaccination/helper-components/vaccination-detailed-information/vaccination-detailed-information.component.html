@@ -1,60 +1,143 @@
-<mat-card-content class="mat-card-content" fxLayout="column" fxLayoutAlign="space-between">
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.DATE"></mat-label>
-    <input matInput value="{{ vaccination?.occurrenceDate | formatDate }}" disabled />
+<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" role="group">
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label
+      class="detailed-card-content__label"
+      vmTranslate="VACCINATION.DATE"
+      [attr.aria-label]="'VACCINATION.DATE' | translate"
+    ></mat-label>
+    <input
+      matInput
+      value="{{ vaccination?.occurrenceDate | formatDate }}"
+      disabled
+      [attr.aria-label]="vaccination?.occurrenceDate | formatDate"
+    />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.VACCINE_CODE"></mat-label>
-    <input matInput value="{{ 'vaccination-names.' + vaccination?.vaccineCode?.code | translate }}" disabled />
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label
+      class="detailed-card-content__label"
+      vmTranslate="VACCINATION.VACCINE_CODE"
+      [attr.aria-label]="'VACCINATION.VACCINE_CODE' | translate"
+    ></mat-label>
+    <input
+      matInput
+      [attr.aria-label]="'vaccination-names.' + vaccination?.vaccineCode?.code | translate"
+      value="{{ 'vaccination-names.' + vaccination?.vaccineCode?.code | translate }}"
+      disabled
+    />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.TARGET_DISEASES"></mat-label>
-    <input matInput value="{{ vaccination?.targetDiseases | arrayObjectsToFlat: 'name' }}" disabled />
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label
+      class="detailed-card-content__label"
+      vmTranslate="VACCINATION.TARGET_DISEASES"
+      [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate"
+    ></mat-label>
+    <input
+      matInput
+      [attr.aria-label]="translateAndConcatenate(vaccination?.targetDiseases)"
+      value="{{ translateAndConcatenate(vaccination?.targetDiseases) }}"
+      disabled
+    />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.DOSE_NUMBER"></mat-label>
-    <input matInput value="{{ vaccination?.doseNumber }}" disabled />
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label
+      class="detailed-card-content__label"
+      vmTranslate="VACCINATION.DOSE_NUMBER"
+      [attr.aria-label]="'VACCINATION.DOSE_NUMBER' | translate"
+    >
+    </mat-label>
+    <input matInput [attr.aria-label]="vaccination?.doseNumber" value="{{ vaccination?.doseNumber }}." disabled />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.STATUS"></mat-label>
-    <input matInput value="{{ 'VACCINE_STATUS.' + vaccination?.status?.code | translate }}" disabled />
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label
+      class="detailed-card-content__label"
+      vmTranslate="VACCINATION.LOT_NUMBER"
+      [attr.aria-label]="'VACCINATION.LOT_NUMBER' | translate"
+    ></mat-label>
+    <input matInput [attr.aria-label]="vaccination?.lotNumber" value="{{ vaccination?.lotNumber }}" disabled />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.LOT_NUMBER"></mat-label>
-    <input matInput value="{{ vaccination?.lotNumber }}" disabled />
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label
+      class="detailed-card-content__label"
+      vmTranslate="VACCINATION.VACCINATION_REASON"
+      [attr.aria-label]="'VACCINATION.VACCINATION_REASON' | translate"
+    ></mat-label>
+    <input
+      matInput
+      [attr.aria-label]="'VACCINATION_REASON.' + vaccination?.reason?.code | translate"
+      value="{{ 'VACCINATION_REASON.' + vaccination?.reason?.code | translate }}"
+      disabled
+    />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.VACCINATION_REASON"></mat-label>
-    <input matInput value="{{ 'VACCINATION_REASON.' + vaccination?.reason?.code | translate }}" disabled />
-  </mat-form-field>
-
-  <mat-card class="mat-elevation-z0 group" fxLayout="column" fxLayoutAlign="center">
-    <mat-label class="mat-label" vmTranslate="VACCINATION.RECORDER"></mat-label>
-    <div class="recorder-group">
-      <mat-form-field class="mat-form-field">
+  <mat-card class="mat-elevation-z0 recorder" fxLayout="column" fxLayoutAlign="center">
+    <mat-label class="recorder__label" vmTranslate="VACCINATION.RECORDER"></mat-label>
+    <div class="recorder--fields">
+      <mat-form-field class="recorder-form-field">
         <input matInput disabled value="{{ vaccination?.recorder?.prefix }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
       </mat-form-field>
-      <mat-form-field class="mat-form-field">
+      <mat-form-field class="recorder-form-field">
         <input matInput disabled value="{{ vaccination?.recorder?.firstName }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
       </mat-form-field>
-      <mat-form-field class="mat-form-field">
+      <mat-form-field class="recorder-form-field">
         <input matInput disabled value="{{ vaccination?.recorder?.lastName }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
       </mat-form-field>
     </div>
   </mat-card>
-  <mat-form-field class="mat-form-field">
-    <mat-label vmTranslate="VACCINATION.ORGANIZATION"></mat-label>
-    <input matInput value="{{ vaccination?.organization }}" disabled />
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label vmTranslate="VACCINATION.ORGANIZATION" [attr.aria-label]="'VACCINATION.ORGANIZATION' | translate"></mat-label>
+    <input matInput [attr.aria-label]="vaccination?.organization" value="{{ vaccination?.organization }}" disabled />
   </mat-form-field>
 
   <mat-form-field class="mat-form-field" *ngIf="vaccination?.commentMessage">
-    <mat-label vmTranslate="GLOBAL.COMMENTS"></mat-label>
-    <input matInput value="{{ vaccination?.commentMessage }}" disabled />
+    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
+    <textarea matInput [attr.aria-label]="vaccination?.commentMessage" value="{{ vaccination?.commentMessage }}" disabled> </textarea>
   </mat-form-field>
+  <div class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center  " role="group">
+      <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
+      <mat-icon
+        tabindex="0"
+        class="openComments"
+        *ngIf="!commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >add</mat-icon
+      >
+      <mat-icon
+        tabindex="0"
+        class="closeComments"
+        *ngIf="commentsOpened"
+        (click)="toggleComments()"
+        (keydown.enter)="toggleComments()"
+        role="presentation"
+        >clear</mat-icon
+      >
+    </div>
+
+    <mat-card
+      *ngFor="let comment of vaccination?.comments"
+      role="article"
+      class="commentsContent_card comment-card mat-elevation-z0"
+      [ngClass]="{ active: commentsOpened }"
+      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
+    >
+      <div class="comment-header">
+        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      </div>
+      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+    </mat-card>
+    <p
+      *ngIf="vaccination?.comments?.length === 0"
+      vmTranslate="COMMENT.NO_COMMENTS"
+      class="commentsContent_card no-comments"
+      [ngClass]="{ active: commentsOpened }"
+    ></p>
+  </div>
 </mat-card-content>

@@ -1,18 +1,52 @@
-<mat-card-header class="mat-elevation-z0" fxLayout="column" *ngIf="toggle">
-  <mat-card-title>
-    <h1 class="h3-header" style="display: inline-flex" [vmTranslate]="title"></h1>
-  </mat-card-title>
-  <mat-card-subtitle style="display: inline-flex; padding: 0 20px 0 30px" class="h3-header" *ngIf="showPatientName"> </mat-card-subtitle>
-
-  <mat-card class="mat-elevation-z0 card-header" fxLayout="row" fxLayoutAlign="space-between center" *ngIf="subtitleVisibility">
-    <mat-form-field appearance="fill" class="search-input-wrapper">
+<mat-card *ngIf="isMobile" class="mat-elevation-z0" [ngClass]="isMobile ? 'mobile-mat-card' : ''">
+  <mat-card-header>
+    <mat-card-title class="mat-card-title" [vmTranslate]="title"></mat-card-title>
+    <mat-card-actions align="start">
+      <button mat-icon-button (click)="add.emit()" type="button" [attr.aria-label]="'buttons.ADD' | translate">
+        <mat-icon [attr.aria-label]="'buttons.ADD' | translate" matTooltip="{{ 'buttons.ADD' | translate }}">add </mat-icon>
+      </button>
+      <button mat-flat-button (click)="openHelpDialog($event)" type="button" [attr.aria-label]="'buttons.HELP' | translate">
+        <mat-icon [attr.aria-label]="'buttons.HELP' | translate" matTooltip="{{ 'buttons.HELP' | translate }}">help </mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card-header>
+  <mat-card-content mat-card-content>
+    <mat-form-field class="search-input-wrapper">
       <mat-label vmTranslate="GLOBAL.SEARCH"></mat-label>
       <input matInput #input (keyup)="filterValue($event)" />
     </mat-form-field>
-    <mat-card-actions fxLayout="row" fxLayoutAlign="center">
-      <vm-generic-button [label]="'buttons.ADD'" (click)="add.emit()" color="accent" [class]="'left'" [isVisible]="isVisible">
-      </vm-generic-button>
-      <vm-help-button class="help-button" (click)="opernHelpDialog($event)"></vm-help-button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="!isMobile" class="mat-elevation-z0 desktop-mat-card">
+  <mat-card-header class="mat-card-header">
+    <mat-card-title [vmTranslate]="title"></mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="mat-card-content">
+    <mat-form-field class="search-input-wrapper">
+      <mat-label vmTranslate="GLOBAL.SEARCH"></mat-label>
+      <input matInput #input (keyup)="filterValue($event)" />
+    </mat-form-field>
+
+    <mat-card-actions align="start">
+      <button mat-raised-button (click)="add.emit()" color="accent" type="button" [attr.aria-label]="'buttons.ADD' | translate">
+        <span
+          class="button-text"
+          [attr.aria-label]="'buttons.ADD' | translate"
+          matTooltip="{{ 'buttons.ADD' | translate }}"
+          [vmTranslate]="'buttons.ADD'"
+        ></span>
+      </button>
+      <button mat-flat-button (click)="openHelpDialog($event)" type="button" [attr.aria-label]="'buttons.HELP' | translate">
+        <mat-icon [attr.aria-label]="'buttons.HELP' | translate" matTooltip="{{ 'buttons.HELP' | translate }}">help </mat-icon>
+      </button>
     </mat-card-actions>
+  </mat-card-content>
+</mat-card>
+
+<mat-card-header class="mat-elevation-z0 vm-list-header" fxLayout="column" *ngIf="toggle">
+  <mat-card-subtitle class="h3-header"> </mat-card-subtitle>
+  <mat-card class="mat-elevation-z0 card-header" *ngIf="subtitleVisibility">
+    <mat-card-actions class="mat-card-actions"> </mat-card-actions>
   </mat-card>
 </mat-card-header>

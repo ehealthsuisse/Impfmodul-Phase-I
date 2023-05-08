@@ -58,11 +58,15 @@ public class SignatureService {
   @Value("${portal.activateTimestampCheck:false}")
   private boolean portalTimestampCheck;
 
+  @Value("${sp.keystore.keystore-type}")
+  private String serviceProviderKeystoreType;
+
   @Value("${sp.keystore.keystore-path}")
   private String serviceProviderKeystorePath;
 
   @Value("${sp.keystore.keystore-password}")
   private String serviceProviderKeystorePassword;
+
   @Value("${sp.keystore.sp-alias}")
   private String serviceProviderKeyAlias;
 
@@ -139,7 +143,7 @@ public class SignatureService {
     InputStream keyStoreInputStream = null;
 
     try {
-      KeyStore keystore = KeyStore.getInstance("PKCS12");
+      KeyStore keystore = KeyStore.getInstance(serviceProviderKeystoreType);
       keyStoreInputStream = Files.newInputStream(Path.of(path));
       keystore.load(keyStoreInputStream, password);
       return keystore;

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,10 +17,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { HttpClient } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { inject } from '@angular/core';
+import { SessionStorageService } from 'ngx-webstorage';
 import { map, Observable, startWith } from 'rxjs';
+import { SessionInfoService } from '../../core/security/session-info.service';
 
 export class MissingTranslationHandlerImpl implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams): string {
@@ -41,10 +43,27 @@ export function missingTranslationHandler(): MissingTranslationHandler {
 export function trackLangChange(): Observable<string> {
   return inject(TranslateService).onLangChange.pipe(
     map(change => change.lang),
-    startWith('')
+    startWith('DE')
   );
+}
+
+export function changeLang(
+  languageKey: string,
+  sessionInfoService: SessionInfoService,
+  translateService: TranslateService,
+  sessionStorageService: SessionStorageService,
+  currentLanguage: string
+): string {
+  if (languageKey !== currentLanguage) {
+    sessionInfoService.queryParams.lang = languageKey.toLowerCase();
+    sessionStorageService.store('locale'.slice(0, 2).toLocaleLowerCase(), languageKey);
+    translateService.use(languageKey.slice(0, 2).toLocaleLowerCase());
+    currentLanguage = languageKey.slice(0, 2);
+  }
+
+  return currentLanguage;
 }
 
 export const translationNotFoundMessage = 'translation-not-found';
 
-export const LANGUAGES: string[] = ['en', 'fr', 'de', 'it'];
+export const LANGUAGES: string[] = ['de', 'en', 'fr', 'it'];

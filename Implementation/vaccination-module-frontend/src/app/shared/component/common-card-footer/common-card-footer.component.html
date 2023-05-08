@@ -1,54 +1,145 @@
-<mat-card class="mat-card mat-elevation-z0" fxLayout="row" fxLayoutAlign="space-between" *ngIf="isDetailsFooter">
-  <vm-generic-button [label]="'buttons.PREVIOUS'" (click)="previous()"></vm-generic-button>
+<mat-card class="mat-card mat-elevation-z0" fxLayoutAlign="space-between" *ngIf="isDetailsFooter">
+  <button
+    mat-raised-button
+    type="button"
+    role="button"
+    [attr.aria-label]="'buttons.PREVIOUS | translate'"
+    class="previousBtn"
+    (click)="previous()"
+    (keydown.enter)="previous()"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.PREVIOUS'"></span>
+    </ng-container>
+  </button>
 
-  <section>
-    <vm-generic-button
-      [label]="'buttons.VALIDATE'"
-      [type]="'submit'"
+  <div class="actionBtns">
+    <button
+      mat-raised-button
+      type="button"
+      role="button"
+      [attr.aria-label]="'buttons.VALIDATE | translate'"
       color="accent"
       [disabled]="!item?.validated!"
-      (click)="validateRecord($event)"
       *ngIf="canValidate"
+      (click)="validateRecord($event)"
+      (keydown.enter)="validateRecord($event)"
       class="mat-button"
-    ></vm-generic-button>
-    <vm-generic-button
-      [label]="'buttons.EDIT'"
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.VALIDATE'"></span>
+      </ng-container>
+    </button>
+
+    <button
+      mat-raised-button
+      class="mat-button"
+      type="button"
+      role="button"
       color="accent"
       (click)="navigateToEdit(item!)"
+      (keydown.enter)="navigateToEdit(item!)"
+      [attr.aria-label]="'buttons.EDIT' | translate"
+      [disabled]="disabled || canEdit"
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.EDIT'"></span>
+      </ng-container>
+    </button>
+
+    <button
+      mat-raised-button
       class="mat-button"
-      [disabled]="disabled"
-    ></vm-generic-button>
-    <vm-generic-button
-      [label]="'buttons.DELETE'"
+      type="button"
+      role="button"
       color="warn"
       (click)="deleteRecord(item!)"
+      (keydown.enter)="deleteRecord(item!)"
+      [attr.aria-label]="'buttons.DELETE' | translate"
       [disabled]="disabled"
-      class="mat-button"
-    ></vm-generic-button>
-    <vm-help-button class="mat-button" (click)="openDialog($event)" [disabled]="disabled"></vm-help-button>
-    <button mat-button (click)="downloadRecord($event)" [disabled]="disabled">
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.DELETE'"></span>
+      </ng-container>
+    </button>
+    <button
+      type="button"
+      role="button"
+      mat-raised-button
+      [color]="!isMobile ? undefined : 'accent'"
+      [attr.aria-label]="'buttons.HELP' | translate"
+      (click)="openDialog($event)"
+      (keydown.enter)="openDialog($event)"
+      [disabled]="disabled"
+      [matTooltip]="'buttons.HELP' | translate"
+    >
+      <ng-template [ngIf]="isMobile">
+        <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
+      </ng-template>
+      <ng-template [ngIf]="!isMobile">
+        <mat-icon class="mat-icon help-icon">help</mat-icon>
+      </ng-template>
+    </button>
+
+    <button mat-button role="button" (click)="downloadRecord($event)" (keydown.enter)="downloadRecord($event)" [disabled]="disabled">
       <img
         alt="{{ 'buttons.DOWNLOAD' | translate }}"
-        [attr.area-label]="'buttons.DOWNLOAD' | translate"
+        [attr.aria-label]="'buttons.DOWNLOAD' | translate"
         matTooltip="{{ 'buttons.DOWNLOAD' | translate }}"
         class="download-icon"
-        src="../../../assets/images/download.png"
+        src="./assets/images/download.png"
       />
     </button>
-  </section>
+  </div>
 </mat-card>
 
 <mat-card class="mat-card mat-elevation-z0" fxLayout="row" fxLayoutAlign="end" *ngIf="isEditFooter">
-  <section>
-    <vm-generic-button
-      [label]="'buttons.SAVE'"
-      [type]="'submit'"
-      color="accent"
-      [disabled]="disabled"
-      (click)="saveRecord($event)"
-      class="mat-button"
-    ></vm-generic-button>
-    <vm-generic-button [label]="'buttons.CANCEL'" color="warn" (click)="previous()" class="mat-button"></vm-generic-button>
-    <vm-help-button class="mat-button" (click)="openDialog($event)"></vm-help-button>
-  </section>
+  <button
+    mat-raised-button
+    class="mat-button saveBtn"
+    type="submit"
+    role="button"
+    color="accent"
+    (click)="saveRecord($event)"
+    (keydown.enter)="saveRecord($event)"
+    [attr.aria-label]="'buttons.SAVE' | translate"
+    [disabled]="disabled"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.SAVE'"></span>
+    </ng-container>
+  </button>
+
+  <button
+    mat-raised-button
+    class="mat-button"
+    type="button"
+    role="button"
+    color="warn"
+    (click)="previous()"
+    (keydown.enter)="previous()"
+    [attr.aria-label]="'buttons.CANCEL' | translate"
+  >
+    <ng-container class="button-content">
+      <span class="button-text" [vmTranslate]="'buttons.CANCEL'"></span>
+    </ng-container>
+  </button>
+  <button
+    type="button"
+    role="button"
+    mat-raised-button
+    class="mat-button helpBtn"
+    [color]="!isMobile ? undefined : 'accent'"
+    [attr.aria-label]="'buttons.HELP' | translate"
+    (click)="openDialog($event)"
+    (keydown.enter)="openDialog($event)"
+    [matTooltip]="'buttons.HELP' | translate"
+  >
+    <ng-template [ngIf]="isMobile">
+      <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
+    </ng-template>
+    <ng-template [ngIf]="!isMobile">
+      <mat-icon class="mat-icon help-icon">help</mat-icon>
+    </ng-template>
+  </button>
 </mat-card>

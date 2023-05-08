@@ -1,25 +1,18 @@
-<section class="detail-wrapper" *ngIf="vaccination!">
-  <mat-card class="mat-card mat-elevation-z10">
-    <mat-card-header class="mat-card-header">
-      <mat-card-title>
-        <h1 vmTranslate="VACCINATION.DETAILS_HEADER" class="h3-header"></h1>
+<section *ngIf="vaccination!" [ngClass]="isMobile ? 'mobile-detail-wrapper' : 'detail-wrapper'">
+  <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0' : 'mat-elevation-z10'">
+    <mat-card-header class="detail-wrapper__card-title mat-card-title">
+      <mat-card-title vmTranslate="VACCINATION.DETAILS_HEADER" [attr.aria-label]="'VACCINATION.DETAILS_HEADER' | translate">
       </mat-card-title>
     </mat-card-header>
-    <mat-card-content class="mat-card-content">
+    <mat-card-content class="detail-wrapper__card-content mat-card-content">
       <vm-vaccination-detailed-information [vaccination]="vaccination"></vm-vaccination-detailed-information>
     </mat-card-content>
-
-    <vm-common-card-footer
-      [isDetailsFooter]="true"
-      [dialogTitle]="helpDialogTitle"
-      [dialogBody]="helpDialogBody"
-      (edit)="editRecord(vaccination)"
-      [canValidate]="canValidate"
-      (download)="download(vaccination)"
-      (validate)="validateRecord(vaccination)"
-      (delete)="deleteRecord(vaccination)"
-      [disabled]="!!vaccination.deleted || !!vaccination.updated"
-    ></vm-common-card-footer>
+    <vm-details-action
+      [canEdit]="vaccination.updated! || vaccination.deleted!"
+      *ngIf="!isMobile"
+      class="details__action"
+    ></vm-details-action>
   </mat-card>
-  <vm-comment [comments]="vaccination.comments!"></vm-comment>
+  <vm-comment class="detail-wrapper__comment" [comments]="vaccination.comments!"></vm-comment>
 </section>
+v

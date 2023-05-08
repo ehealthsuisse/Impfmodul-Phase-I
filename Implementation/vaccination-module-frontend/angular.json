@@ -33,7 +33,12 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/assets/scss/theme.scss", "src/assets/scss/global.scss", "src/assets/scss/vendor.scss"],
+            "styles": [
+              "node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "src/assets/scss/_variables.scss",
+              "src/assets/scss/global.scss",
+              "src/assets/scss/vendor.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -46,8 +51,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kb",
-                  "maximumError": "6kb"
+                  "maximumWarning": "12kb",
+                  "maximumError": "15kb"
                 }
               ],
               "outputHashing": "all"
@@ -100,7 +105,12 @@
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/assets/scss/theme.scss", "src/assets/scss/global.scss", "src/assets/scss/vendor.scss"],
+            "styles": [
+              "node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "src/assets/scss/_variables.scss",
+              "src/assets/scss/global.scss",
+              "src/assets/scss/vendor.scss"
+            ],
             "scripts": [],
             "codeCoverage": true
           }

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,155 +16,118 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { Allergy, IIllnesses, IVaccinationRecord, Vaccination } from '../../../model';
-import {
-  DialogService,
-  GenericButtonComponent,
-  HelpButtonComponent,
-  IHumanDTO,
-  MapperService,
-  PageTitleTranslateComponent,
-  TableWrapperComponent,
-} from '../../../shared';
+import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
+import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
+import { IHumanDTO, MapperService, TableWrapperComponent, trackLangChange } from '../../../shared';
+import { SharedDataService } from '../../../shared/services/shared-data.service';
+import { SpinnerService } from '../../../shared/services/spinner.service';
+import { SharedComponentModule } from '../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { VaccinationListComponent } from '../../vaccination/main-components';
 import { VaccinationRecordService } from '../service/vaccination-record.service';
-import { downloadRecordValue } from '../../../shared/function';
-import { SharedDataService } from '../../../shared/services/shared-data.service';
+import { PatientActionComponent } from '../../common/patient-action/patient-action.component';
+import { initializeActionData } from '../../../shared/function';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { SessionInfoService } from '../../../core/security/session-info.service';
 
 @Component({
   selector: 'vm-vaccination-record',
   standalone: true,
-  imports: [
-    SharedLibsModule,
-    TableWrapperComponent,
-    VaccinationListComponent,
-    GenericButtonComponent,
-    HelpButtonComponent,
-    MatIconModule,
-    FlexLayoutModule,
-  ],
+  imports: [SharedLibsModule, TableWrapperComponent, VaccinationListComponent, SharedComponentModule, PatientActionComponent],
   templateUrl: './vaccination-record.component.html',
   styleUrls: ['./vaccination-record.component.scss'],
 })
-export class VaccinationRecordComponent extends PageTitleTranslateComponent implements OnInit, OnDestroy {
+export class VaccinationRecordComponent implements OnInit, OnDestroy {
   router = inject(Router);
-  http = inject(HttpClient);
-  dialog = inject(DialogService);
-  vaccinations!: MatTableDataSource<Vaccination>;
-  illnesses!: MatTableDataSource<IIllnesses>;
-  allergies!: MatTableDataSource<Allergy>;
-  translationService: TranslateService = inject(TranslateService);
+  vaccinations!: MatTableDataSource<IVaccination>;
+  illnesses!: MatTableDataSource<IInfectiousDiseases>;
+  allergies!: MatTableDataSource<IAdverseEvent>;
+  medicalProblems!: MatTableDataSource<IMedicalProblem>;
   mapper: MapperService = inject(MapperService);
   vaccinationRecordService = inject(VaccinationRecordService);
-  allergyColumns: string[] = ['occurrenceDate', 'allergyCode', 'clinicalStatus'];
-  illnessesColumns: string[] = ['recordedDate', 'illnessCode', 'clinicalStatus'];
-  vaccinationColumns: string[] = ['occurrenceDate', 'vaccineCode', 'targetDiseases', 'doseNumber', 'recorder'];
+  record$ = combineLatest([this.vaccinationRecordService.queryOneRecord(), trackLangChange()]);
+  allergyColumns: string[] = ['occurrenceDate', 'code', 'recorder'];
+  illnessesColumns: string[] = ['recordedDate', 'illnessCode', 'recorder'];
+  vaccinationColumns: string[] = ['occurrenceDate', 'targetDiseases', 'vaccineCode', 'doseNumber', 'recorder'];
+  medicalProblemColumns: string[] = ['recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder'];
   subscription!: Subscription;
   sharedDataService: SharedDataService = inject(SharedDataService);
+  spinnerService: SpinnerService = inject(SpinnerService);
+  public getScreenWidth: any;
+  patientRender: boolean = true;
+  isMobile: boolean = false;
+  sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  patient: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
 
-  get patient(): IHumanDTO {
-    return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
+  constructor(private breakPointObserver: BreakpointObserver) {
+    this.getScreenWidth = window.innerWidth;
+    this.breakPointObserver.observe(['(max-width: 780px)']).subscribe(result => {
+      this.isMobile = result.matches;
+    });
   }
 
   ngOnInit(): void {
     this.getRecord();
+    initializeActionData('record', this.sharedDataService);
   }
 
   getRecord(): Subscription {
     this.spinnerService.show();
+    if (this.getScreenWidth < 780) {
+      this.patientRender = false;
+    }
     return (this.subscription = this.vaccinationRecordService.queryOneRecord().subscribe({
       next: value => {
-        this.sharedDataService.storedData['patient'] = value.patient;
         this.sharedDataService.setSessionStorage();
-        this.vaccinations = new MatTableDataSource<Vaccination>(this.mapper.vaccinationTranslateMapper(value.vaccinations));
-        this.illnesses = new MatTableDataSource<IIllnesses>(this.mapper.illnessesTranslateMapper(value.pastIllnesses));
-        this.allergies = new MatTableDataSource<Allergy>(this.mapper.allergyTranslationMapper(value.allergies));
+        this.record$.subscribe(([]) => {
+          this.allergies = new MatTableDataSource<IAdverseEvent>(this.mapper.allergyTranslateMapper(value.allergies));
+          this.vaccinations = new MatTableDataSource<IVaccination>(this.mapper.vaccinationTranslateMapper(value.vaccinations));
+          this.illnesses = new MatTableDataSource<IInfectiousDiseases>(this.mapper.illnessesTranslateMapper(value.pastIllnesses));
+          this.medicalProblems = new MatTableDataSource<IMedicalProblem>(this.mapper.problemTranslateMapper(value.medicalProblems));
+        });
+        this.patient.next(value.patient);
         this.spinnerService.hide();
       },
     }));
   }
 
-  exportPdf(): any {
-    this.spinnerService.show();
-    return this.vaccinationRecordService.queryOneRecord().subscribe({
-      next: record => {
-        record.allergies.forEach(e => {
-          e.allergyCode.name = this.translationService.instant('ALLERGY_NAMES.' + e.allergyCode.code);
-          e.clinicalStatus.name = this.translationService.instant('ALLERGY_CLINICAL_STATUS.' + e.clinicalStatus.code);
-        });
-        record.pastIllnesses.forEach(e => {
-          e.illnessCode.name = this.translationService.instant('ILLNESSES_CODE.' + e.illnessCode.code);
-          e.clinicalStatus.name = this.translationService.instant('ILLNESS_CLINICAL_STATUS.' + e.clinicalStatus.code);
-        });
-        this.vaccinationRecordService.exportPdf(record).subscribe({
-          next: response => {
-            const blob = new Blob([response], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
-            window.open(url);
-          },
-        });
-        this.spinnerService.hide();
-      },
-    });
-  }
-
-  save = (): Subscription => {
-    this.spinnerService.show();
-    return this.vaccinationRecordService.queryOneRecord().subscribe({
-      next: record =>
-        this.vaccinationRecordService.saveRecord(record!).subscribe({
-          next: () => {
-            this.dialog.openDialog('HELP.VACCINATION_RECORD.SAVE.TITLE', 'HELP.VACCINATION_RECORD.SAVE.BODY');
-          },
-          complete: () => {
-            this.spinnerService.hide();
-          },
-        }),
-    });
-  };
-
-  navigateToAllergy(row: Allergy): void {
+  navigateToAllergy(row: IAdverseEvent): void {
     this.router.navigate(['allergy', row.id, 'detail']);
   }
 
-  navigateToIllness(row: IIllnesses): void {
-    this.router.navigate(['illnesses', row.id, 'detail']);
+  navigateToIllness(row: IInfectiousDiseases): void {
+    this.router.navigate(['infectious-diseases', row.id, 'detail']);
   }
 
-  navigateToVaccination(row: Vaccination): void {
+  navigateToVaccination(row: IVaccination): void {
     this.router.navigate(['vaccination', row.id, 'detail']);
   }
 
-  override ngOnDestroy(): void {
+  navigateToMedicalProblem(row: IMedicalProblem): void {
+    this.router.navigate(['medical-problem', row.id, 'detail']);
+  }
+
+  ngOnDestroy(): void {
     this.subscription.unsubscribe();
-    super.ngOnDestroy();
   }
 
   addVaccination(): void {
-    this.router.navigate(['vaccination', 'new']);
+    this.router.navigateByUrl('vaccination/new');
+  }
+
+  addMedicalProblem(): void {
+    // this.router.navigate(['medical-problem', 'new']);
+    this.router.navigateByUrl('medical-problem/new');
   }
 
   addIllness(): void {
-    this.router.navigate(['illnesses', 'new']);
+    this.router.navigateByUrl('infectious-diseases/new');
   }
 
   addAllergy(): void {
-    this.router.navigate(['allergy', 'new']);
+    this.router.navigateByUrl('allergy/new');
   }
-
-  download = (): Subscription => {
-    return this.vaccinationRecordService.queryOneRecord().subscribe({
-      next: record => downloadRecordValue<IVaccinationRecord>(record, this.patient),
-    });
-  };
 }

@@ -2,6 +2,7 @@
   "GLOBAL": {
     "ALLERGIES": "Nebenwirkungen (UIE)",
     "PAST_ILLNESSES": "Infektionskrankheiten",
+    "PROBLEM": "Grunderkrankungen",
     "VACCINATIONS": "Impfungen",
     "HOME": "Impfausweis",
     "DATE": "Datum",
@@ -16,6 +17,9 @@
     "COMMENTS": "Kommentare",
     "SEARCH": "Suchen",
     "COMMENT": "Kommentar",
+    "ERROR": "Fehler",
+    "ERROR_403": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen. Sie müssen auf diese Seite über das EPD-Portal zugreifen.",
+    "SNEAKBAR_CONFIRM": "Entität erfolgreich gespeichert",
     "NONE_OPTION": ""
   }
 }

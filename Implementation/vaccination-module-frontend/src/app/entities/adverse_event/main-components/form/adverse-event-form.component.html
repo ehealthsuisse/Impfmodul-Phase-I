@@ -1,0 +1,79 @@
+<div class="detail-wrapper">
+  <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0' : 'mat-elevation-z10'">
+    <mat-card-header class="detail-wrapper__card-title mat-card-title">
+      <mat-card-title
+        *ngIf="adverseEvent"
+        vmTranslate="ALLERGY.EDIT_HEADER"
+        [attr.aria-label]="'ALLERGY.EDIT_HEADER' | translate"
+      ></mat-card-title>
+      <mat-card-title
+        *ngIf="!adverseEvent"
+        vmTranslate="ALLERGY.NEW_HEADER"
+        [attr.aria-label]="'ALLERGY.NEW_HEADER' | translate"
+      ></mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="detail-wrapper__card-content form-wrapper">
+      <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form-wrapper__form" role="form">
+        <vm-reusable-date-field
+          [formControl]="editForm.controls.occurrenceDate"
+          [labelTranslationKey]="'ALLERGY.DATE'"
+          [isEditable]="true"
+          formControlName="occurrenceDate"
+        >
+        </vm-reusable-date-field>
+
+        <mat-form-field class="detailed-card-content__form-field">
+          <mat-select
+            [attr.aria-label]="'ALLERGY.CODE' | translate"
+            [placeholder]="'ALLERGY.CODE' | translate"
+            #singleSelect
+            formControlName="code"
+            required="true"
+            [formControl]="allergiesControl"
+            ngDefaultControl
+          >
+            <mat-option>
+              <ngx-mat-select-search [formControl]="searchControl"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option
+              *ngFor="let allergy of filteredAllergies | async | filterPipe : searchControl.value : 'ALLERGY_CODE.'"
+              vmTranslate="{{ 'ALLERGY_CODE.' + allergy.code }}"
+              [value]="allergy"
+              [attr.aria-label]="'ALLERGY_CODE.' + allergy.code"
+            >
+              {{ 'ALLERGY_CODE.' + allergy.code }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <vm-reusable-recorder-field
+          [parentForm]="editForm"
+          [recorder]="adverseEvent?.recorder!"
+          [organization]="adverseEvent?.organization!"
+          [isEditable]="true"
+        >
+        </vm-reusable-recorder-field>
+
+        <mat-form-field class="detailed-card-content__form-field">
+          <mat-label [attr.aria-label]="'GLOBAL.COMMENT' | translate" class="mat-label" vmTranslate="GLOBAL.COMMENT"></mat-label>
+          <textarea
+            [attr.aria-label]="'GLOBAL.COMMENT' | translate"
+            matInput
+            formControlName="commentMessage"
+            [placeholder]="'COMMENT.PLACEHOLDER' | translate"
+          ></textarea>
+        </mat-form-field>
+        <vm-common-card-footer
+          [isEditFooter]="true"
+          [dialogTitle]="helpDialogTitle | translate"
+          [dialogBody]="helpDialogBody | translate"
+          (edit)="save()"
+          [disabled]="editForm.invalid || isSaving"
+        >
+        </vm-common-card-footer>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  <vm-comment class="detail-wrapper__comment" [comments]="adverseEvent?.comments!"></vm-comment>
+</div>

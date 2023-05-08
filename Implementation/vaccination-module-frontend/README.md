@@ -1,6 +1,6 @@
 # Vaccination Module Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.2.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.6.
 
 ## Development
 
@@ -40,9 +40,9 @@ ng serve -o
 
 | Name                    | purpose                                                                         |
 | ----------------------- | :------------------------------------------------------------------------------ |
-| npm run build           | Build the project. The build artifacts will be stored in the `dist/` directory. Assumes to run in root path. |
+| ng build                | build the project. The build artifacts will be stored in the `dist/` directory. |
 | npm run buildProd       | Same as npm run build but assumes to run in a subfolder.                        |
-| npm run test            | execute the unit tests via [Karma](https://karma-runner.github.io).             |
+| ng test                 | execute the unit tests via [Karma](https://karma-runner.github.io).             |
 | npm run lint            | execute the linting configuration.                                              |
 | npm run lint:fix        | used to configure the linting configuration                                     |
 | npm run prettier:check  | check if the code is match with the style guide the code style                  |
@@ -80,7 +80,7 @@ npm install moment --save
 
 ### Using Angular CLI
 
-You can also use [Angular CLI][] to generate some custom client code.
+You can also use [Angular CLI](https://github.com/angular/angular-cli) to generate some custom client code.
 
 For example, the following command:
 
@@ -111,4 +111,4 @@ The project root directory contains the following
 | .eslintignore   | used to instruct eslint to not wast time linting the mentioned file inside.                          |
 | .eslintrc.json  | used to configure the linting configuration                                                          |
 | .prettierrc     | enforces a consistent code style for all developer                                                   |
-| .prettierignore | ignore checking code style                                                                           |                                                                           |
+| .prettierignore | ignore checking code style                                                                           |

@@ -2,6 +2,7 @@
   "GLOBAL": {
     "ALLERGIES": "Adverse Events",
     "PAST_ILLNESSES": "Infectious Diseases",
+    "PROBLEM": "Medical Problems",
     "VACCINATIONS": "Vaccinations",
     "HOME": "Vaccination Record",
     "DATE": "Date",
@@ -9,13 +10,16 @@
     "TARGET_DISEASES": "Target Diseases",
     "DOSE_NUMBER": "Dose",
     "PERFORMER": "Vaccinated by",
-    "RECORDER": "recorder",
+    "RECORDER": "Recorder",
     "CLINICAL_STATUS": "Status",
     "VERIFICATION_STATUS": "Verified",
     "VACCINATION_CARD": "Vaccination Record",
     "COMMENTS": "Comments",
-    "SEARCH": "search",
+    "SEARCH": "Search",
     "COMMENT": "Comment",
+    "ERROR": "Error",
+    "ERROR_403": "You are not authorized to access this page. you must access this page from the EPD portal",
+    "SNEAKBAR_CONFIRM": "Entity saved successfully",
     "NONE_OPTION": ""
   }
 }

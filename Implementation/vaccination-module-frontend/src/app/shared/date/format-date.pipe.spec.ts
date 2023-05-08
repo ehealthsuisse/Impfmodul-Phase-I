@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -24,11 +24,11 @@ describe('FormatMediumDatePipe', () => {
   const formatDatePipe = new FormatDatePipe();
 
   it('should return an empty string when receive undefined', () => {
-    expect(formatDatePipe.transform(undefined)).toBe('');
+    expect(formatDatePipe.transform(undefined)).toBe('-');
   });
 
   it('should return an empty string when receive null', () => {
-    expect(formatDatePipe.transform(null)).toBe('');
+    expect(formatDatePipe.transform(null)).toBe('-');
   });
 
   it('should format date like this D MMM YYYY', () => {

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,37 +16,37 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, ViewChild } from '@angular/core';
-import { BaseHttpService, FormOptionsService } from '../../services';
-import { SharedLibsModule } from '../../shared-libs.module';
+import { FormOptionsService } from '../../services';
 import { IValueDTO } from '../../interfaces';
 import { ReplaySubject } from 'rxjs';
 import { MatSelect } from '@angular/material/select';
 import { SharedDataService } from '../../services/shared-data.service';
+import { SharedLibsModule } from '../../shared-libs.module';
+import { ConfidentialityService } from './confidentiality.service';
 
 @Component({
   selector: 'vm-confidentiality',
   standalone: true,
-  imports: [SharedLibsModule, CommonModule],
+  imports: [SharedLibsModule],
   templateUrl: './confidentiality.component.html',
   styleUrls: ['./confidentiality.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfidentialityComponent implements OnInit, AfterViewInit {
   formOptionsService: FormOptionsService = inject(FormOptionsService);
-  baseServices: BaseHttpService<any> = inject(BaseHttpService<any>);
   confidentialityOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();
   confidentiality: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   sharedDataService: SharedDataService = inject(SharedDataService);
   confidentialityWithOutSecret: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   role: string = this.sharedDataService.storedData['role']!;
   defaultConfidentiality: ReplaySubject<IValueDTO> = new ReplaySubject<IValueDTO>(1);
+  confidentialityService: ConfidentialityService = inject(ConfidentialityService);
 
   @ViewChild('confidentialityStatus', { static: true }) confidentialityStatus!: MatSelect;
 
   changeStatus(value: IValueDTO): void {
-    this.baseServices.confidentialityStatus = value;
+    this.confidentialityService.confidentialityStatus = value;
   }
 
   ngOnInit(): void {
@@ -70,7 +70,7 @@ export class ConfidentialityComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.defaultConfidentiality.subscribe({
       next: value => {
-        this.baseServices.confidentialityStatus = value;
+        this.confidentialityService.confidentialityStatus = value;
       },
     });
   }

@@ -1,0 +1,10 @@
+{
+  "MEDICAL_PROBLEM_VERIFICATION_STATUS": {
+    "unconfirmed": "Unconfirmed",
+    "differential": "Differential",
+    "provisional": "Provisional",
+    "confirmed": "Confirmed",
+    "refuted": "Refuted",
+    "entered-in-error": "Entered in Error"
+  }
+}

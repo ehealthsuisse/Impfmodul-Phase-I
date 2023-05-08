@@ -1,11 +1,19 @@
-<mat-label class="mat-label">{{ 'CONFIDENTIALITY.title' | translate }}</mat-label>
+<mat-label [attr.aria-label]="'CONFIDENTIALITY.title' | translate" class="mat-label">{{ 'CONFIDENTIALITY.title' | translate }}</mat-label>
 <mat-select #confidentialityStatus ngDefaultControl (selectionChange)="changeStatus($event.value)" [value]="defaultConfidentiality | async">
-  <mat-option *ngIf="defaultConfidentiality | async as c" [value]="c">{{ 'CONFIDENTIALITY.' + c.code | translate }}</mat-option>
+  <mat-option *ngIf="defaultConfidentiality | async as c" [attr.aria-label]="'CONFIDENTIALITY.' + c.code | translate" [value]="c">{{
+    'CONFIDENTIALITY.' + c.code | translate
+  }}</mat-option>
   <ng-container *ngIf="role === 'PAT' || role === 'REP' || role === undefined">
-    <mat-option *ngFor="let conf of confidentiality | async" [value]="conf"> {{ 'CONFIDENTIALITY.' + conf.code | translate }}</mat-option>
+    <mat-option *ngFor="let conf of confidentiality | async" [attr.aria-label]="'CONFIDENTIALITY.' + conf.code | translate" [value]="conf">
+      {{ 'CONFIDENTIALITY.' + conf.code | translate }}</mat-option
+    >
   </ng-container>
   <ng-container *ngIf="role === 'ASS' || role === 'HCP'">
-    <mat-option *ngFor="let conf of confidentialityWithOutSecret | async" [value]="conf">
+    <mat-option
+      [attr.aria-label]="'CONFIDENTIALITY.' + conf.code | translate"
+      *ngFor="let conf of confidentialityWithOutSecret | async"
+      [value]="conf"
+    >
       {{ 'CONFIDENTIALITY.' + conf.code | translate }}</mat-option
     >
   </ng-container>

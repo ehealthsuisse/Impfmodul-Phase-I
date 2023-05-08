@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -17,19 +17,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TableWrapperComponent } from './table-wrapper.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { SharedLibsModule } from '../../shared-libs.module';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Vaccination } from '../../../model/vaccination.interface';
+import { IVaccination } from '../../../model';
+import { SharedLibsModule } from '../../shared-libs.module';
+import { TableWrapperComponent } from './table-wrapper.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('TableWrapperComponent', () => {
-  let component: TableWrapperComponent<Vaccination>;
-  let fixture: ComponentFixture<TableWrapperComponent<Vaccination>>;
+  let component: TableWrapperComponent<IVaccination>;
+  let fixture: ComponentFixture<TableWrapperComponent<IVaccination>>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TableWrapperComponent, NoopAnimationsModule, SharedLibsModule, TranslateModule],
+      imports: [TableWrapperComponent, NoopAnimationsModule, SharedLibsModule, TranslateModule, RouterTestingModule],
       providers: [
         {
           provide: TranslateService,
@@ -38,7 +39,7 @@ describe('TableWrapperComponent', () => {
       ],
     });
 
-    fixture = TestBed.overrideTemplate(TableWrapperComponent, '').createComponent(TableWrapperComponent<Vaccination>);
+    fixture = TestBed.overrideTemplate(TableWrapperComponent, '').createComponent(TableWrapperComponent<IVaccination>);
     component = fixture.componentInstance;
   });
 

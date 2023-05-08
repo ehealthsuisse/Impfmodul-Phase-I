@@ -30,7 +30,5 @@ public enum EPDRepository {
   /** Submit a document */
   SubmitDocument,
   /** Query the X-User-Assertion */
-  XUA,
-  /** ATNA - Audit logging */
-  ATNA,
+  XUA
 }

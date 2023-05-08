@@ -24,6 +24,7 @@ import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
@@ -31,17 +32,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.xml.security.c14n.Canonicalizer;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.messaging.handler.MessageHandlerException;
+import org.opensaml.saml.common.SAMLObjectContentReference;
+import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.saml.common.binding.security.impl.MessageLifetimeSecurityHandler;
 import org.opensaml.saml.common.binding.security.impl.ReceivedEndpointSecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLMessageInfoContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
@@ -52,9 +60,16 @@ import org.opensaml.saml.saml2.core.NameIDPolicy;
 import org.opensaml.saml.saml2.core.NameIDType;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
+import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SignatureSigningParameters;
 import org.opensaml.xmlsec.context.SecurityParametersContext;
+import org.opensaml.xmlsec.signature.KeyInfo;
+import org.opensaml.xmlsec.signature.Signature;
+import org.opensaml.xmlsec.signature.X509Certificate;
+import org.opensaml.xmlsec.signature.X509Data;
+import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
+import org.opensaml.xmlsec.signature.support.Signer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -107,6 +122,8 @@ public class SAMLService implements SAMLServiceIfc {
     artifactResolve.setDestination(idpConfig.getArtifactResolutionServiceURL());
     artifactResolve.setArtifact(artifact);
 
+    signRequest(artifactResolve);
+
     return artifactResolve;
   }
 
@@ -117,8 +134,8 @@ public class SAMLService implements SAMLServiceIfc {
   }
 
   @Override
-  public void createDummyAuthentication(HttpServletRequest request, String dummyName) {
-    createAuthenticatedSession(request, dummyName, null, dummyName);
+  public void createDummyAuthentication(HttpServletRequest request) {
+    createAuthenticatedSession(request, "Dummy", null, "Dummy");
   }
 
   @Override
@@ -127,7 +144,7 @@ public class SAMLService implements SAMLServiceIfc {
   }
 
   @Override
-  public int getSessionNumber() {
+  public int getNumberOfSessions() {
     return sessionIdToSecurityContext.size();
   }
 
@@ -146,7 +163,7 @@ public class SAMLService implements SAMLServiceIfc {
     IdentityProviderConfig idpConfig = idpProviders.getProviderConfig(idpIdentifier);
 
     MessageContext context = new MessageContext();
-    AuthnRequest authnRequest = createAuthnRequest(idpConfig.getAuthnrequestURL());
+    AuthnRequest authnRequest = createAuthnRequest(idpConfig);
     context.setMessage(authnRequest);
 
     SAMLPeerEntityContext peerEntityContext =
@@ -157,16 +174,18 @@ public class SAMLService implements SAMLServiceIfc {
     endpointContext.setEndpoint(getIdpEndpoint(idpConfig.getAuthnrequestURL()));
 
     SignatureSigningParameters signatureSigningParameters = new SignatureSigningParameters();
-    signatureSigningParameters.setSigningCredential(signatureService.getSamlSPCredential());
+    signatureSigningParameters.setSigningCredential(getServiceProviderSignatureCredential());
     signatureSigningParameters
         .setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
 
     context.getSubcontext(SecurityParametersContext.class, true)
         .setSignatureSigningParameters(signatureSigningParameters);
 
-    HTTPRedirectDeflateEncoder encoder = new HTTPRedirectDeflateEncoder();
+    HTTPPostEncoder encoder = new HTTPPostEncoder();
+    VelocityEngine vEngine = createEngine();
+    encoder.setVelocityEngine(vEngine);
     encoder.setMessageContext(context);
-    encoder.setHttpServletResponse(httpServletResponse);
+    encoder.setHttpServletResponseSupplier(() -> httpServletResponse);
 
     try {
       encoder.initialize();
@@ -186,7 +205,7 @@ public class SAMLService implements SAMLServiceIfc {
   @Override
   public ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig,
       ArtifactResolve artifactResolve) {
-    return idpAdapter.sendAndReceiveArtifactResolve(idpConfig.getArtifactResolutionServiceURL(), artifactResolve);
+    return idpAdapter.sendAndReceiveArtifactResolve(idpConfig, artifactResolve);
   }
 
   @Override
@@ -234,7 +253,7 @@ public class SAMLService implements SAMLServiceIfc {
   private NameIDPolicy buildNameIdPolicy() {
     NameIDPolicy nameIDPolicy = SAMLUtils.buildSAMLObject(NameIDPolicy.class);
     nameIDPolicy.setAllowCreate(true);
-    nameIDPolicy.setFormat(NameIDType.TRANSIENT);
+    nameIDPolicy.setFormat(NameIDType.PERSISTENT);
 
     return nameIDPolicy;
   }
@@ -264,17 +283,34 @@ public class SAMLService implements SAMLServiceIfc {
     SecurityContextHolder.setContext(securityContext);
   }
 
-  private AuthnRequest createAuthnRequest(String idpAuthNRequestURL) {
+  private AuthnRequest createAuthnRequest(IdentityProviderConfig idpConfig) {
     AuthnRequest authnRequest = SAMLUtils.buildSAMLObject(AuthnRequest.class);
     authnRequest.setIssueInstant(Instant.now());
-    authnRequest.setDestination(idpAuthNRequestURL);
+    authnRequest.setDestination(idpConfig.getAuthnrequestURL());
     authnRequest.setProtocolBinding(SAMLConstants.SAML2_ARTIFACT_BINDING_URI);
-    authnRequest.setAssertionConsumerServiceURL(assertionConsumerServiceUrl);
+    authnRequest.setAssertionConsumerServiceURL(
+        assertionConsumerServiceUrl.replace("{idp}", idpConfig.getIdentifier().toLowerCase()));
     authnRequest.setID(SAMLUtils.generateSecureRandomId());
     authnRequest.setIssuer(buildIssuer());
     authnRequest.setNameIDPolicy(buildNameIdPolicy());
 
+    signRequest(authnRequest);
+
     return authnRequest;
+  }
+
+  private VelocityEngine createEngine() {
+    try {
+      VelocityEngine velocityEngine = new VelocityEngine();
+      velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+      velocityEngine.setProperty(
+          "classpath.resource.loader.class",
+          "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+      velocityEngine.init();
+      return velocityEngine;
+    } catch (Exception e) {
+      throw new RuntimeException("Error configuring velocity", e);
+    }
   }
 
   private Endpoint getIdpEndpoint(String idpAuthNRequestURL) {
@@ -283,6 +319,10 @@ public class SAMLService implements SAMLServiceIfc {
     endpoint.setLocation(idpAuthNRequestURL);
 
     return endpoint;
+  }
+
+  private Credential getServiceProviderSignatureCredential() {
+    return signatureService.getSamlSPCredential();
   }
 
   private void put(String sessionId, SecurityContext securityContext) {
@@ -308,11 +348,47 @@ public class SAMLService implements SAMLServiceIfc {
     httpSession.removeAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
   }
 
+  private void signRequest(SignableSAMLObject authnRequest) {
+    try {
+      SignatureBuilder signFactory = new SignatureBuilder();
+      Signature signature = signFactory.buildObject(Signature.DEFAULT_ELEMENT_NAME);
+      signature.setCanonicalizationAlgorithm(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+      signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+      signature.setSigningCredential(getServiceProviderSignatureCredential());
+      KeyInfo keyInfo = SAMLUtils.buildSAMLObject(KeyInfo.class);
+      X509Data data = SAMLUtils.buildSAMLObject(X509Data.class);
+
+      X509Certificate cert = SAMLUtils.buildSAMLObject(X509Certificate.class);
+      String value = Base64.getEncoder()
+          .encodeToString(getServiceProviderSignatureCredential().getPublicKey().getEncoded());
+      cert.setValue(value);
+      data.getX509Certificates().add(cert);
+      keyInfo.getX509Datas().add(data);
+      signature.setKeyInfo(keyInfo);
+
+      authnRequest.setSignature(signature);
+      ((SAMLObjectContentReference) signature.getContentReferences().get(0))
+          .setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+
+      Marshaller marshaller =
+          XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(authnRequest);
+      marshaller.marshall(authnRequest);
+
+      Signer.signObject(signature);
+      String sig = signature.getDOM().getChildNodes().item(3).getFirstChild().getNodeValue();
+      sig = sig.replace("\n", "").replace("\r", "");
+      signature.getDOM().getChildNodes().item(3).getFirstChild().setNodeValue(sig);
+    } catch (Exception ex) {
+      log.error("Error occurred while retrieving encoded cert", ex);
+      log.error("failed to sign a SAML object", ex);
+    }
+  }
+
   private void validateDestination(HttpServletRequest request, MessageContext context)
       throws ComponentInitializationException, MessageHandlerException {
     ReceivedEndpointSecurityHandler receivedEndpointSecurityHandler =
         new ReceivedEndpointSecurityHandler();
-    receivedEndpointSecurityHandler.setHttpServletRequest(request);
+    receivedEndpointSecurityHandler.setHttpServletRequestSupplier(() -> request);
     receivedEndpointSecurityHandler.initialize();
     receivedEndpointSecurityHandler.invoke(context);
   }

@@ -26,27 +26,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
 import ch.admin.bag.vaccination.service.saml.SAMLUtils;
-import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
-import java.io.File;
-import java.io.FileReader;
+import ch.admin.bag.vaccination.service.saml.SAMLXmlTestUtils;
 import java.net.URI;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.AttributeStatement;
-import org.opensaml.saml.saml2.core.AuthnContext;
-import org.opensaml.saml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,9 +53,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -84,26 +74,15 @@ public class SAMLControllerMockTest {
   private TestRestTemplate restTemplate;
 
   @Test
-  void samlAuthenticationActive_anyInput_forwardToSamlService() throws Exception {
-    ResponseEntity<String> response = restTemplate.getForEntity(
-        SAMLController.SAML_AUTHENTICATION_ACTIVE.replace("{active}", "true"),
-        String.class);
-
-    assertNotNull(response);
-
-    verify(profileConfig).setSamlAuthenticationActive(true);
-  }
-
-  @Test
   void ssoLogin_mockService_itJustWorks() throws Exception {
     createArtifactResolveMock();
     ArtifactResponse artifactResponse = createArtifactResponseMock();
 
 
     RequestEntity<Void> entity = new RequestEntity<>(createCookieHeader(), HttpMethod.GET,
-        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT + "?SAMLart=" + SAML_ART));
+        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT.replace("{idp}", "gazelle") + "?SAMLart="
+            + SAML_ART));
     ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
-
     assertNotNull(response);
 
     ArgumentCaptor<Artifact> capturer = ArgumentCaptor.forClass(Artifact.class);
@@ -112,20 +91,6 @@ public class SAMLControllerMockTest {
 
     Artifact artifact = capturer.getValue();
     assertEquals(SAML_ART, artifact.getValue());
-  }
-
-  @Test
-  void ssoLogin_validInput_cookieWasCreated() {
-    ResponseEntity<Void> response = restTemplate.getForEntity(
-        "http://localhost:" + port
-            + SAMLController.SSO_LOGIN_ENDPOINT.replace("{idpIdentifier}",
-                IdpProvider.GAZELLE_IDP_IDENTIFIER),
-        Void.class);
-
-    assertNotNull(response);
-    assertNotNull(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE));
-    assertThat(response.getHeaders().getFirst(HttpHeaders.SET_COOKIE))
-        .contains("idpIdentifier=" + IdpProvider.GAZELLE_IDP_IDENTIFIER);
   }
 
   @Test
@@ -142,7 +107,7 @@ public class SAMLControllerMockTest {
   private void createArtifactResolveMock() throws Exception {
     ArtifactResolve artifactResolveMock = mock(ArtifactResolve.class);
     when(artifactResolveMock.isSigned()).thenReturn(true);
-    Element artifactResolveElement = createXMLElementFromFile("saml/samlArtifactResolve.xml");
+    Element artifactResolveElement = SAMLXmlTestUtils.createXMLElementFromFile("saml/samlArtifactResolve.xml");
     when(artifactResolveMock.getDOM()).thenReturn(artifactResolveElement);
     when(artifactResolveMock.getSchemaType()).thenReturn(ArtifactResolve.TYPE_NAME);
     when(samlService.buildArtifactResolve(any(), any())).thenReturn(artifactResolveMock);
@@ -151,42 +116,17 @@ public class SAMLControllerMockTest {
   private ArtifactResponse createArtifactResponseMock() throws Exception {
     ArtifactResponse artifactResponseMock = mock(ArtifactResponse.class);
     when(artifactResponseMock.isSigned()).thenReturn(true);
-    Element artifactResponseElement = createXMLElementFromFile("saml/samlArtifactResponse.xml");
+    Element artifactResponseElement = SAMLXmlTestUtils.createXMLElementFromFile("saml/samlArtifactResponse.xml");
     when(artifactResponseMock.getDOM()).thenReturn(artifactResponseElement);
     when(artifactResponseMock.getSchemaType()).thenReturn(ArtifactResponse.TYPE_NAME);
-    when(samlService.sendAndReceiveArtifactResolve(any(), any()))
-        .thenReturn(artifactResponseMock);
+    when(samlService.sendAndReceiveArtifactResolve(any(), any())).thenReturn(artifactResponseMock);
 
-    Assertion assertion = createAssertion();
+    Assertion assertion = SAMLXmlTestUtils.createAssertion("saml/samlAssertion.xml");
     Response responseContainigAssertion = mock(Response.class);
     when(responseContainigAssertion.getAssertions()).thenReturn(List.of(assertion));
     when(artifactResponseMock.getMessage()).thenReturn(responseContainigAssertion);
 
     return artifactResponseMock;
-  }
-
-  private Assertion createAssertion() throws Exception {
-    Attribute attribute = mock(Attribute.class);
-    AttributeStatement attrStatement = mock(AttributeStatement.class);
-    when(attrStatement.getAttributes()).thenReturn(List.of(attribute));
-
-    AuthnContextClassRef authncontextClassRef = mock(AuthnContextClassRef.class);
-    when(authncontextClassRef.getURI()).thenReturn("URI");
-
-    AuthnContext authNContext = mock(AuthnContext.class);
-    when(authNContext.getAuthnContextClassRef()).thenReturn(authncontextClassRef);
-
-    AuthnStatement authStatement = mock(AuthnStatement.class);
-    when(authStatement.getAuthnContext()).thenReturn(authNContext);
-
-    Element assertionElement = createXMLElementFromFile("saml/samlAssertion.xml");
-    Assertion assertion = mock(Assertion.class);
-    when(assertion.getAttributeStatements()).thenReturn(List.of(attrStatement));
-    when(assertion.getAuthnStatements()).thenReturn(List.of(authStatement));
-    when(assertion.getSchemaType()).thenReturn(Assertion.TYPE_NAME);
-    when(assertion.getDOM()).thenReturn(assertionElement);
-
-    return assertion;
   }
 
   private HttpHeaders createCookieHeader() {
@@ -196,14 +136,6 @@ public class SAMLControllerMockTest {
     return headers;
   }
 
-  private Element createXMLElementFromFile(String path) throws Exception {
-    ClassLoader classLoader = getClass().getClassLoader();
-    File file = new File(classLoader.getResource(path).getFile());
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-    Document document = dBuilder.parse(new InputSource(new FileReader(file)));
 
-    return document.getDocumentElement();
-  }
 
 }

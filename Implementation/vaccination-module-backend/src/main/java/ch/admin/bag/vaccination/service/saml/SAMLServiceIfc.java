@@ -30,28 +30,86 @@ import org.springframework.security.core.context.SecurityContext;
 
 /**
  * SAML functionalities definition.
- *
  */
 public interface SAMLServiceIfc {
 
-  public ArtifactResolve buildArtifactResolve(IdentityProviderConfig idpConfig, Artifact artifact);
+  /**
+   * Resolves the Artifact from the IDP.
+   *
+   * @param idpConfig {@link IdentityProviderConfig}
+   * @param artifact SAML {@link Artifact}
+   * @return {@link ArtifactResolve}
+   */
+  ArtifactResolve buildArtifactResolve(IdentityProviderConfig idpConfig, Artifact artifact);
 
-  public void createAuthenticatedSession(HttpServletRequest request, String saml2Reponse, Assertion assertion);
+  /**
+   * Creates an valid authenticated session based on a saml resposne.
+   *
+   * @param request {@link HttpServletRequest}
+   * @param saml2Reponse saml response as string
+   * @param assertion idp assertion
+   */
+  void createAuthenticatedSession(HttpServletRequest request, String saml2Reponse, Assertion assertion);
 
-  public void createDummyAuthentication(HttpServletRequest request, String dummyName);
+  /**
+   * Craetes a dummy session used for development purposes if no saml context is given
+   *
+   * @param request {@link HttpServletRequest}
+   */
+  void createDummyAuthentication(HttpServletRequest request);
 
-  public IdentityProviderConfig getIdpConfig(String idpIdentifier);
+  /**
+   * Gets the IDP config based on the identifiers specific in the idp-config.yml
+   *
+   * @param idpIdentifier name of the config
+   * @return {@link IdentityProviderConfig}
+   */
+  IdentityProviderConfig getIdpConfig(String idpIdentifier);
 
-  public int getSessionNumber();
+  /**
+   * Returns number of current sessions.
+   *
+   * @return number
+   */
+  int getNumberOfSessions();
 
-  public void logout(String name);
+  /**
+   * Logs out a user by principal name given by the saml artifact response.
+   *
+   * @param principalName name of the user
+   */
+  void logout(String principalName);
 
-  public void redirectToIdp(String idpIdentifier, HttpServletResponse httpServletResponse);
+  /**
+   * Prepares the redirect to the IDP by doing the SAML authentication flow using HTTP Post.
+   *
+   * @param idpIdentifier Identifier of the idp config
+   * @param httpServletResponse {@link HttpServletResponse}
+   */
+  void redirectToIdp(String idpIdentifier, HttpServletResponse httpServletResponse);
 
-  public ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig,
-      ArtifactResolve artifactResolve);
+  /**
+   * As the name indicates sends and receives the artifact resolve item.
+   *
+   * @param idpIdentifier Identifier of the idp config
+   * @param artifactResolve {@link ArtifactResolve}
+   * @return {@link ArtifactResponse}
+   */
+  ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig, ArtifactResolve artifactResolve);
 
-  public void validateArtifactResponse(ArtifactResponse artifactResponse, HttpServletRequest request);
+  /**
+   * Validates the Response, e.g. checking lifetimes and received endpoints.
+   *
+   * @param artifactResponse {@link ArtifactResponse}
+   * @param request {@link HttpServletRequest}
+   */
+  void validateArtifactResponse(ArtifactResponse artifactResponse, HttpServletRequest request);
 
-  public void validateSecurityContext(HttpSession httpSession, SecurityContext authenticatedSecurityContext);
+  /**
+   * Validates the spring security context stored in the http session.
+   *
+   * @param httpSession {@link HttpSession}
+   * @param authenticatedSecurityContext {@link SecurityContext}
+   */
+  void validateSecurityContext(HttpSession httpSession, SecurityContext authenticatedSecurityContext);
 }

@@ -1,0 +1,10 @@
+@import 'src/assets/scss/global';
+.recorder {
+  padding: 0;
+  display: grid;
+  .recorder--fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 50px;
+  }
+}

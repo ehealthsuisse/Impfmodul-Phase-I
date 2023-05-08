@@ -1,17 +1,13 @@
 {
   "ALLERGY": {
-    "TITLE": "Effetti Collaterali (EIV)",
-    "DETAILS_HEADER": "Dettagli sull'Effetti Collaterali",
-    "NEW_HEADER": "Aggiungere Effetti Collaterali",
-    "EDIT_HEADER": "Modifica Effetti Collaterali",
-    "ALLERGY_CODE": "Effetti Collaterali",
-    "TYPE": "Arte",
-    "CATEGORY": "Categoria",
-    "CRITICALITY": "Rischio",
-    "CLINICAL_STATUS": "Stato clinico",
-    "VERIFICATION_STATUS": "Verificato",
-    "RECORDER": "Catturare da",
-    "RECORDER_CONTACT": "Contatto del registratore",
-    "OCCURRENCE_DATE": "Data dell'evento"
+    "TITLE": "Effetti collaterali (EIV)",
+    "DETAILS_HEADER": "Dettagli sull'effetti collaterali",
+    "NEW_HEADER": "Aggiungere effetti collaterali",
+    "EDIT_HEADER": "Modifica effetti collaterali",
+    "CODE": "Effetto avverso con",
+    "RECORDER": "Registrato da",
+    "ORGANIZATION": "Organizzazione",
+    "OCCURRENCE_DATE": "Data",
+    "DATE": "Data di determinazione"
   }
 }

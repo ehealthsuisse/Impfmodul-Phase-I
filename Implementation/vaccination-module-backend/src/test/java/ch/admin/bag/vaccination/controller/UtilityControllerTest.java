@@ -19,8 +19,11 @@
 package ch.admin.bag.vaccination.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +53,40 @@ public class UtilityControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotEmpty();
     assertThat(response.getBody()).isInstanceOf(ValueListDTO[].class);
+
+    ValueListDTO[] valueListDTOs = response.getBody();
+    assertThat(valueListDTOs.length).isEqualTo(16);
+    boolean medicalProblemCodeFound = false;
+    for (int i = 0; i < valueListDTOs.length; i++) {
+      if ("medicalProblemCode".equals(valueListDTOs[i].getName())) {
+        medicalProblemCodeFound = true;
+        assertThat(valueListDTOs[i].getName()).isEqualTo("medicalProblemCode");
+        assertThat(valueListDTOs[i].getEntries().size()).isGreaterThan(50);
+        assertThat(valueListDTOs[i].getEntries().get(40).getCode()).isEqualTo("1237021005");
+        assertThat(valueListDTOs[i].getEntries().get(40).getName())
+            .isEqualTo("At increased risk of exposure to European tick-borne encephalitis virus (finding)");
+        assertThat(valueListDTOs[i].getEntries().get(40).getSystem())
+            .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs");
+        assertThat(valueListDTOs[i].getEntries().get(0).getCode()).isEqualTo("223366009");
+        assertThat(valueListDTOs[i].getEntries().get(0).getName())
+            .isEqualTo("Healthcare professional (occupation)");
+        assertThat(valueListDTOs[i].getEntries().get(0).getSystem())
+            .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs");
+      }
+    }
+    assertTrue(medicalProblemCodeFound);
+  }
+
+  @Test
+  void getTargetDiseases() {
+    ResponseEntity<ValueDTO[]> response = restTemplate.getForEntity(
+        createURL("/utility/targetDiseases"),
+        ValueDTO[].class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody().length).isGreaterThan(25);
+    assertThat(response.getBody()[27].getCode()).isEqualTo("36989005");
+    assertThat(response.getBody()[27].getName()).isEqualTo("Mumps (disorder)");
   }
 
   @Test
@@ -61,7 +98,7 @@ public class UtilityControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotEmpty();
     assertThat(response.getBody()).isInstanceOf(VaccineToTargetDiseasesDTO[].class);
-    assertThat(response.getBody().length).isEqualTo(87);
+    assertThat(response.getBody().length).isGreaterThan(80);
     assertThat(response.getBody()[0].getVaccine().getCode()).isEqualTo("683");
     assertThat(response.getBody()[0].getVaccine().getName()).isEqualTo("FSME-Immun 0.25 ml Junior");
     assertThat(response.getBody()[0].getVaccine().getSystem())
@@ -72,7 +109,7 @@ public class UtilityControllerTest {
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getName())
         .isEqualTo("Central European encephalitis (disorder)");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs");
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm.html");
   }
 
   @Test

@@ -26,12 +26,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.FilterChain;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -138,16 +138,6 @@ public class SAMLFilterTest {
     return session;
   }
 
-  private Cookie[] createCookies() {
-    Cookie cookie = new Cookie("idpIdentifier", IDP_IDENTIFIER);
-    cookie.setDomain("localhost");
-    cookie.setPath("/");
-    int oneMinute = 60;
-    cookie.setMaxAge(oneMinute);
-
-    return new Cookie[] {cookie};
-  }
-
   private HttpServletRequest createMockRequest(String uri) {
     HttpSession session = mock(HttpSession.class);
     when(session.getId()).thenReturn("sessionId");
@@ -159,7 +149,7 @@ public class SAMLFilterTest {
     when(request.getRequestURI()).thenReturn(uri);
     when(request.getRequestURL()).thenReturn(new StringBuffer(uri));
     when(request.getSession()).thenReturn(session);
-    when(request.getCookies()).thenReturn(createCookies());
+    when(request.getHeader(eq("idp"))).thenReturn(IDP_IDENTIFIER);
 
     return request;
   }
@@ -182,7 +172,7 @@ public class SAMLFilterTest {
           .thenReturn(context);
 
       return null;
-    }).when(samlService).createDummyAuthentication(request, "DUMMY");
+    }).when(samlService).createDummyAuthentication(request);
   }
 
 }

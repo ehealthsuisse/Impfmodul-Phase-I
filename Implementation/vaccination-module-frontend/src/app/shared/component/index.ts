@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -18,13 +18,9 @@
  */
 export * from './comment';
 export * from './common-card-footer';
-export * from './generic-button';
 export * from './help';
-export * from './help-button';
 export * from './list-header';
 export * from './main-wrapper';
-export * from './page-title-translate';
 export * from './refresh-indicator';
 export * from './refresh-indicator/refresh-indicator.component';
 export * from './table-wrapper';
-export * from './user-comment';

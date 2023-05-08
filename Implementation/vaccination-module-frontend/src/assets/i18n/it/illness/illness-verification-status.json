@@ -1,8 +1,10 @@
 {
   "ALLERGY_VERIFICATION_STATUS": {
     "unconfirmed": "Non confermato",
+    "differential": "differenziale",
+    "provisional": "provvisorio",
     "confirmed": "Confermato",
-    "refuted": "Refuted",
-    "entered-in-error": "Inserito in errore"
+    "refuted": "Rifiutato",
+    "entered-in-error": "Inserito per errore"
   }
 }

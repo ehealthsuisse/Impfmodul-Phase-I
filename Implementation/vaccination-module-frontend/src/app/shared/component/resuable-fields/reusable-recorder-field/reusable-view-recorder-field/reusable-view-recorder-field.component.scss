@@ -1,0 +1,16 @@
+@import 'src/assets/scss/global';
+.recorder {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  &--fields {
+    padding: 0;
+
+    width: 100%;
+  }
+}
+.organization {
+  width: 100%;
+}

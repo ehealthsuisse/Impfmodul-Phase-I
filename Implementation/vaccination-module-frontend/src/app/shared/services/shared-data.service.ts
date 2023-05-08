@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -25,6 +25,10 @@ import * as CryptoJS from 'crypto-js';
 export class SharedDataService {
   storedData: any = {};
   storedDataEncrypted: string = '';
+  patientActions: boolean = false;
+  detailedActions: boolean = false;
+  showActionMenu: boolean = false;
+  canEdit: boolean = false;
 
   constructor() {
     this.getSessionStorage();
