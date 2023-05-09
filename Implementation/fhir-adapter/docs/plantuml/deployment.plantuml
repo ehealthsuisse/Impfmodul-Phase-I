@@ -1,0 +1,25 @@
+@startuml
+
+artifact SpringbootParent [
+  spring-boot-starter-parent
+  2.7.11
+  ====
+]
+
+artifact fhir_adapter as "fhir-adapter.jar" {
+
+  artifact fhir [
+    ca.uhn.hapi.fhir
+    6.2.5
+    ====
+    hapi-fhir-structures-r4
+    ....
+    hapi-fhir-validation-resources-r4
+  ]
+
+}
+
+SpringbootParent <-r- fhir_adapter
+
+@enduml
+
