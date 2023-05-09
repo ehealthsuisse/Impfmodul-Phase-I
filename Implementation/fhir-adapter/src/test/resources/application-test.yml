@@ -1,0 +1,4 @@
+spring:
+  config:
+    import: >
+      file:config/fhir.yml

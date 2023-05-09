@@ -107,7 +107,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(dtos.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(dtos.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
     assertThat(dtos.get(0).getId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
-    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("213001");
+    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("223366009");
   }
 
   @Test
@@ -123,7 +123,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
             "IHEBLUE-2599", author, null);
     assertThat(dtos.size()).isEqualTo(1);
     assertThat(dtos.get(0).getId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
-    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("213001");
+    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("223366009");
     assertThat(dtos.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(dtos.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
     assertThat(dtos.get(0).getJson()).contains("30327ea1-6893-4c65-896e-c32c394f1ec6");

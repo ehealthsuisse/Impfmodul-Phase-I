@@ -1,0 +1,598 @@
+{
+  "resourceType": "Bundle",
+  "id": "A-D5-P-C1",
+  "meta": {
+    "profile": [
+      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration"
+    ]
+  },
+  "identifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:uuid:79dabe89-63f4-45e0-9b0f-e4b88950bcd2"
+  },
+  "type": "document",
+  "timestamp": "2021-09-01T00:00:00.390+02:00",
+  "entry": [
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Composition/A-D5-P-C1-Composition",
+      "resource": {
+        "resourceType": "Composition",
+        "id": "A-D5-P-C1-Composition",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration"
+          ]
+        },
+        "language": "en-US",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D5-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:c2e1d265-f3fa-4023-92a3-2e9efe1ca192</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>September 1, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (qualifier value) (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr><tr><td>Comments</td></tr></table></div>"
+        },
+        "extension": [
+          {
+            "id": "versionNumber",
+            "url": "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-versionnumber",
+            "valueUnsignedInt": 1
+          }
+        ],
+        "identifier": {
+          "system": "urn:ietf:rfc:3986",
+          "value": "urn:uuid:c2e1d265-f3fa-4023-92a3-2e9efe1ca192"
+        },
+        "status": "final",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "41000179103",
+              "display": "Immunization record"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/TC-patient"
+        },
+        "date": "2021-09-01T00:00:00.390+02:00",
+        "author": [
+          {
+            "reference": "Patient/TC-patient"
+          }
+        ],
+        "title": "Immunization Administration",
+        "confidentiality": "N",
+        "_confidentiality": {
+          "extension": [
+            {
+              "url": "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-confidentialitycode",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://snomed.info/sct",
+                    "code": "17621005",
+                    "display": "Normal (qualifier value)"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "custodian": {
+          "reference": "Organization/TC-ORG1"
+        },
+        "section": [
+          {
+            "id": "administration",
+            "title": "Immunization Administration",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11369-6",
+                  "display": "Hx of Immunization"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Hx of Immunization (http://loinc.org#11369-6)</span></p><p><b>Entries:</b></p><table><tr><td><a href=\"Immunization-TCA03-IMMUN5-patient.html\">Immunization/TCA03-IMMUN5-patient</a></td></tr></table></div>"
+            },
+            "entry": [
+              {
+                "reference": "Immunization/TCA03-IMMUN5-patient"
+              }
+            ]
+          },
+          {
+            "id": "Annotation",
+            "title": "Comments",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48767-8",
+                  "display": "Annotation comment Imp"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p><b>Code: </b><span>Annotation comment [Interpretation] Narrative (http://loinc.org#48767-8)</span></p></div>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Patient/TC-patient",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "TC-patient",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Patient</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Patient \"TC-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-patient-epr.html\">CH Core Patient EPR</a></p></div><p><b>identifier</b>: Medical record number: 12345678</p><p><b>name</b>: Monika Wegmueller </p><p><b>telecom</b>: ph: tel:+41.32.685.12.34(HOME)</p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1967-02-10</p><p><b>address</b>: Leidensweg 10 Specimendorf 9876 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ]
+            },
+            "system": "urn:oid:1.2.3.4",
+            "value": "12345678"
+          }
+        ],
+        "name": [
+          {
+            "family": "Wegmueller",
+            "given": [
+              "Monika"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.685.12.34",
+            "use": "home"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1967-02-10",
+        "address": [
+          {
+            "type": "both",
+            "line": [
+              "Leidensweg 10"
+            ],
+            "city": "Specimendorf",
+            "postalCode": "9876",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Organization/TC-ORG1",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "TC-ORG1",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601777777718</p><p><b>name</b>: Gruppenpraxis Müller</p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:bereit@gruppenpraxis.ch\">mailto:bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zürich ZH 8005 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.51.1.3",
+            "value": "7601777777718"
+          }
+        ],
+        "name": "Gruppenpraxis Müller",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.234.55.66",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "fax:+41.32.234.55.67",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "mailto:bereit@gruppenpraxis.ch",
+            "use": "work"
+          },
+          {
+            "system": "url",
+            "value": "http://www.gruppenpraxis.ch",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "Grabenstrasse 2"
+            ],
+            "city": "Zürich",
+            "state": "ZH",
+            "postalCode": "8005",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Practitioner/TC-HCP2-C2",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "TC-HCP2-C2",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Practitioner</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Practitioner \"TC-HCP2-C2\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitioner-epr.html\">CH Core Practitioner EPR</a></p></div><p><b>identifier</b>: id: 7601999999998</p><p><b>active</b>: true</p><p><b>name</b>: Gabriela Meier </p><p><b>telecom</b>: ph: tel:+41.32.234.77.88(WORK), fax: fax:+41.32.234.77.89(WORK), <a href=\"mailto:mailto:leitung@praxis-gesund.ch\">mailto:leitung@praxis-gesund.ch</a>, <a href=\"http://www.praxis-gesund.ch\">http://www.praxis-gesund.ch</a></p><p><b>address</b>: Werthgasse 34 Bern ZH 3000 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.51.1.3",
+            "value": "7601999999998"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Meier",
+            "given": [
+              "Gabriela"
+            ],
+            "prefix": [
+              "Dr. med."
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.234.77.88",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "fax:+41.32.234.77.89",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "mailto:leitung@praxis-gesund.ch",
+            "use": "work"
+          },
+          {
+            "system": "url",
+            "value": "http://www.praxis-gesund.ch",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "type": "physical",
+            "line": [
+              "Werthgasse 34"
+            ],
+            "city": "Bern",
+            "state": "ZH",
+            "postalCode": "3000",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Organization/TC-ORG2",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "TC-ORG2",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG2\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601999999912</p><p><b>name</b>: Praxis Dr. G. Meier</p><p><b>telecom</b>: ph: tel:+41.32.234.77.88(WORK), fax: fax:+41.32.234.77.89(WORK), <a href=\"mailto:mailto:leitung@praxis-gesund.ch\">mailto:leitung@praxis-gesund.ch</a>, <a href=\"http://www.praxis-gesund.ch\">http://www.praxis-gesund.ch</a></p><p><b>address</b>: Werthgasse 34 Bern ZH 3000 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.51.1.3",
+            "value": "7601999999912"
+          }
+        ],
+        "name": "Praxis Dr. G. Meier",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41.32.234.77.88",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "fax:+41.32.234.77.89",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "mailto:leitung@praxis-gesund.ch",
+            "use": "work"
+          },
+          {
+            "system": "url",
+            "value": "http://www.praxis-gesund.ch",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "Werthgasse 34"
+            ],
+            "city": "Bern",
+            "state": "ZH",
+            "postalCode": "3000",
+            "country": "CH"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/PractitionerRole/TC-HCP2-ORG2-ROLE-performer",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "TC-HCP2-ORG2-ROLE-performer",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: PractitionerRole</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource PractitionerRole \"TC-HCP2-ORG2-ROLE-performer\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitionerrole-epr.html\">CH Core PractitionerRole EPR</a></p></div><p><b>active</b>: true</p><p><b>practitioner</b>: <a href=\"#Practitioner_TC-HCP2-C2\">See above (Practitioner/TC-HCP2-C2)</a></p><p><b>organization</b>: <a href=\"#Organization_TC-ORG2\">See above (Organization/TC-ORG2)</a></p></div>"
+        },
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/TC-HCP2-C2"
+        },
+        "organization": {
+          "reference": "Organization/TC-ORG2"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Immunization/TCA03-IMMUN5-patient",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "TCA03-IMMUN5-patient",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization"
+          ]
+        },
+        "text": {
+          "status": "extensions",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Immunization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Immunization \"TCA03-IMMUN5-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-immunization.html\">CH VACD Immunization</a></p></div><p><b>CH VACD Extension Immunization Recorder Reference</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>CH VACD Extension Immunization Medication Reference</b>: <a href=\"#Medication_TC-IMMUN-MEDIC-FSMEIMMCC\">See above (Medication/TC-IMMUN-MEDIC-FSMEIMMCC)</a></p><p><b>identifier</b>: id: 74b1e856-c0fb-47da-aab1-08541eacc21c</p><p><b>status</b>: completed</p><p><b>vaccineCode</b>: FSME-Immun CC <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-swissmedic-cs.html\">Swiss Medic Authorized Vaccines Codesystem</a>#450)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>occurrence</b>: 2021-09-01</p><p><b>recorded</b>: 2021-09-01 12:00:00+0200</p><p><b>lotNumber</b>: 12-34244</p><p><b>route</b>: Intramuscular use <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (standardterms.edqm.eu#20035000)</span></p><h3>Performers</h3><table class=\"grid\"><tr><td>-</td><td><b>Actor</b></td></tr><tr><td>*</td><td><a href=\"#PractitionerRole_TC-HCP2-ORG2-ROLE-performer\">See above (PractitionerRole/TC-HCP2-ORG2-ROLE-performer)</a></td></tr></table><h3>ProtocolApplieds</h3><table class=\"grid\"><tr><td>-</td><td><b>TargetDisease</b></td><td><b>DoseNumber[x]</b></td></tr><tr><td>*</td><td>Central European encephalitis (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#16901001)</span></td><td>1</td></tr></table></div>"
+        },
+        "extension": [
+          {
+            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-recorder-reference",
+            "valueReference": {
+              "reference": "Patient/TC-patient"
+            }
+          },
+          {
+            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-medication-reference",
+            "valueReference": {
+              "reference": "Medication/TC-IMMUN-MEDIC-FSMEIMMCC"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "urn:oid:2.16.756.5.30.1.402.1.3.1.1.1",
+            "value": "74b1e856-c0fb-47da-aab1-08541eacc21c"
+          }
+        ],
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs",
+              "code": "450",
+              "display": "FSME-Immun CC"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/TC-patient"
+        },
+        "occurrenceDateTime": "2021-09-01",
+        "recorded": "2021-09-01T00:00:00.390+02:00",
+        "lotNumber": "12-34244",
+        "route": {
+          "coding": [
+            {
+              "system": "http://standardterms.edqm.eu",
+              "code": "20035000",
+              "display": "Intramuscular use"
+            }
+          ]
+        },
+        "performer": [
+          {
+            "actor": {
+              "reference": "PractitionerRole/TC-HCP2-ORG2-ROLE-performer"
+            }
+          }
+        ],
+        "protocolApplied": [
+          {
+            "targetDisease": [
+              {
+                "coding": [
+                  {
+                    "system": "http://snomed.info/sct",
+                    "code": "16901001",
+                    "display": "Central European encephalitis (disorder)"
+                  }
+                ]
+              }
+            ],
+            "doseNumberPositiveInt": 1
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Medication/TC-IMMUN-MEDIC-FSMEIMMCC",
+      "resource": {
+        "resourceType": "Medication",
+        "id": "TC-IMMUN-MEDIC-FSMEIMMCC",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medication-for-immunization"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Medication</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Medication \"TC-IMMUN-MEDIC-FSMEIMMCC\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-medication-for-immunization.html\">CH VACD Medication For Immunization</a></p></div><p><b>code</b>: FSME-IMMUN CC Inj Susp sep Nadel <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#7680004500039)</span></p><p><b>status</b>: active</p><p><b>manufacturer</b>: <a href=\"#Organization_TC-ORG-PFIZER\">See above (Organization/TC-ORG-PFIZER)</a></p><p><b>form</b>: Suspension for injection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://fhir.ch/ig/ch-emed/2.1.0/CodeSystem-edqm-standardterms.html\">EDQM - Standard Terms</a>#11202000)</span></p><p><b>amount</b>: 0.5 milliliter<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code mL = 'mL')</span>/1 Syringe (unit of presentation)<span style=\"background: LightGoldenRodYellow\"> (Details: SNOMED CT code 733020007 = 'Syringe')</span></p><h3>Ingredients</h3><table class=\"grid\"><tr><td>-</td><td><b>Item[x]</b></td></tr><tr><td>*</td><td>Immunologic substance (substance) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#106181007)</span></td></tr></table><h3>Batches</h3><table class=\"grid\"><tr><td>-</td><td><b>LotNumber</b></td></tr><tr><td>*</td><td>VNR1T10C</td></tr></table></div>"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "urn:oid:2.51.1.1",
+              "code": "7680004500039",
+              "display": "FSME-IMMUN CC Inj Susp sep Nadel"
+            }
+          ],
+          "text": "FSME-IMMUN CC Inj Susp sep Nadel"
+        },
+        "status": "active",
+        "manufacturer": {
+          "reference": "Organization/TC-ORG-PFIZER"
+        },
+        "form": {
+          "coding": [
+            {
+              "system": "urn:oid:0.4.0.127.0.16.1.1.2.1",
+              "code": "11202000",
+              "display": "Suspension for injection"
+            }
+          ]
+        },
+        "amount": {
+          "numerator": {
+            "value": 0.5,
+            "unit": "milliliter",
+            "system": "http://unitsofmeasure.org",
+            "code": "mL"
+          },
+          "denominator": {
+            "value": 1,
+            "unit": "Syringe (unit of presentation)",
+            "system": "http://snomed.info/sct",
+            "code": "733020007"
+          }
+        },
+        "ingredient": [
+          {
+            "itemCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "106181007",
+                  "display": "Immunologic substance (substance)"
+                }
+              ],
+              "text": "Immunologic substance (substance)"
+            }
+          }
+        ],
+        "batch": {
+          "lotNumber": "VNR1T10C"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://test.fhir.ch/r4/Organization/TC-ORG-PFIZER",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "TC-ORG-PFIZER",
+        "meta": {
+          "profile": [
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG-PFIZER\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization.html\">CH Core Organization</a></p></div><p><b>identifier</b>: id: 7601001010604</p><p><b>name</b>: Pfizer AG</p><p><b>telecom</b>: ph: tel:+41 800 562 825(WORK), fax: fax:+41 44 583 07 00(WORK), <a href=\"mailto:mailto:customer.ch@pfizer.com\">mailto:customer.ch@pfizer.com</a>, <a href=\"https://www.pfizer.ch\">https://www.pfizer.ch</a></p><p><b>address</b>: Schärenmoosstrasse 99 Postfach Zürich ZH 8052 CH </p></div>"
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.51.1.3",
+            "value": "7601001010604"
+          }
+        ],
+        "name": "Pfizer AG",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "tel:+41 800 562 825",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "fax:+41 44 583 07 00",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "mailto:customer.ch@pfizer.com",
+            "use": "work"
+          },
+          {
+            "system": "url",
+            "value": "https://www.pfizer.ch",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "Schärenmoosstrasse 99",
+              "Postfach"
+            ],
+            "city": "Zürich",
+            "state": "ZH",
+            "postalCode": "8052",
+            "country": "CH"
+          }
+        ]
+      }
+    }
+  ]
+}
