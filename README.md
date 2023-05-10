@@ -17,8 +17,7 @@ unter einer [MIT Lizenz](./Documentation/DE/09_License.md) zur freien und
 uneingeschränkten Nutzung durch die Gemeinschaften.
 
 eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:
-- [Benutzerhandbuch](./UserGuide/Version-1.2/DE/Benutzerhandbuch-Impfmodul_V1.2_de.pdf) bzw. [Manuel d’utilisation](./UserGuide/Version-1.1/FR/Manuel-
-d’utilisation_V1.1_FR.pdf)      
+- [Benutzerhandbuch](./UserGuide/DE/) bzw. [Manuel d’utilisation](./UserGuide/FR/)      
 - [Dokumentation](./Documentation/EN/README.md)
 - [Testcases](./Testcases/DE/README.md)
 - [Governance Handbuch](./Documentation/DE/GovernanceHandbuch_Impfmodul_D_V01.00.pdf) bzw. [Manuel de gouvernance du module vaccinal DEP](./Documentation/FR/GovernanceHandbuch_Impfmodul_F_V01.00.pdf)
