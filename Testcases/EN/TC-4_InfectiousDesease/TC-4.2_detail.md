@@ -6,7 +6,7 @@ Der Benutzer öffnet die Ansicht für die Infektionskrankheiten. Dem Benutzer we
 
 Der Benutzer wählt aus der Liste der angezeigten Infektionskrankheiten eine aus und öffnet die Detailansicht der Infektionskrankheit.
 
-### Vorbereitung:
+### Preparation:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
@@ -16,7 +16,7 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Infektionskrankheiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
 - Die Testdokumente im EPD Testsystem enthalten Einträge mit Infektionskrankheiten.
 
-### Durchführung:
+### Test run:
 
 Der Test wie folgt durchgeführt:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
@@ -25,9 +25,9 @@ Der Test wie folgt durchgeführt:
 - Genau eine Infektionskrankheit in der Liste per Mausklick selektieren und die Detailansicht der Infektionskrankheit öffnen.
 - Verifizieren, dass alle erforderlichen Attribute der Infektionskrankheit angezeigt werden.
 
-### Erwartetes Ergebnis:
+### Expected result:
 
-Das erwartete Resultat des Tests ist wie folgt:
+The expected result is:
 - Das Impfmodul zeigt alle Infektionskrankheiten aus dem EPD Testsystem zeilenweise an.
 - Die Infektionskrankheiten werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt.  
 - Die Detailansicht einer Infektionskrankheit öffnet sich per Doppelklick in der Zeile.

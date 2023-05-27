@@ -6,7 +6,7 @@ Der Benutzer öffnet die Ansicht für Impfungen, Unverträglichkeiten oder für 
 
 Der Benutzer wählt einen Eintrag aus und öffnet die Detailansicht. Der Benutzer öffnet die Liste der Kommentare aus der Detailansicht.
 
-### Vorbereitung:
+### Preparation:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
@@ -15,9 +15,9 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Das EPD Testsystem ist aufgeschaltet und erreichbar (Gazelle, EPD Playground, Testsystem einer Gemeinschaft, EPD Mock).
 - Im EPD Testsystem sind für den Patienten oder die Patientin Testdaten (Impfungen, Unverträglichkeiten, Infektionskrankheiten und Kommentare) mit dem Dokument Typ Immunization Administration gespeichert.
 
-### Durchführung:
+### Test run:
 
-Der Test wird wie folgt durchgeführt:
+The test shall be run as follows:
 
 Iteration 1:
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
@@ -37,9 +37,9 @@ Iteration 3:
 - Im View eine kommentierte Unverträglichkeit auswählen und die Ansicht für die Kommentare aus dem Kontextmenü aufrufen.
 - Verifizieren, dass alle Kommentare zur Unverträglichkeiten angezeigt werden.
 
-### Erwartetes Ergebnis:
+### Expected result:
 
-Das erwartete Resultat des Tests ist wie folgt:
+The expected result is:
 
 - Die Ansicht für die Kommentare kann aus der Detailansicht des ausgewählten Eintrags geöffnet werden.
 - Alle zum Eintrag erfassten Kommentare werden zeitgeordnet angezeigt (vom neuesten zum ältesten Kommentar).

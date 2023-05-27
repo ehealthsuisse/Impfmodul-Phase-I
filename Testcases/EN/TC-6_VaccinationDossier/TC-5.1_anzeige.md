@@ -6,7 +6,7 @@ Ein Benutzer startet das Impfmodul aus einem EPD Portal für Gesundheitsfachpers
 Der Benutzer öffnet die Ansicht für den Impfausweis. Dem Benutzer werden alle Einträge für Impfungen, Nebenwirkungen und Kommentaren zu Impfungen und Nebenwirkungen zeitgeordnet angezeigt. Dabei werden die Informationen für das Lifecycle Management berücksichtigt.
 
 
-### Vorbereitung:
+### Preparation:
 
 Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Der Benutzer nutzt das EPD Portal über einen Standard Browser
@@ -17,9 +17,9 @@ Für den Test müssen die folgenden Vorbereitungen getroffen werden:
 - Die Testdokumente im EPD Testsystem enthalten die erforderlichen Einträge für Impfungen, Nebenwirkungen und Kommentare zu Impfungen und Unverträglichkeiten.
 
 
-### Durchführung:
+### Test run:
 
-Der Test wird wie folgt durchgeführt:
+The test shall be run as follows:
 
 - Das Impfmodul aus einem EPD Portal für Gesundheitsfachpersonen mit Patientenkontext und der Rolle GFP und ASSISTANT starten.
 - Die Ansicht für den Impfausweis im Menu auswählen.
@@ -27,9 +27,9 @@ Der Test wird wie folgt durchgeführt:
 - Verifizieren, dass die Impfungen, Nebenwirkungen und Infektionskrankheiten aus dem EPD Testsystem (Gazelle, EPD Playground, Testsystem einer Gemeinschaft) unter Berücksichtigung des Lifecycle Management in einer Sicht angezeigt werden.
 
 
-### Erwartetes Ergebnis:
+### Expected result:
 
-Das erwartete Resultat des Tests ist wie folgt:
+The expected result is:
 - Das Impfmodul zeigt die Impfungen, Nebenwirkungen und Infektionskrnakheiten aus dem EPD Testsystem an.
 - Die Impfungen werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt. Die zeitliche Ordnung nutzt das Attribut "occurence" des Impfeintrags.
 - Die Nebenwirkungen werden zeitgeordnet vom neuesten zum ältesten Eintrag angezeigt. Die zeitliche Ordnung nutzt das Attribut "recorderDate".
