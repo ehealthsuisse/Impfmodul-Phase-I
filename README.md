@@ -13,7 +13,7 @@ im EPD mit einem Softwaremodul mit den folgenden Funktionen:
 - http Schnittstelle zur Integration in die Portale der Gemeinschaften
 
 eHealth Suisse veröffentlicht den Quellcode und die begleitenden Informationen
-unter einer [MIT Lizenz](./Documentation/DE/09_License.md) zur freien und
+unter einer [MIT Lizenz](./Documentation/EN/09_License.md) zur freien und
 uneingeschränkten Nutzung durch die Gemeinschaften.
 
 eHealth Suisse veröffentlicht die folgenden begleitenden Materialien:
