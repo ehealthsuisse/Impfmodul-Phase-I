@@ -19,9 +19,12 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.admin.bag.vaccination.config.ProfileConfig;
+import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.FhirUtils;
+import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -31,6 +34,8 @@ import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +43,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Slf4j
 class VaccinationRecordServiceTest {
 
+  private static final String EPDPLAYGROUND = "EPDPLAYGROUND";
   @Autowired
   private VaccinationRecordService vaccinationRecordService;
   @Autowired
@@ -64,19 +72,23 @@ class VaccinationRecordServiceTest {
   void before() {
     profileConfig.setLocalMode(true);
     profileConfig.setHuskyLocalMode(null);
+    setAuthorInSession(
+        new AuthorDTO(new HumanNameDTO("Test Firstname", "Test Lastname", "Test Prefix", LocalDate.now(), "MALE")));
   }
 
   @Test
   void saveToEPD_validEntries_noExceptions() {
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll("dummy", "dummy", "dummy", author, null, true);
-    List<AllergyDTO> allergies = allergyService.getAll("dummy", "dummy", "dummy", author, null, true);
-    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll("dummy", "dummy", "dummy", author, null, true);
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "dummy", "dummy"));
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
+    List<AllergyDTO> allergies = allergyService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
+    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
     List<MedicalProblemDTO> medicalProblems =
-        medicalProblemService.getAll("dummy", "dummy", "dummy", author, null, true);
+        medicalProblemService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
 
     VaccinationRecordDTO record =
-        new VaccinationRecordDTO(createAuthor(), null, allergies, pastIllnesses, vaccinations, medicalProblems);
-    String json = vaccinationRecordService.create("EPDPLAYGROUND", "dummy", "dummy", record, null);
+        new VaccinationRecordDTO(null, null, allergies, pastIllnesses, vaccinations, medicalProblems);
+    String json = vaccinationRecordService.create(EPDPLAYGROUND, "dummy", "dummy", record, null);
     log.error("created record + json {}", json);
 
     Bundle parsedBundle = fhirAdapter.unmarshallFromString(json);
@@ -91,7 +103,15 @@ class VaccinationRecordServiceTest {
     assertThat(pastIllnessesResult.size()).isEqualTo(pastIllnesses.size());
   }
 
-  private AuthorDTO createAuthor() {
-    return new AuthorDTO(new HumanNameDTO("Test Firstname", "Test Lastname", "Test Prefix", LocalDate.now(), "MALE"));
+  private void setAuthorInSession(AuthorDTO author) {
+    Objects.nonNull(author);
+    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.AUTHOR, author);
+  }
+
+  private void setPatientIdentifierInSession(PatientIdentifier identifier) {
+    Objects.nonNull(identifier);
+    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.CACHE_PATIENT_IDENTIFIER, identifier);
   }
 }

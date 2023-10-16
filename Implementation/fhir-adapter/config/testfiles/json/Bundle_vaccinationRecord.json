@@ -1,0 +1,642 @@
+{
+  "resourceType": "Bundle",
+  "id": "Bundle-0001",
+  "meta": {
+    "lastUpdated": "2023-08-01T13:58:15.867+00:00",
+    "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-vaccination-record" ]
+  },
+  "identifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:uuid:38c1aaca-d00e-48dc-925b-9beb202a938a"
+  },
+  "type": "document",
+  "timestamp": "2023-08-01T13:58:15.867+00:00",
+  "entry": [ {
+    "fullUrl": "https://www.e-health-suisse.ch/Composition/Composition-0001",
+    "resource": {
+      "resourceType": "Composition",
+      "id": "Composition-0001",
+      "meta": {
+        "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-vaccination-record" ]
+      },
+      "language": "en-US",
+      "identifier": {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:ed696f58-b434-4ee6-b873-9beb52ddbd3e"
+      },
+      "status": "final",
+      "type": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "41000179103",
+          "display": "Immunization record"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/Patient-0001"
+      },
+      "date": "2023-08-01T13:58:15+00:00",
+      "author": [ {
+        "reference": "Patient/Patient-author"
+      } ],
+      "title": "Immunization Administration",
+      "confidentiality": "N",
+      "_confidentiality": {
+        "extension": [ {
+          "url": "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-confidentialitycode",
+          "valueCodeableConcept": {
+            "coding": [ {
+              "system": "https://ehealthsuisse.art-decor.org/cdachemed-html-20220302T110630/voc-2.16.756.5.30.1.127.3.10.1.5-2021-04-01T170535.html",
+              "code": "17621005",
+              "display": "Normal"
+            } ]
+          }
+        } ]
+      },
+      "section": [ {
+        "id": "administration",
+        "title": "Immunization Administration",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "11369-6",
+            "display": "Hx of Immunization"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "Immunization/Immunization-0001"
+        } ]
+      }, {
+        "id": "administration",
+        "title": "Immunization Administration",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "11369-6",
+            "display": "Hx of Immunization"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "Immunization/Immunization-0002"
+        } ]
+      }, {
+        "id": "administration",
+        "title": "Immunization Administration",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "11369-6",
+            "display": "Hx of Immunization"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "Immunization/Immunization-0003"
+        } ]
+      }, {
+        "id": "pastillnesses",
+        "title": "undergone illnesses for immunization",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "11348-0",
+            "display": "Hx of Past illness"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "Condition/Condition-0004"
+        } ]
+      }, {
+        "id": "allergies",
+        "title": "Allergies and adverse reactions Document",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "48765-2",
+            "display": "Allergies and adverse reactions Document"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "AllergyIntolerance/AllergyIntolerance-0005"
+        } ]
+      }, {
+        "id": "medicalproblems",
+        "title": "Problem list Reported",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "11450-4",
+            "display": "Problem list Reported"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "Condition/Condition-0006"
+        } ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Patient/Patient-author",
+    "resource": {
+      "resourceType": "Patient",
+      "id": "Patient-author",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:4b5c6593-5376-4569-9a4d-557aadd3fe2c"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "system",
+        "given": [ "generated by" ],
+        "prefix": [ "document" ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Patient/Patient-0001",
+    "resource": {
+      "resourceType": "Patient",
+      "id": "Patient-0001",
+      "identifier": [ {
+        "system": "spid authority",
+        "value": "spid extension"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "Mustermann",
+        "given": [ "Max" ]
+      } ],
+      "gender": "male",
+      "birthDate": "2023-08-01"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0001",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0001",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:5273b163-58ef-4954-9542-5639b611e662"
+      } ],
+      "name": [ {
+        "family": "Bereit",
+        "given": [ "Allzeit" ],
+        "prefix": [ "Dr. med." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0001",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0001",
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0001"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0001"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0001",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0001",
+      "name": "Gruppenpraxis CH"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Immunization/Immunization-0001",
+    "resource": {
+      "resourceType": "Immunization",
+      "id": "Immunization-0001",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:47cd7b2f-609b-499e-aa58-e81c82835841"
+      } ],
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [ {
+          "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs",
+          "code": "637",
+          "display": "Boostrix"
+        } ]
+      },
+      "patient": {
+        "reference": "Patient/Patient-0001"
+      },
+      "occurrenceDateTime": "2020-12-09T00:00:00+00:00",
+      "lotNumber": "AHAVB946A",
+      "performer": [ {
+        "actor": {
+          "reference": "PractitionerRole/PractitionerRole-0001"
+        }
+      } ],
+      "protocolApplied": [ {
+        "targetDisease": [ {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "76902006",
+            "display": "Tetanus (disorder)"
+          } ]
+        }, {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "27836007",
+            "display": "Pertussis (disorder)"
+          } ]
+        }, {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "397430003",
+            "display": "Diphtheria caused by Corynebacterium diphtheriae (disorder)"
+          } ]
+        } ],
+        "doseNumberPositiveInt": 1
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0002",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0002",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:6e9f2630-1e0d-49f0-9c5a-c74da1aac2a3"
+      } ],
+      "name": [ {
+        "family": "Bereit",
+        "given": [ "Allzeit" ],
+        "prefix": [ "Dr. med." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0002",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0002",
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0002"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0002"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0002",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0002",
+      "name": "Gruppenpraxis CH"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Immunization/Immunization-0002",
+    "resource": {
+      "resourceType": "Immunization",
+      "id": "Immunization-0002",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:3f29b9f7-fb28-4782-80be-50d5008d75f4"
+      } ],
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [ {
+          "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs",
+          "code": "450",
+          "display": "FSME-Immun CC"
+        } ]
+      },
+      "patient": {
+        "reference": "Patient/Patient-0001"
+      },
+      "occurrenceDateTime": "2021-06-22T00:00:00+00:00",
+      "lotNumber": "12-34244",
+      "performer": [ {
+        "actor": {
+          "reference": "PractitionerRole/PractitionerRole-0002"
+        }
+      } ],
+      "protocolApplied": [ {
+        "targetDisease": [ {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "16901001",
+            "display": "Central European encephalitis (disorder)"
+          } ]
+        } ],
+        "doseNumberPositiveInt": 1
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0003",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0003",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:94b0de94-8551-46d9-9da7-3f17c682cb2c"
+      } ],
+      "name": [ {
+        "family": "Müller",
+        "given": [ "Peter" ],
+        "prefix": [ "Dr. med." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0003",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0003",
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0003"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0003"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0003",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0003",
+      "name": "Gruppenpraxis Müller"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Immunization/Immunization-0003",
+    "resource": {
+      "resourceType": "Immunization",
+      "id": "Immunization-0003",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:7a2eb044-179e-45a8-b5ee-16be7be0a254"
+      } ],
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [ {
+          "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs",
+          "code": "558",
+          "display": "Havrix 1440"
+        } ]
+      },
+      "patient": {
+        "reference": "Patient/Patient-0001"
+      },
+      "occurrenceDateTime": "2021-06-01T00:00:00+00:00",
+      "lotNumber": "AHAVB946A",
+      "performer": [ {
+        "actor": {
+          "reference": "PractitionerRole/PractitionerRole-0003"
+        }
+      } ],
+      "protocolApplied": [ {
+        "targetDisease": [ {
+          "coding": [ {
+            "system": "http://snomed.info/sct",
+            "code": "40468003",
+            "display": "Viral hepatitis, type A (disorder)"
+          } ]
+        } ],
+        "doseNumberPositiveInt": 1
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0004",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0004",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:81fd2e78-a486-411d-87e1-ea5bbfe904ec"
+      } ],
+      "name": [ {
+        "family": "Bereit",
+        "given": [ "Allzeit" ],
+        "prefix": [ "Dr. med." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0004",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0004",
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0004"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0004"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0004",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0004",
+      "name": "Gruppenpraxis CH"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Condition/Condition-0004",
+    "resource": {
+      "resourceType": "Condition",
+      "id": "Condition-0004",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:bcbb4bf5-66f7-4458-9dd3-a561c28c9935"
+      } ],
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "resolved",
+          "display": "Resolved"
+        } ]
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ]
+      },
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "38907003",
+          "display": "Varicella (disorder)"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/Patient-0001"
+      },
+      "onsetDateTime": "2015-05-30",
+      "recordedDate": "2015-05-30T00:00:00+00:00",
+      "recorder": {
+        "reference": "PractitionerRole/PractitionerRole-0004"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0005",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0005",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:8e55b52f-0da2-4989-86eb-ea7d12d4beb5"
+      } ],
+      "name": [ {
+        "family": "Müller",
+        "given": [ "Peter" ],
+        "prefix": [ "Dr. med." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0005",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0005",
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0005"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0005"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0005",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0005",
+      "name": "Gruppenpraxis Müller"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/AllergyIntolerance/AllergyIntolerance-0005",
+    "resource": {
+      "resourceType": "AllergyIntolerance",
+      "id": "AllergyIntolerance-0005",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:b59fbbf7-0f6e-430f-896b-65d77992ac8e"
+      } ],
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+          "code": "active",
+          "display": "active"
+        } ]
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+          "code": "confirmed",
+          "display": "confirmed"
+        } ]
+      },
+      "category": [ "medication" ],
+      "code": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "293109003",
+          "display": "Adverse reaction to component of vaccine product containing only Bordetella pertussis and Clostridium tetani and Corynebacterium diphtheriae antigens (disorder)"
+        } ]
+      },
+      "patient": {
+        "reference": "Patient/Patient-0001"
+      },
+      "recordedDate": "2021-10-06T00:00:00+00:00",
+      "recorder": {
+        "reference": "PractitionerRole/PractitionerRole-0005"
+      },
+      "lastOccurrence": "2021-10-06T00:00:00+00:00"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0006",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0006",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:cd116684-4f25-4675-83a8-44564698477a"
+      } ],
+      "name": [ {
+        "family": "Bereit",
+        "given": [ "Allzeit" ],
+        "prefix": [ "Dr. med." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0006",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0006",
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0006"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0006"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0006",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0006",
+      "name": "Gruppenpraxis CH"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Condition/Condition-0006",
+    "resource": {
+      "resourceType": "Condition",
+      "id": "Condition-0006",
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:b09912bc-5ac5-4bdc-afa2-1afc7434d981"
+      } ],
+      "clinicalStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        } ]
+      },
+      "verificationStatus": {
+        "coding": [ {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        } ]
+      },
+      "code": {
+        "coding": [ {
+          "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs",
+          "code": "223366009",
+          "display": "Gesundheitsfachperson"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/Patient-0001"
+      },
+      "onsetDateTime": "2021-10-01",
+      "recordedDate": "2021-10-20T00:00:00+00:00",
+      "recorder": {
+        "reference": "PractitionerRole/PractitionerRole-0006"
+      }
+    }
+  } ]
+}

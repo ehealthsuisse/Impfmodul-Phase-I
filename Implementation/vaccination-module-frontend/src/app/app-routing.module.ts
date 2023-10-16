@@ -18,13 +18,15 @@
  */
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NAVBAR_ROUTING } from './layouts/navbar/navbar-routing';
-import { ERROR_ROUTE } from './layouts/error/error.route';
+import { SAMLAssertionRoute } from './core/security/samlassertion-consumer/samlassertion-route';
 import { VACCINATION_RECORD_ROUTING } from './entities/vaccintion-record/vaccination-record-routing';
+import { ERROR_ROUTE } from './layouts/error/error.route';
+import { NAVBAR_ROUTING } from './layouts/navbar/navbar-routing';
 
 const routes: Routes = [
   NAVBAR_ROUTING,
   VACCINATION_RECORD_ROUTING,
+  SAMLAssertionRoute,
   {
     path: '',
     loadChildren: () => import('./entities/entities-routing').then(r => r.ENTITIES_ROUTE),

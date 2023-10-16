@@ -49,6 +49,7 @@ export class AdverseEventDetailComponent extends BreakPointSensorComponent imple
   }
 
   ngOnInit(): void {
+    this.displayMenu(true, false);
     initializeActionData('details', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
     this.adverseEventService.find(id).subscribe((adverseEvent: IAdverseEvent) => {

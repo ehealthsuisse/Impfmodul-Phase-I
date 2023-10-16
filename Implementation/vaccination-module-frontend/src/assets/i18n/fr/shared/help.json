@@ -73,6 +73,18 @@
     "COMMENT": {
       "TITLE": "Commentaire",
       "BODY": "Commentaire"
+    },
+    "BROKEN": {
+      "VACCINATION_RECORD": {
+        "TITLE": "Documents défectueux",
+        "BODY": "Un ou plusieurs documents ont été trouvés dans votre EPD qui contiennent des données incorrectes. Veuillez vérifier les documents suivants dans le EPD:",
+        "FOOTER": "Chaque document doit être présenté dans le format HL7 valide (XML / JSON). Veuillez vérifier cette exigence auprès de votre communauté de base EPD."
+      },
+      "ELEMENT": {
+        "TITLE": "Document défectueux",
+        "BODY": "Malheureusement, le présent document n'a pas pu être lu car il n'est pas dans un format HL7 valide (XML/JSON). Veuillez clarifier cette question avec votre communauté d'origine EPD. Vous pouvez volontiers télécharger le document ici dans l'original.",
+        "FOOTER": "Chaque document doit être dans un format HL7 valide (XML / JSON). Veuillez vérifier cette question avec votre communauté d'origine EPD."
+      }
     }
   }
 }

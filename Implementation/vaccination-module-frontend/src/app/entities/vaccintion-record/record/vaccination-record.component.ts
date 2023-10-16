@@ -21,17 +21,19 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
 import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
-import { IHumanDTO, MapperService, TableWrapperComponent, trackLangChange } from '../../../shared';
+import { IBaseDTO, IHumanDTO, MapperService, TableWrapperComponent, trackLangChange } from '../../../shared';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { SpinnerService } from '../../../shared/services/spinner.service';
 import { SharedComponentModule } from '../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { VaccinationListComponent } from '../../vaccination/main-components';
-import { VaccinationRecordService } from '../service/vaccination-record.service';
+import { filterPatientRecordData, VaccinationRecordService } from '../service/vaccination-record.service';
 import { PatientActionComponent } from '../../common/patient-action/patient-action.component';
 import { initializeActionData } from '../../../shared/function';
-import { BreakpointObserver } from '@angular/cdk/layout';
 import { SessionInfoService } from '../../../core/security/session-info.service';
+import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { PatientService } from '../../../shared/component/patient/patient.service';
+import { openVaccinationRecordErrorDialog } from '../../../shared/component/help/dialogContent';
 
 @Component({
   selector: 'vm-vaccination-record',
@@ -40,7 +42,7 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
   templateUrl: './vaccination-record.component.html',
   styleUrls: ['./vaccination-record.component.scss'],
 })
-export class VaccinationRecordComponent implements OnInit, OnDestroy {
+export class VaccinationRecordComponent extends BreakPointSensorComponent implements OnInit, OnDestroy {
   router = inject(Router);
   vaccinations!: MatTableDataSource<IVaccination>;
   illnesses!: MatTableDataSource<IInfectiousDiseases>;
@@ -58,20 +60,17 @@ export class VaccinationRecordComponent implements OnInit, OnDestroy {
   spinnerService: SpinnerService = inject(SpinnerService);
   public getScreenWidth: any;
   patientRender: boolean = true;
-  isMobile: boolean = false;
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   patient: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
-
-  constructor(private breakPointObserver: BreakpointObserver) {
-    this.getScreenWidth = window.innerWidth;
-    this.breakPointObserver.observe(['(max-width: 780px)']).subscribe(result => {
-      this.isMobile = result.matches;
-    });
-  }
+  patientService: PatientService = inject(PatientService);
+  isEmergencyMode: boolean = false;
 
   ngOnInit(): void {
+    this.dialogService.showActionSidenav(true);
+    this.dialogService.showPatientActionSidenav(true);
     this.getRecord();
     initializeActionData('record', this.sharedDataService);
+    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
   }
 
   getRecord(): Subscription {
@@ -81,6 +80,8 @@ export class VaccinationRecordComponent implements OnInit, OnDestroy {
     }
     return (this.subscription = this.vaccinationRecordService.queryOneRecord().subscribe({
       next: value => {
+        this.checkAndOpenErrorDialog([...value.allergies, ...value.vaccinations, ...value.pastIllnesses, ...value.medicalProblems]);
+        value = filterPatientRecordData(value);
         this.sharedDataService.setSessionStorage();
         this.record$.subscribe(([]) => {
           this.allergies = new MatTableDataSource<IAdverseEvent>(this.mapper.allergyTranslateMapper(value.allergies));
@@ -88,7 +89,8 @@ export class VaccinationRecordComponent implements OnInit, OnDestroy {
           this.illnesses = new MatTableDataSource<IInfectiousDiseases>(this.mapper.illnessesTranslateMapper(value.pastIllnesses));
           this.medicalProblems = new MatTableDataSource<IMedicalProblem>(this.mapper.problemTranslateMapper(value.medicalProblems));
         });
-        this.patient.next(value.patient);
+
+        this.patientService.patient.next(value.patient);
         this.spinnerService.hide();
       },
     }));
@@ -119,7 +121,6 @@ export class VaccinationRecordComponent implements OnInit, OnDestroy {
   }
 
   addMedicalProblem(): void {
-    // this.router.navigate(['medical-problem', 'new']);
     this.router.navigateByUrl('medical-problem/new');
   }
 
@@ -129,5 +130,22 @@ export class VaccinationRecordComponent implements OnInit, OnDestroy {
 
   addAllergy(): void {
     this.router.navigateByUrl('allergy/new');
+  }
+
+  private checkAndOpenErrorDialog(patientData: IBaseDTO[]): void {
+    patientData = patientData.filter(data => data.hasErrors);
+    for (const data of patientData) {
+      if (data.hasErrors) {
+        openVaccinationRecordErrorDialog(
+          'HELP.BROKEN.VACCINATION_RECORD.TITLE',
+          'HELP.BROKEN.VACCINATION_RECORD.BODY',
+          'HELP.BROKEN.VACCINATION_RECORD.FOOTER',
+          this.translateService,
+          this.dialogService,
+          patientData
+        );
+        break;
+      }
+    }
   }
 }

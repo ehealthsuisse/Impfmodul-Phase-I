@@ -17,10 +17,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
-import { VaccinationRecordService } from '../../../entities/vaccintion-record/service/vaccination-record.service';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { PerformerToStringPipe } from '../../pipes';
+import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
+import { PatientService } from './patient.service';
 
 @Component({
   selector: 'vm-patient',
@@ -30,13 +30,17 @@ import { PerformerToStringPipe } from '../../pipes';
   styleUrls: ['./patient.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PatientComponent implements AfterViewInit {
-  patient$: Observable<string> | null = null;
-
-  @Input() isMobile!: boolean;
-  constructor(private record: VaccinationRecordService) {}
+export class PatientComponent extends BreakPointSensorComponent implements AfterViewInit {
+  patientService: PatientService = inject(PatientService);
+  cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  patient: string = '';
 
   ngAfterViewInit(): void {
-    this.patient$ = this.record.getPatient().pipe(shareReplay(1));
+    this.patientService.fetchPatientName().subscribe({
+      next: patientName => {
+        this.patient = patientName;
+        this.cdr.detectChanges();
+      },
+    });
   }
 }

@@ -41,4 +41,13 @@ export const ERROR_ROUTE: Routes = [
       errorMessage: 'GLOBAL.ERROR_403',
     },
   },
+  {
+    path: '**',
+    component: ErrorComponent,
+    title: 'GLOBAL.ERROR',
+    data: {
+      errorCode: 404,
+      errorMessage: 'GLOBAL.ERROR_404',
+    },
+  },
 ];

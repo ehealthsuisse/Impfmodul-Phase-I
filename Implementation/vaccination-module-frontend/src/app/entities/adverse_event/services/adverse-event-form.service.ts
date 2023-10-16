@@ -74,7 +74,11 @@ export class AdverseEventFormService {
       ...allergy,
     };
 
+    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
     const authorInfo = this.sessionInfo.author.getValue();
+    const firstName = isHCP ? authorInfo.firstName : '';
+    const lastName = isHCP ? authorInfo.lastName : '';
+    const prefix = isHCP ? authorInfo.prefix : '';
     return new FormGroup<AdverseEventFormGroupContent>({
       id: new FormControl(
         { value: allergyRawValue.id, disabled: true },
@@ -87,9 +91,9 @@ export class AdverseEventFormService {
       occurrenceDate: new FormControl(new Date()),
       code: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(authorInfo.firstName),
-        lastName: new FormControl(authorInfo.lastName),
-        prefix: new FormControl(authorInfo.prefix),
+        firstName: new FormControl(firstName),
+        lastName: new FormControl(lastName),
+        prefix: new FormControl(prefix),
       }),
       organization: new FormControl(),
       comments: new FormControl([]),

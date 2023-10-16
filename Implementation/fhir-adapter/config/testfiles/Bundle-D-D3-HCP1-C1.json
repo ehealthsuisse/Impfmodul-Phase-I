@@ -887,7 +887,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TCB03-EXPRISK1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-medical-problems.html\">CH VACD Medical Problems</a></p></div><p><b>identifier</b>: id: 30327ea1-6893-4c65-896e-c32c394f1ec6</p><p><b>clinicalStatus</b>: Active <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-condition-clinical.html\">Condition Clinical Status Codes</a>#active)</span></p><p><b>verificationStatus</b>: Confirmed <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-condition-ver-status.html\">ConditionVerificationStatus</a>#confirmed)</span></p><p><b>category</b>: Problem List Item <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-condition-category.html\">Condition Category Codes</a>#problem-list-item)</span></p><p><b>code</b>: Beschäftigte im Gesundheitswesen <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-exposure-risks-cs.html\">Swiss Exposure Risks Codesystem</a>#213001)</span></p><p><b>subject</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>onset</b>: 2021-10-01</p><p><b>recordedDate</b>: 2021-10-20</p><p><b>recorder</b>: <a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-author\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-author)</a></p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"TCB03-EXPRISK1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-medical-problems.html\">CH VACD Medical Problems</a></p></div><p><b>identifier</b>: id: 30327ea1-6893-4c65-896e-c32c394f1ec6</p><p><b>clinicalStatus</b>: Active <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-condition-clinical.html\">Condition Clinical Status Codes</a>#active)</span></p><p><b>verificationStatus</b>: Confirmed <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-condition-ver-status.html\">ConditionVerificationStatus</a>#confirmed)</span></p><p><b>category</b>: Problem List Item <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-condition-category.html\">Condition Category Codes</a>#problem-list-item)</span></p><p><b>code</b>: Gesundheitsfachperson <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-exposure-risks-cs.html\">Swiss Exposure Risks Codesystem</a>#223366009)</span></p><p><b>subject</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>onset</b>: 2021-10-01</p><p><b>recordedDate</b>: 2021-10-20</p><p><b>recorder</b>: <a href=\"#PractitionerRole_TC-HCP1-ORG1-ROLE-author\">See above (PractitionerRole/TC-HCP1-ORG1-ROLE-author)</a></p></div>"
         },
         "identifier": [
           {
@@ -927,9 +927,9 @@
         "code": {
           "coding": [
             {
-              "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs",
-              "code": "213001",
-              "display": "Beschäftigte im Gesundheitswesen"
+              "system": "2.16.756.5.30.1.127.3.3.1",
+              "code": "402196005",
+              "display": "Atopische Dermatitis im Kindesalter"
             }
           ]
         },

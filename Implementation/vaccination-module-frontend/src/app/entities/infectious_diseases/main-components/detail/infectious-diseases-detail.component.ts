@@ -39,8 +39,11 @@ export class InfectiousDiseasesDetailComponent extends BreakPointSensorComponent
   illnessService: InfectiousDiseasesService = inject(InfectiousDiseasesService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sharedDataService: SharedDataService = inject(SharedDataService);
+
   private _infectiousDiseases: IInfectiousDiseases | null = null;
+
   ngOnInit(): void {
+    this.displayMenu(true, false);
     let id = this.activatedRoute.snapshot.params['id'];
     this.illnessService.find(id).subscribe(illness => {
       if (illness) {

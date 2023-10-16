@@ -14,11 +14,20 @@
     "VERIFICATION_STATUS": "Statut de vérification",
     "VACCINATION_CARD": "Carnet de vaccination",
     "COMMENTS": "Commentaires",
+    "NO_ENTRIES_FOUND": "Aucun enregistrement correspondant trouvé",
     "SEARCH": "Recherche",
     "COMMENT": "Commentaire",
     "ERROR": "Erreur",
-    "ERROR_403": "Vous n'êtes pas autorisé à accéder à cette page. Vous devez accéder à cette page depuis le portail EPD",
+    "ERROR_403": "Vous n'êtes pas autorisé à accéder à cette page. Vous devez accéder à cette page depuis le portail EPD.",
+    "UNSUPPORTED_LANGUAGE": "La langue {{lang}} n'est pas prise en charge.",
+    "ERROR_404": "La page que vous recherchez n'existe pas",
+    "UNEXPECTED_ERROR": "Une erreur inattendue s'est produite. L'action demandée n'a pas pu être effectuée.",
     "SNEAKBAR_CONFIRM": "Entité enregistrée avec succès",
+    "END_DATE_BEFORE_START_DATE": "La fin doit se situer après le début.",
+    "LOGO_VACCINATION_MODULE": "Logo du module de vaccination, aller au carnet de vaccination",
+    "COMMUNITY_LOGO": "Logo de la communauté.",
+    "LANGUAGE_HELP_TEXT": "Sélectionnez la langue dans laquelle vous souhaitez utiliser le module de vaccination.",
+    "DATE_FORMAT": "Veuillez entrer la date. Utilisez le format Jour, Jour, Point, Mois, Mois, Point, Année, Année, Année, Année. Par exemple, 01.01.2023",
     "NONE_OPTION": ""
   }
 }

@@ -18,7 +18,9 @@
  */
 package ch.admin.bag.vaccination.exception;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -45,13 +47,13 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void technicalExceptionHandler_TechnicalException_getHttpStatusCodeGetMessage() {
+  void technicalExceptionHandler_TechnicalException_getHttpStatusCodeAndMessageTemplate() {
     TechnicalException tex = new TechnicalException(ERROR_MESSAGE, new Throwable(ERROR_MESSAGE));
     GlobalExceptionHandler geh = new GlobalExceptionHandler();
 
     ResponseEntity<String> resultGetMessageAndStatusCode = geh.technicalExceptionHandler(tex);
 
-    assertEquals(ERROR_MESSAGE, resultGetMessageAndStatusCode.getBody());
+    assertThat(resultGetMessageAndStatusCode.getBody()).contains(GlobalExceptionHandler.TECHNICAL_ERROR_MESSAGE);
     assertEquals(INTERNAL_SERVER_ERROR, resultGetMessageAndStatusCode.getStatusCode());
   }
 

@@ -1,9 +1,9 @@
-# https://fhir.ch/ig/ch-vacd/0.1.0/ValueSet-ch-vacd-illnesses-undergone-for-immunizaion-vs.html
-# https://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html
+# https://fhir.ch/ig/ch-vacd/0.1.0/ValueSet-ch-vacd-illnesses-undergone-for-immunizaion-vs
+# https://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs
 
 vaccines-to-targetdiseases:
-  vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html
-  targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm.html
+  vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs
+  targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm
   vaccines:
     - code: 683
       name: FSME-Immun 0.25 ml Junior

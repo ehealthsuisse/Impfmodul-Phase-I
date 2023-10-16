@@ -1,10 +1,6 @@
 <mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" role="group">
   <mat-form-field class="detailed-card-content__form-field">
-    <mat-label
-      class="detailed-card-content__label"
-      vmTranslate="VACCINATION.DATE"
-      [attr.aria-label]="'VACCINATION.DATE' | translate"
-    ></mat-label>
+    <mat-label vmTranslate="VACCINATION.DATE" [attr.aria-label]="'VACCINATION.DATE' | translate"></mat-label>
     <input
       matInput
       value="{{ vaccination?.occurrenceDate | formatDate }}"
@@ -14,11 +10,7 @@
   </mat-form-field>
 
   <mat-form-field class="detailed-card-content__form-field">
-    <mat-label
-      class="detailed-card-content__label"
-      vmTranslate="VACCINATION.VACCINE_CODE"
-      [attr.aria-label]="'VACCINATION.VACCINE_CODE' | translate"
-    ></mat-label>
+    <mat-label vmTranslate="VACCINATION.VACCINE_CODE" [attr.aria-label]="'VACCINATION.VACCINE_CODE' | translate"></mat-label>
     <input
       matInput
       [attr.aria-label]="'vaccination-names.' + vaccination?.vaccineCode?.code | translate"
@@ -28,11 +20,7 @@
   </mat-form-field>
 
   <mat-form-field class="detailed-card-content__form-field">
-    <mat-label
-      class="detailed-card-content__label"
-      vmTranslate="VACCINATION.TARGET_DISEASES"
-      [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate"
-    ></mat-label>
+    <mat-label vmTranslate="VACCINATION.TARGET_DISEASES" [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate"></mat-label>
     <input
       matInput
       [attr.aria-label]="translateAndConcatenate(vaccination?.targetDiseases)"
@@ -42,30 +30,17 @@
   </mat-form-field>
 
   <mat-form-field class="detailed-card-content__form-field">
-    <mat-label
-      class="detailed-card-content__label"
-      vmTranslate="VACCINATION.DOSE_NUMBER"
-      [attr.aria-label]="'VACCINATION.DOSE_NUMBER' | translate"
-    >
-    </mat-label>
+    <mat-label vmTranslate="VACCINATION.DOSE_NUMBER" [attr.aria-label]="'VACCINATION.DOSE_NUMBER' | translate"> </mat-label>
     <input matInput [attr.aria-label]="vaccination?.doseNumber" value="{{ vaccination?.doseNumber }}." disabled />
   </mat-form-field>
 
   <mat-form-field class="detailed-card-content__form-field">
-    <mat-label
-      class="detailed-card-content__label"
-      vmTranslate="VACCINATION.LOT_NUMBER"
-      [attr.aria-label]="'VACCINATION.LOT_NUMBER' | translate"
-    ></mat-label>
+    <mat-label vmTranslate="VACCINATION.LOT_NUMBER" [attr.aria-label]="'VACCINATION.LOT_NUMBER' | translate"></mat-label>
     <input matInput [attr.aria-label]="vaccination?.lotNumber" value="{{ vaccination?.lotNumber }}" disabled />
   </mat-form-field>
 
   <mat-form-field class="detailed-card-content__form-field">
-    <mat-label
-      class="detailed-card-content__label"
-      vmTranslate="VACCINATION.VACCINATION_REASON"
-      [attr.aria-label]="'VACCINATION.VACCINATION_REASON' | translate"
-    ></mat-label>
+    <mat-label vmTranslate="VACCINATION.VACCINATION_REASON" [attr.aria-label]="'VACCINATION.VACCINATION_REASON' | translate"></mat-label>
     <input
       matInput
       [attr.aria-label]="'VACCINATION_REASON.' + vaccination?.reason?.code | translate"
@@ -75,7 +50,7 @@
   </mat-form-field>
 
   <mat-card class="mat-elevation-z0 recorder" fxLayout="column" fxLayoutAlign="center">
-    <mat-label class="recorder__label" vmTranslate="VACCINATION.RECORDER"></mat-label>
+    <mat-label vmTranslate="VACCINATION.RECORDER"></mat-label>
     <div class="recorder--fields">
       <mat-form-field class="recorder-form-field">
         <input matInput disabled value="{{ vaccination?.recorder?.prefix }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
@@ -128,7 +103,7 @@
       [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
     >
       <div class="comment-header">
-        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.author">{{ comment.author }}</mat-card-subtitle>
         <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
       </div>
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>

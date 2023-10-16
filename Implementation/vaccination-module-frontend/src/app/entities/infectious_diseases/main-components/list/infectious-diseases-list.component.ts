@@ -53,6 +53,8 @@ export class InfectiousDiseasesListComponent extends BreakPointSensorComponent i
   @Input() tableWidth: string = '80vw';
 
   ngOnInit(): void {
+    this.displayMenu(false, false);
+
     initializeActionData('', this.sharedDataService);
     this.infectiousDiseasesData$.subscribe(([v]) => {
       this.infectiousDiseases = new MatTableDataSource<IInfectiousDiseases>(this.mapper.illnessesTranslateMapper(v));

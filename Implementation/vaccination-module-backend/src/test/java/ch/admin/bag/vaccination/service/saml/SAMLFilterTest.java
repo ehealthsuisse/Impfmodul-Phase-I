@@ -18,17 +18,15 @@
  */
 package ch.admin.bag.vaccination.service.saml;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.fhir.epr.adapter.exception.TechnicalException;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.FilterChain;
@@ -43,6 +41,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @SpringBootTest
 public class SAMLFilterTest {
@@ -69,7 +69,7 @@ public class SAMLFilterTest {
 
   @Test
   void doFilter_nonSecuredURL_continueFilterChain() throws Exception {
-    HttpServletRequest request = createMockRequest("/swagger-ui");
+    HttpServletRequest request = createMockRequest("/swagger");
     samlFilter.doFilter(request, response, filterChain);
     verify(filterChain).doFilter(request, response);
 
@@ -81,11 +81,19 @@ public class SAMLFilterTest {
     samlFilter.doFilter(request, response, filterChain);
     verify(filterChain).doFilter(request, response);
 
+    request = createMockRequest("/signature");
+    samlFilter.doFilter(request, response, filterChain);
+    verify(filterChain).doFilter(request, response);
+
     request = createMockRequest("/saml/sso");
     samlFilter.doFilter(request, response, filterChain);
     verify(filterChain).doFilter(request, response);
 
-    request = createMockRequest("/saml/authentication/false");
+    request = createMockRequest("/saml/isAuthenticated");
+    samlFilter.doFilter(request, response, filterChain);
+    verify(filterChain).doFilter(request, response);
+
+    request = createMockRequest("/saml/logout");
     samlFilter.doFilter(request, response, filterChain);
     verify(filterChain).doFilter(request, response);
   }
@@ -101,21 +109,33 @@ public class SAMLFilterTest {
   }
 
   @Test
-  void doFilter_securedURL_noAuthentication_forwardToIdP() throws Exception {
+  void doFilter_securedURL_noAuthentication_noInitialCall_ignoreCall() throws Exception {
     HttpServletRequest request = createMockRequest("/husky");
+    samlFilter.doFilter(request, response, filterChain);
+
+    verify(samlService, never()).redirectToIdp(anyString(), eq(response));
+    verify(filterChain, never()).doFilter(request, response);
+  }
+
+  @Test
+  void doFilter_securedURL_noAuthentication_validInitalCall_forwardToIdP() throws Exception {
+    HttpServletRequest request = createMockRequest("/husky");
+    when(request.getSession(false).getAttribute(HttpSessionUtils.INITIAL_CALL_VALID)).thenReturn(true);
+
     samlFilter.doFilter(request, response, filterChain);
 
     verify(samlService).redirectToIdp(anyString(), eq(response));
     verify(filterChain, never()).doFilter(request, response);
   }
 
-
   @Test
-  void doFilter_securedURL_withAuthentication_noContext_throwException() throws Exception {
+  void doFilter_securedURL_withAuthentication_noContext_validInitialCall_forwardToIDP() throws Exception {
     HttpServletRequest request = createMockRequest("/husky", createAuthenticatedSession(null));
+    when(request.getSession(false).getAttribute(HttpSessionUtils.INITIAL_CALL_VALID)).thenReturn(true);
 
-    assertThrows(TechnicalException.class,
-        () -> samlFilter.doFilter(request, response, filterChain));
+    samlFilter.doFilter(request, response, filterChain);
+    verify(samlService).redirectToIdp(anyString(), eq(response));
+    verify(filterChain, never()).doFilter(request, response);
   }
 
   @Test
@@ -125,15 +145,16 @@ public class SAMLFilterTest {
 
     samlFilter.doFilter(request, response, filterChain);
 
-    verify(samlService).validateSecurityContext(request.getSession(), context);
+    verify(samlService).checkAndUpdateSessionInformation(request.getSession());
     verify(filterChain).doFilter(request, response);
   }
 
   private HttpSession createAuthenticatedSession(SecurityContext context) {
     HttpSession session = mock(HttpSession.class);
-    when(session.getAttribute(SAMLService.AUTHENTICATED_SESSION_ATTRIBUTE)).thenReturn("true");
+    when(session.getAttribute(HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE)).thenReturn(true);
     when(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
         .thenReturn(context);
+    when(samlService.checkAndUpdateSessionInformation(eq(session))).thenReturn(true);
 
     return session;
   }
@@ -141,6 +162,7 @@ public class SAMLFilterTest {
   private HttpServletRequest createMockRequest(String uri) {
     HttpSession session = mock(HttpSession.class);
     when(session.getId()).thenReturn("sessionId");
+    when(session.getAttribute(eq(HttpSessionUtils.IDP))).thenReturn(IDP_IDENTIFIER);
     return createMockRequest(uri, session);
   }
 
@@ -149,8 +171,12 @@ public class SAMLFilterTest {
     when(request.getRequestURI()).thenReturn(uri);
     when(request.getRequestURL()).thenReturn(new StringBuffer(uri));
     when(request.getSession()).thenReturn(session);
-    when(request.getHeader(eq("idp"))).thenReturn(IDP_IDENTIFIER);
+    when(request.getSession(false)).thenReturn(session);
+    when(session.getAttribute(eq(HttpSessionUtils.IDP))).thenReturn(IDP_IDENTIFIER);
 
+    // include request in default servlet context
+    ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+    RequestContextHolder.setRequestAttributes(requestAttributes);
     return request;
   }
 
@@ -163,16 +189,12 @@ public class SAMLFilterTest {
         samlService,
         new ConcurrentHashMap<>());
 
-
-    doAnswer(invocation -> {
-      SecurityContext context = mock(SecurityContext.class);
-      HttpSession session = ((HttpServletRequest) invocation.getArgument(0)).getSession();
-      when(session.getAttribute(SAMLService.AUTHENTICATED_SESSION_ATTRIBUTE)).thenReturn(true);
-      when(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
-          .thenReturn(context);
-
-      return null;
-    }).when(samlService).createDummyAuthentication(request);
+    HttpSession session = request.getSession();
+    SecurityContext context = mock(SecurityContext.class);
+    when(session.getAttribute(HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE)).thenReturn(true);
+    when(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY))
+        .thenReturn(context);
+    when(samlService.checkAndUpdateSessionInformation(eq(session))).thenReturn(true);
   }
 
 }

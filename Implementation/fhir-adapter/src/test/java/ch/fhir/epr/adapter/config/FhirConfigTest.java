@@ -19,6 +19,7 @@
 package ch.fhir.epr.adapter.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import ch.fhir.epr.TestMain;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

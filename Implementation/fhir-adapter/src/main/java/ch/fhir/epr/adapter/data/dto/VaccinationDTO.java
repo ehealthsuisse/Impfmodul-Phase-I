@@ -56,6 +56,11 @@ public class VaccinationDTO extends BaseDTO {
     setComments(comments);
   }
 
+  @Override
+  public LocalDate getDateOfEvent() {
+    return getOccurrenceDate();
+  }
+
   @Deprecated
   public ValueDTO getVaccineCode() {
     return getCode();

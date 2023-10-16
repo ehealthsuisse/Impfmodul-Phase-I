@@ -15,19 +15,12 @@
 
     <mat-card-content class="detail-wrapper__card-content form-wrapper">
       <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form-wrapper__form" role="form">
-        <mat-form-field class="detailed-card-content__form-field">
-          <input
-            matInput
-            [placeholder]="'VACCINATION.DATE' | translate"
-            [attr.aria-label]="'VACCINATION.DATE' | translate"
-            (click)="picker.open()"
-            [matDatepicker]="picker"
-            required
-            formControlName="occurrenceDate"
-          />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+        <vm-reusable-date-field
+          [formControl]="editForm.controls.occurrenceDate"
+          [labelTranslationKey]="'VACCINATION.DATE'"
+          [isEditable]="true"
+          formControlName="occurrenceDate"
+        ></vm-reusable-date-field>
 
         <mat-form-field [attr.aria-label]="'VACCINATION.STATUS' | translate" class="detailed-card-content__form-field">
           <mat-select
@@ -40,7 +33,11 @@
             ngDefaultControl
           >
             <mat-option>
-              <ngx-mat-select-search [formControl]="searchControl"></ngx-mat-select-search>
+              <ngx-mat-select-search
+                [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
+                [placeholderLabel]="'GLOBAL.SEARCH' | translate"
+                [formControl]="searchControl"
+              ></ngx-mat-select-search>
             </mat-option>
             <mat-option
               *ngFor="let vaccine of vaccinationFilteredList | async | filterPipe : searchControl.value : 'vaccination-names.'"
@@ -56,7 +53,7 @@
           <input
             matInput
             placeholder="{{ 'VACCINATION.TARGET_DISEASES' | translate }}"
-            [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate"
+            [attr.aria-label]="'VACCINATION.SEARCH_TARGET_DISEASES' | translate"
             required="true"
             formControlName="targetDiseases"
             [formControl]="diseasesChips.ctrl"
@@ -81,9 +78,16 @@
               [value]="v"
               [attr.aria-label]="'vaccination-targetdiseases.' + v.code | translate"
             >
-              <mat-checkbox [attr.aria-label]="'vaccination-targetdiseases.' + v.code | translate" [checked]="v.selected">
-                {{ 'vaccination-targetdiseases.' + v.code | translate }}</mat-checkbox
+              <mat-checkbox
+                [aria-label]="
+                  v.selected
+                    ? ('vaccination-targetdiseases.' + v.code + 'VACCINATION.ACTIVE' | translate)
+                    : ('vaccination-targetdiseases.' + v.code + 'VACCINATION.INACTIVE' | translate)
+                "
+                [checked]="v.selected"
               >
+                {{ 'vaccination-targetdiseases.' + v.code | translate }}
+              </mat-checkbox>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -92,7 +96,7 @@
           <input
             matInput
             type="number"
-            [attr.aria-label]="'VACCINATION.DOSE_NUMBER' | translate"
+            [attr.aria-label]="('VACCINATION.DOSE_NUMBER' | translate) + ' ' + ('VACCINATION.DOSE_NUMBER_FORMAT' | translate)"
             formControlName="doseNumber"
             required="true"
             [placeholder]="'VACCINATION.DOSE_NUMBER' | translate"

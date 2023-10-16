@@ -58,6 +58,8 @@ export class AdverseEventListComponent extends BreakPointSensorComponent impleme
   }
 
   ngOnInit(): void {
+    this.displayMenu(false, false);
+
     initializeActionData('', this.sharedDataService);
     this.allergyData$.subscribe(([v]) => {
       this.allergies = new MatTableDataSource<IAdverseEvent>(this.mapper.allergyTranslateMapper(v));

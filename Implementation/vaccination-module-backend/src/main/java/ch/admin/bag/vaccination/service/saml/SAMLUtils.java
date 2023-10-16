@@ -18,22 +18,58 @@
  */
 package ch.admin.bag.vaccination.service.saml;
 
+import ch.admin.bag.vaccination.controller.AssertionUtils;
+import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.nio.file.Files;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGenerationStrategy;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
+import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.Unmarshaller;
+import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.core.xml.schema.XSString;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.messaging.handler.MessageHandlerException;
+import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
+import org.opensaml.saml.common.binding.security.impl.MessageLifetimeSecurityHandler;
+import org.opensaml.saml.common.messaging.context.SAMLMessageInfoContext;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.core.Artifact;
+import org.opensaml.saml.saml2.core.ArtifactResolve;
+import org.opensaml.saml.saml2.core.ArtifactResponse;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.LogoutResponse;
+import org.opensaml.saml.saml2.core.NameIDPolicy;
+import org.opensaml.saml.saml2.core.NameIDType;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.Status;
+import org.opensaml.saml.saml2.core.StatusCode;
+import org.opensaml.saml.saml2.core.impl.StatusBuilder;
+import org.opensaml.saml.saml2.core.impl.StatusCodeBuilder;
+import org.opensaml.saml.saml2.metadata.Endpoint;
+import org.opensaml.saml.saml2.metadata.SingleSignOnService;
+import org.opensaml.soap.wstrust.RequestSecurityTokenResponse;
+import org.opensaml.soap.wstrust.RequestedSecurityToken;
+import org.projecthusky.xua.communication.xua.XUserAssertionResponse;
+import org.projecthusky.xua.communication.xua.impl.XUserAssertionResponseImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -47,32 +83,81 @@ import org.w3c.dom.Element;
 @Slf4j
 public class SAMLUtils {
   private static RandomIdentifierGenerationStrategy secureRandomIdGenerator;
+  private static final String OBJECT_MUST_NOT_BE_NULL = "object must not be null";
+  private static final String CLAZZ_MUST_NOT_BE_NULL = "clazz must not be null";
+  private static final String ELEMENT_MUST_NOT_BE_NULL = "element must not be null";
 
   static {
     secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
   }
 
+  public static String addEnvelope(String request) {
+    String open = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"
+        + "   <soapenv:Header/>\n"
+        + "   <soapenv:Body>";
+    String close = "</soapenv:Body>\n"
+        + "</soapenv:Envelope>";
+    return open + request + close;
+  }
+
+  /**
+   * Builds a Artifact message from a saml artifact.
+   *
+   * @param samlArtifact one-time-token
+   * @return {@link Artifact}i
+   */
+  public static Artifact buildArtifactFromRequest(String samlArtifact) {
+    Artifact artifact = SAMLUtils.buildSAMLObject(Artifact.class);
+    artifact.setValue(samlArtifact);
+    return artifact;
+  }
+
   @SuppressWarnings("unchecked")
   public static <T> T buildSAMLObject(final Class<T> clazz) {
-    T object = null;
-    try {
-      XMLObjectBuilderFactory builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
-      QName defaultElementName = (QName) clazz.getDeclaredField("DEFAULT_ELEMENT_NAME").get(null);
-      object = (T) builderFactory.getBuilder(defaultElementName).buildObject(defaultElementName);
-    } catch (IllegalAccessException | NoSuchFieldException ex) {
-      throw new IllegalArgumentException("Could not create SAML object");
+    Validate.notNull(clazz, CLAZZ_MUST_NOT_BE_NULL);
+    XMLObjectBuilderFactory builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
+    QName elementName = findQName(clazz);
+
+    return (T) builderFactory.getBuilder(elementName).buildObject(elementName);
+  }
+
+  public static String convertElementToString(XMLObject logoutResponse)
+      throws MarshallingException {
+    Marshaller marshaller = org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport
+        .getMarshallerFactory().getMarshaller(logoutResponse);
+    Element element = marshaller.marshall(logoutResponse);
+
+    return SerializeSupport.prettyPrintXML(element);
+  }
+
+  public static XMLObject convertElementToXMLObject(final Element element, final Class<?> clazz)
+      throws UnmarshallingException {
+    Validate.notNull(element, ELEMENT_MUST_NOT_BE_NULL);
+    Validate.notNull(clazz, CLAZZ_MUST_NOT_BE_NULL);
+
+    QName elementName = findQName(clazz);
+    Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(elementName);
+
+    if (unmarshaller == null) {
+      throw new UnmarshallingException("no unmarshaller found for class " + clazz.getSimpleName());
     }
 
-    return object;
+    return unmarshaller.unmarshall(element);
   }
 
-  public static String generateSecureRandomId() {
-    return secureRandomIdGenerator.generateIdentifier();
-  }
+  /**
+   * Converts the xml object to string.
+   *
+   * @param object any saml xml object
+   * @return {@link String}
+   */
+  public static String convertSamlMessageToString(XMLObject object) {
+    if (object == null) {
+      log.warn("SAML object cannot be converted as it is null.");
+      return "Undefined";
+    }
 
-  public static String getSamlMessageAsString(XMLObject object) {
     Element element = null;
-
     if (object instanceof SignableSAMLObject
         && ((SignableSAMLObject) object).isSigned()
         && object.getDOM() != null) {
@@ -91,13 +176,165 @@ public class SAMLUtils {
     return SerializeSupport.prettyPrintXML(element);
   }
 
+  public static Element convertXMLObjectToElement(XMLObject object, Class<?> clazz)
+      throws MarshallingException {
+    Validate.notNull(object, OBJECT_MUST_NOT_BE_NULL);
+    Validate.notNull(clazz, CLAZZ_MUST_NOT_BE_NULL);
+
+    QName elementName = findQName(clazz);
+    Marshaller marshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(elementName);
+
+    if (marshaller == null) {
+      throw new MarshallingException("no marshaller found for class " + clazz.getSimpleName());
+    }
+
+    return marshaller.marshall(object);
+  }
+
+  /**
+   * Builds {@link Endpoint} for authnrequest.
+   *
+   * @param authnrequestURL request url for authnrequest
+   * @return {@link Endpoint}
+   */
+  public static Endpoint createEndpoint(String authnrequestURL) {
+    Endpoint endpoint = buildSAMLObject(SingleSignOnService.class);
+    endpoint.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+    endpoint.setLocation(authnrequestURL);
+    return endpoint;
+  }
+
+  /**
+   * Builds an {@link ArtifactResolve}Request
+   *
+   * @param spEntityId unique id of the service provider
+   * @param artifactResolutionServiceURL url to resolve the assertion of the IDP
+   * @param artifact {@link Artifact}
+   * @return {@link ArtifactResolve}
+   */
+  public static ArtifactResolve createUnsignedArtifactResolveRequest(String spEntityId,
+      String artifactResolutionServiceURL, Artifact artifact) {
+    ArtifactResolve artifactResolve = SAMLUtils.buildSAMLObject(ArtifactResolve.class);
+
+    Issuer issuer = SAMLUtils.buildSAMLObject(Issuer.class);
+    issuer.setValue(spEntityId);
+    artifactResolve.setIssuer(issuer);
+    artifactResolve.setIssueInstant(Instant.now());
+    artifactResolve.setID(SAMLUtils.generateSecureRandomId());
+    artifactResolve.setDestination(artifactResolutionServiceURL);
+    artifactResolve.setArtifact(artifact);
+
+    return artifactResolve;
+  }
+
+  /**
+   * Creates the {@link AuthnRequest} to forward the client to the IDP
+   *
+   * @param spEntityId unique identity of the service provider
+   * @param requestUrl url of the IDP for authnrequests.
+   * @param assertionConsumerServiceUrl url on service provider side to receive the saml artifact.
+   * @return {@link AuthnRequest} which still needs to be signed
+   */
+  public static AuthnRequest createUnsignedAuthnRequest(String spEntityId, String requestUrl,
+      String assertionConsumerServiceUrl) {
+    AuthnRequest authnRequest = SAMLUtils.buildSAMLObject(AuthnRequest.class);
+    authnRequest.setIssueInstant(Instant.now());
+    authnRequest.setDestination(requestUrl);
+    authnRequest.setProtocolBinding(SAMLConstants.SAML2_ARTIFACT_BINDING_URI);
+    authnRequest.setAssertionConsumerServiceURL(assertionConsumerServiceUrl);
+    authnRequest.setID(SAMLUtils.generateSecureRandomId());
+    authnRequest.setIssuer(buildIssuer(spEntityId));
+    authnRequest.setNameIDPolicy(buildNameIdPolicy());
+
+    return authnRequest;
+  }
+
+  public static LogoutResponse createUnsignedLogoutResponse(LogoutRequest logoutRequest, String spEntityId,
+      String logoutURL) {
+    String issuer = logoutRequest.getIssuer().getValue();
+    LogoutResponse response = buildSAMLObject(LogoutResponse.class);
+    response.setDestination(logoutURL);
+    if (logoutURL == null) {
+      log.warn("Logout URL is null (due to missing IDP information), "
+          + "so guessing logout URL from issuer {}. If this is no URL, this will lead to a exception.", issuer);
+      response.setDestination(issuer);
+    }
+    response.setInResponseTo(logoutRequest.getID());
+    response.setIssueInstant(Instant.now());
+    response.setIssuer(buildIssuer(spEntityId));
+    response.setVersion(SAMLVersion.VERSION_20);
+    response.setID(generateSecureRandomId());
+    response.setStatus(buildStatus());
+
+    return response;
+  }
+
+  public static String generateSecureRandomId() {
+    return secureRandomIdGenerator.generateIdentifier();
+  }
+
+  /**
+   * Returns the assertion from the {@link ArtifactResponse}
+   *
+   * @param artifactResponse {@link ArtifactResponse}
+   * @return {@link Assertion}
+   */
+  public static Assertion getAssertion(ArtifactResponse artifactResponse) {
+    Response response = (Response) artifactResponse.getMessage();
+    if (response != null) {
+      if (log.isTraceEnabled()) {
+        SAMLUtils.logSAMLObject(response);
+      }
+      return response.getAssertions().get(0);
+    }
+
+    String errorMsg = "Artifact response message is empty and does not contain any assertion.";
+    log.error(errorMsg);
+    throw new TechnicalException(errorMsg);
+  }
+
+  public static org.projecthusky.xua.saml2.Assertion getXuaAssertionFromResponse(
+      List<XUserAssertionResponse> response) {
+    RequestSecurityTokenResponse responseCollection = ((XUserAssertionResponseImpl) response.get(0)).getWrappedObject();
+
+    // copied from XUserAssertionResponseImpl, husky-xua-gen-impl
+    List<XMLObject> requestedTokens = responseCollection.getUnknownXMLObjects(new QName(
+        "http://docs.oasis-open.org/ws-sx/ws-trust/200512", "RequestedSecurityToken"));
+    if (!requestedTokens.isEmpty()) {
+      RequestedSecurityToken token = (RequestedSecurityToken) requestedTokens.get(0);
+      org.opensaml.saml.saml2.core.Assertion openSamlAssertion =
+          (org.opensaml.saml.saml2.core.Assertion) token.getUnknownXMLObject();
+      org.projecthusky.xua.saml2.Assertion xua = AssertionUtils.convertSamlToHuskyAssertion(openSamlAssertion);
+      SAMLUtils.logSAMLObject((XMLObject) xua.getWrappedObject());
+      return xua;
+    }
+
+    throw new TechnicalException("Received XUA assertion does not contain any requestSecurityTokens.");
+  }
+
+  /**
+   * Logs the attributes and methods of a assertion for debugging reasons.
+   *
+   * @param assertion {@link Assertion}
+   */
+  public static void logAssertionForDebug(Assertion assertion) {
+    SAMLUtils.logSAMLObject(assertion);
+
+    logAssertionAttributes(assertion);
+    logAuthenticationInstant(assertion);
+    logAuthenticationMethod(assertion);
+  }
+
   public static void logSAMLObject(XMLObject object) {
-    log.debug(getSamlMessageAsString(object));
+    if (log.isDebugEnabled()) {
+      log.debug(convertSamlMessageToString(object));
+    }
   }
 
   public static XMLObject unmarshall(String xmlString) {
     try {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setIgnoringComments(true);
       dbf.setNamespaceAware(true);
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document doc = db.parse(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
@@ -105,23 +342,107 @@ public class SAMLUtils {
       Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport
           .getUnmarshallerFactory()
           .getUnmarshaller(doc.getDocumentElement());
-      XMLObject xmlObject = unmarshaller.unmarshall(doc.getDocumentElement());
-
-      return xmlObject;
+      return unmarshaller.unmarshall(doc.getDocumentElement());
     } catch (Exception e) {
       log.warn("Exception:{}", e.toString());
       return null;
     }
   }
 
-  public static String xml(String path) {
+  /**
+   * Validates the Response, e.g. checking lifetimes and received endpoints.
+   *
+   * @param artifactResponse {@link ArtifactResponse}
+   * @param request {@link HttpServletRequest}
+   */
+  public static void validateArtifactResponse(ArtifactResponse artifactResponse,
+      HttpServletRequest request) {
+    MessageContext context = new MessageContext();
+    context.setMessage(artifactResponse);
+
+    SAMLMessageInfoContext messageInfoContext =
+        context.getSubcontext(SAMLMessageInfoContext.class, true);
+    messageInfoContext.setMessageIssueInstant(artifactResponse.getIssueInstant());
+
     try {
-      ClassLoader classLoader = SAMLUtils.class.getClassLoader();
-      File file = new File(classLoader.getResource(path).getFile());
-      return Files.readString(file.toPath());
-    } catch (Exception e) {
-      log.warn("Exception:{}", e.toString());
-      return null;
+      validateMessageLifetime(context);
+    } catch (ComponentInitializationException | MessageHandlerException e) {
+      throw new RuntimeException(e);
     }
   }
+
+  private static Issuer buildIssuer(String spEntityId) {
+    Issuer issuer = SAMLUtils.buildSAMLObject(Issuer.class);
+    issuer.setValue(spEntityId);
+    return issuer;
+  }
+
+  private static NameIDPolicy buildNameIdPolicy() {
+    NameIDPolicy nameIDPolicy = SAMLUtils.buildSAMLObject(NameIDPolicy.class);
+    nameIDPolicy.setAllowCreate(true);
+    nameIDPolicy.setFormat(NameIDType.PERSISTENT);
+
+    return nameIDPolicy;
+  }
+
+  private static Status buildStatus() {
+    StatusCode code = new StatusCodeBuilder().buildObject();
+    code.setValue(StatusCode.SUCCESS);
+
+    Status status = new StatusBuilder().buildObject();
+    status.setStatusCode(code);
+    return status;
+  }
+
+  private static <T> QName findQName(final Class<T> clazz) {
+    Validate.notNull(clazz, CLAZZ_MUST_NOT_BE_NULL);
+
+    try {
+      return (QName) clazz.getDeclaredField("DEFAULT_ELEMENT_NAME").get(null);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchFieldException e) {
+      try {
+        return (QName) clazz.getDeclaredField("ELEMENT_NAME").get(null);
+      } catch (IllegalAccessException e1) {
+        throw new RuntimeException(e1);
+      } catch (NoSuchFieldException e1) {
+        try {
+          return (QName) clazz.getDeclaredField("TYPE_NAME").get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e2) {
+          throw new RuntimeException(e2);
+        }
+      }
+    }
+  }
+
+  private static void logAssertionAttributes(Assertion assertion) {
+    for (Attribute attribute : assertion.getAttributeStatements().get(0).getAttributes()) {
+      log.debug("Attribute name: " + attribute.getName());
+      for (XMLObject attributeValue : attribute.getAttributeValues()) {
+        log.debug("Attribute value: " + ((XSString) attributeValue).getValue());
+      }
+    }
+  }
+
+  private static void logAuthenticationInstant(Assertion assertion) {
+    log.debug("Authentication instant: " + assertion.getAuthnStatements().get(0).getAuthnInstant());
+  }
+
+  private static void logAuthenticationMethod(Assertion assertion) {
+    log.debug("Authentication method: "
+        + assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
+            .getURI());
+  }
+
+  private static void validateMessageLifetime(MessageContext context)
+      throws ComponentInitializationException, MessageHandlerException {
+    MessageLifetimeSecurityHandler lifetimeSecurityHandler = new MessageLifetimeSecurityHandler();
+    lifetimeSecurityHandler.setClockSkew(Duration.ofMillis(1000));
+    lifetimeSecurityHandler.setMessageLifetime(Duration.ofMillis(2000));
+    lifetimeSecurityHandler.setRequiredRule(true);
+    lifetimeSecurityHandler.initialize();
+    lifetimeSecurityHandler.invoke(context);
+  }
+
 }

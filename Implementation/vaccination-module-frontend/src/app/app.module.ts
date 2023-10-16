@@ -45,7 +45,7 @@ export function initializeApp(appConfigService: ConfigService, validationService
     const initConfig = initializeConfigApp(appConfigService);
     return initConfig().then(() => {
       return appConfigService.initialize().then(() => {
-        return validationService.validate(appConfigService.endpointPrefix)!;
+        return validationService.validate()!;
       });
     });
   };

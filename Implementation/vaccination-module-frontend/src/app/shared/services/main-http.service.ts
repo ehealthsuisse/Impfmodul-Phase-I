@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
+import { map, Observable, of, shareReplay, take, tap } from 'rxjs';
 import { ConfigService } from '../../core/config/config.service';
 import { SessionInfoService } from '../../core/security/session-info.service';
 import { IBaseDTO, IValueDTO } from '../interfaces';
@@ -12,6 +12,7 @@ import { SpinnerService } from './spinner.service';
 export abstract class MainHttpService<T extends IBaseDTO> {
   records: T[] = [];
   resource: string = '';
+  brokenRecord: T = {} as T; // to be used in case if we need to download broken record
   abstract prefix: string;
 
   constructor(
@@ -27,10 +28,12 @@ export abstract class MainHttpService<T extends IBaseDTO> {
 
   query(): Observable<T[]> {
     this.spinnerService.show();
-    return this.http
-      .get<T[]>(`${this.configService.endpointPrefix}/${this.prefix}/${this.resource}`, { params: new HttpParams() })
-      .pipe(tap(records => (this.records = records)))
-      .pipe(tap(() => this.spinnerService.hide()));
+    return this.http.get<T[]>(`${this.configService.endpointPrefix}/${this.prefix}/${this.resource}`, { params: new HttpParams() }).pipe(
+      take(1),
+      shareReplay(1),
+      map(records => (this.records = this.filterOutBrokenRecords(records))),
+      tap(() => this.spinnerService.hide())
+    );
   }
 
   create(entity: T): Observable<T> {
@@ -67,5 +70,15 @@ export abstract class MainHttpService<T extends IBaseDTO> {
     return this.http
       .post<T>(`${this.configService.endpointPrefix}/${this.prefix}/validate/${this.resource}/uuid/${t.id}`, t)
       .pipe(tap(() => this.spinnerService.hide()));
+  }
+
+  private filterOutBrokenRecords(records: T[]): T[] {
+    return records.filter(record => {
+      if (record.hasErrors) {
+        this.brokenRecord = record;
+        return false;
+      }
+      return true;
+    });
   }
 }

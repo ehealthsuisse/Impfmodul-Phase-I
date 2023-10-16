@@ -1,0 +1,13 @@
+<samlp:LogoutResponse
+  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+  ID="_6c3737282f007720e736f0f4028feed8cb9b40291c"
+  Version="2.0"
+  IssueInstant="2017-08-16T11:00:50Z"
+  Destination="https://sp.community.ch/epd"
+  InResponseTo="luld4d369e8k9ea16780cvaff8sa1d11a9862a1">
+  <saml:Issuer>https://idp.swissepd.cch/SingleLogoutService</saml:Issuer>
+  <samlp:Status>
+    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+  </samlp:Status>
+</samlp:LogoutResponse>

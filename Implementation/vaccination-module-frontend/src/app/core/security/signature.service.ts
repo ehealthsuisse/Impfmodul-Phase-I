@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,34 +16,18 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.admin.bag.vaccination.service.cache;
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ConfigService } from './../config/config.service';
 
-import ch.fhir.epr.adapter.data.PatientIdentifier;
-import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+@Injectable({
+  providedIn: 'root',
+})
+export class SignatureService {
+  constructor(private http: HttpClient, private configService: ConfigService) {}
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
-class PatientIdentifierKey implements Serializable {
-  private static final long serialVersionUID = 1L;
-  private String communityIdentifier;
-  private String oid;
-  private String localId;
-
-  public PatientIdentifierKey(PatientIdentifier patientIdentifier) {
-    this(patientIdentifier.getCommunityIdentifier(),
-        patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion());
+  validateQueryString(queryString: string): Observable<boolean> {
+    return this.http.post<boolean>(`${this.configService.endpointPrefix}/signature/validate`, queryString);
   }
-
-
 }

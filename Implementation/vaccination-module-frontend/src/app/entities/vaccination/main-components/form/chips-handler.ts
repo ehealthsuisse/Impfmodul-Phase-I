@@ -22,6 +22,7 @@ import { map, Observable, startWith } from 'rxjs';
 import { VaccinationFormGroup } from '../../services/vaccination-form.service';
 import { IValueDTO } from '../../../../shared';
 import { TranslateService } from '@ngx-translate/core';
+
 export class ChipsHandler {
   list: IValueDTO[] = [];
   selected: IValueDTO[] = [];
@@ -66,6 +67,7 @@ export class ChipsHandler {
     this.selected = this.selected.filter((x: any) => x.code !== item.code);
     this.list.filter(x => x.code === item.code)[0].selected = false;
     formCtrl.setValue(this.selected);
+    this.ctrl.setValue(null);
   }
   setupChipsControls(list: IValueDTO[]): void {
     this.list = list;

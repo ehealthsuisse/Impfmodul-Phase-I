@@ -34,9 +34,9 @@ public class VaccinesToTargetDiseasesConfigTest {
 
   @Test
   public void testConfig() {
-    assertThat(config.getVaccineSystem()).isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html");
+    assertThat(config.getVaccineSystem()).isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs");
     assertThat(config.getTargetDiseaseSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm.html");
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
   }
 
   @Test

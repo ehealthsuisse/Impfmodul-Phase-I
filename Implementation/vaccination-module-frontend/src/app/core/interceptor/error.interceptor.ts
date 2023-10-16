@@ -18,17 +18,33 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, take, throwError, timer } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { SpinnerService } from '../../shared/services/spinner.service';
+import { DialogService } from '../../shared';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(public spinnerService: SpinnerService) {}
+  private errorDialogOpen = false;
+
+  constructor(public spinnerService: SpinnerService, private dialogService: DialogService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError(err => {
+        if (err.status >= 500) {
+          if (!this.errorDialogOpen) {
+            const error = err.error || 'GLOBAL.UNEXPECTED_ERROR';
+            this.dialogService.openDialog('GLOBAL.ERROR', error, true, {}, { showOk: true });
+            this.errorDialogOpen = true;
+            // use time to open dialog only once even if multiple errors occur within 1 second.
+            timer(1000)
+              .pipe(take(1))
+              .subscribe(() => {
+                this.errorDialogOpen = false;
+              });
+          }
+        }
         this.spinnerService.hide();
         return throwError(err);
       })

@@ -29,6 +29,9 @@
     "219095000": "reazione avversa al vaccino contro la febbre gialla",
     "1162644007": "reazione avversa al vaccino anti-COVID-19 ricombinante con antigene della proteina spike",
     "1217476001": "anafilassi dovuta al vaccino",
-    "293120003": "effetto indesiderato di un vaccino antivaiolo"
+    "293120003": "effetto indesiderato di un vaccino antivaiolo",
+    "allergyvaccinevarizella": "Adverse reaction to component of vaccine product containing varicella antigen",
+    "allergyvaccinehpv": "Adverse reaction to component of vaccine product containing human papillomavirus antigen",
+    "allergyvaccineherpeszoster": "Adverse reaction to component of vaccine product containing Herpes zoster"
   }
 }

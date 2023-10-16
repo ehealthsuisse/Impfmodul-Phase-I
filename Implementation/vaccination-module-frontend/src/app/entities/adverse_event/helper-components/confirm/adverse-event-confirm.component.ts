@@ -17,11 +17,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { SharedLibsModule } from '../../../../shared/shared-libs.module';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { AdverseEventDetailedInformationComponent } from '../adverse-event-detailed-information/adverse-event-detailed-information.component';
-import { SharedComponentModule } from '../../../../shared/shared-component.module';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
+import { SharedComponentModule } from '../../../../shared/shared-component.module';
+import { SharedLibsModule } from '../../../../shared/shared-libs.module';
+import { AdverseEventDetailedInformationComponent } from '../adverse-event-detailed-information/adverse-event-detailed-information.component';
 
 @Component({
   selector: 'vm-adverse-event-confirm',
@@ -33,4 +33,5 @@ import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.c
 })
 export class AdverseEventConfirmComponent {
   constructor(public dialogRef: MatDialogRef<AdverseEventConfirmComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+  onNoClick = (): void => this.dialogRef.close();
 }

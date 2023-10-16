@@ -29,6 +29,9 @@
     "219095000": "Unerwünschte Wirkung eines Gelbfieber-Impfstoffs",
     "1162644007": "Unerwünschte Wirkung eines Covid-19-rekombinanten Spike-Protein-Antigen-Impfstoffs",
     "1217476001": "Anaphylaktische Reaktion auf einen Impfstoff",
-    "293120003": "Unerwünschte Wirkung eines Pocken-Impfstoffs"
+    "293120003": "Unerwünschte Wirkung eines Pocken-Impfstoffs",
+    "allergyvaccinevarizella": "Unerwünschte Wirkung eines Varizellen-Impfstoffs",
+    "allergyvaccinehpv": "Unerwünschte Wirkung eines Humanen-Papillomaviren-Impfstoffs",
+    "allergyvaccineherpeszoster": "Unerwünschte Wirkung eines Herpes-Zoster-Impfstoffs"
   }
 }

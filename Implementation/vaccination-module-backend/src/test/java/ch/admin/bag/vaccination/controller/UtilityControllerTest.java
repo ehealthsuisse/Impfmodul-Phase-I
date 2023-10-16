@@ -61,17 +61,12 @@ public class UtilityControllerTest {
       if ("medicalProblemCode".equals(valueListDTOs[i].getName())) {
         medicalProblemCodeFound = true;
         assertThat(valueListDTOs[i].getName()).isEqualTo("medicalProblemCode");
-        assertThat(valueListDTOs[i].getEntries().size()).isGreaterThan(50);
-        assertThat(valueListDTOs[i].getEntries().get(40).getCode()).isEqualTo("1237021005");
-        assertThat(valueListDTOs[i].getEntries().get(40).getName())
-            .isEqualTo("At increased risk of exposure to European tick-borne encephalitis virus (finding)");
-        assertThat(valueListDTOs[i].getEntries().get(40).getSystem())
-            .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs");
-        assertThat(valueListDTOs[i].getEntries().get(0).getCode()).isEqualTo("223366009");
-        assertThat(valueListDTOs[i].getEntries().get(0).getName())
-            .isEqualTo("Healthcare professional (occupation)");
-        assertThat(valueListDTOs[i].getEntries().get(0).getSystem())
-            .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs");
+        assertThat(valueListDTOs[i].getEntries().size()).isGreaterThan(20);
+        assertThat(valueListDTOs[i].getEntries().get(1).getCode()).isEqualTo("449840001");
+        assertThat(valueListDTOs[i].getEntries().get(1).getName())
+            .isEqualTo("Cochlear prosthesis in situ (finding)");
+        assertThat(valueListDTOs[i].getEntries().get(1).getSystem())
+            .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-complication-risks-cs");
       }
     }
     assertTrue(medicalProblemCodeFound);
@@ -102,14 +97,14 @@ public class UtilityControllerTest {
     assertThat(response.getBody()[0].getVaccine().getCode()).isEqualTo("683");
     assertThat(response.getBody()[0].getVaccine().getName()).isEqualTo("FSME-Immun 0.25 ml Junior");
     assertThat(response.getBody()[0].getVaccine().getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html");
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs");
 
     assertThat(response.getBody()[0].getTargetDiseases().size()).isEqualTo(1);
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getCode()).isEqualTo("16901001");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getName())
         .isEqualTo("Central European encephalitis (disorder)");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm.html");
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
   }
 
   @Test

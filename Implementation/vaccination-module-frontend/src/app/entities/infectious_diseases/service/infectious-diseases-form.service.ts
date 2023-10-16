@@ -21,10 +21,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import dayjs, { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
-import { IInfectiousDiseases } from '../../../model/infectious-diseases.interface';
+import { SessionInfoService } from '../../../core/security/session-info.service';
+import { dateValidator } from '../../../core/validators/date-order-validator';
+import { IInfectiousDiseases } from '../../../model';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { SessionInfoService } from '../../../core/security/session-info.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -74,8 +75,11 @@ export class InfectiousDiseasesFormService {
       ...infectiousDiseases,
     };
 
+    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
     const authorInfo = this.sessionInfo.author.getValue();
-
+    const firstName = isHCP ? authorInfo.firstName : '';
+    const lastName = isHCP ? authorInfo.lastName : '';
+    const prefix = isHCP ? authorInfo.prefix : '';
     return new FormGroup<InfectiousDiseasesFormGroupContent>({
       id: new FormControl(
         { value: illnessRawValue.id, disabled: true },
@@ -87,12 +91,12 @@ export class InfectiousDiseasesFormService {
 
       recordedDate: new FormControl(new Date(), Validators.required),
       begin: new FormControl(new Date(), Validators.required),
-      end: new FormControl(),
+      end: new FormControl(null, [dateValidator()]),
       code: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(authorInfo.firstName),
-        lastName: new FormControl(authorInfo.lastName),
-        prefix: new FormControl(authorInfo.prefix),
+        firstName: new FormControl(firstName),
+        lastName: new FormControl(lastName),
+        prefix: new FormControl(prefix),
       }),
       organization: new FormControl(),
       comments: new FormControl([]),

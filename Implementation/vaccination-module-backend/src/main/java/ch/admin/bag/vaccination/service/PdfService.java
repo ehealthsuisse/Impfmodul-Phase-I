@@ -1,23 +1,30 @@
 /**
  * Copyright (c) 2022 eHealth Suisse
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
  * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package ch.admin.bag.vaccination.service;
 
+import be.quodlibet.boxable.BaseTable;
+import be.quodlibet.boxable.Cell;
+import be.quodlibet.boxable.HorizontalAlignment;
+import be.quodlibet.boxable.Row;
+import be.quodlibet.boxable.line.LineStyle;
+import ch.admin.bag.vaccination.exception.BusinessException;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -27,30 +34,7 @@ import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
-import com.itextpdf.io.font.FontProgram;
-import com.itextpdf.io.font.FontProgramFactory;
-import com.itextpdf.io.font.PdfEncodings;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.colors.Color;
-import com.itextpdf.kernel.colors.WebColors;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.font.PdfFontFactory.EmbeddingStrategy;
-import com.itextpdf.kernel.pdf.PdfAConformanceLevel;
-import com.itextpdf.kernel.pdf.PdfOutputIntent;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.LineSeparator;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Text;
-import com.itextpdf.layout.properties.AreaBreakType;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.pdfa.PdfADocument;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -59,384 +43,537 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.xml.XmpSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
+import org.verapdf.pdfa.Foundries;
+import org.verapdf.pdfa.PDFAParser;
+import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.flavours.PDFAFlavour;
+import org.verapdf.pdfa.results.ValidationResult;
+
 
 /**
- * Generate pdf files according to PDF/1A standard.
+ * Generate pdf files according to PDF/1A standard, using Pdf-box library
  */
 @Slf4j
 @Service
 public class PdfService {
-  private static final String FONT_COULD_NOT_BE_INITIALIZED = "Font could not be initialized.";
-  private static final String ICC_PROFILE = "font/sRGB_CS_profile.icm";
   private static final String FONT = new ClassPathResource("font/FreeSans.ttf").getPath();
   private static final String FONT_BOLD = new ClassPathResource("font/FreeSansBold.ttf").getPath();
   private static final String FONT_OBLIQUE = new ClassPathResource("font/FreeSansOblique.ttf").getPath();
-  private static final Color FONT_COLOR_WHITE = WebColors.getRGBColor("#FFFFFF");
-  private static final Color FONT_COLOR_DARKBLUE = WebColors.getRGBColor("#014C8A");
-  private static final Color FONT_COLOR_LIGHTBLUE = WebColors.getRGBColor("#C8E8F6");
 
-  private FontProgram font;
-  private FontProgram fontBold;
-  private FontProgram fontOblique;
-  private Color tableBackgoundColor;
+  private static final String ICC_PROFILE = "font/sRGB_CS_profile.icm";
+  private static final Color COLOR_DARKBLUE = Color.decode("#014C8A");
+  private static final Color COLOR_LIGHTBLUE = Color.decode("#C8E8F6");
+  private static final Color COLOR_WHITE = Color.decode("#FFFFFF");
+  private static final float[] VACCIN_TABLE_WITHS = {30, 10, 15, 20, 25};
+  private static final float[] MEDICAL_PROBLEMS_TABLE_WITHS = {10, 15, 15, 15, 30, 15};
+  private static final float[] PASTILNESS_TABLE_WITHS = {10, 15, 15, 15, 45};
+  private static final float MARGIN = 50;
+  private static final float CELL_HEIGHT = 15;
+  private static final float LONG_LINE_BREAK = 20;
+  private static final float SHORT_LINE_BREAK = 15;
+  private static final float FONT_SIZE = 10;
+  private static final float FONT_SIZE_TITLE = 15;
+
+  private Color rowBackgoundColor = COLOR_WHITE;
+  private float yPositionOftheLastLine = 0;
+
   @Autowired
   private PdfOutputConfig pdfOutputConfig;
 
-  public PdfService() {
-    initializeFontProgram();
-  }
-
   public InputStream create(VaccinationRecordDTO vaccinationRecordDTO) {
     try {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-      Document document = createDocumentAndItsMeta(out);
+      PDDocument document = createDocumentAndItsMeta();
       fillDocumentContent(vaccinationRecordDTO, document);
+
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      document.save(out);
       document.close();
 
-      return new ByteArrayInputStream(out.toByteArray());
-    } catch (Exception e) {
-      log.error("Exception:", e);
-      return null;
+      byte[] pdf = out.toByteArray();
+      ByteArrayInputStream validateIn = new ByteArrayInputStream(pdf);
+      validatePdf(validateIn);
+      validateIn.close();
+
+      return new ByteArrayInputStream(pdf);
+    } catch (Exception ex) {
+      log.error("error while exportToPDF {}", ex.getMessage());
+      throw new TechnicalException("Pdf generation failed", ex);
     }
   }
 
-  protected String getFormattedDate(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    return date != null ? date.format(formatter) : "-";
-  }
+  private void addAdverseEvents(PDDocument document, VaccinationRecordDTO vaccinationRecordDTO) throws IOException {
+    PDPage page = document.getPage(document.getNumberOfPages() - 1);
+    PDPageContentStream contentStream =
+        new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("bold", document);
+    contentStream.setFont(font, FONT_SIZE_TITLE);
+    contentStream.beginText();
+    updateYposition(MARGIN);
+    contentStream.newLineAtOffset(MARGIN, yPositionOftheLastLine);
 
-  protected String getFormattedDateTime(LocalDateTime dateTime) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
-    return dateTime != null ? dateTime.format(formatter) : "-";
-  }
-
-  private void addBaseVaccinations(Table table, VaccinationRecordDTO vaccinationRecordDTO) throws Exception {
-    for (String code : pdfOutputConfig.getBasicVaccination().getCodes()) {
-      String targetDiseaseName = getDiseaseName(vaccinationRecordDTO, code);
-      List<VaccinationDTO> vaccinations = extract(vaccinationRecordDTO.getVaccinations(), code);
-      addRows(table, targetDiseaseName, vaccinations, vaccinationRecordDTO.getLang(),
-          pdfOutputConfig.getBasicVaccination().isKeepEmpty());
-    }
-  }
-
-  private void addLogo(Document document) throws IOException {
-    try (InputStream input = new ClassPathResource("EPDLogo.jpg").getInputStream()) {
-      byte[] image = input.readAllBytes();
-      Image img = new Image(ImageDataFactory.create(image));
-      img.setFixedPosition(1, 402, 750, UnitValue.createPointValue(110));
-      document.add(img);
-    }
-  }
-
-  private void addOtherVaccinations(Table table, VaccinationRecordDTO vaccinationRecordDTO) throws Exception {
-    for (String code : pdfOutputConfig.getOtherVaccination().getCodes()) {
-      String targetDiseaseName = getDiseaseName(vaccinationRecordDTO, code);
-      List<VaccinationDTO> vaccinations = extract(vaccinationRecordDTO.getVaccinations(), code);
-      addRows(table, targetDiseaseName, vaccinations, vaccinationRecordDTO.getLang(),
-          pdfOutputConfig.getOtherVaccination().isKeepEmpty());
-    }
-  }
-
-  private void addParagraphTitle(Document document, I18nKey key, String lang) throws Exception {
-    addParagraphTitle(document, 14, key, lang);
-  }
-
-  private void addParagraphTitle(Document document, int fontSize, I18nKey key, String lang) throws Exception {
-    Paragraph paragraph = new Paragraph(createText(key.getTranslation(lang) + "\n",
-        fontSize, FONT_COLOR_DARKBLUE, true));
-    document.add(paragraph);
-  }
-
-  private void addPatient(Document document, HumanNameDTO patient, String lang) throws Exception {
-    if (patient == null) {
-      log.warn("addPatient patient is null");
-      return;
-    }
-    Paragraph paragraph =
-        new Paragraph(createText(I18nKey.LASTNAME.getTranslation(lang) + ": ", 10, FONT_COLOR_DARKBLUE, true));
-    paragraph.add(createText(patient.getLastName() + "\n"));
-    paragraph.add(createText(I18nKey.FIRSTNAME.getTranslation(lang) + ": ", 10, FONT_COLOR_DARKBLUE, true));
-    paragraph.add(createText(patient.getFirstName() + "\n"));
-    paragraph.add(createText(I18nKey.BIRTHDAY.getTranslation(lang) + ": ", 10, FONT_COLOR_DARKBLUE, true));
-    paragraph.add(createText(getFormattedDate(patient.getBirthday()) + "\n"));
-    paragraph.add(createText(I18nKey.GENDER.getTranslation(lang) + ": ", 10, FONT_COLOR_DARKBLUE, true));
-    paragraph.add(createText(patient.getGender()));
-    document.add(paragraph);
-  }
-
-  private void addPrintedParagraph(Document document, String lang) {
-    Paragraph paragraph = new Paragraph();
-    paragraph.add(createText(I18nKey.PRINTED1.getTranslation(lang) + "\n", 9, FONT_COLOR_DARKBLUE, true));
-    paragraph.add(createText(I18nKey.PRINTED2.getTranslation(lang) + getFormattedDate(LocalDate.now()), 9));
-    paragraph.setFixedPosition(1, 402, 700, UnitValue.createPercentValue(90));
-    document.add(paragraph);
-  }
-
-  private void addRemainingVaccinations(Table table, VaccinationRecordDTO vaccinationRecordDTO) {
-    for (VaccinationDTO dto : vaccinationRecordDTO.getVaccinations()) {
-      for (ValueDTO targetDisease : dto.getTargetDiseases()) {
-        if (!pdfOutputConfig.getBasicVaccination().getCodes().contains(targetDisease.getCode()) && //
-            !pdfOutputConfig.getOtherVaccination().getCodes().contains(targetDisease.getCode())) {
-          String targetDiseaseName = getDiseaseName(vaccinationRecordDTO, targetDisease.getCode());
-          addRows(table, targetDiseaseName, Arrays.asList(dto), vaccinationRecordDTO.getLang(), true);
-        }
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.ADVERSE_EVENTS.getTranslation(vaccinationRecordDTO.getLang()), contentStream);
+    contentStream.endText();
+    contentStream.close();
+    updateYposition(LONG_LINE_BREAK);
+    List<AllergyDTO> dtos = vaccinationRecordDTO.getAllergies();
+    log.debug("create {} allergies", dtos == null ? 0 : dtos.size());
+    if (dtos != null) {
+      for (AllergyDTO dto : dtos) {
+        addRow(page, document, dto, vaccinationRecordDTO.getLang());
       }
     }
   }
 
-  private void addRow(Document document, AllergyDTO dto, String lang) {
-    if (dto == null) {
-      log.warn("addRow AllergyDTO null");
-      return;
+  private void addAdverseEventsCommentText(PDDocument document, CommentDTO commentDTO) throws IOException {
+    if (yPositionOftheLastLine == PDRectangle.A4.getHeight() - MARGIN) {
+      document.addPage(new PDPage(PDRectangle.A4));
     }
 
-    log.debug("addRow {}", dto.getCode().getName());
-    Text textAllergy = new Text(dto.getCode().getName())
-        .setFont(PdfFontFactory.createFont(fontBold, PdfEncodings.WINANSI, EmbeddingStrategy.FORCE_EMBEDDED));
-    Text authorAllergy =
-        new Text(", " + getFormattedDate(dto.getOccurrenceDate()) + ", " + dto.getAuthor().getUser().getFullName())
-            .setFont(PdfFontFactory.createFont(fontOblique, PdfEncodings.WINANSI, EmbeddingStrategy.FORCE_EMBEDDED));
+    PDPageContentStream contentStream = new PDPageContentStream(document,
+        document.getPage(document.getNumberOfPages() - 1), PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("", document);
+    contentStream.setFont(font, FONT_SIZE);
+    contentStream.beginText();
+    contentStream.newLineAtOffset(50, yPositionOftheLastLine);
+    writeText(getFormattedDateTime(commentDTO.getDate()) + ", " + commentDTO.getAuthor(), contentStream);
+    updateYposition(SHORT_LINE_BREAK);
+    contentStream.newLineAtOffset(0, -SHORT_LINE_BREAK);
+    writeText(commentDTO.getText().replace("\n", " "), contentStream);
+    updateYposition(SHORT_LINE_BREAK);
+    contentStream.endText();
+    contentStream.close();
 
-    Paragraph allergy = new Paragraph();
+  }
+
+  private void addAdverseEventsText(PDDocument document, AllergyDTO dto) throws IOException {
+    if (yPositionOftheLastLine == PDRectangle.A4.getHeight() - MARGIN) {
+      document.addPage(new PDPage(PDRectangle.A4));
+    }
+
+    PDPageContentStream contentStream = new PDPageContentStream(document,
+        document.getPage(document.getNumberOfPages() - 1), PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("bold", document);
+    contentStream.setFont(font, FONT_SIZE);
+    contentStream.beginText();
+    contentStream.newLineAtOffset(MARGIN, yPositionOftheLastLine);
     if (dto.isValidated()) {
-      allergy.add(createText("(+) ", null, null, true));
+      writeText("(+) ", contentStream);
     }
-    allergy.add(textAllergy);
-    allergy.add(authorAllergy);
+    writeText(dto.getCode().getName(), contentStream);
+    contentStream.setFont(getFont("", document), 10);
+    writeText(", " + getFormattedDate(dto.getOccurrenceDate()) + ", " + dto.getAuthor().getUser().getFullName(),
+        contentStream);
+    updateYposition(LONG_LINE_BREAK);
+    contentStream.endText();
+    contentStream.close();
+  }
 
-    document.add(allergy);
+  private void addBaseVaccinations(BaseTable table, VaccinationRecordDTO vaccinationRecordDTO, PDDocument document)
+      throws IOException, NoSuchFieldException, IllegalAccessException {
+    rowBackgoundColor = COLOR_WHITE;
+    addVaccinationTableHeader(table, vaccinationRecordDTO.getLang(), CELL_HEIGHT, document);
+    for (String code : pdfOutputConfig.getBasicVaccination().getCodes()) {
+      String targetDiseaseName = getDiseaseName(vaccinationRecordDTO, code);
+      List<VaccinationDTO> vaccinations = extract(vaccinationRecordDTO.getVaccinations(), code);
+      addVaccinRows(table, targetDiseaseName, vaccinations, pdfOutputConfig.getBasicVaccination().isKeepEmpty(),
+          document);
+    }
 
-    for (CommentDTO commentDTO : dto.getComments()) {
-      Text textComment = new Text(commentDTO.getText().replace("\n", " "))
-          .setFont(PdfFontFactory.createFont(font, PdfEncodings.WINANSI, EmbeddingStrategy.FORCE_EMBEDDED));
-      Text authorComment =
-          new Text(getFormattedDateTime(commentDTO.getDate()) + ", " + commentDTO.getAuthor().getFullName() + "\n")
-              .setFont(PdfFontFactory.createFont(fontOblique, PdfEncodings.WINANSI, EmbeddingStrategy.FORCE_EMBEDDED));
-      Paragraph comment = new Paragraph();
-      comment.add(authorComment);
-      comment.add(textComment);
-      document.add(comment);
+    table.draw();
+  }
+
+  private Cell<PDPage> addCell(String content, float width, Row<PDPage> headerRow, PDDocument document)
+      throws IOException {
+    Cell<PDPage> cell = headerRow.createCell(width, content);
+    cell.setFont(getFont("", document));
+    return cell;
+  }
+
+  private void addLogo(PDDocument document, String lang) throws IOException {
+    PDImageXObject pdImage = PDImageXObject.createFromByteArray(document,
+        PdfService.class.getResourceAsStream("/EPDLogo.jpg").readAllBytes(), "EPLogo");
+    PDPageContentStream contentStream =
+        new PDPageContentStream(document, document.getPage(0), PDPageContentStream.AppendMode.APPEND, true, true);
+    PDRectangle pageSize = document.getPage(0).getMediaBox();
+    float pageWidth = pageSize.getWidth();
+    float imageWidth = 120;
+    float imageHeight = pdImage.getHeight() * (imageWidth / pdImage.getWidth());
+    float imageXPosition = pageWidth - MARGIN - imageWidth;
+    float imageYPosition = pageSize.getHeight() - MARGIN - imageHeight;
+
+    contentStream.drawImage(pdImage, imageXPosition, imageYPosition, imageWidth, imageHeight);
+    contentStream.setFont(getFont("", document), FONT_SIZE);
+    contentStream.beginText();
+    contentStream.newLineAtOffset(imageXPosition, imageYPosition);
+    contentStream.newLineAtOffset(0, -LONG_LINE_BREAK);
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.PRINTED1.getTranslation(lang), contentStream);
+    contentStream.newLineAtOffset(0, -LONG_LINE_BREAK);
+    contentStream.setNonStrokingColor(Color.BLACK);
+    writeText(I18nKey.PRINTED2.getTranslation(lang), contentStream);
+    writeText(getFormattedDate(LocalDate.now()), contentStream);
+    contentStream.endText();
+    yPositionOftheLastLine = imageYPosition - MARGIN;
+
+    contentStream.close();
+  }
+
+  private void addMedicalProblems(PDDocument document, VaccinationRecordDTO vaccinationRecordDTO) throws IOException {
+    rowBackgoundColor = COLOR_WHITE;
+    updateYposition(MARGIN);
+    PDPage page = document.getPage(document.getNumberOfPages() - 1);
+    PDPageContentStream contentStream =
+        new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("bold", document);
+    contentStream.setFont(font, 15);
+    contentStream.beginText();
+    contentStream.newLineAtOffset(MARGIN, yPositionOftheLastLine);
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.MEDICAL_PROBLEM.getTranslation(vaccinationRecordDTO.getLang()), contentStream);
+    contentStream.endText();
+    contentStream.close();
+    updateYposition(15);
+    BaseTable table =
+        createTable(yPositionOftheLastLine, document.getNumberOfPages() - 1, document, vaccinationRecordDTO.getLang());
+    addMedicalProblemsTableHeader(table, vaccinationRecordDTO.getLang(), CELL_HEIGHT, document);
+    updateYposition(CELL_HEIGHT);
+    for (MedicalProblemDTO medicalProblem : vaccinationRecordDTO.getMedicalProblems()) {
+      addRow(table, medicalProblem, document);
+    }
+    table.draw();
+  }
+
+  private void addMedicalProblemsTableHeader(BaseTable table, String lang, float height, PDDocument document)
+      throws IOException {
+    List<String> headers = List.of(I18nKey.VALIDATED.getTranslation(lang), I18nKey.DATE.getTranslation(lang),
+        I18nKey.BEGIN.getTranslation(lang), I18nKey.END.getTranslation(lang),
+        I18nKey.MEDICAL_PROBLEM.getTranslation(lang), I18nKey.CLINICAL_STATUS.getTranslation(lang));
+
+    addTableHeader(table, height, headers, MEDICAL_PROBLEMS_TABLE_WITHS, document);
+  }
+
+  private void addOtherVaccinations(PDDocument document, VaccinationRecordDTO vaccinationRecordDTO) throws IOException {
+    rowBackgoundColor = COLOR_WHITE;
+    PDPage newPage = new PDPage((PDRectangle.A4));
+    yPositionOftheLastLine = newPage.getMediaBox().getHeight() - MARGIN;
+    document.addPage(newPage);
+    PDPageContentStream contentStream =
+        new PDPageContentStream(document, newPage, PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("bold", document);
+    contentStream.setFont(font, FONT_SIZE_TITLE);
+    contentStream.beginText();
+    contentStream.newLineAtOffset(MARGIN, yPositionOftheLastLine);
+
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.OTHER_VACCINATION.getTranslation(vaccinationRecordDTO.getLang()), contentStream);
+    contentStream.endText();
+    contentStream.close();
+    updateYposition(LONG_LINE_BREAK);
+    BaseTable table =
+        createTable(yPositionOftheLastLine, document.getNumberOfPages() - 1, document, vaccinationRecordDTO.getLang());
+    addVaccinationTableHeader(table, vaccinationRecordDTO.getLang(), CELL_HEIGHT, document);
+    updateYposition(CELL_HEIGHT);
+    for (String code : pdfOutputConfig.getOtherVaccination().getCodes()) {
+      String targetDiseaseName = getDiseaseName(vaccinationRecordDTO, code);
+      List<VaccinationDTO> vaccinations = extract(vaccinationRecordDTO.getVaccinations(), code);
+      addVaccinRows(table, targetDiseaseName, vaccinations, pdfOutputConfig.getOtherVaccination().isKeepEmpty(),
+          document);
+    }
+
+    table.draw();
+  }
+
+  private void addPastIllnessTable(PDDocument document, VaccinationRecordDTO vaccinationRecordDTO) throws IOException {
+    rowBackgoundColor = COLOR_WHITE;
+    updateYposition(MARGIN);
+    // checkNewPageNeeded();
+    PDPage page = document.getPage(document.getNumberOfPages() - 1);
+    PDPageContentStream contentStream =
+        new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("bold", document);
+    contentStream.setFont(font, 15);
+
+    contentStream.beginText();
+    contentStream.newLineAtOffset(MARGIN, yPositionOftheLastLine);
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.PASTILLNESSES.getTranslation(vaccinationRecordDTO.getLang()), contentStream);
+    contentStream.endText();
+    contentStream.close();
+    updateYposition(1.5f * 15);
+    BaseTable table =
+        createTable(yPositionOftheLastLine, document.getNumberOfPages() - 1, document, vaccinationRecordDTO.getLang());
+    addPastIllnessTableHeader(table, vaccinationRecordDTO.getLang(), CELL_HEIGHT, document);
+    updateYposition(1.5f * CELL_HEIGHT);
+    List<PastIllnessDTO> dtos = vaccinationRecordDTO.getPastIllnesses();
+    if (dtos != null) {
+      for (PastIllnessDTO dto : dtos) {
+        addRow(table, dto, document);
+      }
+    }
+
+    table.draw();
+  }
+
+  private void addPastIllnessTableHeader(BaseTable table, String lang, float height, PDDocument document)
+      throws IOException {
+    List<String> headers = List.of(I18nKey.VALIDATED.getTranslation(lang), I18nKey.DATE.getTranslation(lang),
+        I18nKey.BEGIN.getTranslation(lang), I18nKey.END.getTranslation(lang), I18nKey.PASTILLNESS.getTranslation(lang));
+    addTableHeader(table, height, headers, PASTILNESS_TABLE_WITHS, document);
+  }
+
+  private void addPatient(PDDocument document, HumanNameDTO patient, String lang) throws IOException {
+    PDPage firstPage = document.getPage(0);
+    PDRectangle pageSize = firstPage.getMediaBox();
+
+    try (PDPageContentStream contentStream =
+        new PDPageContentStream(document, firstPage, PDPageContentStream.AppendMode.APPEND, true, true)) {
+      contentStream.beginText();
+      contentStream.setFont(getFont("bold", document), FONT_SIZE);
+      contentStream.newLineAtOffset(MARGIN, pageSize.getHeight() - MARGIN); // start 50 units from top-left corner
+      addPatientInformation(I18nKey.LASTNAME.getTranslation(lang), patient.getLastName(), contentStream, document);
+      addPatientInformation(I18nKey.FIRSTNAME.getTranslation(lang), patient.getFirstName(), contentStream, document);
+      addPatientInformation(I18nKey.BIRTHDAY.getTranslation(lang), getFormattedDate(patient.getBirthday()),
+          contentStream, document);
+      addPatientInformation(I18nKey.GENDER.getTranslation(lang), patient.getGender(), contentStream, document);
+      contentStream.endText();
+      contentStream.close();
     }
   }
 
-  private void addRow(Table table, MedicalProblemDTO dto) {
+  private void addPatientInformation(String title, String info, PDPageContentStream contentStream, PDDocument document)
+      throws IOException {
+    contentStream.newLineAtOffset(0, -LONG_LINE_BREAK);
+    contentStream.setFont(getFont("bold", document), FONT_SIZE);
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(title + ": ", contentStream);
+    contentStream.setFont(getFont("", document), FONT_SIZE);
+    contentStream.setNonStrokingColor(Color.BLACK);
+    writeText(info, contentStream);
+  }
+
+  private void addRow(BaseTable table, MedicalProblemDTO dto, PDDocument document) throws IOException {
     if (dto == null) {
       log.warn("addRow MedicalProblemDTO null");
       return;
     }
 
     log.debug("addRow {}", dto.getCode().getName());
-    table.addCell(createCell(dto.isValidated() ? "+" : ""));
-    table.addCell(createCell(getFormattedDate(dto.getRecordedDate())));
-    table.addCell(createCell(getFormattedDate(dto.getBegin())));
-    table.addCell(createCell(getFormattedDate(dto.getEnd())));
+    Row<PDPage> row = table.createRow(15);
+    Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", MEDICAL_PROBLEMS_TABLE_WITHS[0], row, document);
+    cell.setAlign(HorizontalAlignment.CENTER);
+    addCell(getFormattedDate(dto.getRecordedDate()), MEDICAL_PROBLEMS_TABLE_WITHS[1], row, document);
+    addCell(getFormattedDate(dto.getBegin()), MEDICAL_PROBLEMS_TABLE_WITHS[2], row, document);
+    addCell(getFormattedDate(dto.getEnd()), MEDICAL_PROBLEMS_TABLE_WITHS[3], row, document);
     if (dto.getCode() != null) {
-      table.addCell(createCell(dto.getCode().getName()));
+      addCell(dto.getCode().getName(), MEDICAL_PROBLEMS_TABLE_WITHS[4], row, document);
     }
     if (dto.getClinicalStatus() != null) {
-      table.addCell(createCell(dto.getClinicalStatus().getName()));
+      addCell(dto.getClinicalStatus().getName(), MEDICAL_PROBLEMS_TABLE_WITHS[5], row, document);
     }
+    setRowColor(row);
     swapColor();
   }
 
-  private void addRow(Table table, PastIllnessDTO dto) {
+  private void addRow(BaseTable table, PastIllnessDTO dto, PDDocument document) throws IOException {
     if (dto == null) {
       log.warn("addRow PastIllnessDTO null");
       return;
     }
 
     log.debug("addRow {}", dto.getCode().getName());
-    table.addCell(createCell(dto.isValidated() ? "+" : ""));
-    table.addCell(createCell(getFormattedDate(dto.getRecordedDate())));
-    table.addCell(createCell(getFormattedDate(dto.getBegin())));
-    table.addCell(createCell(getFormattedDate(dto.getEnd())));
+    Row<PDPage> row = table.createRow(15);
+    Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", PASTILNESS_TABLE_WITHS[0], row, document);
+    cell.setAlign(HorizontalAlignment.CENTER);
+    addCell(getFormattedDate(dto.getRecordedDate()), PASTILNESS_TABLE_WITHS[1], row, document);
+    addCell(getFormattedDate(dto.getBegin()), PASTILNESS_TABLE_WITHS[2], row, document);
+    addCell(getFormattedDate(dto.getEnd()), PASTILNESS_TABLE_WITHS[3], row, document);
     if (dto.getCode() != null) {
-      table.addCell(createCell(dto.getCode().getName()));
+      addCell(dto.getCode().getName(), PASTILNESS_TABLE_WITHS[4], row, document);
     }
-
+    updateYposition(row.getHeight());
+    setRowColor(row);
     swapColor();
   }
 
-  private void addRow(Table table, VaccinationDTO dto, String lang) {
+  private void addRow(PDPage page, PDDocument document, AllergyDTO dto, String lang) throws IOException {
     if (dto == null) {
-      log.warn("addRow vaccinationDTO null");
+      log.warn("addRow AllergyDTO null");
       return;
     }
     log.debug("addRow {}", dto.getCode().getName());
-    table.addCell(createCell(dto.isValidated() ? "+" : ""));
-    table.addCell(createCell(getFormattedDate(dto.getOccurrenceDate())));
-
-    if (dto.getCode() != null) {
-      table.addCell(createCell(dto.getCode().getName()));
-    }
-
-    if (dto.getRecorder() != null) {
-      table.addCell(createCell(dto.getRecorder().getPrefix() + " " + dto.getRecorder().getFirstName() + " "
-          + dto.getRecorder().getLastName()));
+    addAdverseEventsText(document, dto);
+    for (CommentDTO commentDTO : dto.getComments()) {
+      addAdverseEventsCommentText(document, commentDTO);
     }
   }
 
-  private void addRows(Table table, String targetDisease, List<VaccinationDTO> dtos, String lang, boolean keepEmpty) {
+  private void addSeparationLine(PDDocument document, String lang) throws IOException {
 
+    PDPageContentStream contentStream =
+        new PDPageContentStream(document, document.getPage(0), PDPageContentStream.AppendMode.APPEND, true, true);
+    PDType0Font font = getFont("bold", document);
+    contentStream.setFont(font, 25);
+    contentStream.beginText();
+    contentStream.newLineAtOffset(MARGIN, yPositionOftheLastLine - 10);
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.VACCINATION_RECORD.getTranslation(lang), contentStream);
+
+    contentStream.setFont(font, 15);
+    contentStream.newLineAtOffset(0, -50);
+    contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+    writeText(I18nKey.BASIC_VACCINATION.getTranslation(lang), contentStream);
+    contentStream.endText();
+    contentStream.close();
+    PDPageContentStream contentStreamLine =
+        new PDPageContentStream(document, document.getPage(0), PDPageContentStream.AppendMode.APPEND, true, true);
+    contentStreamLine.moveTo(MARGIN, yPositionOftheLastLine - 35); // Starting point (x, y)
+    contentStreamLine.lineTo(PDRectangle.A4.getWidth() - MARGIN, yPositionOftheLastLine - 35); // Ending point (x, y)
+    yPositionOftheLastLine = yPositionOftheLastLine - 70;
+    contentStreamLine.stroke();
+    contentStreamLine.close();
+
+
+  }
+
+
+  private void addTableHeader(BaseTable table, float height, List<String> headers, float[] widths, PDDocument document)
+      throws IOException {
+    Row<PDPage> headerRow = table.createRow(height);
+    for (int i = 0; i < headers.size(); i++) {
+      Cell<PDPage> cell = addCell(headers.get(i), widths[i], headerRow, document);
+      cell.setTextColor(COLOR_WHITE);
+      cell.setFillColor(COLOR_DARKBLUE);
+    }
+  }
+
+  private void addVaccinationTableHeader(BaseTable table, String lang, float height, PDDocument document)
+      throws IOException {
+    java.util.List<String> headers = java.util.List.of(I18nKey.DISEASE.getTranslation(lang),
+        I18nKey.VALIDATED.getTranslation(lang), I18nKey.DATE.getTranslation(lang), I18nKey.VACCINE.getTranslation(lang),
+        I18nKey.TREATING.getTranslation(lang));
+
+    addTableHeader(table, height, headers, VACCIN_TABLE_WITHS, document);
+  }
+
+  private void addVaccinRows(BaseTable table, String targetDisease, List<VaccinationDTO> dtos, boolean keepEmpty,
+      PDDocument document) throws IOException {
     log.debug("addRows targetDisease:{} {}", targetDisease, dtos.size());
 
     if (!keepEmpty && dtos.isEmpty()) {
       return;
     }
-
-    Cell targetDiseaseCell = new Cell(dtos.size(), 1);
-    targetDiseaseCell.setBackgroundColor(tableBackgoundColor);
-    targetDiseaseCell.add(new Paragraph(targetDisease));
-    table.addCell(targetDiseaseCell);
+    Row<PDPage> row = table.createRow(CELL_HEIGHT);
+    var spanncell = addCell(targetDisease, VACCIN_TABLE_WITHS[0], row, document);
 
     if (dtos != null && !dtos.isEmpty()) {
-      for (VaccinationDTO dto : dtos) {
-        addRow(table, dto, lang);
+      if (dtos.size() > 1) {
+        spanncell.setBottomBorderStyle(LineStyle.produceDashed(rowBackgoundColor, 0));
+      }
+
+      for (int i = 0; i < dtos.size(); i++) {
+        VaccinationDTO dto = dtos.get(i);
+
+        Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", VACCIN_TABLE_WITHS[1], row, document);
+        cell.setAlign(HorizontalAlignment.CENTER);
+
+        addCell(getFormattedDate(dto.getOccurrenceDate()), VACCIN_TABLE_WITHS[2], row, document);
+        if (dto.getCode() != null) {
+          addCell(dto.getCode().getName(), VACCIN_TABLE_WITHS[3], row, document);
+        }
+        if (dto.getRecorder() != null) {
+          addCell(dto.getRecorder().getPrefix() + " " + dto.getRecorder().getFirstName() + " "
+              + dto.getRecorder().getLastName(), VACCIN_TABLE_WITHS[4], row, document);
+        }
+        setRowColor(row);
+
+        if (i < dtos.size() - 1) {
+          updateYposition(row.getHeight());
+          row = table.createRow(CELL_HEIGHT);
+          spanncell = addCell("", VACCIN_TABLE_WITHS[0], row, document);
+          if (i < dtos.size() - 2 && yPositionOftheLastLine >= 180) {
+            spanncell.setBottomBorderStyle(LineStyle.produceDashed(rowBackgoundColor, 0));
+          }
+        }
+
       }
     } else {
-      table.addCell(createCell(""));
-      table.addCell(createCell(""));
-      table.addCell(createCell(""));
-      table.addCell(createCell(""));
+      addCell("", VACCIN_TABLE_WITHS[1], row, document);
+      addCell("", VACCIN_TABLE_WITHS[2], row, document);
+      addCell("", VACCIN_TABLE_WITHS[3], row, document);
+      addCell("", VACCIN_TABLE_WITHS[4], row, document);
+      setRowColor(row);
     }
-
+    updateYposition(row.getHeight());
     swapColor();
   }
 
-  private void addVaccinationTableHeader(Table table, String lang) {
-    Stream.of(I18nKey.DISEASE.getTranslation(lang), //
-        I18nKey.VALIDATED.getTranslation(lang), //
-        I18nKey.DATE.getTranslation(lang), //
-        I18nKey.VACCINE.getTranslation(lang), //
-        I18nKey.TREATING.getTranslation(lang))
-        .forEach(columnTitle -> createHeaderCell(table, columnTitle));
-    tableBackgoundColor = WebColors.getRGBColor("#FFFFFF");
-  }
+  private PDDocument createDocumentAndItsMeta() throws Exception {
+    PDDocument document = new PDDocument();
+    PDPage page = new PDPage(PDRectangle.A4);
+    document.addPage(page);
 
-  private void createAllergies(Document document, List<AllergyDTO> dtos, String lang) {
-    log.debug("create {} allergies", dtos == null ? 0 : dtos.size());
+    PDMetadata metadata = new PDMetadata(document);
+    page.setMetadata(metadata);
 
-    if (dtos != null) {
-      for (AllergyDTO dto : dtos) {
-        addRow(document, dto, lang);
-      }
+    XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+    PDFAIdentificationSchema pdfaid = xmp.createAndAddPDFAIdentificationSchema();
+    pdfaid.setPart(1);
+    pdfaid.setConformance("A");
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    new XmpSerializer().serialize(xmp, baos, true);
+    metadata.importXMPMetadata(baos.toByteArray());
+
+    PDDocumentCatalog catalog = document.getDocumentCatalog();
+    PDMarkInfo markInfo = catalog.getMarkInfo();
+    if (markInfo == null) {
+      markInfo = new PDMarkInfo();
+      catalog.setMarkInfo(markInfo);
     }
-  }
 
-  private Cell createCell(String text) {
-    Cell cell = new Cell();
-    cell.setBackgroundColor(tableBackgoundColor);
-    if ("+".equals(text)) {
-      cell.setTextAlignment(TextAlignment.CENTER);
-    }
-    cell.add(new Paragraph(text));
-    return cell;
-  }
+    PDStructureTreeRoot treeRoot = new PDStructureTreeRoot();
+    catalog.setStructureTreeRoot(treeRoot);
+    catalog.getMarkInfo().setMarked(true);
+    document.getDocumentCatalog().setMetadata(metadata);
 
-  private Document createDocumentAndItsMeta(ByteArrayOutputStream out) throws Exception {
-    PdfADocument pdf = new PdfADocument(new PdfWriter(out),
-        PdfAConformanceLevel.PDF_A_1A,
-        new PdfOutputIntent("Custom", "", "http://www.color.org",
-            "sRGB IEC61966-2.1", new ClassPathResource(ICC_PROFILE).getInputStream()));
-
-    Document document = new Document(pdf);
-    document.setFont(PdfFontFactory.createFont(font, PdfEncodings.WINANSI, EmbeddingStrategy.FORCE_EMBEDDED));
-    document.getPdfDocument().setTagged();
+    InputStream colorProfile = new ClassPathResource(ICC_PROFILE).getInputStream();
+    PDOutputIntent oi = new PDOutputIntent(document, colorProfile);
+    oi.setInfo("sRGB IEC61966-2.1");
+    oi.setOutputCondition("sRGB IEC61966-2.1");
+    oi.setOutputConditionIdentifier("sRGB IEC61966-2.1");
+    oi.setRegistryName("http://www.color.org");
+    document.getDocumentCatalog().addOutputIntent(oi);
 
     return document;
   }
 
-  private void createHeaderCell(Table table, String columnTitle) {
-    Cell header = new Cell();
-    header.setBackgroundColor(FONT_COLOR_DARKBLUE);
-    header.add(new Paragraph(createText(columnTitle, 10, FONT_COLOR_WHITE, true)));
-    table.addCell(header);
-  }
-
-  private Table createMedicalProblemTable(List<MedicalProblemDTO> dtos, String lang) {
-    log.debug("create {} allergies", dtos == null ? 0 : dtos.size());
-    UnitValue[] columnWidths = {new UnitValue(UnitValue.PERCENT, 10),
-        new UnitValue(UnitValue.PERCENT, 15),
-        new UnitValue(UnitValue.PERCENT, 15),
-        new UnitValue(UnitValue.PERCENT, 15),
-        new UnitValue(UnitValue.PERCENT, 30),
-        new UnitValue(UnitValue.PERCENT, 15)};
-    Table table = createTable(columnWidths);
-    Stream.of(I18nKey.VALIDATED.getTranslation(lang), //
-        I18nKey.DATE.getTranslation(lang),
-        I18nKey.BEGIN.getTranslation(lang),
-        I18nKey.END.getTranslation(lang),
-        I18nKey.MEDICAL_PROBLEM.getTranslation(lang),
-        I18nKey.CLINICAL_STATUS.getTranslation(lang))
-        .forEach(columnTitle -> createHeaderCell(table, columnTitle));
-    tableBackgoundColor = FONT_COLOR_WHITE;
-
-    if (dtos != null) {
-      for (MedicalProblemDTO dto : dtos) {
-        addRow(table, dto);
-      }
-    }
-
+  private BaseTable createTable(float yStart, int pageNumber, PDDocument document, String lang) throws IOException {
+    PDPage page = document.getPage(pageNumber);
+    float tableWidth = page.getMediaBox().getWidth() - 2 * MARGIN;
+    BaseTable table = new BaseTable(yStart, document.getPage(0).getMediaBox().getHeight() - MARGIN, MARGIN, tableWidth,
+        MARGIN, document, page, true, true);
     return table;
-  }
-
-  private Table createPastIllnessTable(List<PastIllnessDTO> dtos, String lang) {
-    log.debug("create {} pastIllness", dtos == null ? 0 : dtos.size());
-    UnitValue[] columnWidths = {new UnitValue(UnitValue.PERCENT, 10), new UnitValue(UnitValue.PERCENT, 15),
-        new UnitValue(UnitValue.PERCENT, 15),
-        new UnitValue(UnitValue.PERCENT, 15), new UnitValue(UnitValue.PERCENT, 45)};
-    Table table = createTable(columnWidths);
-    Stream.of(I18nKey.VALIDATED.getTranslation(lang),
-        I18nKey.DATE.getTranslation(lang),
-        I18nKey.BEGIN.getTranslation(lang),
-        I18nKey.END.getTranslation(lang),
-        I18nKey.PASTILLNESS.getTranslation(lang))
-        .forEach(columnTitle -> createHeaderCell(table, columnTitle));
-    tableBackgoundColor = WebColors.getRGBColor("#FFFFFF");
-
-    if (dtos != null) {
-      for (PastIllnessDTO dto : dtos) {
-        addRow(table, dto);
-      }
-    }
-
-    return table;
-  }
-
-  private Table createTable(UnitValue[] columnWidths) {
-    Table table = new Table(columnWidths);
-    table.setWidth(new UnitValue(UnitValue.PERCENT, 95));
-    return table;
-  }
-
-  private Text createText(String content) {
-    return createText(content, 10, null, false);
-  }
-
-  private Text createText(String content, Integer fontSize) {
-    return createText(content, fontSize, null, false);
-  }
-
-  private Text createText(String content, Integer fontSize, Color color, boolean isBold) {
-    Text text = new Text(content != null ? content : "");
-    if (color != null) {
-      text.setFontColor(color);
-    }
-    if (isBold) {
-      text.setBold();
-    }
-    if (fontSize != null) {
-      text.setFontSize(fontSize);
-    }
-    return text;
   }
 
   private List<VaccinationDTO> extract(List<VaccinationDTO> inputs, String code) {
@@ -451,49 +588,16 @@ public class PdfService {
     return vaccinations;
   }
 
-  private void fillDocumentContent(VaccinationRecordDTO vaccinationRecordDTO, Document document) throws Exception {
-    addPatient(document, vaccinationRecordDTO.getPatient(), vaccinationRecordDTO.getLang());
-    addLogo(document);
-    addPrintedParagraph(document, vaccinationRecordDTO.getLang());
-    addParagraphTitle(document, 20, I18nKey.VACCINATION_RECORD, vaccinationRecordDTO.getLang());
-
-    LineSeparator line = new LineSeparator(new SolidLine());
-    line.setWidth(UnitValue.createPercentValue(95));
-    document.add(line);
-
-    addParagraphTitle(document, I18nKey.BASIC_VACCINATION, vaccinationRecordDTO.getLang());
-
-    UnitValue[] columnWidths = {new UnitValue(UnitValue.PERCENT, 30), new UnitValue(UnitValue.PERCENT, 10),
-        new UnitValue(UnitValue.PERCENT, 15), new UnitValue(UnitValue.PERCENT, 20),
-        new UnitValue(UnitValue.PERCENT, 25)};
-    Table table = createTable(columnWidths);
-    addVaccinationTableHeader(table, vaccinationRecordDTO.getLang());
-    addBaseVaccinations(table, vaccinationRecordDTO);
-    document.add(table);
-
-    document.add(new AreaBreak(AreaBreakType.NEXT_AREA));
-    addParagraphTitle(document, I18nKey.OTHER_VACCINATION, vaccinationRecordDTO.getLang());
-    table = createTable(columnWidths);
-    addVaccinationTableHeader(table, vaccinationRecordDTO.getLang());
-    addOtherVaccinations(table, vaccinationRecordDTO);
-    addRemainingVaccinations(table, vaccinationRecordDTO);
-    document.add(table);
-
-    document.add(new Paragraph("\n"));
-    addParagraphTitle(document, I18nKey.ADVERSE_EVENTS, vaccinationRecordDTO.getLang());
-    createAllergies(document, vaccinationRecordDTO.getAllergies(), vaccinationRecordDTO.getLang());
-
-    document.add(new Paragraph("\n"));
-    addParagraphTitle(document, I18nKey.PASTILLNESSES, vaccinationRecordDTO.getLang());
-    table = createPastIllnessTable(vaccinationRecordDTO.getPastIllnesses(),
-        vaccinationRecordDTO.getLang());
-    document.add(table);
-
-    document.add(new Paragraph("\n"));
-    addParagraphTitle(document, I18nKey.MEDICAL_PROBLEMS, vaccinationRecordDTO.getLang());
-    table = createMedicalProblemTable(vaccinationRecordDTO.getMedicalProblems(),
-        vaccinationRecordDTO.getLang());
-    document.add(table);
+  private void fillDocumentContent(VaccinationRecordDTO record, PDDocument document) throws Exception {
+    addPatient(document, record.getPatient(), record.getLang());
+    addLogo(document, record.getLang());
+    addSeparationLine(document, record.getLang());
+    addBaseVaccinations(createTable(yPositionOftheLastLine, 0, document, record.getLang()),
+        record, document);
+    addOtherVaccinations(document, record);
+    addAdverseEvents(document, record);
+    addPastIllnessTable(document, record);
+    addMedicalProblems(document, record);
   }
 
   private String getDiseaseName(VaccinationRecordDTO vaccinationRecordDTO, String code) {
@@ -505,24 +609,66 @@ public class PdfService {
     return code;
   }
 
-  private void initializeFontProgram() {
-    try {
-      // Font must be created per document, thus here, we only create the fontProgramm which
-      // is then reused per document usage.
-      font = FontProgramFactory.createFont(FONT);
-      fontBold = FontProgramFactory.createFont(FONT_BOLD);
-      fontOblique = FontProgramFactory.createFont(FONT_OBLIQUE);
-    } catch (IOException ex) {
-      log.error(FONT_COULD_NOT_BE_INITIALIZED);
-      throw new TechnicalException(FONT_COULD_NOT_BE_INITIALIZED, ex);
+  private PDType0Font getFont(String fontname, PDDocument document) throws IOException {
+    switch (fontname) {
+      case "bold":
+        return PDType0Font.load(document, new ClassPathResource(FONT_BOLD).getFile());
+      case "oblique":
+        return PDType0Font.load(document, new ClassPathResource(FONT_OBLIQUE).getFile());
+      default:
+        return PDType0Font.load(document, new ClassPathResource(FONT).getFile());
+    }
+  }
+
+  private String getFormattedDate(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    return date != null ? date.format(formatter) : "-";
+  }
+
+  private String getFormattedDateTime(LocalDateTime dateTime) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
+    return dateTime != null ? dateTime.format(formatter) : "-";
+  }
+
+  private void setRowColor(Row<PDPage> row) {
+    for (Cell<PDPage> cell : row.getCells()) {
+      cell.setFillColor(rowBackgoundColor);
     }
   }
 
   private void swapColor() {
-    if (tableBackgoundColor.equals(FONT_COLOR_WHITE)) {
-      tableBackgoundColor = FONT_COLOR_LIGHTBLUE;
+    if (COLOR_WHITE.equals(rowBackgoundColor)) {
+      rowBackgoundColor = COLOR_LIGHTBLUE;
     } else {
-      tableBackgoundColor = FONT_COLOR_WHITE;
+      rowBackgoundColor = COLOR_WHITE;
+    }
+  }
+
+
+  private void updateYposition(float delta) {
+    boolean isNewPageNecessary = yPositionOftheLastLine - delta > MARGIN;
+    if (isNewPageNecessary) {
+      yPositionOftheLastLine -= delta;
+    } else {
+      yPositionOftheLastLine = PDRectangle.A4.getHeight() - MARGIN;
+    }
+  }
+
+  private void validatePdf(InputStream inputStream) throws Exception {
+    VeraGreenfieldFoundryProvider.initialise();
+    PDFAFlavour flavour = PDFAFlavour.fromString("1a");
+    PDFAParser parser = Foundries.defaultInstance().createParser(inputStream, flavour);
+    PDFAValidator validator = Foundries.defaultInstance().createValidator(flavour, false);
+    ValidationResult result = validator.validate(parser);
+
+    if (!result.isCompliant()) {
+      throw new BusinessException("Generated pdf is not PDF/1A compatible.");
+    }
+  }
+
+  private void writeText(String value, PDPageContentStream contentStream) throws IOException {
+    if (value != null) {
+      contentStream.showText(value);
     }
   }
 }

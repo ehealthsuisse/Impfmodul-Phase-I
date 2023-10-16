@@ -16,10 +16,19 @@
     "VACCINATION_CARD": "Impfausweis",
     "COMMENTS": "Kommentare",
     "SEARCH": "Suchen",
+    "NO_ENTRIES_FOUND": "Keine passenden Einträge gefunden",
     "COMMENT": "Kommentar",
     "ERROR": "Fehler",
     "ERROR_403": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen. Sie müssen auf diese Seite über das EPD-Portal zugreifen.",
+    "UNSUPPORTED_LANGUAGE": "Die Sprache {{ lang }} wird nicht unterstützt.",
+    "ERROR_404": "Die angeforderte Seite wurde nicht gefunden.",
+    "UNEXPECTED_ERROR": "Es ist ein unerwarteter Fehler aufgetreten. Die gewünschte Aktion konnte nicht ausgeführt werden.",
     "SNEAKBAR_CONFIRM": "Entität erfolgreich gespeichert",
+    "END_DATE_BEFORE_START_DATE": "Ende muss nach dem Begin liegen.",
+    "LOGO_VACCINATION_MODULE": "Logo Impfmodul, gehe zum Impfausweis",
+    "COMMUNITY_LOGO": "Logo der Stammgemeinschaft",
+    "DATE_FORMAT": "Bitte geben Sie das Datum ein. Verwenden Sie das Format Tag, Tag, Punkt, Monat, Monat, Punkt, Jahr, Jahr, Jahr, Jahr. Zum Beispiel, 01.01.2023",
+    "LANGUAGE_HELP_TEXT": "Wählen Sie die Sprache aus, in der Sie das Impfmodul verwenden möchten",
     "NONE_OPTION": ""
   }
 }

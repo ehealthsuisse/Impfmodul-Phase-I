@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Extension;
@@ -43,13 +44,28 @@ import org.hl7.fhir.r4.model.Resource;
 
 @Slf4j
 public class FhirUtils {
-  static public String VACCINATION_RECORD_TYPE_URL =
+  public static final String VACCINATION_RECORD_TYPE_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-vaccination-record";
-  static public String VACCINATION_TYPE_URL =
+  public static final String VACCINATION_TYPE_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration";
-  static public String CONFIDENTIALITY_CODE_URL =
-      "https://ehealthsuisse.art-decor.org/cdachemed-html-20220302T110630/voc-2.16.756.5.30.1.127.3.10.1.5-2021-04-01T170535.html";
-  static public ValueDTO defaultConfidentialityCode = new ValueDTO("17621005", "Normal", CONFIDENTIALITY_CODE_URL);
+  public static final ValueDTO DEFAULT_CONFIDENTIALITY_CODE =
+      new ValueDTO("17621005", "Normal", "2.16.840.1.113883.6.96");
+
+  public static SectionComponent getSectionByType(Composition composition, SectionType type) {
+    for (SectionComponent sectionComponent : composition.getSection()) {
+      boolean isSameId = type.getId().equals(sectionComponent.getId());
+      boolean isSameCode = type.getCode().equals(sectionComponent.getCode().getCodingFirstRep().getCode());
+      if (isSameId || isSameCode) {
+        return sectionComponent;
+      }
+    }
+
+    return null;
+  }
+
+  public static String getUuidFromBundle(Bundle bundle) {
+    return bundle.getIdentifier().getValue();
+  }
 
   static AuthorDTO getAuthor(Bundle bundle) {
     Composition composition = getResource(Composition.class, bundle);
@@ -76,12 +92,14 @@ public class FhirUtils {
     PractitionerRole practitionerRole = getPractitionerRole(bundle, id);
     if (practitionerRole != null) {
       Practitioner practitioner = getPractitioner(bundle, practitionerRole.getPractitioner().getReference());
-      return new AuthorDTO(toHumanNameDTO(practitioner), null, "HCP", null, null, null, null);
+      return new AuthorDTO(toHumanNameDTO(practitioner), null, "HCP", null,
+          practitioner.getIdentifierFirstRep().getValue(), null, null);
     }
 
     Practitioner practitioner = getPractitioner(bundle, id);
     if (practitioner != null) {
-      return new AuthorDTO(toHumanNameDTO(practitioner), null, "HCP", null, null, null, null);
+      return new AuthorDTO(toHumanNameDTO(practitioner), null, "HCP", null,
+          practitioner.getIdentifierFirstRep().getValue(), null, null);
     }
     log.warn("getAuthor {} not found!", id);
     return null;

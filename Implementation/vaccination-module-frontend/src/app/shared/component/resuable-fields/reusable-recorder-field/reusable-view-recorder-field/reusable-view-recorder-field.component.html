@@ -1,9 +1,5 @@
 <mat-card class="mat-elevation-z0 recorder">
-  <mat-label
-    class="recorder__label"
-    vmTranslate="MEDICAL_PROBLEM.RECORDER"
-    [attr.aria-label]="'MEDICAL_PROBLEM.RECORDER' | translate"
-  ></mat-label>
+  <mat-label vmTranslate="MEDICAL_PROBLEM.RECORDER" [attr.aria-label]="'MEDICAL_PROBLEM.RECORDER' | translate"></mat-label>
   <div class="recorder--fields">
     <mat-form-field>
       <input matInput disabled value="{{ recorder.prefix }}" [attr.aria-label]="recorder.prefix" />

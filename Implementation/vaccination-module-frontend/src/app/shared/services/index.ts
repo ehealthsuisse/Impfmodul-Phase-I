@@ -19,3 +19,4 @@
 export * from './dialog.service';
 export * from './form-options.service';
 export * from './mapper.service';
+export * from './shared-data.service';

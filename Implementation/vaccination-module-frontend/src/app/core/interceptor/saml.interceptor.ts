@@ -31,6 +31,7 @@ export class SamlInterceptor implements HttpInterceptor {
             let formHtml = requestBody.slice(requestBody.indexOf('<form'), requestBody.indexOf('</form>') + 7);
             // replace so URL can be read and evaluated
             formHtml = formHtml.replace(/\\"/g, '"');
+            formHtml = formHtml.replace(/\\n/g, '');
             this.injectForm(formHtml);
           }
         }

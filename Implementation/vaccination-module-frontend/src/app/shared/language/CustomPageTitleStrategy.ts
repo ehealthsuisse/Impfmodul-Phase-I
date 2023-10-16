@@ -36,7 +36,7 @@ export class CustomPageTitleStrategy extends TitleStrategy implements OnDestroy 
         this.title.setTitle(translatedTitle);
       });
     } else {
-      this.title.setTitle('DEFAULT_TITLE');
+      this.title.setTitle('Vaccination module');
     }
   }
 

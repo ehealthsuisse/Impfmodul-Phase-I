@@ -3,22 +3,24 @@ idp:
   # SP Entity ID that is known to the IdP
   knownEntityId: https://my.backend.url/
 
-  # Provide per Provider
-  # HTTP-Post Binding URL
-  # SAML2.0-SOAP Binding URL 
+  # Provide per Provider 
   supportedProvider:
   - identifier: GAZELLE
     authnrequestURL: https://ehealthsuisse.ihe-europe.net:4443/idp/profile/SAML2/POST/SSO
-    artifactResolutionServiceURL: https://ehealthsuisse.ihe-europe.net:4443/idp/profile/SAML2/SOAP/ArtifactResolution 
-  # Dummy Provider for testing purpose
+    artifactResolutionServiceURL: https://ehealthsuisse.ihe-europe.net:4443/idp/profile/SAML2/SOAP/ArtifactResolution
+    securityTokenServiceURL: https://is.not.set.for.gazelle
+    entityId: OverwriteDefaultEntityIDIfNecessary
+    logoutURL: https://logout.url.set.in.logout.request.destination
   - identifier: DUMMY
-    
+  
 # Service Provider - this application
 sp:
-  assertionConsumerServiceUrl: https://my.backend.url/saml/{idp}/sso
-    
+  assertionConsumerServiceUrl: https://my.backend.url/saml/sso
+  forwardArtifactToClientUrl: https://my.frontend.url/saml-acs
+
   # keystore containing our private key
   keystore:
+   keystore-type: PKCS12
    keystore-path: path.to.keystore
    keystore-password: keystore.password
    sp-alias: key.alias.used.for.idp

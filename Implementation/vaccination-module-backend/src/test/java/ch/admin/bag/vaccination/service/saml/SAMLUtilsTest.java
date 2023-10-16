@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.LogoutRequest;
@@ -27,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * 
+ *
  * Test the {@link SAMLUtils} utility class
  *
  */
@@ -41,22 +42,23 @@ public class SAMLUtilsTest {
   }
 
   @Test
-  public void unmarshall_logoutRequest() throws Exception {
-    LogoutRequest logoutRequest = (LogoutRequest) SAMLUtils.unmarshall(SAMLUtils.xml("saml/samlLogoutRequest.xml"));
-    assertThat(logoutRequest.getNameID().getValue()).isEqualTo("remery");
-    assertThat(logoutRequest.getIssuer().getValue()).isEqualTo("http://sp.example.com/demo1/metadata.php");
-    assertThat(logoutRequest.getIssueInstant().toString()).isEqualTo("2014-07-18T01:13:06Z");
-  }
-
-  @Test
   public void replaceInstantByNow() throws Exception {
     Instant now = Instant.now();
     now = now.minusMillis(1000);
-    String xml = SAMLUtils.xml("saml/samlLogoutRequest.xml");
+    String xml = SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml");
     xml = SAMLUtilsTest.replaceInstantByNow(xml);
     LogoutRequest logoutRequest = (LogoutRequest) SAMLUtils.unmarshall(xml);
     assertThat(logoutRequest.getNameID().getValue()).isEqualTo("remery");
     assertThat(logoutRequest.getIssuer().getValue()).isEqualTo("http://sp.example.com/demo1/metadata.php");
     assertThat(logoutRequest.getIssueInstant()).isAfter(now);
+  }
+
+  @Test
+  public void unmarshall_logoutRequest() throws Exception {
+    LogoutRequest logoutRequest =
+        (LogoutRequest) SAMLUtils.unmarshall(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"));
+    assertThat(logoutRequest.getNameID().getValue()).isEqualTo("remery");
+    assertThat(logoutRequest.getIssuer().getValue()).isEqualTo("http://sp.example.com/demo1/metadata.php");
+    assertThat(logoutRequest.getIssueInstant().toString()).isEqualTo("2014-07-18T01:13:06Z");
   }
 }

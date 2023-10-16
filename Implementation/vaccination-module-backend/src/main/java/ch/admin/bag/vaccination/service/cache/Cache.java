@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.service.cache;
 
+import ch.admin.bag.vaccination.data.request.EPRDocument;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MapConfig;
@@ -26,9 +27,11 @@ import com.hazelcast.core.HazelcastInstance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,88 +44,98 @@ public class Cache {
   private String PATIENT_IDENTIFIER_CACHE_NAME = "patient-identifier";
   private String DOCUMENT_CACHE_NAME = "document";
   private HazelcastInstance hazelcast;
-  @Autowired
-  private CacheConfig cacheConfig;
+
+  @Value("${epdbackend.cache.enabled:false}")
+  private boolean isCacheEnabled;
+  @Value("${epdbackend.cache.clustername:vaccination-module-cache}")
+  private String clustername;
+  @Value("${epdbackend.cache.ttlInSeconds:300}")
+  private int cacheTTLInSeconds;
 
   public void clear() {
+    log.debug("Clearing both patient identifier and document cache.");
     hazelcast.getMap(PATIENT_IDENTIFIER_CACHE_NAME).clear();
     hazelcast.getMap(DOCUMENT_CACHE_NAME).clear();
   }
 
-  public boolean dataCacheMiss(PatientIdentifier patientIdentifier) {
-    PatientIdentifierKey key = new PatientIdentifierKey(patientIdentifier);
-    Map<PatientIdentifierKey, List<String>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
-    boolean miss = !map.containsKey(key);
-    log.debug("dataCacheMiss {} {}", key, miss);
+  /**
+   * Clears caches for a single patient. This is necessary as there might be a quick login/logout on
+   * emergency access.
+   *
+   * @param cacheIdentifier {@link CacheIdentifierKey}
+   */
+  public void clear(CacheIdentifierKey cacheIdentifier) {
+    log.debug("Clearing document cache for {}.", cacheIdentifier);
+    Map<CacheIdentifierKey, List<String>> mapDocument = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+    mapDocument.remove(cacheIdentifier);
+  }
+
+  public boolean dataCacheMiss(CacheIdentifierKey cacheIdentifier) {
+    Map<CacheIdentifierKey, List<String>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+    boolean miss = !map.containsKey(cacheIdentifier);
+    if (!miss) {
+      log.debug("Missed cache entry for {}", cacheIdentifier);
+    }
     return miss;
   }
 
-  public List<String> getData(PatientIdentifier patientIdentifier) {
-    PatientIdentifierKey key = new PatientIdentifierKey(patientIdentifier);
-    Map<PatientIdentifierKey, List<String>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
-    List<String> jsons = getData(map, key);
-    log.debug("getJsons {} {}", key, jsons.size());
-    return jsons;
+  public List<EPRDocument> getData(CacheIdentifierKey identifier) {
+    Map<CacheIdentifierKey, List<EPRDocument>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+    List<EPRDocument> documents = getData(map, identifier);
+    log.debug("Load cache data for {}. Found {} entries", identifier, documents.size());
+    return documents;
   }
 
-  /**
-   * Gets a {@link PatientIdentifier} from the cache
-   *
-   * @param communityIdentifier The community
-   * @param oid The assigning community
-   * @param localId the local ID of the Patient
-   * @return the {@link PatientIdentifier}
-   */
-  public PatientIdentifier getPatientIdentifier(String communityIdentifier, String oid, String localId) {
-    PatientIdentifierKey key = new PatientIdentifierKey(communityIdentifier, oid, localId);
-    log.debug("get {}", key);
-    Map<PatientIdentifierKey, PatientIdentifier> map = hazelcast.getMap(PATIENT_IDENTIFIER_CACHE_NAME);
-    PatientIdentifier PatientIdentifier = map.get(key);
-    return PatientIdentifier;
+  public PatientIdentifier getPatientIdentifier(String localAssigningAuthorityId, String localId) {
+    CacheIdentifierKey key = new CacheIdentifierKey(localAssigningAuthorityId, localId, null);
+    log.debug("Load cache data for {}", key);
+    Map<CacheIdentifierKey, PatientIdentifier> map = hazelcast.getMap(PATIENT_IDENTIFIER_CACHE_NAME);
+    return map.get(key);
   }
 
-  public void putData(PatientIdentifier patientIdentifier, String json) {
-    PatientIdentifierKey key = new PatientIdentifierKey(patientIdentifier);
-
-    Map<PatientIdentifierKey, List<String>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
-    List<String> jsons = getData(map, key);
-    jsons.add(json);
-    log.debug("putJson {} {}", key, jsons.size());
-    map.put(key, jsons);
+  public boolean isEnabled() {
+    return isCacheEnabled;
   }
 
-  /**
-   * Puts the {@link PatientIdentifier} into the cache
-   *
-   * @param patientIdentifier The {@link PatientIdentifier}
-   */
+  public void putData(CacheIdentifierKey cacheIdentifier, EPRDocument document) {
+    Map<CacheIdentifierKey, List<EPRDocument>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+    List<EPRDocument> eprDocuments = getData(map, cacheIdentifier);
+    if (document.getJsonOrXmlFhirContent() != null) {
+      eprDocuments.add(document);
+    }
+    log.debug("Save cache data for {}. Number of entries: {}", cacheIdentifier, eprDocuments.size());
+    map.put(cacheIdentifier, eprDocuments);
+  }
+
   public void putPatientIdentifier(PatientIdentifier patientIdentifier) {
-    Map<PatientIdentifierKey, PatientIdentifier> map = hazelcast.getMap(PATIENT_IDENTIFIER_CACHE_NAME);
-    PatientIdentifierKey key = new PatientIdentifierKey(patientIdentifier);
-    log.debug("put {}", key);
+    Map<CacheIdentifierKey, PatientIdentifier> map = hazelcast.getMap(PATIENT_IDENTIFIER_CACHE_NAME);
+    CacheIdentifierKey key = new CacheIdentifierKey(patientIdentifier, null);
+    log.debug("Store patient information in cache {}", key);
     map.put(key, patientIdentifier);
   }
 
-  private List<String> getData(Map<PatientIdentifierKey, List<String>> map, PatientIdentifierKey key) {
-    List<String> jsons = map.get(key);
-    if (jsons == null) {
-      jsons = new ArrayList<>();
+  private List<EPRDocument> getData(Map<CacheIdentifierKey, List<EPRDocument>> map,
+      CacheIdentifierKey key) {
+    List<EPRDocument> eprDocuments = map.get(key);
+    if (eprDocuments == null) {
+      eprDocuments = new ArrayList<>();
     }
-    return jsons;
+    return eprDocuments;
   }
 
   @PostConstruct
   private void init() {
+    log.info("Cache enabled: " + (isCacheEnabled));
     Config config = new Config();
-    config.setClusterName(cacheConfig.getClusterName());
+    config.setClusterName(clustername);
     MapConfig patientMapConfig = config.getMapConfig(PATIENT_IDENTIFIER_CACHE_NAME);
     patientMapConfig
         .setBackupCount(0)
-        .setTimeToLiveSeconds(cacheConfig.getTimeToLiveSeconds());
+        .setTimeToLiveSeconds(isCacheEnabled ? cacheTTLInSeconds : 1);
     MapConfig documentMapConfig = config.getMapConfig(DOCUMENT_CACHE_NAME);
     documentMapConfig
         .setBackupCount(0)
-        .setTimeToLiveSeconds(cacheConfig.getTimeToLiveSeconds());
-    hazelcast = Hazelcast.newHazelcastInstance(config);;
+        .setTimeToLiveSeconds(isCacheEnabled ? cacheTTLInSeconds : 1);
+    hazelcast = Hazelcast.newHazelcastInstance(config);
   }
 }

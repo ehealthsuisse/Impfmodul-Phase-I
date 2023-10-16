@@ -4,6 +4,14 @@
   color: var(--text-color-base) !important;
 }
 
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background,
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: var(--accent-color);
+
+  &:focus {
+    background-color: var(--accent-color);
+  }
+}
 // accent color
 .mat-flat-button.mat-accent,
 .mat-raised-button.mat-accent,
@@ -24,6 +32,28 @@
 .mat-icon-button.mat-warn,
 .mat-stroked-button.mat-warn {
   background: var(--alert-color);
+  color: white;
+}
+
+// mat-label color
+mat-label {
+  font-size: calc(var(--font-size-base)) !important;
+  line-height: calc(var(--font-size-base) * 1.5) !important;
+  color: var(--text-color-secondary) !important;
+}
+.mat-form-field-label:not(.mat-form-field-empty) {
+  font-size: calc(var(--font-size-base)) !important;
+  line-height: calc(var(--font-size-base) * 0.9 * 1.5) !important;
+  color: var(--text-color-secondary) !important;
+  font-weight: 400 !important;
+}
+
+// recorder outer label
+.recorder {
+  mat-label {
+    font-size: calc(var(--font-size-base) * 0.9) !important;
+    line-height: calc(var(--font-size-base) * 0.9 * 1.5) !important;
+  }
 }
 
 .mat-action-button {
@@ -53,6 +83,15 @@
     background: #c5c5c5;
   }
 }
+
+.mat-cell {
+  font-size: var(--font-size-base) !important;
+}
+.mat-header-cell {
+  font-size: calc(var(--font-size-base)) !important;
+  font-weight: bold !important;
+}
+
 @include media-breakpoint(xs) {
   .cdk-global-overlay-wrapper {
     padding-top: 50px;

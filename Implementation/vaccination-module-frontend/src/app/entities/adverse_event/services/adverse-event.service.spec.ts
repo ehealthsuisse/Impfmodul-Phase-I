@@ -52,6 +52,7 @@ describe('Vaccination Service', () => {
       category: { code: 'AAAAA', name: 'AAAAA' },
       updated: false,
       validated: true,
+      content: ['AAAAA'],
     };
   });
   // FIXME: This test is failing because there is No records array  to get data from

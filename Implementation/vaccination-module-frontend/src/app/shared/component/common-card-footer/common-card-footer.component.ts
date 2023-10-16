@@ -16,7 +16,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DialogService } from '../../services';
 import { IBaseDTO } from '../../interfaces';
 import { MaterialModule } from '../../material.module';
@@ -25,6 +25,7 @@ import { TranslateDirective } from '../../language';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
+import { SessionInfoService } from '../../../core/security/session-info.service';
 
 /**
  * Used to structure all buttons in the details and edit components.
@@ -37,7 +38,7 @@ import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sen
   styleUrls: ['./common-card-footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSensorComponent implements OnDestroy {
+export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSensorComponent implements OnInit, OnDestroy {
   @Output() edit: EventEmitter<T> = new EventEmitter<T>();
   @Output() delete: EventEmitter<T> = new EventEmitter<T>();
   @Output() help: EventEmitter<Event> = new EventEmitter<Event>();
@@ -57,7 +58,10 @@ export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSen
   @Input() IsNewRecord!: boolean;
   @Input() canEdit: boolean = true;
 
+  isEmergencyMode: boolean = false;
+
   dialog = inject(DialogService);
+  private sessionInfoService = inject(SessionInfoService);
 
   navigateToEdit = (value: T): void => this.edit.emit(value);
   saveRecord = (event: Event): void => this.save.emit(event);
@@ -75,5 +79,9 @@ export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSen
 
   ngOnDestroy(): void {
     this.help.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
   }
 }

@@ -16,13 +16,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { DATE_FORMAT, DialogService, IValueDTO } from '../../../shared';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { downloadRecordValue, openSnackBar } from '../../../shared/function';
 import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination, IVaccinationRecord } from '../../../model';
-import { VaccinationRecordService } from '../../vaccintion-record/service/vaccination-record.service';
+import { filterPatientRecordData, VaccinationRecordService } from '../../vaccintion-record/service/vaccination-record.service';
 import { SpinnerService } from '../../../shared/services/spinner.service';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
@@ -37,12 +37,17 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
   styleUrls: ['./patient-action.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PatientActionComponent extends BreakPointSensorComponent {
+export class PatientActionComponent extends BreakPointSensorComponent implements OnInit {
   vaccinationRecordService: VaccinationRecordService = inject(VaccinationRecordService);
   spinnerService: SpinnerService = inject(SpinnerService);
   translationService: TranslateService = inject(TranslateService);
   dialog: DialogService = inject(DialogService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  isEmergencyMode: boolean = false;
+
+  ngOnInit(): void {
+    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
+  }
 
   download = (): Subscription => {
     return this.vaccinationRecordService.queryOneRecord().subscribe({
@@ -60,6 +65,7 @@ export class PatientActionComponent extends BreakPointSensorComponent {
     this.spinnerService.show();
     this.vaccinationRecordService.queryOneRecord().subscribe({
       next: record => {
+        filterPatientRecordData(record);
         this.translateIllnesses(record.pastIllnesses);
         this.translateAllergies(record.allergies);
         this.translateMedicalProblem(record.medicalProblems);

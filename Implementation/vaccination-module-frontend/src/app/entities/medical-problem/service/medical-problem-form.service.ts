@@ -22,9 +22,10 @@ import dayjs, { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { IMedicalProblem } from 'src/app/model/medical-problem.interface';
+import { SessionInfoService } from '../../../core/security/session-info.service';
+import { dateValidator } from '../../../core/validators/date-order-validator';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { SessionInfoService } from '../../../core/security/session-info.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -64,7 +65,6 @@ export type ProblemFormGroup = FormGroup<ProblemFormGroupContent>;
 @Injectable({ providedIn: 'root' })
 export class MedicalProblemFormService {
   sessionInfo: SessionInfoService = inject(SessionInfoService);
-
   getFormDefaults(): ProblemFormDefaults {
     return {
       id: null,
@@ -76,7 +76,11 @@ export class MedicalProblemFormService {
       ...problem,
     };
 
+    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
     const authorInfo = this.sessionInfo.author.getValue();
+    const firstName = isHCP ? authorInfo.firstName : '';
+    const lastName = isHCP ? authorInfo.lastName : '';
+    const prefix = isHCP ? authorInfo.prefix : '';
     return new FormGroup<ProblemFormGroupContent>({
       id: new FormControl(
         { value: medicalProblemRawValue.id, disabled: true },
@@ -87,15 +91,15 @@ export class MedicalProblemFormService {
       ),
 
       recordedDate: new FormControl(new Date(), Validators.required),
-      begin: new FormControl(new Date(), Validators.required),
-      end: new FormControl(medicalProblemRawValue.end),
+      begin: new FormControl(new Date(), [Validators.required]),
+      end: new FormControl(null, [dateValidator()]),
       code: new FormControl(null, Validators.required),
       verificationStatus: new FormControl(),
       clinicalStatus: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(authorInfo.firstName),
-        lastName: new FormControl(authorInfo.lastName),
-        prefix: new FormControl(authorInfo.prefix),
+        firstName: new FormControl(firstName),
+        lastName: new FormControl(lastName),
+        prefix: new FormControl(prefix),
       }),
       organization: new FormControl(),
       comments: new FormControl([]),
@@ -113,7 +117,7 @@ export class MedicalProblemFormService {
       ...formValue,
       recordedDate: dateWithTimezone(formValue.recordedDate),
       begin: dateWithTimezone(formValue.begin),
-      end: dateWithTimezone(formValue.end),
+      end: formValue.end !== null ? dateWithTimezone(formValue.end) : null,
     };
   }
 

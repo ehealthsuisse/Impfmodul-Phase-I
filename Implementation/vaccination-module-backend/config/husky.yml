@@ -2,7 +2,7 @@ epdbackend:
   # Logging of soap messages, for testing purpose only, put to false on prod machines.
   activateSoapLogging: false
   soapLoggingPath: ${vaccination_config:config}/log/
-  
+
   sender:
     applicationOid: "1.2.3.4"
     facilityOid: 
@@ -12,7 +12,6 @@ epdbackend:
     - identifier: EPDBackend
       globalAssigningAuthorityOid: "1.2.3.4.5.6.7.8.9"
       spidEprOid: "1.2.3.4.5.6.7.8.9"
-      spidEprNamespace: ""
       repositories:
         # PDQ: Query the master patient ID and EPR-SPID for patients
         - identifier: PDQ
@@ -22,14 +21,28 @@ epdbackend:
             facilityOid: "1.2.3.4.5.6.7.8.9"
 
         # Registry Stored Query: Get and display document metadata
-        - identifier: RegistryStoredQuery
+        - identifier: InternalRegistryStoredQuery
           uri: https://configure.me/RegistryStoredQuery
           receiver:
             applicationOid: "1.2.3.4.5.6.7.8.9"
             facilityOid: "1.2.3.4.5.6.7.8.9"
 
-        # Retrieve Document Set: Get and display document contents
-        - identifier: RetrieveDocumentSet
+        # Retrieve Document Set: Get and display document contents - own community
+        - identifier: InternalRetrieveDocumentSet
+          uri: https://configure.me/RetrieveDocumentSet
+          receiver:
+            applicationOid: "1.2.3.4.5.6.7.8.9"
+            facilityOid: "1.2.3.4.5.6.7.8.9"
+
+        # Registry Stored Query: Get and display document metadata - cross community
+        - identifier: ExternalRegistryStoredQuery
+          uri: https://configure.me/RegistryStoredQuery
+          receiver:
+            applicationOid: "1.2.3.4.5.6.7.8.9"
+            facilityOid: "1.2.3.4.5.6.7.8.9"
+
+        # Retrieve Document Set: Get and display document contents - cross community
+        - identifier: ExternalRetrieveDocumentSet
           uri: https://configure.me/RetrieveDocumentSet
           receiver:
             applicationOid: "1.2.3.4.5.6.7.8.9"
@@ -37,14 +50,14 @@ epdbackend:
 
         # Submit Document Set: Submit a document contents
         - identifier: SubmitDocument
-          uri: https://configure.me/RetrieveDocumentSet
+          uri: https://configure.me/SubmitDocument
           receiver:
             applicationOid: "1.2.3.4.5.6.7.8.9"
             facilityOid: "1.2.3.4.5.6.7.8.9"
-            
-        # XUA / STS: Get X-User Assertion
+
+        # XUA
         - identifier: XUA
-          uri: https://configure.me/XUA
+          uri: http://configure.me/STS/services/SecurityTokenService
           receiver:
             applicationOid: "1.2.3.4.5.6.7.8.9"
             facilityOid: "1.2.3.4.5.6.7.8.9"
@@ -56,7 +69,7 @@ epdbackend:
 # Configuration of the ATNA Logging provided by the husky framework
 ipf:
   atna:
-    audit-enabled: true
+    audit-enabled: false
     audit-repository-host: localhost
     audit-repository-port: 9898
     # For TCP, ATNA needs TLS which is implies that the default 

@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title class="mat-card-title" [vmTranslate]="title"></mat-card-title>
     <mat-card-actions align="start">
-      <button mat-icon-button (click)="add.emit()" type="button" [attr.aria-label]="'buttons.ADD' | translate">
+      <button mat-icon-button (click)="add.emit()" type="button" [attr.aria-label]="'buttons.ADD' | translate" [disabled]="isEmergencyMode">
         <mat-icon [attr.aria-label]="'buttons.ADD' | translate" matTooltip="{{ 'buttons.ADD' | translate }}">add </mat-icon>
       </button>
       <button mat-flat-button (click)="openHelpDialog($event)" type="button" [attr.aria-label]="'buttons.HELP' | translate">
@@ -29,7 +29,14 @@
     </mat-form-field>
 
     <mat-card-actions align="start">
-      <button mat-raised-button (click)="add.emit()" color="accent" type="button" [attr.aria-label]="'buttons.ADD' | translate">
+      <button
+        mat-raised-button
+        (click)="add.emit()"
+        color="accent"
+        type="button"
+        [attr.aria-label]="'buttons.ADD' | translate"
+        [disabled]="isEmergencyMode"
+      >
         <span
           class="button-text"
           [attr.aria-label]="'buttons.ADD' | translate"

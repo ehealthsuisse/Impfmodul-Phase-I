@@ -59,6 +59,7 @@ describe('Vaccination Service', () => {
       organization: 'AAAAAA',
       author: { firstName: 'AAAAAAA', lastName: 'AAAAAAA', prefix: 'AAAAAAA' },
       updated: false,
+      content: ['AAAAA'],
     };
   });
 

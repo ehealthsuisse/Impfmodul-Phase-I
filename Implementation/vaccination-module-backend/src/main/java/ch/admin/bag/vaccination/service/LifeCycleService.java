@@ -20,7 +20,6 @@ package ch.admin.bag.vaccination.service;
 
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
-import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.util.ArrayList;
@@ -78,6 +77,8 @@ public class LifeCycleService {
           }
           previous = previous(map, previous);
         }
+      } else if (entry.isDeleted() && !keepModifiedEntries) {
+        remove(map, entry);
       }
     }
 
@@ -100,45 +101,12 @@ public class LifeCycleService {
 
   protected boolean isPreviousCandidate(BaseDTO candidate, BaseDTO entry) {
     log.trace("isCandidate {} {}", candidate, entry);
-    if (candidate.getId().equals(entry.getId())) {
-      return false;
-    }
+    boolean isSameEntry = candidate.getId().equals(entry.getId());
+    boolean createdAtSameTimeOrLater = candidate.getCreatedAt().compareTo(entry.getCreatedAt()) >= 1;
+    boolean hasNotSameCode = !candidate.getCode().equals(entry.getCode());
+    boolean notSameDayOfEvent = !candidate.getDateOfEvent().equals(entry.getDateOfEvent());
 
-    if (candidate.getCreatedAt().isAfter(entry.getCreatedAt()) ||
-        candidate.getCreatedAt().isEqual(entry.getCreatedAt())) {
-      return false;
-    }
-
-    if (candidate instanceof VaccinationDTO dto1 &&
-        entry instanceof VaccinationDTO dto2) {
-      if (!dto1.getCode().equals(dto2.getCode()) ||
-          !dto1.getOccurrenceDate().equals(dto2.getOccurrenceDate())) {
-        return false;
-      }
-    } else if (candidate instanceof PastIllnessDTO dto1 &&
-        entry instanceof PastIllnessDTO dto2) {
-      if (!dto1.getCode().equals(dto2.getCode()) ||
-          !dto1.getRecordedDate().equals(dto2.getRecordedDate())) {
-        return false;
-      }
-    } else if (candidate instanceof AllergyDTO dto1 &&
-        entry instanceof AllergyDTO dto2) {
-      if (!dto1.getCode().equals(dto2.getCode()) ||
-          !dto1.getOccurrenceDate().equals(dto2.getOccurrenceDate())) {
-        return false;
-      }
-    } else if (candidate instanceof MedicalProblemDTO dto1 &&
-        entry instanceof MedicalProblemDTO dto2) {
-      if (!dto1.getCode().equals(dto2.getCode()) ||
-          !dto1.getRecordedDate().equals(dto2.getRecordedDate())) {
-        return false;
-      }
-    } else {
-      log.warn("{} {} not supported", candidate.getClass().getSimpleName(), entry.getClass().getSimpleName());
-      return false;
-    }
-
-    return true;
+    return !(isSameEntry || createdAtSameTimeOrLater || hasNotSameCode || notSameDayOfEvent);
   }
 
   /**

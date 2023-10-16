@@ -21,11 +21,15 @@ package ch.fhir.epr.adapter.data.dto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class CommentDTO {
   private LocalDateTime date;
-  private HumanNameDTO author;
+  private String author;
   private String text;
 }

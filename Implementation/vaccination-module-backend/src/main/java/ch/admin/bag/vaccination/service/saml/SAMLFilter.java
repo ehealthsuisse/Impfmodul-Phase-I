@@ -19,7 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.fhir.epr.adapter.exception.TechnicalException;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,6 +27,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -53,56 +54,68 @@ public class SAMLFilter extends GenericFilterBean {
       throws IOException, ServletException {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+    log.info("Request url: {}", httpServletRequest.getRequestURL());
 
     checkSAMLAuthenticationState(httpServletRequest);
-    boolean isToBeAuthenticated = isToBeAuthenticated(httpServletRequest);
-    boolean isUserAuthenticated = httpServletRequest.getSession()
-        .getAttribute(SAMLService.AUTHENTICATED_SESSION_ATTRIBUTE) != null;
 
-    if (isToBeAuthenticated && isUserAuthenticated) {
+    HttpSession httpSession = httpServletRequest.getSession(false);
+    boolean isToBeAuthenticated = isToBeAuthenticated(httpServletRequest);
+    boolean isLoginCall = httpServletRequest.getRequestURL().toString().contains("/saml/login");
+    boolean isUserAuthenticated = HttpSessionUtils.getIsAuthenticatedFromSession();
+
+    if (!isLoginCall && isToBeAuthenticated && isUserAuthenticated) {
       SecurityContext authenticatedSecurityContext =
-          (SecurityContext) httpServletRequest.getSession()
-              .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+          (SecurityContext) httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
 
       if (authenticatedSecurityContext == null) {
-        throw new TechnicalException(
-            "An authenticated user must include a spring security context.");
+        log.error("An authenticated user must include a spring security context, please check session {}.");
+        forwardToIdp(httpServletRequest, httpServletResponse);
+        return;
       }
 
-      samlService.validateSecurityContext(httpServletRequest.getSession(),
-          authenticatedSecurityContext);
+      if (!samlService.checkAndUpdateSessionInformation(httpSession)) {
+        log.info("User was logged out while his current http session was still active, relogin is initialized.");
+        forwardToIdp(httpServletRequest, httpServletResponse);
+        return;
+      }
     } else if (isToBeAuthenticated) {
-      String idpIdentifier = httpServletRequest.getHeader("idp");
-      if (idpIdentifier != null) {
-        log.info("User needs to be authenticated. Forwarding to IDP {}.", idpIdentifier);
-        redirectUserForAuthentication(idpIdentifier, httpServletResponse);
-      }
-
-      return; // stop security processing
+      forwardToIdp(httpServletRequest, httpServletResponse);
+      return;
     }
 
     chain.doFilter(request, response);
   }
 
+  // development purpose only - needs adaption to local security to be used
   private void checkSAMLAuthenticationState(HttpServletRequest request) {
-    if (!profileConfig.isSamlAuthenticationActive()) {
+    boolean isAlreadyAuthenticated = HttpSessionUtils.getIsAuthenticatedFromSession();
+    if (!isAlreadyAuthenticated && !profileConfig.isSamlAuthenticationActive()) {
       samlService.createDummyAuthentication(request);
+    }
+  }
+
+  private void forwardToIdp(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    String idpIdentifier = HttpSessionUtils.getIdpFromSession();
+    boolean validInitialCall = HttpSessionUtils.getIsInitialCallValidFromSession();
+    if (validInitialCall && idpIdentifier != null) {
+      log.info("User needs to be authenticated. Forwarding to IDP {}.", idpIdentifier);
+      samlService.redirectToIdp(idpIdentifier, httpServletResponse);
+    } else if (!validInitialCall) {
+      log.info("User did not have valid initial webcall, forward to IDP refused.");
     }
   }
 
   private boolean isToBeAuthenticated(HttpServletRequest httpServletRequest) {
     String uri = httpServletRequest.getRequestURI();
 
-    return !(uri.startsWith("/swagger")
-        || uri.startsWith("/v3/api-docs")
-        || uri.startsWith("/actuator")
-        || uri.startsWith("/signature")
-        || uri.startsWith("/saml/"));
-  }
-
-  private void redirectUserForAuthentication(String idpIdentifier,
-      HttpServletResponse httpServletResponse) {
-    samlService.redirectToIdp(idpIdentifier, httpServletResponse);
+    return !(uri.contains("/swagger")
+        || uri.contains("/v3/api-docs")
+        || uri.contains("/actuator")
+        || uri.contains("/signature")
+        || uri.contains("/saml/sso")
+        || uri.contains("/saml/isAuthenticated")
+        || uri.contains("/saml/logout")
+        || uri.contains("/utility"));
   }
 
 }

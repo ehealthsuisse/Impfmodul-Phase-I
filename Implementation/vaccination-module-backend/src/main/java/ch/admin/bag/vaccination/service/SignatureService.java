@@ -40,6 +40,7 @@ import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.x509.BasicX509Credential;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
 
 /***
@@ -48,15 +49,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class SignatureService {
-  private static final int ALLOWED_TIME_DERIVATION_MILLIS = 2000;
   private static final String SIGNATURE_URL_PARAMETER = "&sig=";
   private static final String HMAC_ALGORITM = "HmacSHA256";
 
   @Value("${portal.hmacpresharedkey}")
   private String portalPresharedKey;
 
+  @Value("${portal.encodeSignatureBase64}")
+  private boolean encodeSignatureBase64;
+
   @Value("${portal.activateTimestampCheck:false}")
   private boolean portalTimestampCheck;
+
+  @Value("${portal.timestampAllowedDerivationMillis:2000}")
+  private long portalTimestampDerivation;
+
+  @Value("${portal.useTimestampInSeconds:false}")
+  private boolean isPortalTimestampInSeconds;
 
   @Value("${sp.keystore.keystore-type}")
   private String serviceProviderKeystoreType;
@@ -98,16 +107,18 @@ public class SignatureService {
 
   // Hook method - overwrite only for testing purpose
   protected long getCurrentTimestamp() {
-    return Instant.now().toEpochMilli();
+    return Instant.now().toEpochMilli() / (isPortalTimestampInSeconds ? 1000 : 1);
   }
 
-  private byte[] calculateHMac(String key, String data) throws GeneralSecurityException {
+  private String calculateHMac(String key, String data) throws GeneralSecurityException {
     Mac hmac = Mac.getInstance(HMAC_ALGORITM);
     SecretKeySpec secretKey =
         new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITM);
     hmac.init(secretKey);
+    byte[] hmacByte = hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
 
-    return hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+    return encodeSignatureBase64 ? Base64.getEncoder().encodeToString(hmacByte)
+        : new String(Hex.encode(hmac.doFinal(data.getBytes(StandardCharsets.UTF_8))));
   }
 
   private Credential getSamlCredential(String alias, boolean isPrivateKey) {
@@ -176,10 +187,9 @@ public class SignatureService {
     if (containsSignature) {
       String queryString =
           fullQueryString.substring(0, fullQueryString.indexOf(SIGNATURE_URL_PARAMETER));
-      String base64Signature = fullQueryString.substring(signatureIndex + 5);
-      byte[] decodedSignature = Base64.getDecoder().decode(base64Signature);
+      String signatureString = fullQueryString.substring(signatureIndex + 5);
 
-      return Arrays.equals(decodedSignature, calculateHMac(portalPresharedKey, queryString));
+      return signatureString.equals(calculateHMac(portalPresharedKey, queryString));
     }
 
     return false;
@@ -187,6 +197,7 @@ public class SignatureService {
 
   private boolean validateTimestamp(String fullQueryString) {
     if (!portalTimestampCheck) {
+      log.warn("Timestamp check is deactivated, this is not recommended for productive use!");
       return true;
     }
 
@@ -200,7 +211,10 @@ public class SignatureService {
             fullQueryString.substring(indexTimestamp + 10, indexParameterAfterTimestamp);
         long timestampLong = Long.parseLong(timestamp);
 
-        return Math.abs(currentTimestamp - timestampLong) < ALLOWED_TIME_DERIVATION_MILLIS;
+        long derivation = Math.abs(currentTimestamp - timestampLong) * (isPortalTimestampInSeconds ? 1000 : 1);
+        log.debug("Timestamp derivation check: {} ms derivation, allowed: {}", derivation,
+            portalTimestampDerivation);
+        return derivation <= portalTimestampDerivation;
       }
     }
 

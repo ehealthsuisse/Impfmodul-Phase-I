@@ -1,4 +1,3 @@
-import { SharedDataService } from './../../shared/services/shared-data.service';
 /**
  * Copyright (c) 2023 eHealth Suisse
  *
@@ -21,7 +20,7 @@ import { SharedDataService } from './../../shared/services/shared-data.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IPortalParameter } from '../../model/portal-parameter';
-import { IHumanDTO } from '../../shared';
+import { IHumanDTO, SharedDataService } from '../../shared';
 import { CryptoJsService } from './crypto-js.service';
 
 /**
@@ -34,8 +33,14 @@ export class SessionInfoService {
   private _queryParams: IPortalParameter = {} as IPortalParameter;
   private _author: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
 
+  private _isEmergency: boolean = false;
+
   get queryParams(): IPortalParameter {
     return this._queryParams;
+  }
+
+  set queryParams(value: IPortalParameter) {
+    this._queryParams = value;
   }
 
   get author(): BehaviorSubject<IHumanDTO> {
@@ -52,28 +57,57 @@ export class SessionInfoService {
     return this.queryParams.role === 'HCP' || this.queryParams.role === 'ASS';
   }
 
+  get isEmergency(): boolean {
+    return this._isEmergency;
+  }
+
+  set isEmergency(value: boolean) {
+    this._isEmergency = value;
+  }
+
+  isEmergencyMode(): boolean {
+    this.isEmergency = this.queryParams.purpose?.toUpperCase() === 'EMER';
+    return this.isEmergency;
+  }
+
   initializeSessionInfo(): Promise<void> {
     return new Promise(resolve => {
       this.cryptoService.decryptPortalData();
       if (this.cryptoService.encryptedData) {
         const params = JSON.parse(this.cryptoService.encryptedData);
         for (const [key, value] of new URLSearchParams(params)) {
-          this.queryParams[key as keyof IPortalParameter] = decodeURIComponent(value) as string;
+          // Check if the parameter is optional and not set by the portal
+          if (!this.isOptionalParameter(key) || value) {
+            this.queryParams[key as keyof IPortalParameter] = decodeURIComponent(value) as string;
+          }
         }
       }
       this.author.subscribe({
         next: e => {
-          e.lastName = this.queryParams.ufname ?? 'Müller';
-          e.firstName = this.queryParams.ugname ?? 'Peter';
-          e.prefix = this.queryParams.utitle ?? 'Dr.';
-          e.role = this.queryParams.role ?? 'HCP';
-          e.lang = this.queryParams.lang ?? 'DE_de';
-          e.purpose = this.queryParams.purpose ?? 'NORM';
-          e.idp = this.queryParams.idp ?? 'testIDP';
+          this.queryParams.ufname = this.queryParams.ufname ?? 'Müller';
+          this.queryParams.ugname = this.queryParams.ugname ?? 'Peter';
+          this.queryParams.utitle = this.queryParams.utitle ?? '';
+          this.queryParams.role = this.queryParams.role ?? 'HCP';
+          this.queryParams.lang = this.queryParams.lang ?? 'DE_de';
+          this.queryParams.purpose = this.queryParams.purpose ?? 'NORM';
+          this.queryParams.idp = this.queryParams.idp ?? 'testIDP';
+
+          e.lastName = this.queryParams.ufname;
+          e.firstName = this.queryParams.ugname;
+          e.prefix = this.queryParams.utitle;
+          e.role = this.queryParams.role;
+          e.lang = this.queryParams.lang;
+          e.purpose = this.queryParams.purpose;
+          e.idp = this.queryParams.idp;
           this.sharedDataService.storedData['role'] = e.role;
         },
       });
       resolve();
     });
+  }
+
+  isOptionalParameter(parameter: string): boolean {
+    const optionalParameters: string[] = ['ugln', 'principalid', 'utitle', 'principalname'];
+    return optionalParameters.includes(parameter);
   }
 }

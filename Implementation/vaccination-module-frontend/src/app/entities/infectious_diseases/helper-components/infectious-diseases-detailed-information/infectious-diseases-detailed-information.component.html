@@ -81,7 +81,7 @@
       [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
     >
       <div class="comment-header">
-        <mat-card-subtitle [attr.aria-label]="comment.author | performer">{{ comment.author | performer }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.author">{{ comment.author }}</mat-card-subtitle>
         <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
       </div>
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>

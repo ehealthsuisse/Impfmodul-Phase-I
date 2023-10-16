@@ -52,6 +52,7 @@ export class MedicalProblemListComponent extends BreakPointSensorComponent imple
   @Input() tableWidth: string = '80vw';
 
   ngOnInit(): void {
+    this.displayMenu(false, false);
     initializeActionData('', this.sharedDataService);
     this.problemData$.subscribe(([v]) => {
       this.problems = new MatTableDataSource<IMedicalProblem>(this.mapper.problemTranslateMapper(v));

@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.service;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import org.hl7.fhir.r4.model.Bundle;
 import org.projecthusky.xua.saml2.Assertion;
@@ -69,12 +70,14 @@ public class VaccinationRecordService {
   public String create(String communityIdentifier, String oid, String localId, VaccinationRecordDTO record,
       Assertion assertion) {
     PatientIdentifier patientIdentifier = huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId);
+    AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
+    record.setAuthor(author);
 
     Bundle bundle = fhirAdapter.create(patientIdentifier, record);
     String jsonToWrite = fhirAdapter.convertBundleToJson(bundle);
 
-    huskyAdapter.writeDocument(patientIdentifier, bundle.getIdentifier().getValue(), jsonToWrite, record.getAuthor(),
-        record.getConfidentiality(), assertion);
+    huskyAdapter.writeDocument(patientIdentifier, bundle.getIdentifier().getValue(), jsonToWrite, record, assertion,
+        true);
 
     return jsonToWrite;
   }

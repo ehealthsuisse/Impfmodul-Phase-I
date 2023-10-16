@@ -78,18 +78,17 @@ class VaccinationConfigTest {
         communitiesConfig.getCommunities().get(0).getRepositoryConfig(EPDCommunity.DUMMY.name()))
             .isNull();
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
-        .getRepositoryConfig(EPDRepository.PIX.name()).getIdentifier())
-            .isEqualTo(EPDRepository.PIX.name());
+        .getRepositoryConfig(EPDRepository.PDQ.name()).getIdentifier())
+            .isEqualTo(EPDRepository.PDQ.name());
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
-        .getRepositoryConfig(EPDRepository.PIX.name()).getUri())
-            .isEqualTo(
-                "https://ehealthsuisse.ihe-europe.net/PAMSimulator-ejb/PIXManager_Service/PIXManager_PortType");
+        .getRepositoryConfig(EPDRepository.PDQ.name()).getUri()).isEqualTo(
+            "https://ehealthsuisse.ihe-europe.net/PAMSimulator-ejb/PDQSupplier_Service/PDQSupplier_PortType");
 
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
-        .getRepositoryConfig(EPDRepository.PIX.name()).getReceiver()
-        .getApplicationOid()).isEqualTo("1.3.6.1.4.1.12559.11.20.1.10");
+        .getRepositoryConfig(EPDRepository.PDQ.name()).getReceiver()
+        .getApplicationOid()).isEqualTo("2.16.840.1.113883.3.72.6.5.100.1399");
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
-        .getRepositoryConfig(EPDRepository.PIX.name()).getReceiver()
+        .getRepositoryConfig(EPDRepository.PDQ.name()).getReceiver()
         .getFacilityOid()).isEmpty();
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
         .getSpidEprOid()).isEqualTo("2.16.756.5.30.1.127.3.10.3");
@@ -109,6 +108,6 @@ class VaccinationConfigTest {
     XuaConfig xuaConfig = communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
         .getRepositoryConfig(EPDRepository.XUA.name()).getXua();
     assertThat(xuaConfig).isNotNull();
-    assertThat(xuaConfig.getClientKeyStoreType()).isEqualTo("jks");
+    assertThat(xuaConfig.getClientKeyStoreType()).isEqualTo("PKCS12");
   }
 }

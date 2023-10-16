@@ -20,13 +20,18 @@ package ch.admin.bag.vaccination.service.cache;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import ch.admin.bag.vaccination.data.request.EPRDocument;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import java.time.LocalDate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  *
@@ -35,78 +40,121 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-public class CacheTest {
+class CacheTest {
   @Autowired
   private Cache cache;
 
   @Test
-  public void clear_anyData_mapIsCleared() throws Exception {
+  void clear_anyData_mapIsCleared() throws Exception {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
+    CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(patientIdentifier, null);
     cache.putPatientIdentifier(patientIdentifier);
-    cache.putData(patientIdentifier, "test");
+    cache.putData(cacheIdentifier, new EPRDocument(false, "test", null));
     cache.clear();
 
-    assertThat(cache.getData(patientIdentifier)).isEmpty();
-    assertNull(cache.getPatientIdentifier("communityIdentifier", "localId", "oid"));
+    assertThat(cache.getData(cacheIdentifier)).isEmpty();
+    assertNull(cache.getPatientIdentifier("localId", "oid"));
   }
 
   @Test
-  public void test_getAfterTTL() throws Exception {
+  void ignoreCache_anyCachedData_isGoneAfter1Second() throws InterruptedException {
+    setEnableCacheAndReinit(true);
+
+    PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
+    patientIdentifier.setSpidRootAuthority("SRA");
+
+    cache.putPatientIdentifier(patientIdentifier);
+    assertThat(cache.getPatientIdentifier("oid", "localId")).isNotNull();
+
+    Thread.sleep(2000); // > 1s TTL
+
+    patientIdentifier = cache.getPatientIdentifier("oid", "localId");
+    assertThat(patientIdentifier).isNull();
+  }
+
+  @BeforeEach
+  void setUp() {
+    setEnableCacheAndReinit(false);
+  }
+
+  @Test
+  void test_CacheIdentifierKey() {
+    CacheIdentifierKey key1 =
+        new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
+    assertThat(key1.getOid()).isEqualTo("oid");
+    assertThat(key1.getLocalId()).isEqualTo("localId");
+    CacheIdentifierKey key2 =
+        new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
+    assertThat(key1.equals(key2)).isTrue();
+    assertThat(key1.hashCode()).isEqualTo(key2.hashCode());
+
+    // localId effects key
+    key2.setLocalId("_localId");
+    assertThat(key1.equals(key2)).isFalse();
+    assertThat(key1.hashCode()).isNotEqualTo(key2.hashCode());
+    key2.setLocalId("localId");
+
+    // gln effects key
+    key2.setGln(null);
+    assertThat(key1.equals(key2)).isFalse();
+    assertThat(key1.hashCode()).isNotEqualTo(key2.hashCode());
+    key2.setGln("123");
+
+    // community does NOT effect key
+    CacheIdentifierKey key3 =
+        new CacheIdentifierKey(new PatientIdentifier("UNKNOWNCOMM", "localId", "oid"),
+            new AuthorDTO(null, null, "123"));
+    assertThat(key1.equals(key3)).isTrue();
+    assertThat(key1.hashCode()).isEqualTo(key3.hashCode());
+  }
+
+  @Test
+  void test_getAfterTTL() throws Exception {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);
-    assertThat(cache.getPatientIdentifier("communityIdentifier", "oid", "localId")).isNotNull();
+    assertThat(cache.getPatientIdentifier("oid", "localId")).isNotNull();
     Thread.sleep(2100); // > 2s TTL
-    patientIdentifier = cache.getPatientIdentifier("communityIdentifier", "oid", "localId");
+    patientIdentifier = cache.getPatientIdentifier("oid", "localId");
     assertThat(patientIdentifier).isNull();
   }
 
   @Test
-  public void test_getBeforeTTL() throws Exception {
+  void test_getBeforeTTL() throws Exception {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);
 
-    patientIdentifier = cache.getPatientIdentifier("communityIdentifier", "oid", "localId");
+    patientIdentifier = cache.getPatientIdentifier("oid", "localId");
     assertThat(patientIdentifier.getSpidRootAuthority()).isEqualTo("SRA");
   }
 
   @Test
-  public void test_getJsonsAfterTTL() throws Exception {
-    cache.putData(new PatientIdentifier("communityIdentifier", "localId", "oid"), "json3");
+  void test_getJsonsAfterTTL() throws Exception {
+    CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
+        new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json3", null));
     Thread.sleep(2100); // > 2s TTL
-    assertThat(cache.getData(new PatientIdentifier("communityIdentifier", "localId", "oid")).size()).isEqualTo(0);
-    assertThat(cache.dataCacheMiss(new PatientIdentifier("communityIdentifier", "localId", "oid"))).isTrue();
+    assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(0);
+    assertThat(cache.dataCacheMiss(cacheIdentifier)).isTrue();
   }
 
   @Test
-  public void test_getJsonsBeforeTTL() throws Exception {
-    assertThat(cache.getData(new PatientIdentifier("communityIdentifier", "localId", "oid")).size()).isEqualTo(0);
-    assertThat(cache.dataCacheMiss(new PatientIdentifier("communityIdentifier", "localId", "oid"))).isTrue();
-    cache.putData(new PatientIdentifier("communityIdentifier", "localId", "oid"), "json1");
-    assertThat(cache.getData(new PatientIdentifier("communityIdentifier", "localId", "oid")).size()).isEqualTo(1);
-    assertThat(cache.dataCacheMiss(new PatientIdentifier("communityIdentifier", "localId", "oid"))).isFalse();
-    cache.putData(new PatientIdentifier("communityIdentifier", "localId", "oid"), "json2");
-    assertThat(cache.getData(new PatientIdentifier("communityIdentifier", "localId", "oid")).size()).isEqualTo(2);
+  void test_getJsonsBeforeTTL() throws Exception {
+    CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
+        new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
+    assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(0);
+    assertThat(cache.dataCacheMiss(cacheIdentifier)).isTrue();
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json1", null));
+    assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(1);
+    assertThat(cache.dataCacheMiss(cacheIdentifier)).isFalse();
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json2", null));
+    assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(2);
   }
 
   @Test
-  public void test_PatientIdentifierKey() {
-    PatientIdentifierKey key1 = new PatientIdentifierKey(new PatientIdentifier("community", "localId", "oid"));
-    assertThat(key1.getCommunityIdentifier()).isEqualTo("community");
-    assertThat(key1.getOid()).isEqualTo("oid");
-    assertThat(key1.getLocalId()).isEqualTo("localId");
-    PatientIdentifierKey key2 = new PatientIdentifierKey(new PatientIdentifier("community", "localId", "oid"));
-    assertThat(key1.equals(key2)).isTrue();
-    assertThat(key1.hashCode()).isEqualTo(key2.hashCode());
-    key2.setLocalId("_localId");
-    assertThat(key1.equals(key2)).isFalse();
-    assertThat(key1.hashCode()).isNotEqualTo(key2.hashCode());
-  }
-
-  @Test
-  public void test_PatientIdentifier() {
+  void test_PatientIdentifier() {
     HumanNameDTO patient = new HumanNameDTO("firstName", "lastName", "prefix", LocalDate.now(), "gender");
 
     PatientIdentifier pid1 = new PatientIdentifier("community", "localId", "oid");
@@ -135,12 +183,12 @@ public class CacheTest {
   }
 
   @Test
-  public void test_replace() throws Exception {
+  void test_replace() throws Exception {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);
 
-    patientIdentifier = cache.getPatientIdentifier("communityIdentifier", "oid", "localId");
+    patientIdentifier = cache.getPatientIdentifier("oid", "localId");
     assertThat(patientIdentifier.getSpidRootAuthority()).isEqualTo("SRA");
 
 
@@ -148,7 +196,12 @@ public class CacheTest {
     patientIdentifier2.setSpidRootAuthority("SRA2");
     cache.putPatientIdentifier(patientIdentifier2);
 
-    patientIdentifier = cache.getPatientIdentifier("communityIdentifier", "oid", "localId");
+    patientIdentifier = cache.getPatientIdentifier("oid", "localId");
     assertThat(patientIdentifier.getSpidRootAuthority()).isEqualTo("SRA2");
+  }
+
+  private void setEnableCacheAndReinit(boolean isCacheEnabled) {
+    ReflectionTestUtils.setField(cache, "isCacheEnabled", isCacheEnabled);
+    ReflectionTestUtils.invokeMethod(cache, "init");
   }
 }

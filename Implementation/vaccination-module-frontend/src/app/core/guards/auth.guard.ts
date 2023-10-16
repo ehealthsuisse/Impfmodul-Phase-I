@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,18 +16,37 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.admin.bag.vaccination.service.cache;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { SamlService } from '../security/saml.service';
+import { map, Observable, switchMap, take } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
-@Configuration
-@ConfigurationProperties(prefix = "hazelcast")
-@Getter
-@Setter
-public class CacheConfig {
-  private String clusterName;
-  private int timeToLiveSeconds;
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthGuard implements CanActivate {
+  constructor(private samlService: SamlService, private router: Router) {}
+
+  canActivate(): Observable<boolean> {
+    return this.samlService.authStateSubject.pipe(
+      filter(authState => authState === 'not-started'),
+      take(1),
+      switchMap(() => this.samlService.isAuthenticated()),
+      take(1),
+      map(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.router.navigate(['access-denied']);
+          return false;
+          if (isAuthenticated) {
+            this.router.navigate(['vaccination-record']);
+            return true;
+          }
+        }
+
+        return true;
+      })
+    );
+  }
 }

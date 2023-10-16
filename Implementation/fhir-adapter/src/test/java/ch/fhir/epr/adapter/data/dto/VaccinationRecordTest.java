@@ -20,6 +20,9 @@
 package ch.fhir.epr.adapter.data.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
@@ -37,9 +40,9 @@ public class VaccinationRecordTest {
         Arrays.asList(new MedicalProblemDTO())//
     );
 
-    assertEquals(vaccinationRecord.getJson(), null);
-    assertEquals(vaccinationRecord.getId(), null);
-    assertEquals(vaccinationRecord.getRelatedId(), null);
+    assertNull(vaccinationRecord.getJson());
+    assertNull(vaccinationRecord.getId());
+    assertNull(vaccinationRecord.getRelatedId());
 
     assertEquals(vaccinationRecord.getAuthor().getUser().getFirstName(), "firstNameA");
     assertEquals(vaccinationRecord.getAuthor().getUser().getLastName(), "lastNameA");
@@ -62,18 +65,19 @@ public class VaccinationRecordTest {
   @Test
   void testConstructorNoArgsConstructor() {
     VaccinationRecordDTO vaccinationRecord = new VaccinationRecordDTO();
-    assertEquals(vaccinationRecord.getJson(), null);
-    assertEquals(vaccinationRecord.getId(), null);
-    assertEquals(vaccinationRecord.getRelatedId(), null);
-    assertEquals(vaccinationRecord.getAuthor(), null);
-    assertEquals(vaccinationRecord.getPatient(), null);
+    assertNull(vaccinationRecord.getJson());
+    assertNull(vaccinationRecord.getId());
+    assertNull(vaccinationRecord.getRelatedId());
+    assertNull(vaccinationRecord.getAuthor());
+    assertNull(vaccinationRecord.getPatient());
 
-    assertEquals(vaccinationRecord.getAuthor(), null);
+    assertNull(vaccinationRecord.getAuthor());
 
-    assertEquals(vaccinationRecord.getAllergies(), null);
-    assertEquals(vaccinationRecord.getPastIllnesses(), null);
-    assertEquals(vaccinationRecord.getVaccinations(), null);
-    assertEquals(vaccinationRecord.getMedicalProblems(), null);
+    assertNull(vaccinationRecord.getAllergies());
+    assertNull(vaccinationRecord.getPastIllnesses());
+    assertNull(vaccinationRecord.getVaccinations());
+    assertNull(vaccinationRecord.getMedicalProblems());
+    assertThrows(UnsupportedOperationException.class, () -> vaccinationRecord.getDateOfEvent());
   }
 }
 

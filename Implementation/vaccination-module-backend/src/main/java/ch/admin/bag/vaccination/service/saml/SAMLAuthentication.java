@@ -19,6 +19,9 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import com.google.common.base.Objects;
+import lombok.Getter;
+import lombok.Setter;
+import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
@@ -31,14 +34,23 @@ import org.springframework.util.Assert;
  * <p>
  * The {@link Authentication} associates valid SAML assertion data with a Spring Security
  * authentication object The complete assertion is contained in the object in String format,
- * {@link SAMLAuthentication#getSaml2Response()}
+ * {@link SAMLAuthentication#getAssertion()}
  *
  * Adapted class Saml2Authentication from spring dependency: spring-security-saml2-service-provider
  */
 public class SAMLAuthentication extends AbstractAuthenticationToken {
 
-  private final AuthenticatedPrincipal principal;
-  private final String saml2Response;
+  @Getter
+  private String idp;
+  @Getter
+  private String artifact;
+
+  private AuthenticatedPrincipal principal;
+
+  @Setter
+  @Getter
+  private Assertion assertion;
+
 
   /**
    * Construct a {@link SAMLAuthentication} using the provided parameters. An authenticated user has
@@ -47,13 +59,28 @@ public class SAMLAuthentication extends AbstractAuthenticationToken {
    * @param principal the logged in user
    * @param saml2Response the SAML 2.0 response used to authenticate the user
    */
-  public SAMLAuthentication(AuthenticatedPrincipal principal, String saml2Response) {
+  public SAMLAuthentication(AuthenticatedPrincipal principal, String idp, Assertion assertion) {
     super(AuthorityUtils.createAuthorityList("ROLE_USER"));
+    Assert.notNull(idp, "idp cannot be null");
     Assert.notNull(principal, "principal cannot be null");
-    Assert.hasText(saml2Response, "saml2Response cannot be null");
+    Assert.notNull(assertion, "assertion cannot be null");
+    this.idp = idp;
     this.principal = principal;
-    this.saml2Response = saml2Response;
+    this.assertion = assertion;
     setAuthenticated(true);
+  }
+
+  /**
+   * Constructor of an unauthenticated session. Nothing is known apart from the registration id
+   *
+   * @param idp string of the configured idp, must match idp-config
+   * @param artifact saml artifact which is a one-time-token for the saml authentication
+   */
+  public SAMLAuthentication(String idp, String artifact) {
+    super(AuthorityUtils.NO_AUTHORITIES);
+    this.idp = idp;
+    this.artifact = artifact;
+    setAuthenticated(false);
   }
 
   @Override
@@ -61,12 +88,12 @@ public class SAMLAuthentication extends AbstractAuthenticationToken {
     return this == obj
         || (obj instanceof SAMLAuthentication
             && Objects.equal(((SAMLAuthentication) obj).principal, principal)
-            && Objects.equal(((SAMLAuthentication) obj).saml2Response, saml2Response));
+            && Objects.equal(((SAMLAuthentication) obj).assertion, assertion));
   }
 
   @Override
   public Object getCredentials() {
-    return getSaml2Response();
+    return getAssertion();
   }
 
   @Override
@@ -74,17 +101,8 @@ public class SAMLAuthentication extends AbstractAuthenticationToken {
     return this.principal;
   }
 
-  /**
-   * Returns the SAML response object, as decoded XML. May contain encrypted elements
-   *
-   * @return string representation of the SAML Response XML object
-   */
-  public String getSaml2Response() {
-    return this.saml2Response;
-  }
-
   @Override
   public int hashCode() {
-    return Objects.hashCode(principal, saml2Response);
+    return Objects.hashCode(principal, assertion);
   }
 }

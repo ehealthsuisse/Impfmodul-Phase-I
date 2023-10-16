@@ -18,7 +18,7 @@
  */
 package ch.admin.bag.vaccination.service.saml.config;
 
-import ch.fhir.epr.adapter.exception.TechnicalException;
+import ch.admin.bag.vaccination.exception.ValidationException;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +41,7 @@ public class IdpProvider {
     return supportedProvider.stream()
         .filter(config -> config.getIdentifier().equalsIgnoreCase(providerIdentifier))
         .findFirst()
-        .orElseThrow(() -> new TechnicalException("Configuration for provider with identifier: "
+        .orElseThrow(() -> new ValidationException("Configuration for provider with identifier: "
             + providerIdentifier + " not found."));
   }
 }

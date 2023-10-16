@@ -1,10 +1,9 @@
 epdbackend:
   activateSoapLogging: true
   soapLoggingPath: log/
-  
-hazelcast:
-  cluster-name: ImpfmoduleTest
-  time-to-live-seconds: 2
+  cache:
+    ttlInSeconds: 2
+    cluster-name: ImpfmoduleTest
 
 ipf:
   atna:

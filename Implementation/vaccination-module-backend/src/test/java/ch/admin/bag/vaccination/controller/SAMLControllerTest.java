@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -27,10 +28,13 @@ import ch.admin.bag.vaccination.service.saml.IdPAdapter;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
 import ch.admin.bag.vaccination.service.saml.SAMLUtils;
 import ch.admin.bag.vaccination.service.saml.SAMLUtilsTest;
+import ch.admin.bag.vaccination.service.saml.SAMLXmlTestUtils;
 import java.net.URI;
 import java.time.Instant;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -38,6 +42,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -50,13 +55,13 @@ import org.springframework.test.context.ActiveProfiles;
  *
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@ActiveProfiles("prod")
 public class SAMLControllerTest {
-
   private static final String SAML_ART = "1234567890";
 
   @Autowired
   private SAMLService samlService;
+
   @MockBean
   private ProfileConfig profileConfig;
   @MockBean
@@ -68,8 +73,28 @@ public class SAMLControllerTest {
   private TestRestTemplate restTemplate;
 
   @Test
+  void sendEmptySoapSamlLogoutRequest_expectException() {
+    assertThrows(AssertionFailedError.class, () -> performLogout("saml/samlEmptySoapLogoutRequest.xml"));
+  }
+
+  @Test
+  void sendSamlLogoutRequest_expectValidResponse() {
+    performLogout("saml/samlLogoutRequest.xml");
+  }
+
+  @Test
+  void sendSoapSamlLogoutRequest_expectValidResponse() {
+    performLogout("saml/samlSoapLogoutRequest.xml");
+  }
+
+  @BeforeEach
+  void setUp() {
+    when(profileConfig.isSamlAuthenticationActive()).thenReturn(true);
+  }
+
+  @Test
   void ssoArtifactAndLogout() throws Exception {
-    String xml = SAMLUtils.xml("saml/samlArtifactResponse.xml");
+    String xml = SAMLXmlTestUtils.xml("saml/samlArtifactResponse.xml");
     ArtifactResponse artifactResponse = (ArtifactResponse) SAMLUtils.unmarshall(xml);
     artifactResponse.setIssueInstant(Instant.now());
     when(idPAdapter.sendAndReceiveArtifactResolve(any(), any())).thenReturn(artifactResponse);
@@ -77,26 +102,43 @@ public class SAMLControllerTest {
     assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
     sendSamlArtifact(SAML_ART);
     assertThat(samlService.getNumberOfSessions()).isEqualTo(1);
-    sendSamlLogoutRequest();
+    performLogout("saml/samlLogoutRequest.xml");
     assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
-    sendSamlLogoutRequest();
+    performLogout("saml/samlLogoutRequest.xml");
     assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
   }
 
-  private void sendSamlArtifact(String samlArtifact) throws Exception {
-    RequestEntity<Void> entity = new RequestEntity<>(HttpMethod.GET,
-        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT.replace("{idp}", "gazelle") + "?SAMLart="
-            + samlArtifact));
-    ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
+  @Test
+  void ssoLoginPost() throws Exception {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Origin", null);
+    headers.add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
+    headers.add("Content-Type", "application/x-www-form-urlencoded");
+    RequestEntity<String> entity =
+        new RequestEntity<>("RelayState=GAZELLE&SAMLart=samlArtifact", headers, HttpMethod.POST,
+            new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT));
+    ResponseEntity<String> response = restTemplate.exchange(entity, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
   }
 
-  private void sendSamlLogoutRequest() {
-    String xml = SAMLUtils.xml("saml/samlLogoutRequest.xml");
+  private void performLogout(String requestFile) {
+    String xml = SAMLXmlTestUtils.xml(requestFile);
     xml = SAMLUtilsTest.replaceInstantByNow(xml);
     HttpEntity<String> request = new HttpEntity<>(xml);
-    ResponseEntity<Void> response = restTemplate.postForEntity(
-        "http://localhost:" + port + "/saml/logout", request, Void.class);
+    ResponseEntity<String> response = restTemplate.postForEntity(
+        "http://localhost:" + port + "/saml/logout", request, String.class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotNull();
+    response.getBody().toString().contains(
+        "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"");
+  }
+
+  private void sendSamlArtifact(String samlArtifact) throws Exception {
+    RequestEntity<Void> entity = new RequestEntity<>(null, HttpMethod.GET,
+        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT_NEW + "?RelayState=GAZELLE&SAMLart="
+            + samlArtifact));
+    ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 }

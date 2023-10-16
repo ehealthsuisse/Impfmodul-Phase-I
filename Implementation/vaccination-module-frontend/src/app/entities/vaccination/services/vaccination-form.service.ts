@@ -82,7 +82,10 @@ export class VaccinationFormService {
     this.validated = isHCP || this.sessionInfo.queryParams.role === 'ASS';
 
     const authorInfo = this.sessionInfo.author.getValue();
-
+    const firstName = isHCP ? authorInfo.firstName : '';
+    const lastName = isHCP ? authorInfo.lastName : '';
+    const prefix = isHCP ? authorInfo.prefix : '';
+    
     return new FormGroup<VaccinationFormGroupContent>({
       id: new FormControl(
         { value: vaccinationRawValue.id, disabled: true },
@@ -100,9 +103,9 @@ export class VaccinationFormService {
       validated: new FormControl(this.validated),
       vaccineCode: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(authorInfo.firstName),
-        lastName: new FormControl(authorInfo.lastName),
-        prefix: new FormControl(authorInfo.prefix),
+        firstName: new FormControl(firstName),
+        lastName: new FormControl(lastName),
+        prefix: new FormControl(prefix),
       }),
       organization: new FormControl(),
       comments: new FormControl([]),

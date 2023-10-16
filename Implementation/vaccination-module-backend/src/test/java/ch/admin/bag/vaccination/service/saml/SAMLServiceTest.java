@@ -21,20 +21,22 @@ package ch.admin.bag.vaccination.service.saml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.SignatureService;
+import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
-import ch.fhir.epr.adapter.exception.TechnicalException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
+import org.opensaml.saml.saml2.core.Artifact;
+import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.NameID;
@@ -47,11 +49,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
 public class SAMLServiceTest {
+  private static final String IDP_SP = "idpSP";
+  private static final String SP = "sp";
   private static final String PRINCIPAL = "principal";
-  private static final String SAML2_RESPONSE = "SAML2Response";
 
   @Autowired
   private SAMLServiceIfc samlService;
@@ -67,6 +72,54 @@ public class SAMLServiceTest {
   private SignatureService signatureService;
 
   @Test
+  void buildArtifactResolve_explicitProviderEntityIdSet_returnExplicitId() {
+    IdentityProviderConfig config = mock(IdentityProviderConfig.class);
+    when(config.getEntityId()).thenReturn(IDP_SP);
+    Artifact artifact = mock(Artifact.class);
+    ReflectionTestUtils.setField(samlService, "spEntityId", SP);
+
+    ArtifactResolve result = samlService.buildArtifactResolve(config, artifact);
+    assertEquals(IDP_SP, result.getIssuer().getValue());
+  }
+
+  @Test
+  void buildArtifactResolve_noProviderEntityIdSet_returnDefaultEntity() {
+    IdentityProviderConfig config = mock(IdentityProviderConfig.class);
+    Artifact artifact = mock(Artifact.class);
+    ReflectionTestUtils.setField(samlService, "spEntityId", SP);
+
+    ArtifactResolve result = samlService.buildArtifactResolve(config, artifact);
+    assertEquals(SP, result.getIssuer().getValue());
+  }
+
+  @Test
+  void checkAndUpdateSessionInformation_differentSession_sameName_returnTrue() {
+    HttpSession session = createAuthenticatedSession();
+    HttpSession newSession = new MockHttpSession();
+    newSession.setAttribute(HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE, true);
+    newSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+        session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY));
+
+    assertTrue(samlService.checkAndUpdateSessionInformation(session));
+  }
+
+  @Test
+  void checkAndUpdateSessionInformation_loggedOutSession_returnFalse_sessionIsAlreadyInvalidated() {
+    HttpSession session = createAuthenticatedSession();
+    assertTrue(samlService.checkAndUpdateSessionInformation(session));
+
+    samlService.logout(PRINCIPAL);
+    assertFalse(samlService.checkAndUpdateSessionInformation(session));
+  }
+
+  @Test
+  void checkAndUpdateSessionInformation_sameSession_returnTrue() {
+    HttpSession session = createAuthenticatedSession();
+
+    assertTrue(samlService.checkAndUpdateSessionInformation(session));
+  }
+
+  @Test
   void createAuthenticatedSession_validCredentials_securityContextHolderContains() {
     createAuthenticatedSession();
 
@@ -74,8 +127,7 @@ public class SAMLServiceTest {
     assertNotNull(securityContext);
     assertNotNull(securityContext.getAuthentication());
     assertEquals(PRINCIPAL, securityContext.getAuthentication().getName());
-    assertEquals(SAML2_RESPONSE,
-        ((SAMLAuthentication) securityContext.getAuthentication()).getSaml2Response());
+    assertNotNull(((SAMLAuthentication) securityContext.getAuthentication()).getAssertion());
   }
 
   @Test
@@ -89,8 +141,7 @@ public class SAMLServiceTest {
     assertNotNull(securityContext);
     assertNotNull(securityContext.getAuthentication());
     assertEquals("Dummy", securityContext.getAuthentication().getName());
-    assertEquals("Dummy",
-        ((SAMLAuthentication) securityContext.getAuthentication()).getSaml2Response());
+    assertNotNull(((SAMLAuthentication) securityContext.getAuthentication()).getAssertion());
   }
 
   @Test
@@ -108,7 +159,7 @@ public class SAMLServiceTest {
     request1.setSession(new MockHttpSession(null, "session1"));
 
     assertEquals(samlService.getNumberOfSessions(), 0);
-    samlService.createAuthenticatedSession(request1, "saml2Reponse1", createAssertion("name1"));
+    samlService.createAuthenticatedSession("dummyIdp", request1, createAssertion("name1"));
     assertEquals(samlService.getNumberOfSessions(), 1);
 
     LogoutRequest logoutRequest = mock(LogoutRequest.class);
@@ -123,39 +174,6 @@ public class SAMLServiceTest {
   void redirectToIdp_validResponse_noException() {
     HttpServletResponse mock = new MockHttpServletResponse();
     samlService.redirectToIdp(IdpProvider.GAZELLE_IDP_IDENTIFIER, mock);
-  }
-
-  @Test
-  void validateSecurityContext_givenSecurityContextIsKnown_putContextInSecurityContextHolder() {
-    createAuthenticatedSession();
-    SecurityContext knownContext = SecurityContextHolder.getContext();
-
-    // remove context from holder to be able to check that it was set by the function under test
-    SecurityContextHolder.clearContext();
-
-    HttpSession session = mock(HttpSession.class);
-    when(session.getId()).thenReturn("1234");
-
-    samlService.validateSecurityContext(session, knownContext);
-    assertEquals(knownContext, SecurityContextHolder.getContext());
-  }
-
-  @Test
-  void validateSecurityContext_noSecurityContextKnown_throwTechnicalException() {
-    HttpSession session = mock(HttpSession.class);
-    when(session.getId()).thenReturn("1234");
-    SecurityContext context = mock(SecurityContext.class);
-
-    assertThrows(TechnicalException.class,
-        () -> samlService.validateSecurityContext(session, context));
-  }
-
-  @Test
-  void validateSecurityContext_noSecurityContextProvided_throwTechnicalException() {
-    HttpSession session = createAuthenticatedSession();
-
-    assertThrows(TechnicalException.class,
-        () -> samlService.validateSecurityContext(session, null));
   }
 
   private Assertion createAssertion() {
@@ -176,7 +194,7 @@ public class SAMLServiceTest {
     Assertion assertion = createAssertion();
     HttpServletRequest request = createMockRequest("/husky", createMockSession());
 
-    samlService.createAuthenticatedSession(request, SAML2_RESPONSE, assertion);
+    samlService.createAuthenticatedSession("dummyIdp", request, assertion);
 
     return request.getSession();
   }
@@ -186,15 +204,13 @@ public class SAMLServiceTest {
     when(request.getRequestURI()).thenReturn(uri);
     when(request.getRequestURL()).thenReturn(new StringBuffer(uri));
     when(request.getSession()).thenReturn(session);
+    when(request.getSession(true)).thenReturn(session);
+    when(request.getSession(false)).thenReturn(session);
 
     return request;
   }
 
   private HttpSession createMockSession() {
-    HttpSession session = mock(HttpSession.class);
-    when(session.getId()).thenReturn("1234");
-
-    return session;
+    return new MockHttpSession();
   }
-
 }

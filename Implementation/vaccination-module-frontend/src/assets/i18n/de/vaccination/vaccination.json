@@ -13,6 +13,10 @@
     "VALIDATED": "bewertet",
     "VACCINATION_REASON": "Grund der Impfung",
     "LOT_NUMBER": "Lotnummer",
-    "DATE": "Datum der Impfung"
+    "DATE": "Datum der Impfung",
+    "ACTIVE": "Aktiv",
+    "INACTIVE": "Inaktiv",
+    "SEARCH_TARGET_DISEASES": "Impfschutz suchen",
+    "DOSE_NUMBER_FORMAT": "Dosis muss eine Zahl sein"
   }
 }

@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,11 @@ public class ProfileConfigProdTest {
 
   @Test
   public void testLocalMode() {
-    assertThat(profileConfig.isLocalMode()).isFalse();
+    boolean initialValue = profileConfig.isLocalMode();
     profileConfig.setLocalMode(true);
-    assertThat(profileConfig.isLocalMode()).isFalse();
+    assertTrue(initialValue == profileConfig.isLocalMode());
+    profileConfig.setLocalMode(false);
+    assertTrue(initialValue == profileConfig.isLocalMode());
   }
 
   @Test

@@ -1,10 +1,3 @@
-<header [ngClass]="isMobile ? 'mobile-header' : 'header'">
-  <router-outlet name="navbar"></router-outlet>
+<header>
+  <vm-navbar></vm-navbar>
 </header>
-<main [ngClass]="isMobile ? 'mobile-main-content' : 'main-content'">
-  <mat-progress-spinner *ngIf="spinnerService.IsWait" class="vm-progress-spinner" mode="indeterminate"> </mat-progress-spinner>
-  <router-outlet></router-outlet>
-</main>
-<footer>
-  <vm-footer></vm-footer>
-</footer>

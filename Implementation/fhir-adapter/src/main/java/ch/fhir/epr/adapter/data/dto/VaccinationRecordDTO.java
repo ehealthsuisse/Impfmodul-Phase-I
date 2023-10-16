@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,5 +51,10 @@ public class VaccinationRecordDTO extends BaseDTO {
     this.medicalProblems = medicalProblems;
     setValidated(false);
     setJson(null);
+  }
+
+  @Override
+  public LocalDate getDateOfEvent() {
+    throw new UnsupportedOperationException();
   }
 }

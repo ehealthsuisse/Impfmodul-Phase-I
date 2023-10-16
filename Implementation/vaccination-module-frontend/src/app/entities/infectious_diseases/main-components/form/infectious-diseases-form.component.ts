@@ -71,6 +71,7 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
   private matDialog: MatDialog = inject(MatDialog);
 
   ngOnInit(): void {
+    this.displayMenu(false, false);
     let id = this.activatedRoute.snapshot.params['id'];
     this.illnessService.find(id).subscribe(illness => {
       if (illness) {
@@ -101,7 +102,7 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
     if (this.editForm.value.commentMessage) {
       const commentObj = {
         text: this.editForm.value.commentMessage,
-        author: this.sessionInfoService.author.getValue(),
+        author: 'will be added by the system',
       };
       this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
       this.editForm.value.comments!.push(commentObj);
@@ -109,6 +110,7 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
     const illness = { ...this.illness, ...this.illnessesFormService.getInfectiousDiseases(this.editForm) };
     illness.verificationStatus = this.formOptionsService.getOption('conditionVerificationStatus', 'unconfirmed');
     illness.clinicalStatus = this.formOptionsService.getOption('conditionClinicalStatus', 'resolved');
+    illness.illnessCode = illness.code;
     /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.matDialog
       .open(InfectiousDiseasesConfirmComponent, {
@@ -172,11 +174,6 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
   private subscribeToSaveResponse(result: Observable<IInfectiousDiseases>, navigate: boolean, isUpdate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(navigate, isUpdate),
-      error: () => this.onSaveError(),
     });
-  }
-
-  private onSaveError(): void {
-    alert('error');
   }
 }

@@ -28,9 +28,7 @@ export class ReusableDateFieldComponent extends BreakPointSensorComponent {
 
   @Input() translationKey!: string;
   @Input() labelTranslationKey!: string;
-
   @Input() mainValueKey!: string;
-
   @Input() notEditableValue: string = '';
 
   onChange: any = () => {};

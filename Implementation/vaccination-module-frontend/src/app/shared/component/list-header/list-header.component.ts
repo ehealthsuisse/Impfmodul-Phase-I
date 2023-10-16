@@ -16,10 +16,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { DialogService } from '../../services';
 import { SharedLibsModule } from '../../shared-libs.module';
 import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
+import { SessionInfoService } from '../../../core/security/session-info.service';
 
 /**
  * Used for the banner on top of the tables containig the title, searchbar, add- and help-button.
@@ -31,7 +32,7 @@ import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sen
   templateUrl: './list-header.component.html',
   styleUrls: ['./list-header.component.scss'],
 })
-export class ListHeaderComponent<T> extends BreakPointSensorComponent {
+export class ListHeaderComponent<T> extends BreakPointSensorComponent implements OnInit {
   @Input() showPatientName: boolean = false;
   @Input() subtitleVisibility: boolean = true;
 
@@ -46,7 +47,9 @@ export class ListHeaderComponent<T> extends BreakPointSensorComponent {
   @Output() help: EventEmitter<Event> = new EventEmitter<Event>();
   @Input() toggle: boolean = true;
 
-  dialog = inject(DialogService);
+  isEmergencyMode: boolean = false;
+  sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  dialog: DialogService = inject(DialogService);
 
   filterValue = (event: Event): void => {
     this.filter.emit(event);
@@ -55,5 +58,9 @@ export class ListHeaderComponent<T> extends BreakPointSensorComponent {
   openHelpDialog(event: Event): void {
     this.dialog.openDialog(this.helpTitle, this.helpBody);
     this.help.emit(event);
+  }
+
+  ngOnInit(): void {
+    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
   }
 }

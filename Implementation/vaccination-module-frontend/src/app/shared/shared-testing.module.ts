@@ -8,6 +8,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @NgModule({
   imports: [RouterTestingModule, NoopAnimationsModule, TranslateModule.forRoot(), MatDialogModule, HttpClientTestingModule],
-  exports: [NoopAnimationsModule, TranslateModule, MatDialogModule, HttpClientTestingModule, SharedLibsModule],
+  exports: [NoopAnimationsModule, TranslateModule, MatDialogModule, HttpClientTestingModule, SharedLibsModule, RouterTestingModule],
 })
 export class SharedTestingModule {}

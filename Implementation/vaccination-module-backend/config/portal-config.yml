@@ -1,6 +1,12 @@
-# Keystore used for the weblink
+# Configuration used for the weblink
 portal:
   # Shared secret between portal and vaccination modul to verify webcall signature
-  hmacpresharedkey: "portalKey"
-  # Must be set to true to ensure that web calls are not older than 2 seconds
-  activateTimestampCheck: "true"
+  hmacpresharedkey: sharedKey
+  # Must be set to true to ensure that web calls are not older than x seconds
+  activateTimestampCheck: true
+  # Default value 2000 millis 
+  timestampAllowedDerivationMillis: 2000
+  # Use timestamp in seconds (default milliseconds)
+  useTimestampInSeconds: false
+  # Encode signature in Base64 (true) or Hex (false) 
+  encodeSignatureBase64: true

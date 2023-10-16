@@ -12,8 +12,8 @@ mat-table {
   min-width: 80vw;
   vertical-align: middle !important;
   text-align-all: center;
-  font-size: calc($font-size-base * 0.75);
-  line-height: $font-size-base * 0.8;
+  font-size: var(--font-size-base);
+  line-height: calc(var(--font-size-base) * 0.8);
 
   mat-header-cell,
   th {
@@ -44,7 +44,7 @@ mat-table {
     padding-right: 30px;
     @for $i from 1 through 10 {
       &:nth-child(#{ $i }) {
-        line-height: $font-size-base * 1.2;
+        line-height: calc(var(--font-size-base) * 1.2);
         @if ($i == 1) {
           width: 20%;
         }

@@ -1,26 +1,20 @@
 @import 'src/assets/scss/global';
+
 .actions {
+  &.mobile {
+    @include flex-center(center, center, column);
+
+    button {
+      width: 150px !important;
+      margin-bottom: 10px;
+    }
+  }
+
+  &.desktop {
+    @include flex-center(center, center, row);
+  }
+
   & .download-btn {
     display: none;
-  }
-  @include media-breakpoint(tm) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: calc(100% - 120px);
-    position: absolute;
-    row-gap: 25px;
-    bottom: 0;
-    width: 100%;
-    & button {
-      width: 150px !important;
-    }
-    & .download-btnIcon {
-      display: none;
-    }
-    & .download-btn {
-      display: block;
-    }
   }
 }

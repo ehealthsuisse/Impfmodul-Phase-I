@@ -53,14 +53,8 @@ public class AllergyDTO extends BaseDTO {
     setComments(comments);
   }
 
-  @Deprecated
-  public ValueDTO getAllergyCode() {
-    return getCode();
+  @Override
+  public LocalDate getDateOfEvent() {
+    return getOccurrenceDate();
   }
-
-  @Deprecated
-  public void setAllergyCode(ValueDTO code) {
-    setCode(code);
-  }
-
 }

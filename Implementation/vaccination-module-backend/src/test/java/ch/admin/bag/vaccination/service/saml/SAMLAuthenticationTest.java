@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+
 import org.junit.jupiter.api.Test;
+import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -31,15 +33,16 @@ import org.springframework.security.core.authority.AuthorityUtils;
 @SpringBootTest
 public class SAMLAuthenticationTest {
 
-  private static final String SAML_RESPONSE = "samlResponse";
+  private static final String IDP_DUMMY = "dummy";
+  private static final Assertion SAML_RESPONSE = mock(Assertion.class);
 
   @Test
   void constructor_validAttribute_gettersReturnSameData() {
     AuthenticatedPrincipal principal = mock(AuthenticatedPrincipal.class);
-    SAMLAuthentication authentication = new SAMLAuthentication(principal, SAML_RESPONSE);
+    SAMLAuthentication authentication = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
 
     assertThat(authentication.getPrincipal()).isEqualTo(principal);
-    assertThat(authentication.getSaml2Response()).isEqualTo(SAML_RESPONSE);
+    assertThat(authentication.getAssertion()).isEqualTo(SAML_RESPONSE);
     assertTrue(authentication.isAuthenticated());
     assertThat(authentication.getAuthorities())
         .isEqualTo(AuthorityUtils.createAuthorityList("ROLE_USER"));
@@ -48,7 +51,7 @@ public class SAMLAuthenticationTest {
   @Test
   void equalsHashCode_differentClass_notEqual() {
     AuthenticatedPrincipal principal = mock(AuthenticatedPrincipal.class);
-    SAMLAuthentication authentication = new SAMLAuthentication(principal, SAML_RESPONSE);
+    SAMLAuthentication authentication = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
 
     int differentClassOrValue = -1;
     assertNotEquals(authentication, differentClassOrValue);
@@ -59,8 +62,8 @@ public class SAMLAuthenticationTest {
   void equalsHashCode_differentPrincipal_notEqual() {
     AuthenticatedPrincipal principal = mock(AuthenticatedPrincipal.class);
     AuthenticatedPrincipal principal2 = mock(AuthenticatedPrincipal.class);
-    SAMLAuthentication authentication = new SAMLAuthentication(principal, SAML_RESPONSE);
-    SAMLAuthentication authentication2 = new SAMLAuthentication(principal2, SAML_RESPONSE);
+    SAMLAuthentication authentication = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
+    SAMLAuthentication authentication2 = new SAMLAuthentication(principal2, IDP_DUMMY, SAML_RESPONSE);
 
     assertNotEquals(authentication, authentication2);
     assertNotEquals(authentication.hashCode(), authentication2.hashCode());
@@ -69,8 +72,9 @@ public class SAMLAuthenticationTest {
   @Test
   void equalsHashCode_differentResponse_notEqual() {
     AuthenticatedPrincipal principal = mock(AuthenticatedPrincipal.class);
-    SAMLAuthentication authentication = new SAMLAuthentication(principal, SAML_RESPONSE);
-    SAMLAuthentication authentication2 = new SAMLAuthentication(principal, "Different Response");
+    SAMLAuthentication authentication = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
+    Assertion differentAssertion = mock(Assertion.class);
+    SAMLAuthentication authentication2 = new SAMLAuthentication(principal, IDP_DUMMY, differentAssertion);
 
     assertNotEquals(authentication, authentication2);
     assertNotEquals(authentication.hashCode(), authentication2.hashCode());
@@ -79,7 +83,7 @@ public class SAMLAuthenticationTest {
   @Test
   void equalsHashCode_sameEntity_equal() {
     AuthenticatedPrincipal principal = mock(AuthenticatedPrincipal.class);
-    SAMLAuthentication authentication = new SAMLAuthentication(principal, SAML_RESPONSE);
+    SAMLAuthentication authentication = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
 
     assertEquals(authentication, authentication);
     assertEquals(authentication.hashCode(), authentication.hashCode());
@@ -88,8 +92,8 @@ public class SAMLAuthenticationTest {
   @Test
   void equalsHashCode_similarEntity_equal() {
     AuthenticatedPrincipal principal = mock(AuthenticatedPrincipal.class);
-    SAMLAuthentication authentication = new SAMLAuthentication(principal, SAML_RESPONSE);
-    SAMLAuthentication authentication2 = new SAMLAuthentication(principal, SAML_RESPONSE);
+    SAMLAuthentication authentication = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
+    SAMLAuthentication authentication2 = new SAMLAuthentication(principal, IDP_DUMMY, SAML_RESPONSE);
 
     assertEquals(authentication, authentication2);
     assertEquals(authentication.hashCode(), authentication2.hashCode());

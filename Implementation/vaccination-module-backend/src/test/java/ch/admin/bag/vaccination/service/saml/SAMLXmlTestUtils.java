@@ -20,11 +20,14 @@ package ch.admin.bag.vaccination.service.saml;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Files;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
@@ -38,6 +41,7 @@ import org.xml.sax.InputSource;
 /**
  * Utility class to manipulate SAML-xml and Assertion xml items
  */
+@Slf4j
 public class SAMLXmlTestUtils {
 
   static public Assertion createAssertion(String xml) throws Exception {
@@ -64,7 +68,7 @@ public class SAMLXmlTestUtils {
     return assertion;
   }
 
-  static public Element createXMLElementFromFile(String path) throws Exception {
+  public static Element createXMLElementFromFile(String path) throws Exception {
     ClassLoader classLoader = SAMLXmlTestUtils.class.getClassLoader();
     File file = new File(classLoader.getResource(path).getFile());
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -72,5 +76,16 @@ public class SAMLXmlTestUtils {
     Document document = dBuilder.parse(new InputSource(new FileReader(file)));
 
     return document.getDocumentElement();
+  }
+
+  public static String xml(String path) {
+    try {
+      ClassLoader classLoader = SAMLUtils.class.getClassLoader();
+      File file = new File(classLoader.getResource(path).getFile());
+      return Files.readString(file.toPath());
+    } catch (Exception e) {
+      log.warn("Exception:{}", e.toString());
+      return null;
+    }
   }
 }
