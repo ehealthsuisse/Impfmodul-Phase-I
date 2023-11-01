@@ -5,7 +5,7 @@ Perfect present for Halloween, **Version 1.3** of the vaccination module is avai
 Delivery consists of:
 * Frontend Code and compiled code
 * Backend Code and compiled JAR (new) and WAR deployment
-* FHIR Adapter version 1.0.3
+* FHIR Adapter version 1.0.2
 
 ## Features ##
 Version 1.3 mainly focussed on stability topics to ensure a succesful Go-Live.
