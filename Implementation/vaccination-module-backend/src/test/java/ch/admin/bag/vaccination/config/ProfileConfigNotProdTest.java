@@ -20,6 +20,7 @@ package ch.admin.bag.vaccination.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class ProfileConfigNotProdTest {
   @Autowired
   private ProfileConfig profileConfig;
+
+  @BeforeEach
+  public void setUp() {
+    profileConfig.setLocalMode(false);
+  }
 
   @Test
   public void testLocalMode() {

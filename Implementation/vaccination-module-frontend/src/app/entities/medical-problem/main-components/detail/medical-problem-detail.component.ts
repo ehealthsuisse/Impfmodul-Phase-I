@@ -42,6 +42,7 @@ export class MedicalProblemDetailComponent extends BreakPointSensorComponent imp
   private _problem: IMedicalProblem | null = null;
 
   ngOnInit(): void {
+    this.displayMenu(true, false);
     let id = this.activatedRoute.snapshot.params['id'];
     this.problemService.find(id).subscribe(problem => {
       if (problem) {

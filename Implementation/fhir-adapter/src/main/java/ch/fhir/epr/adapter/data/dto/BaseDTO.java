@@ -18,6 +18,9 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import ch.fhir.epr.adapter.FhirUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
@@ -30,7 +33,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class BaseDTO {
+public abstract class BaseDTO {
   /** uuid of the item */
   private String id;
   private ValueDTO code;
@@ -51,6 +54,25 @@ public class BaseDTO {
   /** organization of the recorder */
   private String organization;
   private List<CommentDTO> comments;
+  /** content in case of valid fhir document */
   private String json;
-  private ValueDTO confidentiality;
+  /** confidentiality of an item, e.g. secret to indicate that it is only visible to the patient */
+  private ValueDTO confidentiality = FhirUtils.DEFAULT_CONFIDENTIALITY_CODE;
+
+  // Special attributes not used by this library but useful if a bundle could not be parsed. In this
+  // case an error DTO can be created and for example filled by the meta information of a document.
+  // DTOs with attribute hasErrorSet are ignored when creating a vaccination record.
+  /** indicates that a document could not be parsed */
+  private boolean hasErrors = false;
+  /** content in case of invalid fhir document */
+  private byte[] content;
+
+  /**
+   * Hook method for convenience reasons to get both occurence date and recorded date
+   *
+   * @return day of the diagnosis or the vaccination.
+   */
+  @JsonIgnore
+  public abstract LocalDate getDateOfEvent();
 }
+

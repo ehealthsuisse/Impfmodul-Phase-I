@@ -69,6 +69,18 @@
     "COMMENT": {
       "TITLE": "Comment",
       "BODY": "comment"
+    },
+    "BROKEN": {
+      "VACCINATION_RECORD": {
+        "TITLE": "Fehlerhafte Dokumente",
+        "BODY": "Es wurden Fehler in Ihrem elektronischen Patientendatensystem (EPD) festgestellt. Es wurden insgesamt <b> {{count}} </b>  Dokument(e) gefunden, die unkorrekte Daten enthalten. Bitte überprüfen Sie die Dokumente in Ihrem EPD.",
+        "FOOTER": "Jedes Dokument muss im gültigen HL7 Format (XML / JSON) vorliegen. Bitte prüfen Sie, dieses Anliegen mit Ihrer EPD Stammgemeinschaft."
+      },
+      "ELEMENT": {
+        "TITLE": "Fehlerhaftes Dokument",
+        "BODY": "Das vorliegende Dokument konnte leider nicht gelesen werden, da es nicht in einem gültigen HL7 Format (XML/JSON) vorliegt. Bitte klären Sie dieses Anliegen mit Ihrer EPD Stammgemeinschaft. Gern können Sie das Dokument hier im Original herunterladen.",
+        "FOOTER": "Jedes Dokument muss im gültigen HL7 Format (XML / JSON) vorliegen. Bitte prüfen Sie, dieses Anliegen mit Ihrer EPD Stammgemeinschaft."
+      }
     }
   }
 }

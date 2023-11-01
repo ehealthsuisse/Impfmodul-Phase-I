@@ -7,8 +7,8 @@
       <vm-adverse-event-detailed-information [adverseEvent]="adverseEvent"></vm-adverse-event-detailed-information>
     </mat-card-content>
     <vm-details-action
+      *ngIf="isDesktop"
       [canEdit]="adverseEvent.updated! || adverseEvent.deleted!"
-      *ngIf="!isMobile"
       class="details__action"
     ></vm-details-action>
   </mat-card>

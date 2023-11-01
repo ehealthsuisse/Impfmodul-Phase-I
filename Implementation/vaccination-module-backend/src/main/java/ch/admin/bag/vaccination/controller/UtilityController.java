@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.controller;
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
 import ch.admin.bag.vaccination.service.ValueListService;
+import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collection;
@@ -38,6 +39,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class UtilityController {
   @Autowired
   private ValueListService valueListService;
+
+  @Autowired
+  private Cache cache;
+
+  @GetMapping("/clearCache")
+  public String clearCache() {
+    log.info("Clearing caches");
+    cache.clear();
+
+    return "Cache was successfully cleared.";
+  }
 
   @GetMapping("/getAllValuesLists")
   public List<ValueListDTO> getAllValuesList() {

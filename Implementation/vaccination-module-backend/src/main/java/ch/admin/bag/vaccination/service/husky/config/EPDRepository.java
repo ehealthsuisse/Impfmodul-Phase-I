@@ -21,12 +21,14 @@ package ch.admin.bag.vaccination.service.husky.config;
 public enum EPDRepository {
   /** Query demographic patient data */
   PDQ,
-  /** Query the master patient ID */
-  PIX,
-  /** Get and display document metadata */
-  RegistryStoredQuery,
-  /** Get and display document contents */
-  RetrieveDocumentSet,
+  /** Get and display document metadata - own community */
+  InternalRegistryStoredQuery,
+  /** Get and display document contents - own community */
+  InternalRetrieveDocumentSet,
+  /** Get and display document metadata - cross community */
+  ExternalRegistryStoredQuery,
+  /** Get and display document contents - cross community */
+  ExternalRetrieveDocumentSet,
   /** Submit a document */
   SubmitDocument,
   /** Query the X-User-Assertion */

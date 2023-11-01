@@ -1,4 +1,6 @@
-﻿/**
+﻿import { AdverseEventConfirmComponent } from './../../adverse_event/helper-components/confirm/adverse-event-confirm.component';
+import { MedicalProblemConfirmComponent } from './../../medical-problem/helper-components/confirm/medical-problem-confirm.component';
+/**
  * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -33,6 +35,7 @@ import { BreakPointSensorComponent } from '../../../shared/component/break-point
 import { deleteRecord, downloadRecordValue } from '../../../shared/function';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { AdverseEventService } from '../../adverse_event/services/adverse-event.service';
+import { InfectiousDiseasesConfirmComponent } from '../../infectious_diseases/helper-components/confirm/infectious-diseases-confirm.component';
 import { InfectiousDiseasesService } from '../../infectious_diseases/service/infectious-diseases.service';
 import { MedicalProblemService } from '../../medical-problem/service/medical-problem.service';
 import { VaccinationConfirmComponent } from '../../vaccination/helper-components/confirm/vaccination-confirm.component';
@@ -69,39 +72,45 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   dialog: DialogService = inject(DialogService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  isEmergencyMode: boolean = false;
 
   @Input() helpDialogTitle!: string;
   @Input() helpDialogBody!: string;
-  canValidate!: boolean;
   @Input() canEdit!: boolean;
+
+  canValidate: boolean = false;
+  isDisabled: boolean = false;
+  itemId: string = '';
 
   get patient(): IHumanDTO {
     return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
   }
 
   ngOnInit(): void {
+    this.itemId = this.sharedDataService.storedData['detailedItem'].id;
     this.updateType();
-
-    const role = this.sharedDataService.storedData['role'];
-    this.canValidate = (role === 'HCP' || role === 'ASS') && !this.details?.validated;
+    const role = this.sessionInfoService.author.getValue().role;
+    this.canValidate = role === 'HCP' || role === 'ASS';
+    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
+    this.isDisabled = this.details?.validated || this.isEmergencyMode;
   }
 
   editRecord(): void {
     this.updateType();
     if (this.type === 'vaccination') {
-      this.router.navigate([`vaccination`, this.details.id, 'edit']);
+      this.router.navigate([`vaccination`, this.itemId, 'edit']);
     }
 
     if (this.type === 'infectious-diseases') {
-      this.router.navigate([`infectious-diseases`, this.details.id, 'edit']);
+      this.router.navigate([`infectious-diseases`, this.itemId, 'edit']);
     }
 
     if (this.type === 'medical-problem') {
-      this.router.navigate([`medical-problem`, this.details.id, 'edit']);
+      this.router.navigate([`medical-problem`, this.itemId, 'edit']);
     }
 
     if (this.type === 'allergy') {
-      this.router.navigate([`allergy`, this.details.id, 'edit']);
+      this.router.navigate([`allergy`, this.itemId, 'edit']);
     }
 
     this.sharedDataService.showActionMenu = false;
@@ -109,7 +118,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
 
   deleteRecord(): void {
     this.updateType();
-    const dialogComponent = VaccinationConfirmComponent;
+    let dialogComponent = VaccinationConfirmComponent;
     const baseDetails = { ...this.details };
     this.sharedDataService.showActionMenu = false;
     switch (this.type) {
@@ -117,12 +126,15 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
         deleteRecord(this.matDialog, dialogComponent, this.vaccinationService, baseDetails, this.details);
         break;
       case 'infectious-diseases':
+        dialogComponent = InfectiousDiseasesConfirmComponent;
         deleteRecord(this.matDialog, dialogComponent, this.illnessService, baseDetails, this.details);
         break;
       case 'medical-problem':
+        dialogComponent = MedicalProblemConfirmComponent;
         deleteRecord(this.matDialog, dialogComponent, this.problemService, baseDetails, this.details);
         break;
       case 'allergy':
+        dialogComponent = AdverseEventConfirmComponent;
         deleteRecord(this.matDialog, dialogComponent, this.adverseEventService, baseDetails, this.details);
         break;
     }
@@ -172,7 +184,10 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
 
   validateRecord(): void {
     this.updateType();
-    let copy: any = { ...this.details };
+    let copy: any = {
+      ...this.details,
+    };
+    copy.author.role = this.sessionInfoService.author.getValue().role;
     switch (this.type) {
       case 'vaccination':
         this.vaccinationService.validate(copy).subscribe(() => window.history.back());
@@ -198,7 +213,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   fetchDetails(type: string, id: string): void {
     switch (type) {
       case 'vaccination':
-        this.vaccinationService.find(id).subscribe(details => {
+        this.vaccinationService.find(this.itemId).subscribe(details => {
           this.details = this.sharedDataService.storedData['detailedItem'] = details;
         });
         break;
@@ -224,6 +239,6 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
     this.sharedDataService.getSessionStorage();
     this.type = this.router.url.split('/')[1];
     this.details = this.router.url.split('/')[2];
-    this.fetchDetails(this.type, this.details);
+    this.fetchDetails(this.type, this.itemId);
   }
 }

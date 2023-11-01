@@ -17,7 +17,7 @@ The vaccination module does not store privacy data. The vaccination module gets 
 
 The vaccination module retrieves the following privacy data form the portal at startup:
 - The patients local ID as used by the portal.
-- The name and title of the authenticated user.
+- The name, title and GLN (if available) of the authenticated user.
 - The EPR role of the authenticated user.
 
 In addition the following data are retrieved, if the authenticated user acts an assistant:

@@ -20,6 +20,7 @@ package ch.admin.bag.vaccination.service.saml.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 public class IdentityProviderConfigTest {
@@ -27,6 +28,7 @@ public class IdentityProviderConfigTest {
   private static final String IDENTIFIER = "identifier";
   private static final String AUTHNREQUEST_URL = "authnrequest url";
   private static final String ARTIFACT_RESOLUTION_URL = "artifact resolution url";
+  private static final String ENTITY_ID = "entityID";
 
   @Test
   void setter_validValues_getterReturnSameValue() {
@@ -34,11 +36,13 @@ public class IdentityProviderConfigTest {
     config.setIdentifier(IDENTIFIER);
     config.setAuthnrequestURL(AUTHNREQUEST_URL);
     config.setArtifactResolutionServiceURL(ARTIFACT_RESOLUTION_URL);
+    config.setEntityId(ENTITY_ID);
 
     assertThat(config).isNotNull();
     assertEquals(IDENTIFIER, config.getIdentifier());
     assertEquals(AUTHNREQUEST_URL, config.getAuthnrequestURL());
     assertEquals(ARTIFACT_RESOLUTION_URL, config.getArtifactResolutionServiceURL());
+    assertEquals(ENTITY_ID, config.getEntityId());
   }
 
 }

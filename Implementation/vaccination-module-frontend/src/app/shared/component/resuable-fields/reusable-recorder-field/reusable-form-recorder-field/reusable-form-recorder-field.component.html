@@ -1,5 +1,5 @@
 <mat-card *ngIf="parentForm" [formGroup]="parentForm" class="mat-elevation-z0 recorder">
-  <mat-label id="recorder-label" class="recorder__label" vmTranslate="MEDICAL_PROBLEM.RECORDER"></mat-label>
+  <mat-label id="recorder-label" vmTranslate="MEDICAL_PROBLEM.RECORDER"></mat-label>
   <div formGroupName="recorder" [ngClass]="isMobile ? 'mobile-recorder--fields' : 'recorder--fields'">
     <mat-form-field>
       <input matInput formControlName="prefix" [placeholder]="'USER.PREFIX' | translate" [attr.aria-labelledby]="'recorder-label'" />

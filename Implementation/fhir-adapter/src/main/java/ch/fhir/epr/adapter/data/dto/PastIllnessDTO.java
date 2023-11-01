@@ -53,6 +53,11 @@ public class PastIllnessDTO extends BaseDTO {
     setComments(comments);
   }
 
+  @Override
+  public LocalDate getDateOfEvent() {
+    return getRecordedDate();
+  }
+
   @Deprecated
   public ValueDTO getIllnessCode() {
     return getCode();

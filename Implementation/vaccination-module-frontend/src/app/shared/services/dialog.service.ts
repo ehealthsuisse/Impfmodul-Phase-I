@@ -19,6 +19,7 @@
 import { inject, Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HelpService } from '../component/help/service/help.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,10 +28,26 @@ export class DialogService {
   @Optional() translateService = inject(TranslateService);
   helpService = inject(HelpService);
 
-  openDialog(title: string, body: string): void {
+  showActionSidenavSource = new BehaviorSubject<boolean>(false);
+  showActionSidenav$ = this.showActionSidenavSource.asObservable();
+
+  showPatientActionSidenavSource = new BehaviorSubject<boolean>(false);
+  showPatientActionSidenav$ = this.showPatientActionSidenavSource.asObservable();
+
+  openDialog<T>(
+    title: string,
+    body: string,
+    showActions?: boolean,
+    object?: T,
+    buttons?: { showOk?: boolean | false; showDownload?: boolean | true }
+  ): void {
     const options = {
       title: this.translateService.instant(title),
       body: this.translateService.instant(body),
+      okClicked: false,
+      showActions: showActions,
+      object: object,
+      button: buttons,
     };
     /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.helpService.open(options);
@@ -38,5 +55,13 @@ export class DialogService {
 
   closeDialog(): void {
     this.helpService.close();
+  }
+
+  showActionSidenav(show: boolean): void {
+    this.showActionSidenavSource.next(show);
+  }
+
+  showPatientActionSidenav(show: boolean): void {
+    this.showPatientActionSidenavSource.next(show);
   }
 }

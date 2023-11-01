@@ -175,7 +175,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601777777718</p><p><b>name</b>: Gruppenpraxis Mueller</p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:bereit@gruppenpraxis.ch\">mailto:bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zuerich ZH 8005 CH </p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Organization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Organization \"TC-ORG1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-organization-epr.html\">CH Core Organization EPR</a></p></div><p><b>identifier</b>: id: 7601777777718</p><p><b>name</b>: Gruppenpraxis Müller</p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:bereit@gruppenpraxis.ch\">mailto:bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zürich ZH 8005 CH </p></div>"
         },
         "identifier": [
           {
@@ -183,7 +183,7 @@
             "value": "7601777777718"
           }
         ],
-        "name": "Gruppenpraxis Mueller",
+        "name": "Gruppenpraxis Müller",
         "telecom": [
           {
             "system": "phone",
@@ -211,7 +211,7 @@
             "line": [
               "Grabenstrasse 2"
             ],
-            "city": "Zuerich",
+            "city": "Zürich",
             "state": "ZH",
             "postalCode": "8005",
             "country": "CH"
@@ -231,7 +231,7 @@
         },
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Practitioner</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Practitioner \"TC-HCP1-C1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitioner-epr.html\">CH Core Practitioner EPR</a></p></div><p><b>identifier</b>: id: 7601888888884</p><p><b>active</b>: true</p><p><b>name</b>: Peter Mueller </p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:allzeit.bereit@gruppenpraxis.ch\">mailto:allzeit.bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zuerich 8005 CH </p></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Practitioner</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Practitioner \"TC-HCP1-C1\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"http://fhir.ch/ig/ch-core/2.1.0/StructureDefinition-ch-core-practitioner-epr.html\">CH Core Practitioner EPR</a></p></div><p><b>identifier</b>: id: 7601888888884</p><p><b>active</b>: true</p><p><b>name</b>: Peter Müller </p><p><b>telecom</b>: ph: tel:+41.32.234.55.66(WORK), fax: fax:+41.32.234.55.67(WORK), <a href=\"mailto:mailto:allzeit.bereit@gruppenpraxis.ch\">mailto:allzeit.bereit@gruppenpraxis.ch</a>, <a href=\"http://www.gruppenpraxis.ch\">http://www.gruppenpraxis.ch</a></p><p><b>address</b>: Grabenstrasse 2 Zürich 8005 CH </p></div>"
         },
         "identifier": [
           {
@@ -242,7 +242,7 @@
         "active": true,
         "name": [
           {
-            "family": "Mueller",
+            "family": "Müller",
             "given": [
               "Peter"
             ],
@@ -279,7 +279,7 @@
             "line": [
               "Grabenstrasse 2"
             ],
-            "city": "Zuerich",
+            "city": "Zürich",
             "postalCode": "8005",
             "country": "CH"
           }

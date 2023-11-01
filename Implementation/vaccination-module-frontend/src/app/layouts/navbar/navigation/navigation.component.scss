@@ -1,0 +1,28 @@
+@import 'src/assets/scss/global';
+
+.nav {
+  &__desktop {
+    & > * {
+      display: inline-grid;
+      padding: 0 10px;
+    }
+
+    & > *:not(:first-child):not(:last-child) {
+      margin: 0 10px;
+    }
+  }
+
+  &__mobile {
+    display: flex;
+    flex-direction: column;
+
+    & > a {
+      margin: 10px 0;
+    }
+  }
+
+  &__tablet {
+    display: flex;
+    flex-direction: column;
+  }
+}

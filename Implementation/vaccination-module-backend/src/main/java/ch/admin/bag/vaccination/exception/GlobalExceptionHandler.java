@@ -18,6 +18,10 @@
  */
 package ch.admin.bag.vaccination.exception;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,7 +40,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * </ul>
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
+
+  static final String TECHNICAL_ERROR_MESSAGE = "A technical error occured. Please check internal logs for details at ";
 
   @ExceptionHandler(BusinessException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -50,7 +57,10 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(RuntimeException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ResponseEntity<String> technicalExceptionHandler(RuntimeException ex) {
-    return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    log.error(ex.getMessage());
+    LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    String errorMessage = TECHNICAL_ERROR_MESSAGE + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".";
+    return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(ValidationException.class)

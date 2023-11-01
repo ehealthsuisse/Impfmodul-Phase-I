@@ -1,0 +1,58 @@
+<nav
+  [ngClass]="{
+    nav__mobile: isMobile || isTablet,
+    nav__desktop: isDesktop,
+    nav__tablet: isTablet,
+    'nav__tablet--open': showTabletMenu
+  }"
+  aria-label="Main navigation"
+>
+  <a
+    accesskey="h"
+    routerLink="/vaccination-record"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    (click)="closeSidenav()"
+    vmTranslate="GLOBAL.HOME"
+    class="mat-list-item"
+  >
+    <span class="sr-only">(Accesskey: H)</span>
+  </a>
+  <a
+    routerLink="/vaccination"
+    routerLinkActive="active"
+    (click)="closeSidenav()"
+    vmTranslate="VACCINATION.TITLE"
+    accesskey="v"
+    class="mat-list-item"
+    ><span class="sr-only">(Accesskey: V)</span></a
+  >
+  <a
+    routerLink="/allergy"
+    (click)="closeSidenav()"
+    routerLinkActive="active"
+    vmTranslate="ALLERGY.TITLE"
+    accesskey="a"
+    class="mat-list-item"
+    ><span class="sr-only">(Accesskey: A)</span></a
+  >
+  <a
+    routerLink="/infectious-diseases"
+    (click)="closeSidenav()"
+    routerLinkActive="active"
+    vmTranslate="ILLNESS.TITLE"
+    accesskey="i"
+    class="mat-list-item"
+    ><span class="sr-only">(Accesskey: I)</span></a
+  >
+  <a
+    routerLink="/medical-problem"
+    routerLinkActive="active"
+    (click)="closeSidenav()"
+    vmTranslate="MEDICAL_PROBLEM.TITLE"
+    accesskey="m"
+    class="mat-list-item"
+  >
+    <span class="sr-only">(Accesskey: I)</span>
+  </a>
+</nav>

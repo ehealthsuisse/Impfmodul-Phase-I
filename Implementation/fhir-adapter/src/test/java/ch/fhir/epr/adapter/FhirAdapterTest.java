@@ -19,6 +19,8 @@
 package ch.fhir.epr.adapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.uhn.fhir.context.FhirContext;
 import ch.fhir.epr.TestMain;
@@ -31,6 +33,7 @@ import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
+import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.io.File;
 import java.time.LocalDate;
@@ -58,15 +61,64 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes = TestMain.class)
 @ActiveProfiles("test")
 @Slf4j
-public class FhirAdapterTest {
+class FhirAdapterTest {
   private static final String CONFIG_TESTFILES_PATH = "config/testfiles";
   @Autowired
   private FhirAdapter fhirAdapter;
   @Autowired
   private FhirConverterIfc fhirConverter;
 
+
   @Test
-  public void test_A_D1() throws Exception {
+  void createBundle_createVaccinationRecord_noExceptionOccurs() throws Exception {
+    Bundle originalBundle =
+        fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-D-D3-HCP1-C1.json");
+    List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, originalBundle);
+    List<AllergyDTO> allergies = fhirAdapter.getDTOs(AllergyDTO.class, originalBundle);
+    List<MedicalProblemDTO> medicalProblems = fhirAdapter.getDTOs(MedicalProblemDTO.class, originalBundle);
+    List<PastIllnessDTO> pastIllnessDTOs = fhirAdapter.getDTOs(PastIllnessDTO.class, originalBundle);
+    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+    AuthorDTO author = createAuthor();
+
+    VaccinationRecordDTO record = new VaccinationRecordDTO(author, patientIdentifier.getPatientInfo(),
+        allergies, pastIllnessDTOs, vaccinations, medicalProblems);
+
+    fhirConverter.createBundle(FhirContext.forR4(), patientIdentifier, record);
+  }
+
+  @Test
+  void createBundle_medicalProblem_contentIsCorrect() throws Exception {
+    Bundle originalBundle =
+        fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-D-D3-HCP1-C1.json");
+    List<MedicalProblemDTO> medicalProblems = fhirAdapter.getDTOs(MedicalProblemDTO.class, originalBundle);
+    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), patientIdentifier, medicalProblems.get(0));
+    MedicalProblemDTO problem = getFirstDTO(MedicalProblemDTO.class, bundle);
+    // new object was created so ID must no longer be equal!
+    assertThat(problem.getId()).isNotEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
+    assertThat(problem.getClinicalStatus().getCode()).isEqualTo("active");
+    assertThat(problem.getVerificationStatus().getCode()).isEqualTo("confirmed");
+    assertThat(problem.getCode().getCode()).isEqualTo("402196005");
+    assertThat(problem.getCode().getName()).isEqualTo("Atopische Dermatitis im Kindesalter");
+    assertThat(problem.getOrganization()).isEqualTo("Gruppenpraxis CH");
+  }
+
+  @Test
+  void getDTOs_vaccinationRecordAsBundle_doNotReturnAnyEntries() {
+    Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle_vaccinationRecord");
+
+    assertEquals(0, fhirAdapter.getDTOs(VaccinationDTO.class, bundle).size());
+  }
+
+  // test cases are defined in config/fhir.yml (4) and config/testfiles/json (1)
+  @Test
+  void getLocalEntities_noInput_returnAllTestCasesAndTestfilesExceptEmptyBundle() {
+    assertEquals(5, fhirAdapter.getLocalEntities().size());
+  }
+
+  @Test
+  void test_A_D1() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
 
     assertThat(bundle.getId()).isEqualTo("Bundle/A-D1-P-C1");
@@ -107,11 +159,11 @@ public class FhirAdapterTest {
 
     assertThat(vaccinationDTO.getComments().get(0).getText())
         .isEqualTo("Der Patient hat diese Impfung ohne jedwelcher nebenwirkungen gut vertragen.");
-    assertThat(vaccinationDTO.getComments().get(0).getAuthor().getLastName()).isEqualTo("Müller");
+    assertThat(vaccinationDTO.getComments().get(0).getAuthor()).isEqualTo("Dr. med. Peter Müller");
   }
 
   @Test
-  public void test_A_D1_xNotes() throws Exception {
+  void test_A_D1_xNotes() throws Exception {
     Bundle bundle = createBundle("testfiles/Bundle-A-D1-P-C1-xNotes.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     assertThat(vaccinations.size()).isEqualTo(1);
@@ -135,10 +187,10 @@ public class FhirAdapterTest {
     assertThat(vaccinationDTO.getComments().get(2).getText()).isEqualTo("BBBB");
     assertThat(vaccinationDTO.getComments().get(1).getText()).isEqualTo("CCCC");
     assertThat(vaccinationDTO.getComments().get(0).getText()).isEqualTo("DDDD");
-    assertThat(vaccinationDTO.getComments().get(3).getAuthor().getLastName()).isEqualTo("Müller");
-    assertThat(vaccinationDTO.getComments().get(2).getAuthor().getLastName()).isEqualTo("Wegmueller");
-    assertThat(vaccinationDTO.getComments().get(1).getAuthor().getLastName()).isEqualTo("Müller");
-    assertThat(vaccinationDTO.getComments().get(0).getAuthor().getFirstName()).isEqualTo("Someone");
+    assertThat(vaccinationDTO.getComments().get(3).getAuthor()).isEqualTo("Dr. med. Peter Müller");
+    assertThat(vaccinationDTO.getComments().get(2).getAuthor()).contains("Wegmueller");
+    assertThat(vaccinationDTO.getComments().get(3).getAuthor()).isEqualTo("Dr. med. Peter Müller");
+    assertThat(vaccinationDTO.getComments().get(0).getAuthor()).contains("Someone");
 
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
     vaccinationDTO.setLotNumber("AHAVB946A_2");
@@ -158,11 +210,11 @@ public class FhirAdapterTest {
     assertThat(updatedVaccinations.get(0).getLotNumber()).isEqualTo("AHAVB946A_2");
     assertThat(updatedVaccinations.get(0).getComments().size()).isEqualTo(5);
     assertThat(updatedVaccinations.get(0).getComments().get(0).getText()).isEqualTo("BlaBla");
-    assertThat(updatedVaccinations.get(0).getComments().get(0).getAuthor().getLastName()).isEqualTo("Wegmueller");
+    assertThat(updatedVaccinations.get(0).getComments().get(0).getAuthor()).contains("Wegmueller");
   }
 
   @Test
-  public void test_A_D2() throws Exception {
+  void test_A_D2() throws Exception {
     Bundle bundle = createBundle("testfiles/Bundle-A-D2-HCP1-C1.json");
 
     assertThat(bundle.getId()).isEqualTo("Bundle/A-D2-HCP1-C1");
@@ -186,7 +238,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_A_D3() throws Exception {
+  void test_A_D3() throws Exception {
     Bundle bundle = createBundle("testfiles/Bundle-A-D3-HCP2-C2.json");
 
     assertThat(bundle.getId()).isEqualTo("Bundle/A-D3-HCP2-C2");
@@ -195,7 +247,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_A_D5_P_C1() throws Exception {
+  void test_A_D5_P_C1() throws Exception {
     Bundle patientBundle = createBundle("testfiles/Bundle-A-D5-P-C1.json");
 
     assertThat(patientBundle.getId()).isEqualTo("Bundle/A-D5-P-C1");
@@ -217,7 +269,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_AuthorIsHCP() throws Exception {
+  void test_AuthorIsHCP() throws Exception {
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
     patientIdentifier.setSpidExtension("12.34.56.78");
     VaccinationDTO vaccinationDTO = createVaccinationDTO();
@@ -257,7 +309,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_AuthorIsOtherPatient() throws Exception {
+  void test_AuthorIsOtherPatient() throws Exception {
     // patient Kenneth Branagh
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
     patientIdentifier.setSpidExtension("12.34.56.78");
@@ -294,7 +346,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_AuthorIsPatient() throws Exception {
+  void test_AuthorIsPatient() throws Exception {
     // patient Kenneth Branagh
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
     VaccinationDTO vaccinationDTO = createVaccinationDTO();
@@ -317,14 +369,14 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_B_D1() throws Exception {
+  void test_B_D1() throws Exception {
     Bundle bundle = createBundle("testfiles/Bundle-B-D1-HCP1-C1.json");
     assertThat(fhirAdapter.getImmunization(bundle)).isNotNull();
     assertThat(fhirAdapter.getDTOs(VaccinationDTO.class, bundle).size()).isEqualTo(2);
   }
 
   @Test
-  public void test_B_D2() throws Exception {
+  void test_B_D2() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-B-D2-HCP1-C1.json");
 
     assertThat(bundle.getId()).isEqualTo("Bundle/B-D2-HCP1-C1");
@@ -342,7 +394,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_B_D3() throws Exception {
+  void test_B_D3() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-B-D3-HCP1-C1.json");
     assertThat(bundle.getId()).isEqualTo("Bundle/B-D3-HCP1-C1");
 
@@ -358,7 +410,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_commentVaccination() throws Exception {
+  void test_commentVaccination() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     assertThat(vaccinations.size()).isEqualByComparingTo(1);
@@ -369,7 +421,7 @@ public class FhirAdapterTest {
     author.setLastName("me");
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
 
-    CommentDTO comment = new CommentDTO(null, author, "BlaBla");
+    CommentDTO comment = new CommentDTO(null, author.getFullName(), "BlaBla");
     vaccinationDTO.setComments(List.of(comment));
 
     Bundle updatedBundle = fhirAdapter.update(patientIdentifier, vaccinationDTO, bundle, vaccinationDTO.getId());
@@ -383,11 +435,11 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_createAllergy() throws Exception {
-    Bundle originalBbundle =
+  void test_createAllergy() throws Exception {
+    Bundle originalBundle =
         fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-B-D2-HCP1-C1.json");
 
-    AllergyDTO originalAllergyDTO = getFirstDTO(AllergyDTO.class, originalBbundle);
+    AllergyDTO originalAllergyDTO = getFirstDTO(AllergyDTO.class, originalBundle);
     originalAllergyDTO.setConfidentiality(new ValueDTO("aa", "bb", "cc"));
     originalAllergyDTO.setType(new ValueDTO("intolerance", "", ""));
 
@@ -411,10 +463,10 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_createPastillness() throws Exception {
-    Bundle originalBbundle =
+  void test_createPastillness() throws Exception {
+    Bundle originalBundle =
         fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-B-D3-HCP1-C1.json");
-    List<PastIllnessDTO> pastIllnessDTOs = fhirAdapter.getDTOs(PastIllnessDTO.class, originalBbundle);
+    List<PastIllnessDTO> pastIllnessDTOs = fhirAdapter.getDTOs(PastIllnessDTO.class, originalBundle);
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
 
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), patientIdentifier, pastIllnessDTOs.get(0));
@@ -428,17 +480,18 @@ public class FhirAdapterTest {
     assertThat(pastIllnessDTO.getOrganization()).isEqualTo("Gruppenpraxis Müller");
   }
 
+
   @Test
-  public void test_D_D3_HCP1_C1() throws Exception {
+  void test_D_D3_HCP1_C1() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-D-D3-HCP1-C1.json");
 
     List<MedicalProblemDTO> dtos = fhirAdapter.getDTOs(MedicalProblemDTO.class, bundle);
     assertThat(dtos.size()).isEqualTo(1);
     assertThat(dtos.get(0).getId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
-    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("213001");
-    assertThat(dtos.get(0).getCode().getName()).isEqualTo("Beschäftigte im Gesundheitswesen");
+    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("402196005");
+    assertThat(dtos.get(0).getCode().getName()).isEqualTo("Atopische Dermatitis im Kindesalter");
     assertThat(dtos.get(0).getCode().getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-exposure-risks-cs");
+        .isEqualTo("2.16.756.5.30.1.127.3.3.1");
 
     assertThat(dtos.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(dtos.get(0).getClinicalStatus().getName()).isEqualTo("Active");
@@ -469,7 +522,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_deleteVaccination() throws Exception {
+  void test_deleteVaccination() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     VaccinationDTO vaccinationDTO = vaccinations.get(0);
@@ -507,8 +560,8 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_getJsonFilenames() throws Exception {
-    assertThat(fhirAdapter.getJsonFilenames(CONFIG_TESTFILES_PATH).size()).isEqualTo(4);
+  void test_getJsonFilenames() throws Exception {
+    assertThat(fhirAdapter.getJsonFilenames(CONFIG_TESTFILES_PATH).size()).isEqualTo(5);
 
     for (String jsonFilename : fhirAdapter.getJsonFilenames(CONFIG_TESTFILES_PATH)) {
       Bundle bundle = fhirAdapter.unmarshallFromFile(CONFIG_TESTFILES_PATH + "/" + jsonFilename);
@@ -521,7 +574,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_getSectionResources() throws Exception {
+  void test_getSectionResources() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-D-D3-HCP1-C1.json");
 
     List<DomainResource> resources;
@@ -540,7 +593,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_toBundle_with_Patient() throws Exception {
+  void test_toBundle_with_Patient() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     VaccinationDTO createdVaccinationDTO = vaccinations.get(0);
@@ -578,7 +631,7 @@ public class FhirAdapterTest {
 
   @Test
   @Deprecated // Patient should be always defined !
-  public void test_toBundle_without_patient() throws Exception {
+  void test_toBundle_without_patient() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     VaccinationDTO vaccinationDTO = vaccinations.get(0);
@@ -610,7 +663,7 @@ public class FhirAdapterTest {
   }
 
   @Test
-  public void test_updateVaccination() throws Exception {
+  void test_updateVaccination() throws Exception {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     VaccinationDTO vaccinationDTO = vaccinations.get(0);
@@ -653,10 +706,14 @@ public class FhirAdapterTest {
         .isEqualTo("acc1f090-5e0c-45ae-b283-521d57c3aa2f");
   }
 
+  @Test
+  void unmarshallFromString_emptyBundle_returnNull() {
+    assertNull(fhirAdapter.unmarshallFromString(""));
+  }
 
   private AuthorDTO createAuthor() {
-    return new AuthorDTO(new HumanNameDTO("Boris", "Karloff", "Herr", LocalDate.now(), "MALE"),
-        null, null, null, null, null, null);
+    return new AuthorDTO(new HumanNameDTO("John", "Doe", "Mr", null, null),
+        null, null, null, "gln:11.22.33.44", null, null);
   }
 
   private Bundle createBundle(String filename) {
@@ -674,9 +731,7 @@ public class FhirAdapterTest {
 
   private VaccinationDTO createVaccinationDTO() {
     HumanNameDTO performer = new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null); // , null,
-                                                                                            // "gln:11.22.33.44");
-    AuthorDTO author = new AuthorDTO(new HumanNameDTO("John", "Doe", "Mr", null, null),
-        null, null, null, "gln:11.22.33.44", null, null);
+    AuthorDTO author = createAuthor();
 
     ValueDTO vaccineCode = new ValueDTO("123456789", "123456789", "testsystem");
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");

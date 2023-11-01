@@ -1,16 +1,25 @@
-<section class="vaccination-record-wrapper">
-  <mat-card class="mat-wrapper-card mat-elevation-z0" *ngIf="patientRender">
-    <mat-card-title>
-      <mat-card-title class="info-title">
-        <h3 class="h3-header" vmTranslate="GLOBAL.VACCINATION_CARD" [attr.aria-label]="'GLOBAL.VACCINATION_CARD' | translate"></h3>
+<section
+  role="region"
+  aria-labelledby="vaccination-header"
+  class="vaccination_record_wrapper"
+  [ngClass]="{
+    'vaccination_record_wrapper--desktop': isDesktop,
+    'vaccination_record_wrapper--mobile': isMobile
+  }"
+>
+  <mat-card class="vaccination-record__card mat-elevation-z0">
+    <mat-card-title class="info-title">
+      <div class="patient-name" *ngIf="isDesktop">
+        <h1
+          id="vaccination-header"
+          class="h3-header"
+          vmTranslate="GLOBAL.VACCINATION_CARD"
+          [attr.aria-label]="'GLOBAL.VACCINATION_CARD' | translate"
+        ></h1>
         <vm-patient></vm-patient>
-      </mat-card-title>
-      <mat-card-title aria-hidden="true"></mat-card-title>
+      </div>
+      <vm-patient-action *ngIf="isDesktop"></vm-patient-action>
     </mat-card-title>
-    <vm-patient-action></vm-patient-action>
-  </mat-card>
-
-  <mat-card class="mat-card mat-elevation-z0">
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobile ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="GLOBAL.VACCINATIONS" [attr.aria-label]="'GLOBAL.VACCINATIONS' | translate"></h3>
@@ -19,12 +28,9 @@
           (click)="addVaccination()"
           (keydown.enter)="addVaccination()"
           [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
-          role="presentation"
+          [disabled]="isEmergencyMode"
         >
-          <mat-icon
-            [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
-            matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
-            role="presentation"
+          <mat-icon [attr.aria-label]="'buttons.ADD_VACCINATION' | translate" matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
             >add
           </mat-icon>
         </button>
@@ -43,7 +49,13 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobile ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="ALLERGY.TITLE" [attr.aria-label]="'ALLERGY.TITLE' | translate">Allergy</h3>
-        <button mat-icon-button (click)="addAllergy()" (keydown.enter)="addAllergy()" [attr.aria-label]="'buttons.ADD_ALLERGY' | translate">
+        <button
+          mat-icon-button
+          (click)="addAllergy()"
+          (keydown.enter)="addAllergy()"
+          [attr.aria-label]="'buttons.ADD_ALLERGY' | translate"
+          [disabled]="isEmergencyMode"
+        >
           <mat-icon [attr.aria-label]="'buttons.ADD_ALLERGY' | translate" matTooltip="{{ 'buttons.ADD_ALLERGY' | translate }}"
             >add
           </mat-icon>
@@ -62,11 +74,12 @@
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobile ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="ILLNESS.TITLE" [attr.aria-label]="'ILLNESS.TITLE' | translate"></h3>
         <button
-          role="presentation"
+          role="button"
           mat-icon-button
           (click)="addIllness()"
           (keydown.enter)="addIllness()"
           [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
+          [disabled]="isEmergencyMode"
         >
           <mat-icon
             [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
@@ -90,11 +103,12 @@
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobile ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="GLOBAL.PROBLEM" [attr.aria-label]="'GLOBAL.PROBLEM' | translate"></h3>
         <button
+          role="button"
           mat-icon-button
           (click)="addMedicalProblem()"
           (keydown.enter)="addMedicalProblem()"
           [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
-          role="presentation"
+          [disabled]="isEmergencyMode"
         >
           <mat-icon
             [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"

@@ -20,9 +20,9 @@ package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirConverterIfc;
-import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
@@ -31,11 +31,10 @@ import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.time.LocalDate;
 import java.util.List;
 import org.hl7.fhir.r4.model.AllergyIntolerance.AllergyIntoleranceType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 class AllergyServiceTest extends AbstractServiceTest {
   @Autowired
   private AllergyService allergyService;
@@ -52,11 +51,10 @@ class AllergyServiceTest extends AbstractServiceTest {
     ValueDTO type = new ValueDTO(AllergyIntoleranceType.ALLERGY.toCode(),
         AllergyIntoleranceType.ALLERGY.getDisplay(), AllergyIntoleranceType.ALLERGY.getSystem());
     String commentText = "BlaBla";
-    CommentDTO comment = new CommentDTO(null, author.getUser(), commentText);
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
     AllergyDTO newAllergyDTO = new AllergyDTO(null, LocalDate.now(), allergyCode, criticality,
         clinicalStatus, verficationStatus, type, recorder, List.of(comment), "My organization AG");
-    newAllergyDTO.setAuthor(author);
-
+    author.setRole("REP");
     AllergyDTO result =
         allergyService.create(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234", newAllergyDTO, null);
@@ -67,10 +65,11 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(result.getType()).isEqualTo(type);
     assertThat(result.getConfidentiality().getCode()).isEqualTo("17621005");
     assertThat(result.getConfidentiality().getName()).isEqualTo("Normal");
-    assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirUtils.CONFIDENTIALITY_CODE_URL);
-    assertThat(result.getComments().get(0).getAuthor().getFullName()).isEqualTo(author.getUser().getFullName());
+    assertThat(result.getConfidentiality().getSystem()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem());
+    assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(result.getComments().get(0).getDate()).isNotNull();
+    assertThat(result.isValidated()).isFalse();
   }
 
   @Override
@@ -80,14 +79,13 @@ class AllergyServiceTest extends AbstractServiceTest {
         allergyService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
 
-    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, author, null, true);
+    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, null, true);
     assertThat(allergies.size()).isEqualTo(1);
 
     AllergyDTO result =
         allergyService.delete(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234", "00476f5f-f3b7-4e49-9b52-5ec88d65c18e",
-            new ValueDTO("1141000195107", "Secret", "url"), author,
-            null);
+            new ValueDTO("1141000195107", "Secret", "url"), null);
     assertThat(result.getRelatedId()).isEqualTo("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
     assertThat(result.getVerificationStatus().getCode()).isEqualTo(FhirConverterIfc.ENTERED_IN_ERROR);
     assertThat(result.isDeleted()).isTrue();
@@ -95,7 +93,7 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(result.getConfidentiality().getName()).isEqualTo("Secret");
     assertThat(result.getConfidentiality().getSystem()).isEqualTo("url");
 
-    allergies = allergyService.getAll(patientIdentifier, author, null, true);
+    allergies = allergyService.getAll(patientIdentifier, null, true);
 
     assertThat(allergies.size()).isEqualTo(0);
   }
@@ -104,9 +102,8 @@ class AllergyServiceTest extends AbstractServiceTest {
   @Test
   public void testGetAll() {
     List<AllergyDTO> allergyDTOs =
-        allergyService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
-            "1.2.3.4.123456.1",
-            "waldspital-Id-1234", author, null);
+        allergyService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            "waldspital-Id-1234", null);
     assertThat(allergyDTOs.size()).isEqualTo(1);
     assertThat(allergyDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(allergyDTOs.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
@@ -118,16 +115,17 @@ class AllergyServiceTest extends AbstractServiceTest {
   @Test
   public void testGetAll_GAZELLE() {
     profileConfig.setLocalMode(false);
-    assertThat(
-        allergyService.getAll(EPDCommunity.GAZELLE.name(),
-            "1.3.6.1.4.1.21367.13.20.3000",
-            EPDCommunity.DUMMY.name(), author, null))
-                .isEmpty();
+    assertThat(allergyService.getAll(EPDCommunity.GAZELLE.name(),
+        "1.3.6.1.4.1.21367.13.20.3000", EPDCommunity.DUMMY.name(), null)).isEmpty();
     profileConfig.setLocalMode(true);
+
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.GAZELLE.name(), "IHEBLUE-2599", "1.3.6.1.4.1.21367.13.20.3000"));
+
     List<AllergyDTO> allergyDTOs =
         allergyService.getAll(EPDCommunity.GAZELLE.name(),
             "1.3.6.1.4.1.21367.13.20.3000",
-            "IHEBLUE-2599", author, null);
+            "IHEBLUE-2599", null);
     assertThat(allergyDTOs.size()).isEqualTo(1);
     assertThat(allergyDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(allergyDTOs.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
@@ -142,7 +140,7 @@ class AllergyServiceTest extends AbstractServiceTest {
     PatientIdentifier patientIdentifier =
         allergyService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
-    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, author, null, true);
+    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, null, true);
     assertThat(allergies.size()).isEqualTo(1);
 
     HumanNameDTO recorder = new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null);
@@ -154,7 +152,7 @@ class AllergyServiceTest extends AbstractServiceTest {
     ValueDTO newType = new ValueDTO(AllergyIntoleranceType.INTOLERANCE.toCode(),
         AllergyIntoleranceType.INTOLERANCE.getDisplay(), AllergyIntoleranceType.INTOLERANCE.getSystem());
     String commentText = "BlaBla";
-    CommentDTO comment = new CommentDTO(null, author.getUser(), commentText);
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
     AllergyDTO newAllergyDTO = new AllergyDTO(null, LocalDate.now(), newAllergyCode, newCriticality,
         newClinicalStatus, newVerficationStatus, newType, recorder, List.of(comment), "My organization AG");
     newAllergyDTO.setAuthor(author);
@@ -168,11 +166,11 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(updatedAllergy.getVerificationStatus()).isEqualTo(newVerficationStatus);
     assertThat(updatedAllergy.getType()).isEqualTo(newType);
     assertThat(updatedAllergy.getComments().size()).isEqualTo(1);
-    assertThat(updatedAllergy.getComments().get(0).getAuthor().getFullName()).isEqualTo(author.getUser().getFullName());
+    assertThat(updatedAllergy.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(updatedAllergy.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(updatedAllergy.getComments().get(0).getDate()).isNotNull();
 
-    allergies = allergyService.getAll(patientIdentifier, author, null, true);
+    allergies = allergyService.getAll(patientIdentifier, null, true);
     assertThat(allergies.size()).isEqualTo(1);
   }
 
@@ -189,8 +187,9 @@ class AllergyServiceTest extends AbstractServiceTest {
         AllergyIntoleranceType.INTOLERANCE.getDisplay(), AllergyIntoleranceType.INTOLERANCE.getSystem());
     AllergyDTO newAllergyDTO = new AllergyDTO(null, LocalDate.now(), newAllergyCode, newCriticality,
         newClinicalStatus, newVerficationStatus, newType, recorder, List.of(), "My organization AG");
-    newAllergyDTO.setAuthor(author);
 
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "waldspital-Id-1234", "1.2.3.4.123456.1"));
     AllergyDTO updatedAllergy =
         allergyService.validate(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234", "00476f5f-f3b7-4e49-9b52-5ec88d65c18e", newAllergyDTO, null);
@@ -206,8 +205,16 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(
         allergyService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
             "1.2.3.4.123456.1",
-            EPDCommunity.DUMMY.name(), author, null))
+            EPDCommunity.DUMMY.name(), null))
                 .isEmpty();
+  }
+
+  @BeforeEach
+  void setUp() {
+    super.before();
+
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "waldspital-Id-1234", "1.2.3.4.123456.1"));
   }
 
   @Test

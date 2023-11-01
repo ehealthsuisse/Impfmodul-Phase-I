@@ -19,6 +19,8 @@
 package ch.admin.bag.vaccination.config;
 
 import ch.admin.bag.vaccination.exception.FilterChainExceptionHandler;
+import ch.admin.bag.vaccination.service.saml.SAMLAuthFilter;
+import ch.admin.bag.vaccination.service.saml.SAMLAuthProvider;
 import ch.admin.bag.vaccination.service.saml.SAMLFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
 import javax.servlet.Filter;
@@ -26,12 +28,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -54,14 +58,29 @@ public class SecurityConfiguration {
   @Autowired
   private FilterChainExceptionHandler filterChainExceptionHandler;
 
+  @Autowired
+  private SAMLAuthProvider samlAuthProvider;
+
+
+  /** Include our saml authentication provider in the list of providers */
   @Bean
-  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+    AuthenticationManagerBuilder authenticationManagerBuilder =
+        http.getSharedObject(AuthenticationManagerBuilder.class);
+    authenticationManagerBuilder.authenticationProvider(samlAuthProvider);
+
+    return authenticationManagerBuilder.build();
+  }
+
+  @Bean
+  SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
+    HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     http.addFilter(corsFilter)
         .csrf().disable()
         .authorizeRequests()
 
-        // allow SAML authentication
-        .antMatchers("/saml/sso", "/saml/login/**", "/saml/authentication/**").permitAll()
+        // allow SAML authentication and logout
+        .antMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
 
         // allow access to actuators
         .antMatchers("/actuator/health", "/actuator/health/**").permitAll()
@@ -69,24 +88,44 @@ public class SecurityConfiguration {
         // allow access to signature service
         .antMatchers("/signature/**").permitAll()
 
+        // allow access to utility controller
+        .antMatchers("/utility/**").permitAll()
+
         // forbid swagger
         .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
         .anyRequest().authenticated()
         .and()
         .addFilterBefore(createSAMLFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(createSAMLAuthFilter(authManager, securityContextRepository), SAMLFilter.class)
         .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .authenticationManager(authManager)
+        .securityContext((securityContext) -> securityContext
+            .securityContextRepository(securityContextRepository)
+            .requireExplicitSave(true));
 
     return http.build();
   }
 
-  @Bean
-  InMemoryUserDetailsManager userDetailsService() {
-    // generate no user for basic authentication
-    return new InMemoryUserDetailsManager();
+  /**
+   * Filter handling the samlArt request from the client.
+   */
+  private Filter createSAMLAuthFilter(AuthenticationManager authManager,
+      HttpSessionSecurityContextRepository securityContextRepository) {
+    return new SAMLAuthFilter(authManager, securityContextRepository);
   }
 
+  /**
+   * Filter handling the main uses cases
+   * <ul>
+   * <li>Allowed endpoint -> do nothing
+   * <li>Protected endpoint and unauthenticated -> forward to idp.
+   * <li>Protected endpoint and samlArtificat request -> let SAMLAuthfilter handle it.
+   * <li>Protected endpoint and authenticated -> check context.
+   *
+   * @return {@link Filter}
+   */
   private Filter createSAMLFilter() {
     return new SAMLFilter(samlService, profileConfig);
   }

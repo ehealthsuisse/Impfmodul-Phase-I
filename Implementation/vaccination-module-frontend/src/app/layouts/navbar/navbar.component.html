@@ -1,140 +1,98 @@
-<div
-  class="menuOverlay"
-  (click)="closeMenu()"
-  (keydown.enter)="closeMenu()"
-  [ngClass]="{ active: showMobileMenu || sharedDataService.showActionMenu }"
-></div>
-<mat-toolbar
-  *ngIf="canVisit$"
-  class="mat-toolbar mat-elevation-z1 navbar navbar__fixed navbar__fixed__main"
-  [ngClass]="{ active: showMobileMenu }"
-  fxLayout="row"
-  fxLayoutAlign="space-between center"
->
-  <!--  Logo -->
-  <div class="navbar__logo navbar__logo__main" fxLayout="row" fxLayoutAlign="center center">
-    <img alt="Logo syringe" routerLink="/" src="./assets/logos/spritze.svg" class="navbar__logo__syringe" aria-label="Main" />
-    <mat-label class="nameLabel">{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
-    <a
-      href="javascript:void(0);"
-      class="navbar__tabletMenu__toggle"
-      [ngClass]="{ activeTablet: showTabletMenu }"
-      (click)="toggleTabletMenu()"
-    >
-      <mat-icon aria-hidden="true">keyboard_arrow_right</mat-icon>
-    </a>
-  </div>
-  <!--  Navigation -->
-  <nav
-    class="navbar__navigation entity-wrapper"
-    [ngClass]="{ activeTablet: showTabletMenu }"
-    aria-label="navbar-navigation"
-    fxLayout="row"
-    fxLayoutAlign="space-around center"
-  >
-    <a
-      accesskey="h"
-      routerLink="/"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-      (click)="closeMenu()"
-      class="navbar__navigation__link"
-      vmTranslate="GLOBAL.HOME"
-    ></a>
-    <a
-      routerLink="/vaccination"
-      routerLinkActive="active"
-      (click)="closeMenu()"
-      class="navbar__navigation__link"
-      vmTranslate="VACCINATION.TITLE"
-      accesskey="v"
-    ></a>
-    <a
-      routerLink="/allergy"
-      (click)="closeMenu()"
-      routerLinkActive="active"
-      class="navbar__navigation__link"
-      vmTranslate="ALLERGY.TITLE"
-      accesskey="a"
-    ></a>
-    <a
-      routerLink="/infectious-diseases"
-      (click)="closeMenu()"
-      routerLinkActive="active"
-      class="navbar__navigation__link"
-      vmTranslate="ILLNESS.TITLE"
-      accesskey="i"
-    ></a>
-    <a
-      routerLink="/medical-problem"
-      routerLinkActive="active"
-      (click)="closeMenu()"
-      class="navbar__navigation__link"
-      vmTranslate="MEDICAL_PROBLEM.TITLE"
-      accesskey="m"
-    ></a>
-  </nav>
-
-  <nav class="navbar__languages" aria-label="Language" fxLayout="row" fxLayoutAlign="space-between center">
-    <div class="dropdown">
-      <button class="dropdown-btn" mat-button [attr.aria-label]="currentLanguage">
-        {{ currentLanguage }}
-        <mat-icon aria-hidden="true">keyboard_arrow_down</mat-icon>
-      </button>
-
-      <div class="dropdown-content">
-        <a
-          *ngFor="let lang of languages"
-          [class.active]="currentLanguage === lang"
-          class="navbar__languages__language"
-          (click)="changeLanguage(lang)"
-          (keydown)="changeLanguage(lang)"
-        >
-          {{ lang | uppercase }}
-        </a>
+<mat-sidenav-container class="navbar-container">
+  <mat-sidenav #sidenav mode="over" position="start" class="mat-sidenav">
+    <!-- Mobile content -->
+    <div *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue">
+      <div class="patient-name">
+        <img
+          [attr.alt]="'GLOBAL.LOGO_VACCINATION_MODULE' | translate"
+          routerLink="/vaccination-record"
+          src="./assets/logos/spritze.svg"
+          class="syringe"
+          [attr.aria-label]="'GLOBAL.HOME' | translate"
+        />
+        <mat-label class="mat-label mat-list-item">{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
+      </div>
+      <vm-language></vm-language>
+      <vm-navigation (toggleSidenav)="sidenav.toggle()"></vm-navigation>
+      <div aria-hidden="true" class="community-logo">
+        <img
+          [attr.alt]="'GLOBAL.COMMUNITY_LOGO' | translate"
+          src="./assets/logos/company.png"
+          [attr.aria-label]="'GLOBAL.COMMUNITY_LOGO' | translate"
+        />
       </div>
     </div>
-  </nav>
+  </mat-sidenav>
 
-  <div fxLayout="column" fxLayoutAlign="flex-start" class="navbar__community">
-    <div aria-hidden="true" class="community-logo">
-      <img alt="" src="./assets/logos/company.png" aria-label="" />
+  <mat-sidenav #sidenavAction mode="over" position="end" class="mat-sidenav" *ngIf="showActionSidenav">
+    <!-- Mobile content -->
+    <div *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()">
+      <ng-template [ngIf]="showActionSidenav">
+        <vm-details-action *ngIf="!showPatientSidenav"></vm-details-action>
+      </ng-template>
+      <ng-template [ngIf]="showPatientSidenav">
+        <vm-patient-action></vm-patient-action>
+      </ng-template>
     </div>
-    <div class="user" fxLayout="row" fxLayoutAlign="center center">
-      <mat-label>{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
-    </div>
-  </div>
-</mat-toolbar>
-<mat-toolbar
-  class="mat-toolbar mat-elevation-z1 navbar__mobile"
-  [ngClass]="{ active: showMobileMenu }"
-  fxLayout="row"
-  fxLayoutAlign="space-between center"
->
-  <div class="navbar__logo" fxLayout="row" fxLayoutAlign="center center">
-    <a href="javascript:void(0);" aria-label="Menu Toggle" class="navbar__mobileMenu__toggle" (click)="toggleMenu()">
-      <mat-icon aria-hidden="true">menu</mat-icon>
-    </a>
-    <vm-patient *ngIf="!showMobileMenu" [isMobile]="true"></vm-patient>
-    <mat-icon
-      class="actionsToggle"
-      *ngIf="sharedDataService.patientActions || sharedDataService.detailedActions"
-      (click)="toggleActionMenu()"
-      >more_vert</mat-icon
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <!-- Desktop Toolbar -->
+    <mat-toolbar
+      *ngIf="isDesktop && (isAuthorized || (isAuthorized && samlService.isSsoRedirectCompleted.getValue()))"
+      class="navbar-container__desktop"
     >
-    <div
-      class="navbar__fixed navbar__fixed__right"
-      [ngClass]="{ active: sharedDataService.showActionMenu }"
-      *ngIf="sharedDataService.patientActions"
-    >
-      <vm-patient-action></vm-patient-action>
-    </div>
-    <div
-      class="navbar__fixed navbar__fixed__right"
-      [ngClass]="{ active: sharedDataService.showActionMenu }"
-      *ngIf="sharedDataService.detailedActions"
-    >
-      <vm-details-action [canEdit]="sharedDataService.canEdit"></vm-details-action>
-    </div>
-  </div>
-</mat-toolbar>
+      <div class="logo">
+        <img
+          [attr.title]="'GLOBAL.LOGO_VACCINATION_MODULE' | translate"
+          [attr.alt]="'GLOBAL.LOGO_VACCINATION_MODULE' | translate"
+          routerLink="/vaccination-record"
+          src="./assets/logos/spritze.svg"
+          class="mat_toolbar__logo__syringe"
+          [attr.aria-label]="'GLOBAL.HOME' | translate"
+        />
+      </div>
+      <vm-navigation></vm-navigation>
+      <vm-language></vm-language>
+      <div fxLayout="column" fxLayoutAlign="flex-start" class="navbar__community">
+        <div aria-hidden="true" class="community-logo">
+          <img
+            [attr.title]="'GLOBAL.COMMUNITY_LOGO' | translate"
+            [attr.alt]="'GLOBAL.COMMUNITY_LOGO' | translate"
+            src="./assets/logos/company.png"
+            [attr.aria-label]="'GLOBAL.COMMUNITY_LOGO' | translate"
+          />
+        </div>
+        <div class="user" fxLayout="row" fxLayoutAlign="center center">
+          <mat-icon class="user__icon" [attr.aria-hidden]="true" fontIcon="person"></mat-icon>
+          <mat-label>{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
+        </div>
+      </div>
+    </mat-toolbar>
+    <!-- Mobile Toolbar -->
+    <mat-toolbar *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()" class="navbar-container__mobile">
+      <div class="menu-patient-wrapper">
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon aria-hidden="true" *ngIf="samlService.isSsoRedirectCompleted.getValue()">menu</mat-icon>
+        </button>
+        <vm-patient></vm-patient>
+      </div>
+      <div
+        class="action-menu"
+        [ngClass]="{
+          'action-menu__mobile': isMobile,
+          'action-menu__desktop': isDesktop,
+          show: showPatientSidenav
+        }"
+      >
+        <button mat-icon-button (click)="sidenavAction.toggle()" *ngIf="showActionSidenav">
+          <mat-icon aria-hidden="true">more_vert</mat-icon>
+        </button>
+      </div>
+    </mat-toolbar>
+    <main>
+      <mat-progress-spinner *ngIf="spinnerService.IsWait" class="vm-progress-spinner" mode="indeterminate"></mat-progress-spinner>
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

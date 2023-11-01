@@ -1,11 +1,18 @@
-<mat-card-actions class="actions">
+<mat-card-actions class="actions" [ngClass]="{ mobile: isMobile || isTablet, desktop: isDesktop }">
   <button mat-raised-button type="button" [attr.aria-label]="'buttons.EXPORT'" color="accent" (click)="exportPdf()" class="mat-button">
     <ng-container class="button-content">
       <span class="button-text" [vmTranslate]="'buttons.EXPORT'"></span>
     </ng-container>
   </button>
 
-  <button mat-raised-button type="button" color="accent" (click)="save()" [attr.aria-label]="'buttons.SAVE' | translate">
+  <button
+    mat-raised-button
+    type="button"
+    color="accent"
+    (click)="save()"
+    [disabled]="isEmergencyMode"
+    [attr.aria-label]="'buttons.SAVE' | translate"
+  >
     <ng-container class="button-content">
       <span class="button-text" [vmTranslate]="'buttons.SAVE'"></span>
     </ng-container>
@@ -14,14 +21,14 @@
   <button
     type="button"
     mat-raised-button
-    [color]="!isMobile ? undefined : 'accent'"
-    [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-action-button'"
+    [color]="!isMobile || !isTablet ? undefined : 'accent'"
+    [ngClass]="isMobile || isTablet ? 'mat-accent' : 'mat-action-button'"
     [attr.aria-label]="'buttons.DOWNLOAD'"
     (click)="download()"
     [matTooltip]="'buttons.DOWNLOAD' | translate"
   >
-    <ng-template [ngIf]="isMobile"> <span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span> </ng-template>
-    <ng-template [ngIf]="!isMobile">
+    <ng-template [ngIf]="isMobile || isTablet"><span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span> </ng-template>
+    <ng-template [ngIf]="isDesktop">
       <img
         [attr.aria-label]="'buttons.DOWNLOAD' | translate"
         alt="{{ 'buttons.DOWNLOAD' | translate }}"
@@ -34,13 +41,15 @@
   <button
     type="button"
     mat-raised-button
-    [color]="!isMobile ? undefined : 'accent'"
-    [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-action-button'"
+    [color]="!isMobile || !isTablet ? undefined : 'accent'"
+    [ngClass]="isMobile || isTablet ? 'mat-accent' : 'mat-action-button'"
     [attr.aria-label]="'buttons.HELP' | translate"
     (click)="dialog.openDialog('HELP.VACCINATION_RECORD.HELP.TITLE', 'HELP.VACCINATION_RECORD.HELP.BODY')"
     [matTooltip]="'buttons.HELP' | translate"
   >
-    <ng-template [ngIf]="isMobile"> <span class="button-text" [vmTranslate]="'buttons.HELP'"></span> </ng-template>
-    <ng-template [ngIf]="!isMobile"> <mat-icon class="mat-icon help-icon">help</mat-icon> </ng-template>
+    <ng-template [ngIf]="isMobile || isTablet"><span class="button-text" [vmTranslate]="'buttons.HELP'"></span> </ng-template>
+    <ng-template [ngIf]="isDesktop">
+      <mat-icon class="mat-icon help-icon">help</mat-icon>
+    </ng-template>
   </button>
 </mat-card-actions>

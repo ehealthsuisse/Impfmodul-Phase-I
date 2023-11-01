@@ -75,11 +75,11 @@ public class PdfServiceTest {
     }
 
     allergyDTOs.get(0).setComments(Arrays.asList(
-        new CommentDTO(LocalDateTime.now().minusDays(10), new HumanNameDTO("Michel", "Dupont", "Dr", null, null),
+        new CommentDTO(LocalDateTime.now().minusDays(10), " Dr. Michel Dupont ",
             "Comment1\nNewLine"),
-        new CommentDTO(LocalDateTime.now().minusDays(5), new HumanNameDTO("Michel", "Dupont", "Dr", null, null),
+        new CommentDTO(LocalDateTime.now().minusDays(5), " Dr. Michel Dupont ",
             "Comment2"),
-        new CommentDTO(LocalDateTime.now().minusDays(1), new HumanNameDTO("Michel", "Dupont", "Dr", null, null),
+        new CommentDTO(LocalDateTime.now().minusDays(1), " Dr. Michel Dupont ",
             "Comment3")));
 
     vaccinationDTOs.add(new VaccinationDTO("id",

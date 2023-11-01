@@ -19,9 +19,14 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
+import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.time.LocalDate;
@@ -44,30 +49,45 @@ public class LifeCycleServiceTest {
   @Autowired
   private LifeCycleService lifeCycleService;
   private VaccinationDTO[] vaccinationDTOs = new VaccinationDTO[4];
+  private AllergyDTO[] allergieDTOs = new AllergyDTO[4];
+  private PastIllnessDTO[] pastIllnessDTOs = new PastIllnessDTO[4];
+  private MedicalProblemDTO[] problemDTOs = new MedicalProblemDTO[4];
 
   /**
    * V1 <- V2 <- V3 <- V4 t0 < t1 < t2 < t3
    */
   @BeforeEach
   public void setup() {
-    ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
-    vaccinationDTOs[0] = new VaccinationDTO("1", new ValueDTO("1", "1", "testsystem"), null, null, 1,
-        LocalDate.now(), new HumanNameDTO("Victor1", "Frankenstein1", "Dr.", null, null), null,
-        "lotNumber1", null, status);
-    vaccinationDTOs[1] = new VaccinationDTO("2", new ValueDTO("2", "2", "testsystem"), null, null, 2,
-        LocalDate.now(), new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null), null,
-        "lotNumber2", null, status);
-    vaccinationDTOs[2] = new VaccinationDTO("3", new ValueDTO("3", "3", "testsystem"), null, null, 3,
-        LocalDate.now(), new HumanNameDTO("Victor3", "Frankenstein3", "Dr.", null, null), null,
-        "lotNumber3", null, status);
-    vaccinationDTOs[3] = new VaccinationDTO("4", new ValueDTO("4", "4", "testsystem"), null, null, 4,
-        LocalDate.now(), new HumanNameDTO("Victor4", "Frankenstein4", "Dr.", null, null), null,
-        "lotNumber4", null, status);
+    createVaccinations();
+    createAllergies();
+    createPastIllnesses();
+    createMedicalProblems();
+  }
 
-    vaccinationDTOs[0].setCreatedAt(LocalDateTime.now());
-    vaccinationDTOs[1].setCreatedAt(LocalDateTime.now().plusSeconds(1));
-    vaccinationDTOs[2].setCreatedAt(LocalDateTime.now().plusSeconds(2));
-    vaccinationDTOs[3].setCreatedAt(LocalDateTime.now().plusSeconds(3));
+  @Test
+  void isPreviousCandidate_createdAtSameItem_returnFalse() {
+    vaccinationDTOs[1].setCreatedAt(vaccinationDTOs[0].getCreatedAt());
+    assertFalse(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1]));
+  }
+
+  @Test
+  void isPreviousCandidate_differentEntities_returnFalse() {
+    vaccinationDTOs[1].setCreatedAt(vaccinationDTOs[0].getCreatedAt());
+    assertFalse(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1]));
+  }
+
+  @Test
+  void isPreviousCandidate_sameItem_returnFalse() {
+    assertFalse(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[0]));
+  }
+
+  @Test
+  void previousEntryMissing_entryIsDeleted_dontShowAnything() {
+    vaccinationDTOs[1].setDeleted(true);
+    List<VaccinationDTO> managedList =
+        (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs[1]), false);
+
+    assertTrue(managedList.isEmpty());
   }
 
   /**
@@ -154,7 +174,6 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(0).getId()).isEqualTo("4");
   }
 
-
   /**
    * V1, V2, V3 = deleted(V2), V4 -> V1, V4
    */
@@ -169,6 +188,7 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(1).getId()).isEqualTo("1");
     assertThat(managedList.get(0).getId()).isEqualTo("4");
   }
+
 
   /**
    * V1 <- V2 <- V3 <- delete(V3) -> empty
@@ -242,7 +262,6 @@ public class LifeCycleServiceTest {
     assertThat(lifeCycleService.extrapolatedPrevious(new HashMap<>(items), vaccinationDTOs[0])).isNull();
   }
 
-
   /**
    * V1 <- V2 <- V3 <- x <- V4 -> V4
    */
@@ -261,6 +280,7 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(0).getId()).isEqualTo("4");
   }
 
+
   @Test
   void testIsPreviousCandidate() {
     assertThat(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1])).isFalse();
@@ -270,6 +290,30 @@ public class LifeCycleServiceTest {
     assertThat(lifeCycleService.isPreviousCandidate(vaccinationDTOs[0], vaccinationDTOs[1])).isTrue();
     vaccinationDTOs[0].setOccurrenceDate(LocalDate.now().minusDays(2));
     assertThat(lifeCycleService.isPreviousCandidate(vaccinationDTOs[1], vaccinationDTOs[0])).isFalse();
+
+    assertThat(lifeCycleService.isPreviousCandidate(allergieDTOs[0], allergieDTOs[1])).isFalse();
+    allergieDTOs[1].setCode(allergieDTOs[0].getCode());
+    assertThat(lifeCycleService.isPreviousCandidate(allergieDTOs[0], allergieDTOs[1])).isTrue();
+    allergieDTOs[0].setCreatedAt(LocalDateTime.now().minusDays(2));
+    assertThat(lifeCycleService.isPreviousCandidate(allergieDTOs[0], allergieDTOs[1])).isTrue();
+    allergieDTOs[0].setOccurrenceDate(LocalDate.now().minusDays(2));
+    assertThat(lifeCycleService.isPreviousCandidate(allergieDTOs[1], allergieDTOs[0])).isFalse();
+
+    assertThat(lifeCycleService.isPreviousCandidate(problemDTOs[0], problemDTOs[1])).isFalse();
+    problemDTOs[1].setCode(problemDTOs[0].getCode());
+    assertThat(lifeCycleService.isPreviousCandidate(problemDTOs[0], problemDTOs[1])).isTrue();
+    problemDTOs[0].setCreatedAt(LocalDateTime.now().minusDays(2));
+    assertThat(lifeCycleService.isPreviousCandidate(problemDTOs[0], problemDTOs[1])).isTrue();
+    problemDTOs[0].setRecordedDate(LocalDate.now().minusDays(2));
+    assertThat(lifeCycleService.isPreviousCandidate(problemDTOs[1], problemDTOs[0])).isFalse();
+
+    assertThat(lifeCycleService.isPreviousCandidate(pastIllnessDTOs[0], pastIllnessDTOs[1])).isFalse();
+    pastIllnessDTOs[1].setCode(pastIllnessDTOs[0].getCode());
+    assertThat(lifeCycleService.isPreviousCandidate(pastIllnessDTOs[0], pastIllnessDTOs[1])).isTrue();
+    pastIllnessDTOs[0].setCreatedAt(LocalDateTime.now().minusDays(2));
+    assertThat(lifeCycleService.isPreviousCandidate(pastIllnessDTOs[0], pastIllnessDTOs[1])).isTrue();
+    pastIllnessDTOs[0].setRecordedDate(LocalDate.now().minusDays(2));
+    assertThat(lifeCycleService.isPreviousCandidate(pastIllnessDTOs[1], pastIllnessDTOs[0])).isFalse();
   }
 
   @Test
@@ -304,5 +348,46 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(1).getId()).isEqualTo("3");
     assertThat(managedList.get(2).getId()).isEqualTo("2");
     assertThat(managedList.get(3).getId()).isEqualTo("1");
+  }
+
+  private void createAllergies() {
+    for (int i = 1; i <= 4; i++) {
+      String counter = String.valueOf(i);
+      allergieDTOs[i - 1] = new AllergyDTO(counter, LocalDate.now(), new ValueDTO(counter, counter, "testsystem"), null,
+          null,
+          null, null, new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null, null);
+      allergieDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
+    }
+  }
+
+  private void createMedicalProblems() {
+    for (int i = 1; i <= 4; i++) {
+      String counter = String.valueOf(i);
+      problemDTOs[i - 1] = new MedicalProblemDTO(counter, new ValueDTO(counter, counter, "testsystem"), null,
+          null, LocalDate.now(), null, null,
+          new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null, null);
+      problemDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
+    }
+  }
+
+  private void createPastIllnesses() {
+    for (int i = 1; i <= 4; i++) {
+      String counter = String.valueOf(i);
+      pastIllnessDTOs[i - 1] = new PastIllnessDTO(counter, new ValueDTO(counter, counter, "testsystem"), null,
+          null, LocalDate.now(), null, null,
+          new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null, null);
+      pastIllnessDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
+    }
+  }
+
+  private void createVaccinations() {
+    ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
+    for (int i = 1; i <= 4; i++) {
+      String counter = String.valueOf(i);
+      vaccinationDTOs[i - 1] = new VaccinationDTO(counter, new ValueDTO(counter, counter, "testsystem"), null, null, i,
+          LocalDate.now(), new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null,
+          "lotNumber" + counter, null, status);
+      vaccinationDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
+    }
   }
 }

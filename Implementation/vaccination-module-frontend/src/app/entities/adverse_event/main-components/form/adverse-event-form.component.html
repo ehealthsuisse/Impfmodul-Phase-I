@@ -34,7 +34,11 @@
             ngDefaultControl
           >
             <mat-option>
-              <ngx-mat-select-search [formControl]="searchControl"></ngx-mat-select-search>
+              <ngx-mat-select-search
+                [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
+                [placeholderLabel]="'GLOBAL.SEARCH' | translate"
+                [formControl]="searchControl"
+              ></ngx-mat-select-search>
             </mat-option>
             <mat-option
               *ngFor="let allergy of filteredAllergies | async | filterPipe : searchControl.value : 'ALLERGY_CODE.'"

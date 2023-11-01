@@ -54,12 +54,12 @@ public enum I18nKey {
       "CCE libretto delle vaccinazioni"), //
   PRINTED2("Printed on: ", "Gedruckt am: ", "Imprimé sur: ", "Stampato su: ");
 
-  private String en;
-  private String de;
-  private String fr;
-  private String it;
+  private final String en;
+  private final String de;
+  private final String fr;
+  private final String it;
 
-  private I18nKey(String en, String de, String fr, String it) {
+  I18nKey(String en, String de, String fr, String it) {
     this.en = en;
     this.de = de;
     this.fr = fr;
@@ -70,16 +70,12 @@ public enum I18nKey {
     if (lang == null) {
       return Locale.ENGLISH;
     }
-    switch (lang) {
-      case "de":
-        return Locale.GERMAN;
-      case "fr":
-        return Locale.FRENCH;
-      case "it":
-        return Locale.ITALIAN;
-      default:
-        return Locale.ENGLISH;
-    }
+    return switch (lang) {
+      case "de" -> Locale.GERMAN;
+      case "fr" -> Locale.FRENCH;
+      case "it" -> Locale.ITALIAN;
+      default -> Locale.ENGLISH;
+    };
   }
 
 
@@ -87,15 +83,11 @@ public enum I18nKey {
     if (lang == null) {
       return en;
     }
-    switch (lang) {
-      case "de":
-        return de;
-      case "fr":
-        return fr;
-      case "it":
-        return it;
-      default:
-        return en;
-    }
+    return switch (lang) {
+      case "de" -> de;
+      case "fr" -> fr;
+      case "it" -> it;
+      default -> en;
+    };
   }
 }

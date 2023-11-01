@@ -21,7 +21,7 @@ component Impfmodule as "vaccination-module-backend" {
   component AllergyController
   component MedicalProblemController
   component VaccinationRecordController
-  component SignatureController
+  component PortalController
   component UtilityController
   component SamlController
 
@@ -41,8 +41,10 @@ component Impfmodule as "vaccination-module-backend" {
   component HuskyAdapter {
      portout PDQ
      portout ATNA
-     portout RSQ
-     portout RDS
+     portout Internal_RSQ
+     portout External_RSQ
+     portout Internal_RDS
+     portout External_RDS
      portout SubmitDoc
      portout XUA
   }
@@ -83,8 +85,8 @@ VaccinationRecordService --> HuskyAdapter
 BaseService           --> Cache
 HuskyAdapter         -d-> Cache
 
-port_signature        --> SignatureController
-SignatureController   --> SignatureService
+port_signature        --> PortalController
+PortalController      --> SignatureService
 
 port_saml             --> SamlController
 SamlController        --> SamlService
@@ -99,8 +101,10 @@ node POST
 
 PDQ           --> GAZELLE
 XUA           --> GAZELLE
-RSQ           --> GAZELLE
-RDS           --> GAZELLE
+Internal_RSQ  --> GAZELLE
+External_RSQ  --> GAZELLE
+Internal_RDS  --> GAZELLE
+External_RDS  --> GAZELLE
 SubmitDoc     --> GAZELLE
 ATNA          --> GAZELLE
 idp           --> IDP

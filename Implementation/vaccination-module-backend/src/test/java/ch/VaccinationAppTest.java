@@ -19,6 +19,8 @@
 package ch;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import ch.admin.bag.vaccination.service.husky.HuskyAdapter;
 import ch.admin.bag.vaccination.service.husky.config.CommunitiesConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
@@ -26,6 +28,7 @@ import ch.admin.bag.vaccination.service.husky.config.EPDRepository;
 import ch.admin.bag.vaccination.service.husky.config.SenderConfig;
 import ch.admin.bag.vaccination.service.saml.IdPAdapter;
 import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
+import ch.fhir.epr.adapter.exception.TechnicalException;
 import org.apache.camel.CamelContext;
 import org.junit.jupiter.api.Test;
 import org.projecthusky.communication.ConvenienceCommunication;
@@ -74,10 +77,10 @@ class VaccinationAppTest {
         .isEqualTo(EPDCommunity.DUMMY.name());
 
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
-        .getRepositoryConfig(EPDRepository.PIX.name()).getReceiver()
-        .getApplicationOid()).isEqualTo("1.3.6.1.4.1.12559.11.20.1.10");
-    assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
-        .getRepositoryConfig(EPDCommunity.DUMMY.name())).isNull();
+        .getRepositoryConfig(EPDRepository.PDQ.name()).getReceiver()
+        .getApplicationOid()).isEqualTo("2.16.840.1.113883.3.72.6.5.100.1399");
+    assertThrows(TechnicalException.class, () -> communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
+        .getRepositoryConfig(EPDCommunity.DUMMY.name()));
   }
 
   @Test

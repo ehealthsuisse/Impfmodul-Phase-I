@@ -79,6 +79,7 @@ The Web Archive of the vaccination module backend uses the following configurati
  - `fhir.yml` configuration of the FHIR profile for vaccination.
  - `husky.yml` configuration of the communication components of the Husky Library.
  - `idp-config-local.yml` configuration of the Identity Providers to be used.
+ - `logging.properties` log configuration to adjust the log level for particular Java packages.
  - `portal-config.yml` configuration of the Portal-Interface to start the module.
 
 There are two additional parameter which must be set as environment variables described below.
@@ -98,7 +99,7 @@ Vaccination Module for the EPR
 profile: local
 config: ${vaccination_config}
 
-Powered by Spring Boot 2.7.11
+Powered by Spring Boot 2.7.17
 ```
 
 The following environment variables must be set appropriately:
@@ -149,11 +150,19 @@ epdbackend:
             facilityOid: "1.2.3.4.5.6.7"
 
         # Registry Stored Query: Get and display document metadata
-        - identifier: RegistryStoredQuery
+        - identifier: InternalRegistryStoredQuery
           [...]
 
-        # Retrieve Document Set: Get and display document contents
-        - identifier: RetrieveDocumentSet
+        # Retrieve Document Set: Get and display document contents - own community
+        - identifier: InternalRetrieveDocumentSet
+          [...]
+
+        # Registry Stored Query: Get and display document metadata - cross community
+        - identifier: ExternalRegistryStoredQuery
+          [...]
+
+        # Retrieve Document Set: Get and display document contents - cross community
+        - identifier: ExternalRetrieveDocumentSet
           [...]
 
         # Submit Document Set: Submit a document
@@ -182,13 +191,13 @@ The community settings are as follows:
  - identifier: OID of the community.
  - globalAssigningAuthorityOid: Global oder root OID of the Master Patient Index of the community.
  - SpidEprOid: Assigning authority of the ZAS for the EPR-SPID.
- - repositories: Section of endpoints the vaccination module shall connect to.
+ - repositories: Section of endpoints the vaccination module shall connect to. Please note that for there are two RegistryStoredQuery and for the RetrieveDocumentSet endpoints. If a community combined both functionality into a single call, just leave the URL for the external endpoints empty. **Do not remove them!** 
  - repositories.identifier: **don't override**, since the value is used internally to link the application code to the configuration.
  - uri: The URL of the community EPR service endpoint.
  - receiver.applicationOid/facilityOid: OID of the receiving endpoint.
  - repositories.xua: This is only relevant for the XUA repository, here the additional settings enable the user to deploy a different keystore for the XUA exchange.
  - ipf.atna: Defines the ATNA Logging which is mandatory for EPR transactions. Make sure to set *ipf.atna.audit-enabled* to true and put in the correct details. When using TLS as transport protocol (which should be done for productive use), MTLS credentials will be taken from the default security key and truststore, see chapter *Security Configuration*.
-
+ 
 **IdP Configuration**
 
 The vaccination module requires the Identity Provider settings to be able to authenticate users during operation. The configuration covers the SAML Metadata exchanged between the community or platform provider and the Identity Providers. The list of Identity Provider setting is multivalued and the vaccination module supports all Identity Provider configured in the list.
@@ -201,20 +210,23 @@ idp:
   knownEntityId: myVaccinationModule
 
   # Provide per Provider
-  # HTTP-Post Binding URL
-  # SAML2.0-SOAP Binding URL
   supportedProvider:
   - identifier: GAZELLE
     authnrequestURL: https://ehealthsuisse.ihe-europe.net:4443/idp/profile/SAML2/Redirect/SSO
     artifactResolutionServiceURL: https://ehealthsuisse.ihe-europe.net:4443/idp/profile/SAML2/SOAP/ArtifactResolution
+    securityTokenServiceURL: https://is.not.set.for.gazelle
+    entityId: OverwriteDefaultEntityIDIfNecessary
+    logoutURL: https://logout.url.set.in.logout.request.destination
   - identifier: [...]
 
 # Service Provider - this application
 sp:
-  assertionConsumerServiceUrl: https://my.backend.url/saml/{idp}/sso
+  assertionConsumerServiceUrl: https://my.backend.url/saml/sso
+  forwardArtifactToClientUrl: https://my.frontend.url/saml-acs
 
   # keystore containing our private key
   keystore:
+   keystore-type: PKCS12
    keystore-path: path.to.keystore.p12
    keystore-password: password
    sp-alias: spkeyAlias
@@ -226,30 +238,53 @@ The parameter are interpreted as follows:
 - supportedProvider.identifier: Label of the Identity Provider which is used in the Portal at vaccination startup.The label is used by the vaccination model to link to the Identity Provider the user logged in the portal.
 - supportedProvider.authnrequestURL: URL of the Identity Provider accepting *AuthNRequest*.
 - supportedProvider.artifactResolutionServiceURL: URL of the Identity Providers accepting the SAML Artefact and returning the IdP Assertion..
+- supportedProvider.securityTokenServiceURL: URL of the security token service needed to refresh the IDP token.
+- supportedProvider.entityId: Allows to override the entity ID for a specific IDP. This was a necessary workaround for HIN IDP to ensure that both vaccination module and portal application resolve to same NameID within the IDP Token.
+- supportedProvider.logoutURL: URL string filled into the destination field of the LogoutResponse. If not set, the issuer from the LogoutRequest is used. 
 - assertionConsumerServiceUrl: URL of the vaccination module accepting callbacks from the Identity Provider. Using the path variable *{idp}*, the vaccination module now can look up which IDP configuration it needs to check for the artifact response.
+- forwardArtifactToClientUrl: URL of a backend endpoint which will forward the SAMLartifact to the Angular frontend application. This workaround was implemented if it is not possible by the IDP to send a HTTP GET to the Frontend application directly.
   
 **Note:** The suffix */saml/sso* is mandatory and only the root address must be set.
 - keystore: Keystore settings.
+- keystore.keystore-type: Type to the Keystore file (either JKS or PKCS12).
 - keystore.keystore-path: Path to the Keystore file.
 - keystore-password: Keystore's Password.
 - sp-alias: Alias name of the private key used for the communication with the Identity Provider.
+
+**Logging Property**  
+The configuration of the log levels are located in the *logging.properties* file. Each row starting with *logging.level* represents a setting.
+Each setting consists of a package name and the corresponding loglevel. The package names are hereby structured hierarchically, i.e. configuration for logging.level.ch includes all subpages unless there is a more specific role.
+Following debug level are available
+* INFO = general information 
+* DEBUG = detailed information incl. some privacy information.  
+**Do not activate unless necessary due to GDPR.**
+* TRACE = For the SAML configuration, it is possible to log all telegrams going over the interfaces. **Does contain sensitive information**
 
 **Portal Configuration**  
 
 The vaccination module is started from the Portal or Primary System with a GET request which conveys a set of parameters, e.g., to identify the patient or time stamp. The startup request is signed with HMAC to verify the integrity and authenticate the calling application, which is configured in the Portal configuration.
 
 ```
-# Keystore used for the weblink
+# Configuration used for the weblink
 portal:
   # Shared secret between portal and vaccination modul to verify webcall signature
-  hmacpresharedkey: "portalKey"
-  # Must be set to true to ensure that web calls are not older than 2 seconds
-  activateTimestampCheck: "true"
+  hmacpresharedkey: sharedKey
+  # Must be set to true to ensure that web calls are not older than x seconds
+  activateTimestampCheck: true
+  # Default value 2000 millis 
+  timestampAllowedDerivationMillis: 2000
+  # Use timestamp in seconds (default milliseconds)
+  useTimestampInSeconds: false
+  # Encode signature in Base64 (true) or Hex (false) 
+  encodeSignatureBase64: true
 ```
 The parameter are interpreted as follows:
 - hmacpresharedkey: A unique key shared between the vaccination module and the calling application (e.g., portal). The key is used for the HMAC signature of the startup request.  
 - activateTimestampCheck: For testing purposes the value can be set to *false*, which suppresses the verificatio nof the timestamp. The default is *true* for productive use.
-
+- timestampAllowedDerivationMillis: Can be used to tune the validity of the initial request before it is processed by the vaccination module. If it is too short, users could experience an unwanted login denial. If it is too long, an attacker could possible grab the web call and initialte his own instance. Please tune during testing mode.
+Please note that milliseconds are cut if parameter useTimestampInSeconds is true.
+- useTimestampInSeconds: Flag to indicate whether the portal transmits the timestamp in seconds or milliseconds. Later one is preferred due to better tunability of the duration.
+- encodeSignatureBase64: Flag to indicate whether the portal transmits the signature Base64 or Hex-encoded.
 
 **Security Configuration**
 

@@ -63,8 +63,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class FhirAdapter implements FhirAdapterIfc {
+  private static final String CONFIG = "config";
   public static final String CONFIG_TESTFILES_JSON = Path.of(System.getProperty("vaccination_config",
-      "config"), "testfiles", "json").toString();
+      CONFIG), "testfiles", "json").toString();
 
   private FhirContext fhirContext;
 
@@ -128,12 +129,11 @@ public class FhirAdapter implements FhirAdapterIfc {
       return dtos;
     }
     if (FhirUtils.isVaccinationRecord(bundle)) {
-      log.warn("profile is VaccinationRecord");
+      log.debug("Bundle contains VaccinationRecord and is therefor ignored.");
       return dtos;
     }
 
     SectionType sectionType = getSectionType(clazz);
-
     try {
       for (DomainResource resource : getSectionResources(bundle, sectionType)) {
         T dto = parseFhirResource(clazz, bundle, resource);
@@ -155,8 +155,8 @@ public class FhirAdapter implements FhirAdapterIfc {
 
     if (!fhirConfig.getTestCases().isEmpty()) {
       for (String testCase : fhirConfig.getTestCases()) {
-        String configPath = System.getProperty("vaccination_config", "config");
-        String json = jsonFromFile(testCase.replaceFirst("config", configPath));
+        String configPath = System.getProperty("vaccination_config", CONFIG);
+        String json = jsonFromFile(testCase.replaceFirst(CONFIG, configPath));
         if (json != null) {
           localJsonFileContent.add(json);
         }
@@ -166,7 +166,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     List<String> jsonFilenames = getJsonFilenames(CONFIG_TESTFILES_JSON);
     for (String jsonFilename : jsonFilenames) {
       String json = jsonFromFile(CONFIG_TESTFILES_JSON + "/" + jsonFilename);
-      if (json != null) {
+      if (json != null && !json.isBlank()) {
         localJsonFileContent.add(json);
       }
     }
@@ -211,8 +211,8 @@ public class FhirAdapter implements FhirAdapterIfc {
       log.debug("unmarshall -> Bundle:{}",
           ToStringBuilder.reflectionToString(parsed, ToStringStyle.JSON_STYLE));
       return parsed;
-    } catch (Exception e) {
-      log.warn("Exception:{}", e.toString());
+    } catch (Exception ex) {
+      log.warn("Bundle could not be parsed. Exception: {}", ex);
       return null;
     }
   }
@@ -265,15 +265,13 @@ public class FhirAdapter implements FhirAdapterIfc {
    * @return the list of json files.
    */
   protected List<String> getJsonFilenames(String path) {
-    List<String> jsonFilenames = new ArrayList<>();
     File folder = new File(path);
     File[] listOfFiles = folder.listFiles();
+    List<String> jsonFilenames = new ArrayList<>(listOfFiles.length);
     for (int i = 0; i < listOfFiles.length; i++) {
       String filename = listOfFiles[i].getName();
-      if (filename.endsWith(".json")) {
-        log.debug("{}", filename);
-        jsonFilenames.add(filename);
-      }
+      log.debug("{}", filename);
+      jsonFilenames.add(filename);
     }
     return jsonFilenames;
   }
@@ -326,7 +324,9 @@ public class FhirAdapter implements FhirAdapterIfc {
     }
     Composition composition = FhirUtils.getResource(Composition.class, bundle);
     for (SectionComponent sectionComponent : composition.getSection()) {
-      if (sectionType.getId().equals(sectionComponent.getId())) {
+      boolean isSameId = sectionType.getId().equals(sectionComponent.getId());
+      boolean isSameCode = sectionType.getCode().equals(sectionComponent.getCode().getCodingFirstRep().getCode());
+      if (isSameId || isSameCode) {
         for (Reference reference : sectionComponent.getEntry()) {
           if (reference.getResource() != null) {
             resources.add((DomainResource) reference.getResource());

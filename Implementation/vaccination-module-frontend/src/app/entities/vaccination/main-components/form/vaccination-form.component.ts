@@ -39,6 +39,7 @@ import { ChipsHandler } from './chips-handler';
 import { VaccinationConfirmComponent } from '../../helper-components/confirm/vaccination-confirm.component';
 import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 
 @Component({
   standalone: true,
@@ -46,7 +47,14 @@ import { ConfidentialityService } from '../../../../shared/component/confidentia
   templateUrl: './vaccination-form.component.html',
   styleUrls: ['./vaccination-form.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedLibsModule, MainWrapperComponent, CommonCardFooterComponent, CommentComponent, FilterPipePipe],
+  imports: [
+    SharedLibsModule,
+    MainWrapperComponent,
+    CommonCardFooterComponent,
+    CommentComponent,
+    FilterPipePipe,
+    ReusableDateFieldComponent,
+  ],
 })
 export class VaccinationFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   vaccinationFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
@@ -82,6 +90,9 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   private unsubscribe$ = new Subject<void>();
 
   ngOnInit(): void {
+    this.dialogService.showActionSidenav(false);
+    this.displayMenu(false, false);
+
     this.getDropdownData();
     initializeActionData('', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
@@ -133,7 +144,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     if (this.editForm.value.commentMessage) {
       const commentObj = {
         text: this.editForm.value.commentMessage,
-        author: this.sessionInfoService.author.getValue(),
+        author: 'will be added by the system',
       };
       this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
       this.editForm.value.comments!.push(commentObj);
@@ -201,7 +212,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   protected subscribeToSaveResponse(result: Observable<IVaccination>, navigate: boolean, isUpdate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(navigate, isUpdate),
-      error: () => this.onSaveError(),
     });
   }
 
@@ -234,10 +244,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
       .subscribe(vaccinationDiseases => {
         this.vaccinationDiseases = vaccinationDiseases;
       });
-  }
-
-  private onSaveError(): void {
-    alert('error');
   }
 
   private getDropdownData(): void {

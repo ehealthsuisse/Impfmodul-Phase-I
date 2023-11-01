@@ -20,7 +20,7 @@
       role="button"
       [attr.aria-label]="'buttons.VALIDATE | translate'"
       color="accent"
-      [disabled]="!item?.validated!"
+      [disabled]="!item?.validated! || isEmergencyMode"
       *ngIf="canValidate"
       (click)="validateRecord($event)"
       (keydown.enter)="validateRecord($event)"
@@ -40,7 +40,7 @@
       (click)="navigateToEdit(item!)"
       (keydown.enter)="navigateToEdit(item!)"
       [attr.aria-label]="'buttons.EDIT' | translate"
-      [disabled]="disabled || canEdit"
+      [disabled]="disabled || canEdit || isEmergencyMode"
     >
       <ng-container class="button-content">
         <span class="button-text" [vmTranslate]="'buttons.EDIT'"></span>

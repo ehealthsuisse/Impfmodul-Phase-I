@@ -54,6 +54,8 @@ export class VaccinationListComponent extends BreakPointSensorComponent implemen
   vaccinationData$ = combineLatest([this.vaccinationService.query(), trackLangChange()]);
 
   ngOnInit(): void {
+    this.displayMenu(false, false);
+
     initializeActionData('', this.sharedDataService);
     this.vaccinationData$.subscribe(([v]) => {
       this.vaccinations = new MatTableDataSource<IVaccination>(this.mapper.vaccinationTranslateMapper(v));

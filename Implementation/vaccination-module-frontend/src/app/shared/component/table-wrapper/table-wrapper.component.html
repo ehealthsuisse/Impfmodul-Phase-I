@@ -18,13 +18,13 @@
     <ng-container [matColumnDef]="columnName" *ngFor="let columnName of displayedColumns">
       <ng-container *ngIf="isSortable(columnName); else unsortables">
         <th mat-header-cell *matHeaderCellDef mat-sort-header role="cell" scope="col">
-          {{ columnName | convertToSnakeCaseTranslation: translationPrefix | translate }}
+          {{ columnName | convertToSnakeCaseTranslation : translationPrefix | translate }}
         </th>
       </ng-container>
       <ng-template #unsortables>
         <th mat-header-cell *matHeaderCellDef role="cell" scope="col">
           <ng-container *ngIf="columnName !== 'entryStatus'">
-            {{ columnName | convertToSnakeCaseTranslation: translationPrefix | translate }}
+            {{ columnName | convertToSnakeCaseTranslation : translationPrefix | translate }}
           </ng-container>
         </th>
       </ng-template>

@@ -17,9 +17,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Component, inject } from '@angular/core';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DialogService } from '../../services';
 
 @Component({
   selector: 'vm-break-point-sensor',
@@ -28,22 +29,38 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styles: [],
 })
 export class BreakPointSensorComponent {
+  // Define your custom breakpoints
+  MY_TABLET_BREAKPOINT = '(min-width: 960px) and (max-width: 1279px)';
+  MY_DESKTOP_BREAKPOINT = '(min-width: 1280px)';
+
   isMobile: boolean = false;
   isDesktop: boolean = false;
+  isTablet: boolean = false;
   translateService: TranslateService = inject(TranslateService);
   snackBar = inject(MatSnackBar);
+  dialogService = inject(DialogService);
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver.observe(['(max-width: 600px)']).subscribe({
-      next: result => {
-        this.isMobile = result.matches;
-      },
-    });
-
-    this.breakpointObserver.observe(['(min-width: 601px)']).subscribe({
-      next: result => {
-        this.isDesktop = result.matches;
-      },
-    });
+    this.breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.HandsetPortrait, Breakpoints.Web, this.MY_TABLET_BREAKPOINT, this.MY_DESKTOP_BREAKPOINT])
+      .subscribe(result => {
+        if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.HandsetPortrait]) {
+          this.isMobile = true;
+          this.isTablet = false;
+          this.isDesktop = false;
+        } else if (result.breakpoints[this.MY_TABLET_BREAKPOINT]) {
+          this.isTablet = true;
+          this.isMobile = false;
+          this.isDesktop = false;
+        } else if (result.breakpoints[this.MY_DESKTOP_BREAKPOINT]) {
+          this.isDesktop = true;
+          this.isMobile = false;
+          this.isTablet = false;
+        }
+      });
+  }
+  displayMenu(showActionSidenav: boolean, showPatientActionSidenav: boolean): void {
+    this.dialogService.showActionSidenav(showActionSidenav);
+    this.dialogService.showPatientActionSidenav(showPatientActionSidenav);
   }
 }

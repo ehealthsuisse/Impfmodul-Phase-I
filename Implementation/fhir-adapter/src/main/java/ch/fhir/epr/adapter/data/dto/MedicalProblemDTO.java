@@ -52,4 +52,9 @@ public class MedicalProblemDTO extends BaseDTO {
     setOrganization(organization);
     setComments(comments);
   }
+
+  @Override
+  public LocalDate getDateOfEvent() {
+    return getRecordedDate();
+  }
 }

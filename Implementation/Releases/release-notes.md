@@ -1,3 +1,52 @@
+# November 2023 - Release 1.3
+
+Perfect present for Halloween, **Version 1.3** of the vaccination module is available.
+
+Delivery consists of:
+* Frontend Code and compiled code
+* Backend Code and compiled JAR (new) and WAR deployment
+* FHIR Adapter version 1.0.3
+
+## Features ##
+Version 1.3 mainly focussed on stability topics to ensure a succesful Go-Live.
+
+**Health Data**  
+All EPD transactions have been validated using the test environment of one EPR community.
+This includes both local and cross community transactions. Additionally, some improvements have been made to the transaction handling and created documents.
+
+**Integration Enhancements**  
+Since May, tests have been running to improve the integration of the vaccination module for the EPR communities.
+With the current version, all current IDPs are now supported by the vaccination module, i.e. SwissSign, HIN and ELCA IDPs.
+The SAML support includes:
+* Authentication via AuthNRequest
+* Artifact Resolve
+* Refresh IDP token automatically
+* Handling of logout via SOAP Backchannel
+
+Next to the SAML integration, the initial webcall needed by the portal applications was made more flexible to ease the use for portal applications to integration this feature.
+Last but not least, some dedicated features (like Emergency Mode) are now supported by the vaccination module. 
+
+**Improved Visibility**  
+In order to analyse the vaccination modules behaviour in an easier fashion, logging properties have been introduce which easily allow administrators to set the log level according to their needs.
+The properties file can be found on the config folder and contains some demo examples. 
+
+**Increased Security**  
+To dispell possible security concerns, an official pentest was run against the vaccination model. 
+The mechanism around the initial webcall and data loading has been reworked to suppress illegal data access.
+
+## Configuration ##
+**Improved Installation Guide**  
+During the testing phase, new parameters have been introduced to ease the integration of the vaccination module with the portal applications. 
+Therefor, check out the updated installation guide.
+
+## Further Bugfixes & Improvements ##
+* Library itextpdf was replaced by PDFBox and Boxable due to license issues when embedded the vaccination module code in your own application.
+* Patient's Confidentiality setting in the EPR is now considered, if a document cannot be saved, it is tried to store it with higher confidentiality.
+* Validation of the record is now condering EPR metadata
+* Signalisation Controller has been replaced by the Portal Controller.
+* Updated config examples to highlight the new properties 
+* Many smaller issues fixed.
+
 # May 2023 - Release 1.2
 
 Here is what's new in **Version 1.2** of the vaccination module.

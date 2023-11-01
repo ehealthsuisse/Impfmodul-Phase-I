@@ -18,11 +18,11 @@
  */
 import { Route } from '@angular/router';
 import { VaccinationRecordComponent } from './record/vaccination-record.component';
-import { ValidationGuard } from '../../core/guards/validation.guard';
+import { AuthGuard } from '../../core/guards/auth.guard';
 
 export const VACCINATION_RECORD_ROUTING: Route = {
-  path: '',
-  component: VaccinationRecordComponent,
+  path: 'vaccination-record',
   title: 'GLOBAL.HOME',
-  canActivate: [ValidationGuard],
+  component: VaccinationRecordComponent,
+  canActivate: [AuthGuard],
 };

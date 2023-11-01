@@ -1,5 +1,5 @@
 <mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
-  <mat-label class="mat-label">{{ labelTranslationKey | translate }}</mat-label>
+  <mat-label>{{ labelTranslationKey | translate }}</mat-label>
   <mat-select
     [compareWith]="compareFn"
     [placeholder]="labelTranslationKey | translate"

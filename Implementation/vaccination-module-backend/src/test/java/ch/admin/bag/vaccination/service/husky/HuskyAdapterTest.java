@@ -21,7 +21,9 @@ package ch.admin.bag.vaccination.service.husky;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.cache.Cache;
@@ -32,13 +34,17 @@ import ch.admin.bag.vaccination.service.husky.config.OidConfig;
 import ch.admin.bag.vaccination.service.husky.config.RepositoryConfig;
 import ch.admin.bag.vaccination.service.saml.SAMLXmlTestUtils;
 import ch.fhir.epr.adapter.FhirAdapter;
-import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
+import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
+import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -54,16 +60,20 @@ import org.projecthusky.common.communication.SubmissionSetMetadata;
 import org.projecthusky.common.enums.LanguageCode;
 import org.projecthusky.common.model.Code;
 import org.projecthusky.common.model.Identificator;
+import org.projecthusky.xua.saml2.Assertion;
 import org.projecthusky.xua.saml2.impl.AssertionBuilderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HuskyAdapterTest {
+  private static final ValueDTO ANY_CODE = new ValueDTO("code", "name", "system");
+
   @Autowired
   private HuskyAdapter huskyAdapter;
 
@@ -101,9 +111,9 @@ class HuskyAdapterTest {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
+    AuthorDTO author = new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null));
     List<DocumentEntry> documentEntries =
-        huskyAdapter.getDocumentEntries(patientIdentifier, null, null,
-            new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null);
+        huskyAdapter.getDocumentEntries(patientIdentifier, null, null, author, null, true);
 
     assertThat(documentEntries.size()).isGreaterThanOrEqualTo(0);
 
@@ -117,8 +127,8 @@ class HuskyAdapterTest {
     repositoryConfig.setReceiver(receiver);
     repositoryConfig.setHomeCommunityOid("urn:oid:1.1.1");
 
-    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(communityConfig,
-        repositoryConfig, documentEntries);
+    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier, communityConfig,
+        repositoryConfig, documentEntries, author, null);
 
     try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
       byte[] bytesOfDocument = is.readAllBytes();
@@ -141,7 +151,7 @@ class HuskyAdapterTest {
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
     List<DocumentEntry> documentEntries = huskyAdapter.getDocumentEntries(patientIdentifier, null, null,
-        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null);
+        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null, true);
     assertThat(documentEntries.size()).isEqualTo(42);
 
     for (DocumentEntry documentEntry : documentEntries) {
@@ -203,72 +213,7 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void getRetrievedDocuments_existingDocument_EPDPLAYGROUND() throws Exception {
-    DocumentEntry documentEntry = new DocumentEntry();
-    documentEntry.setRepositoryUniqueId("1.1.1.2.31");
-    documentEntry.setUniqueId("2.25.90799173491713586491471839779315544798"); // 2.25.253445961889251413523507992196901058285
-
-    CommunityConfig communityConfig = new CommunityConfig();
-    RepositoryConfig repositoryConfig = new RepositoryConfig();
-    repositoryConfig.setHomeCommunityOid("urn:oid:1.1.1");
-    OidConfig receiver = new OidConfig();
-    receiver.setApplicationOid("2.16.840.1.113883.3.72.6.5.100.1399");
-    receiver.setFacilityOid("Waldpsital Bern");
-    repositoryConfig
-        .setUri("https://epdplayground.i4mi.bfh.ch:6443/Repository/services/RepositoryService");
-    repositoryConfig.setReceiver(receiver);
-
-    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(communityConfig,
-        repositoryConfig, List.of(documentEntry));
-
-    assertEquals("application/fhir+json", retrievedDocuments.get(0).getMimeType());
-
-    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
-      byte[] bytesOfDocument = is.readAllBytes();
-      assertNotNull(bytesOfDocument);
-      log.debug("{}", new String(bytesOfDocument));
-      Bundle bundle = fhirAdapter.unmarshallFromString(new String(bytesOfDocument));
-      List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
-      assertThat(vaccinations.size()).isEqualByComparingTo(1);
-      VaccinationDTO vaccinationDTO = vaccinations.get(0);
-      log.debug("{}", vaccinationDTO);
-      assertThat(vaccinationDTO.getLotNumber()).isEqualTo("AHAVB946A");
-      assertThat(syslogServer.getLastMessage()).contains("Retrieve Document Set");
-    }
-  }
-
-  @Test
-  void getRetrievedDocuments_existingDocument_EPRPLAYGROUND() throws Exception {
-    DocumentEntry documentEntry = new DocumentEntry();
-    documentEntry.setRepositoryUniqueId("1.1.1.2.31");
-    documentEntry.setUniqueId("5b73b737-617c-41cc-86f4-449718d41556");
-
-    List<RetrievedDocument> retrievedDocuments =
-        huskyAdapter.getRetrievedDocuments(EPDCommunity.EPDPLAYGROUND.name(), List.of(documentEntry));
-    assertThat(retrievedDocuments.size()).isGreaterThanOrEqualTo(0);
-    assertThat(syslogServer.getLastMessage()).contains("Retrieve Document Set");
-  }
-
-  // @Test
-  void getRetrievedDocuments_existingDocument_GAZELLE() throws Exception {
-    DocumentEntry documentEntry = new DocumentEntry();
-    documentEntry.setRepositoryUniqueId("1.1.4567332.1.75");
-    documentEntry.setUniqueId("1.2.820.99999.18508463736145106181926975526539403561455330316563");
-
-    List<RetrievedDocument> retrievedDocuments =
-        huskyAdapter.getRetrievedDocuments(EPDCommunity.GAZELLE.name(), List.of(documentEntry));
-    assertThat(retrievedDocuments.size()).isEqualTo(1);
-
-    assertEquals("text/xml", retrievedDocuments.get(0).getMimeType());
-
-    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
-      byte[] bytesOfDocument = is.readAllBytes();
-      assertNotNull(bytesOfDocument);
-    }
-  }
-
-  @Test
-  void test_getPatientIdentifier_existing_patient() throws Exception {
+  void getPatientIdentifier_existing_patient() throws Exception {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
             "1.2.3.4.123456.1", "waldspital-Id-1234");
@@ -289,16 +234,83 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void test_getPatientIdentifier_unknown_patient() throws Exception {
+  void getPatientIdentifier_unknown_patient() throws Exception {
     assertThrows(TechnicalException.class,
         () -> huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "dummy"));
     assertThat(syslogServer.getLastMessage()).contains("Patient Demographics Query");
   }
 
-  // @Test Ignore test due to ClientSendException
-  // FIXME: Husky integration tests also dont work so assumption that it is a gazelle topic
-  void test_getXUserAssertion() throws Exception {
+  @Test
+  void getRetrievedDocuments_existingDocument_EPDPLAYGROUND() throws Exception {
+    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), null, null);
+    DocumentEntry documentEntry = new DocumentEntry();
+    documentEntry.setRepositoryUniqueId("1.1.1.2.31");
+    documentEntry.setUniqueId("2.25.90799173491713586491471839779315544798"); // 2.25.253445961889251413523507992196901058285
+
+    CommunityConfig communityConfig = new CommunityConfig();
+    RepositoryConfig repositoryConfig = new RepositoryConfig();
+    repositoryConfig.setHomeCommunityOid("urn:oid:1.1.1");
+    OidConfig receiver = new OidConfig();
+    receiver.setApplicationOid("2.16.840.1.113883.3.72.6.5.100.1399");
+    receiver.setFacilityOid("Waldpsital Bern");
+    repositoryConfig
+        .setUri("https://epdplayground.i4mi.bfh.ch:6443/Repository/services/RepositoryService");
+    repositoryConfig.setReceiver(receiver);
+
+    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier, communityConfig,
+        repositoryConfig, List.of(documentEntry), null, null);
+
+    assertEquals("application/fhir+json", retrievedDocuments.get(0).getMimeType());
+
+    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
+      byte[] bytesOfDocument = is.readAllBytes();
+      assertNotNull(bytesOfDocument);
+      log.debug("{}", new String(bytesOfDocument));
+      Bundle bundle = fhirAdapter.unmarshallFromString(new String(bytesOfDocument));
+      List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
+      assertThat(vaccinations.size()).isEqualByComparingTo(1);
+      VaccinationDTO vaccinationDTO = vaccinations.get(0);
+      log.debug("{}", vaccinationDTO);
+      assertThat(vaccinationDTO.getLotNumber()).isEqualTo("AHAVB946A");
+      assertThat(syslogServer.getLastMessage()).contains("Retrieve Document Set");
+    }
+  }
+
+  @Test
+  void getRetrievedDocuments_existingDocument_EPRPLAYGROUND() throws Exception {
+    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), null, null);
+    DocumentEntry documentEntry = new DocumentEntry();
+    documentEntry.setRepositoryUniqueId("1.1.1.2.31");
+    documentEntry.setUniqueId("5b73b737-617c-41cc-86f4-449718d41556");
+
+    List<RetrievedDocument> retrievedDocuments =
+        huskyAdapter.getRetrievedDocuments(patientIdentifier, List.of(documentEntry), null, null, true);
+    assertThat(retrievedDocuments.size()).isGreaterThanOrEqualTo(0);
+    assertThat(syslogServer.getLastMessage()).contains("Retrieve Document Set");
+  }
+
+  // @Test
+  void getRetrievedDocuments_existingDocument_GAZELLE() throws Exception {
+    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.GAZELLE.name(), null, null);
+    DocumentEntry documentEntry = new DocumentEntry();
+    documentEntry.setRepositoryUniqueId("1.1.4567332.1.75");
+    documentEntry.setUniqueId("1.2.820.99999.18508463736145106181926975526539403561455330316563");
+
+    List<RetrievedDocument> retrievedDocuments =
+        huskyAdapter.getRetrievedDocuments(patientIdentifier, List.of(documentEntry), null, null, true);
+    assertThat(retrievedDocuments.size()).isEqualTo(1);
+
+    assertEquals("text/xml", retrievedDocuments.get(0).getMimeType());
+
+    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
+      byte[] bytesOfDocument = is.readAllBytes();
+      assertNotNull(bytesOfDocument);
+    }
+  }
+
+  @Test
+  void getXUserAssertion() throws Exception {
     org.opensaml.saml.saml2.core.Assertion osAssertion = SAMLXmlTestUtils.createAssertion("saml/Assertion.xml");
     org.projecthusky.xua.saml2.Assertion huskyAssertion = new AssertionBuilderImpl().create(osAssertion);
     AuthorDTO author = new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null));
@@ -317,12 +329,35 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void test_setDocumentMetadata() {
+  void getXUserAssertion_localMode_returnNullUponEmptyAssertion() throws Exception {
+    assertNull(huskyAdapter.getXUserAssertion(null, null, null, null, null));
+  }
+
+  @Test
+  void getXUserAssertion_noLocalMode_nullAssertion_throwException() throws Exception {
+    profileConfig.setLocalMode(false);
+    profileConfig.setHuskyLocalMode(false);
+    assertThrows(TechnicalException.class, () -> huskyAdapter.getXUserAssertion(null, null, null, null, null));
+  }
+
+  @Test
+  void getXUserAssertion_noXuaConfigured_throwException() throws Exception {
+    Assertion mockAssertion = mock(Assertion.class);
+    CommunityConfig repository = new CommunityConfig();
+    profileConfig.setLocalMode(false);
+    profileConfig.setHuskyLocalMode(false);
+    assertThrows(TechnicalException.class,
+        () -> huskyAdapter.getXUserAssertion(null, mockAssertion, null, repository, null));
+  }
+
+  @Test
+  void setDocumentMetadata() {
     DocumentMetadata metadata = new DocumentMetadata();
+    VaccinationDTO vaccination = createVaccination();
 
     huskyAdapter.setDocumentMetadata(metadata, new Identificator("root", "ext"),
         new Identificator("root2", "ext2"),
-        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null);
+        vaccination, false);
 
     assertThat(metadata.getAuthors().get(0).getName().getFamily()).isEqualTo("Frankenstein");
     assertThat(metadata.getAuthors().get(0).getName().getGiven()).isEqualTo("Victor");
@@ -332,17 +367,17 @@ class HuskyAdapterTest {
     assertThat(metadata.getClassCode()).isEqualTo(
         new Code("184216000", "2.16.840.1.113883.6.96", "Patient record type (record artifact)"));
     assertThat(metadata.getConfidentialityCodes().get(0))
-        .isEqualTo(new Code("17621005", FhirUtils.CONFIDENTIALITY_CODE_URL, "Normal"));
+        .isEqualTo(new Code("17621005", HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem(), "Normal"));
     assertThat(metadata.getFormatCode()).isEqualTo(new Code("urn:che:epr:ch-vacd:immunization-administration:2022",
-        "1.3.6.1.4.1.19376.1.2.3", "CH VACD Immunization Administration"));
+        "2.16.756.5.30.1.127.3.10.10", "CH VACD Immunization Administration"));
     assertThat(metadata.getHealthcareFacilityTypeCode())
         .isEqualTo(new Code("43741000", "2.16.840.1.113883.6.96", "Site of Care (environment)"));
 
     assertThat(metadata.getCodedLanguage()).isEqualTo(LanguageCode.ENGLISH_CODE);
     assertThat(metadata.getMimeType()).isEqualTo("application/fhir+json");
     assertThat(metadata.getPracticeSettingCode())
-        .isEqualTo(new Code("394658006", "2.16.840.1.113883.6.96",
-            "Clinical specialty (qualifier value)"));
+        .isEqualTo(new Code("394802001", "2.16.840.1.113883.6.96",
+            "General medicine (qualifier value)"));
     assertThat(metadata.getTypeCode()).isEqualTo(
         new Code("41000179103", "2.16.840.1.113883.6.96", "Immunization Record (record artifact)"));
 
@@ -355,28 +390,26 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void test_setDocumentMetadataWithConfidentiality() {
+  void setDocumentMetadataWithConfidentiality() {
     DocumentMetadata metadata = new DocumentMetadata();
+    VaccinationDTO vaccination = createVaccination();
 
     huskyAdapter.setDocumentMetadata(metadata, new Identificator("root", "ext"),
-        new Identificator("root2", "ext2"),
-        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)),
-        new ValueDTO("1234", "name", "system"));
+        new Identificator("root2", "ext2"), vaccination, false);
 
+    ValueDTO cc = HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE;
     assertThat(metadata.getConfidentialityCodes().get(0))
-        .isEqualTo(new Code("1234", "system", "name"));
+        .isEqualTo(new Code(cc.getCode(), cc.getSystem(), cc.getName()));
   }
 
   @Test
-  void test_setSubmissionSetMetadata() {
+  void setSubmissionSetMetadata() {
     SubmissionSetMetadata metadata = new SubmissionSetMetadata();
-    String uuid = "1234";
-    huskyAdapter.setSubmissionSetMetadata(metadata, new Identificator("root", "ext"), uuid,
-        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)));
+    AuthorDTO authorDTO = new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null));
+    huskyAdapter.setSubmissionSetMetadata(metadata, new Identificator("root", "ext"), authorDTO);
 
     assertThat(metadata.getContentTypeCode())
         .isEqualTo(new Code("71388002", "2.16.840.1.113883.6.96", "Procedure (procedure)"));
-    assertThat(metadata.getEntryUUID()).isEqualTo("1234");
     assertThat(metadata.getAuthor().size()).isEqualTo(1);
     assertThat(metadata.getAuthor().get(0).getName().getFamily()).isEqualTo("Frankenstein");
     assertThat(metadata.getAuthor().get(0).getName().getGiven()).isEqualTo("Victor");
@@ -388,35 +421,69 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void test_writeDocument_EPDPLAYGROUND() throws Exception {
-    PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
-            "1.2.3.4.123456.1", "waldspital-Id-1234");
-    String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
-    String uuid = UUID.randomUUID().toString();
-    profileConfig.setHuskyLocalMode(null); // Disable the write
-    huskyAdapter.writeDocument(patientIdentifier, uuid, json,
-        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)), null, null);
-  }
+  void testTitle_setTitleRightBasedOnDto() {
+    VaccinationDTO vaccination = new VaccinationDTO();
+    checkMetadata("Vaccination", vaccination);
 
+    AllergyDTO allergy = new AllergyDTO();
+    checkMetadata("Adverse Event", allergy);
 
-  // @Test
-  void test_writeDocument_GAZELLE() throws Exception {
-    PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
-            "1.2.3.4.123456.1", "waldspital-Id-1234");
-    String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
-    String uuid = UUID.randomUUID().toString();
-    profileConfig.setHuskyLocalMode(null);
-    huskyAdapter.writeDocument(patientIdentifier, uuid, json,
-        new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null)),
-        null, null);
+    MedicalProblemDTO problem = new MedicalProblemDTO();
+    checkMetadata("Medical Problem", problem);
+
+    PastIllnessDTO illness = new PastIllnessDTO();
+    checkMetadata("Infectious Disease", illness);
   }
 
   @Test
   void unknownCommunity_throwTechnicalException() throws Exception {
     PatientIdentifier patientIdentifier = new PatientIdentifier("unknownCommunity", null, null);
     assertThrows(TechnicalException.class,
-        () -> huskyAdapter.getDocumentEntries(patientIdentifier, null, null, null, null));
+        () -> huskyAdapter.getDocumentEntries(patientIdentifier, null, null, null, null, true));
+  }
+
+  @Test
+  void writeDocument_EPDPLAYGROUND() throws Exception {
+    PatientIdentifier patientIdentifier =
+        huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
+            "1.2.3.4.123456.1", "waldspital-Id-1234");
+    String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
+    String uuid = UUID.randomUUID().toString();
+    VaccinationDTO vaccination = createVaccination();
+
+    profileConfig.setHuskyLocalMode(null); // Disable the write
+    huskyAdapter.writeDocument(patientIdentifier, uuid, json, vaccination, null);
+  }
+
+  // @Test
+  void writeDocument_GAZELLE() throws Exception {
+    PatientIdentifier patientIdentifier =
+        huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
+            "1.2.3.4.123456.1", "waldspital-Id-1234");
+    String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
+    String uuid = UUID.randomUUID().toString();
+    VaccinationDTO vaccination = createVaccination();
+
+    profileConfig.setHuskyLocalMode(null);
+    huskyAdapter.writeDocument(patientIdentifier, uuid, json, vaccination, null);
+  }
+
+  private void checkMetadata(String titleCategory, BaseDTO baseDto) {
+    DocumentMetadata metadata = new DocumentMetadata();
+    baseDto.setCode(ANY_CODE);
+
+    ReflectionTestUtils.invokeMethod(huskyAdapter, "setTitle", metadata, baseDto);
+    assertEquals(titleCategory + " - name", metadata.getTitle());
+  }
+
+  private VaccinationDTO createVaccination() {
+    AuthorDTO authorDTO = new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null));
+    ValueDTO confidentiality = HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE;
+    VaccinationDTO vaccination = new VaccinationDTO();
+    vaccination.setAuthor(authorDTO);
+    vaccination.setConfidentiality(confidentiality);
+    vaccination.setOccurrenceDate(LocalDate.now());
+
+    return vaccination;
   }
 }

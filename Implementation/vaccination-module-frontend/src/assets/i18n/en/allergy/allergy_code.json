@@ -29,6 +29,9 @@
     "219095000": "Yellow fever vaccine adverse reaction",
     "1162644007": "COVID-19 recombinant spike protein antigen vaccine adverse reaction",
     "1217476001": "Anaphylaxis due to vaccine",
-    "293120003": "Smallpox vaccine adverse reactionerse reaction"
+    "293120003": "Smallpox vaccine adverse reactionerse reaction",
+    "allergyvaccinevarizella": "Adverse reaction to component of vaccine product containing varicella antigen",
+    "allergyvaccinehpv": "Adverse reaction to component of vaccine product containing human papillomavirus antigen",
+    "allergyvaccineherpeszoster": "Adverse reaction to component of vaccine product containing Herpes zoster"
   }
 }

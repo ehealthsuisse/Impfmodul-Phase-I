@@ -19,12 +19,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MainComponent } from './main.component';
-import { FooterComponent } from '../footer/footer.component';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { TranslateModule } from '@ngx-translate/core';
-import { NgxWebstorageModule } from 'ngx-webstorage';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SharedTestingModule } from '../../shared/shared-testing.module';
 
 describe('MainComponent', () => {
   let component: MainComponent;
@@ -33,15 +29,10 @@ describe('MainComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MainComponent],
-      imports: [
-        FooterComponent,
-        NavbarComponent,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        TranslateModule.forRoot(),
-        NgxWebstorageModule.forRoot(),
-      ],
-    }).compileComponents();
+      imports: [SharedTestingModule, NavbarComponent],
+    })
+      .overrideTemplate(MainComponent, '')
+      .compileComponents();
 
     fixture = TestBed.createComponent(MainComponent);
     component = fixture.componentInstance;

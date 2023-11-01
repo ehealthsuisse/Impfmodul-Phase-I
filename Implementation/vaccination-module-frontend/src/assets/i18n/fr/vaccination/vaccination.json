@@ -13,6 +13,10 @@
     "VALIDATED": "Validé",
     "VACCINATION_REASON": "Raisons de la vaccination",
     "LOT_NUMBER": "Numéro de lot",
-    "DATE": "Date de la vaccination"
+    "DATE": "Date de la vaccination",
+    "ACTIVE": "Actif",
+    "INACTIVE": "Inactif",
+    "SEARCH_TARGET_DISEASES": "Rechercher une protection vaccinale",
+    "DOSE_NUMBER_FORMAT": "La dose doit être un nombre entier positif"
   }
 }

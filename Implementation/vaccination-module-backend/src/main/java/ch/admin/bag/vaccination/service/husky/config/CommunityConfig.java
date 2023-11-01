@@ -18,10 +18,13 @@
  */
 package ch.admin.bag.vaccination.service.husky.config;
 
+import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Setter
 public class CommunityConfig {
@@ -50,9 +53,12 @@ public class CommunityConfig {
   public RepositoryConfig getRepositoryConfig(String repositoryIdentifier) {
     if (repositories != null) {
       return repositories.stream()
-          .filter(config -> config.getIdentifier().equals(repositoryIdentifier))
+          .filter(config -> config.getIdentifier().equalsIgnoreCase(repositoryIdentifier))
           .findFirst()
-          .orElse(null);
+          .orElseThrow(() -> {
+            log.warn("Repository Config for {} not found", repositoryIdentifier);
+            throw new TechnicalException("repository.not.found");
+          });
     }
 
     return null;

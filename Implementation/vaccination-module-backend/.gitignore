@@ -1,17 +1,16 @@
 ######################
 # Eclipse
 ######################
-**/.project
+.project
 .metadata
 tmp/
-bin/
 log/**/*
 tmp/**/*
 *.tmp
 *.bak
 *.swp
 *~.nib
-**/.classpath
+.classpath
 .settings/
 **/rebel.xml
 
@@ -56,3 +55,9 @@ Desktop.ini
 
 # PDF 
 *.pdf
+
+######################
+# Soap Logs
+######################
+/config/log/**
+/config/log/

@@ -15,11 +15,20 @@
     "VERIFICATION_STATUS": "Verification status",
     "VACCINATION_CARD": "Libretto delle vaccinazioni",
     "COMMENTS": "Commenti",
+    "NO_ENTRIES_FOUND": "Nessun record corrispondente trovato.",
     "SEARCH": "Cerca",
     "COMMENT": "Commento",
     "ERROR": "Errore",
     "ERROR_403": "Non sei autorizzato ad accedere a questa pagina. Devi accedere a questa pagina dal portale EPD.",
-    "SNEAKBAR_CONFIRM": "Entità salvata con successo",
+    "UNSUPPORTED_LANGUAGE": "La lingua {{lang}} non è supportata.",
+    "SNEAKBAR_CONFIRM": "Entità salvata con successo.",
+    "ERROR_404": "La pagina richiesta non è stata trovata.",
+    "UNEXPECTED_ERROR": "Si è verificato un errore imprevisto. L'azione richiesta non può essere eseguita.",
+    "END_DATE_BEFORE_START_DATE": "La fine deve essere dopo l'inizio.",
+    "LOGO_VACCINATION_MODULE": "Logo del modulo vaccinazioni, andare al record di vaccinazione",
+    "COMMUNITY_LOGO": "Logo della comunità",
+    "DATE_FORMAT": "Inserisci la data. Usa il formato Giorno, Giorno, Punto, Mese, Mese, Punto, Anno, Anno, Anno, Anno. Ad esempio, 01.01.2023.",
+    "LANGUAGE_HELP_TEXT": "Seleziona la lingua in cui vuoi utilizzare il modulo di vaccinazione.",
     "NONE_OPTION": ""
   }
 }

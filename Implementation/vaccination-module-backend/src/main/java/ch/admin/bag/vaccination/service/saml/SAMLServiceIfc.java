@@ -26,12 +26,22 @@ import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.springframework.security.core.context.SecurityContext;
+import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.LogoutResponse;
 
 /**
  * SAML functionalities definition.
  */
 public interface SAMLServiceIfc {
+
+  /**
+   * Creates a logout response based on a given logout request
+   *
+   * @param idp idp information needed to retrieve logout url
+   * @param logoutRequest {@link LogoutRequest}
+   * @return {@link LogoutResponse}
+   */
+  public LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest);
 
   /**
    * Resolves the Artifact from the IDP.
@@ -43,13 +53,21 @@ public interface SAMLServiceIfc {
   ArtifactResolve buildArtifactResolve(IdentityProviderConfig idpConfig, Artifact artifact);
 
   /**
+   * Validates that the correct sessions is associated with the user.
+   *
+   * @param httpSession {@link HttpSession}
+   * @return <code>true</code> if IDP session is still valid, false otherwise
+   */
+  boolean checkAndUpdateSessionInformation(HttpSession httpSession);
+
+  /**
    * Creates an valid authenticated session based on a saml resposne.
    *
+   * @param idp identifier of the IDP
    * @param request {@link HttpServletRequest}
-   * @param saml2Reponse saml response as string
    * @param assertion idp assertion
    */
-  void createAuthenticatedSession(HttpServletRequest request, String saml2Reponse, Assertion assertion);
+  void createAuthenticatedSession(String idp, HttpServletRequest request, Assertion assertion);
 
   /**
    * Craetes a dummy session used for development purposes if no saml context is given
@@ -74,11 +92,19 @@ public interface SAMLServiceIfc {
   int getNumberOfSessions();
 
   /**
+   * Invalidates current http session.
+   *
+   * @param httpSession {@link HttpSession}
+   */
+  void invalidateSession(HttpSession httpSession);
+
+  /**
    * Logs out a user by principal name given by the saml artifact response.
    *
    * @param principalName name of the user
+   * @return returns IDP string needed to process the logout response
    */
-  void logout(String principalName);
+  String logout(String principalName);
 
   /**
    * Prepares the redirect to the IDP by doing the SAML authentication flow using HTTP Post.
@@ -96,20 +122,4 @@ public interface SAMLServiceIfc {
    * @return {@link ArtifactResponse}
    */
   ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig, ArtifactResolve artifactResolve);
-
-  /**
-   * Validates the Response, e.g. checking lifetimes and received endpoints.
-   *
-   * @param artifactResponse {@link ArtifactResponse}
-   * @param request {@link HttpServletRequest}
-   */
-  void validateArtifactResponse(ArtifactResponse artifactResponse, HttpServletRequest request);
-
-  /**
-   * Validates the spring security context stored in the http session.
-   *
-   * @param httpSession {@link HttpSession}
-   * @param authenticatedSecurityContext {@link SecurityContext}
-   */
-  void validateSecurityContext(HttpSession httpSession, SecurityContext authenticatedSecurityContext);
 }

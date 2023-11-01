@@ -75,12 +75,11 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   sharedDataService: SharedDataService = inject(SharedDataService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
-
   searchControl = new FormControl();
   private problemFormService: MedicalProblemFormService = inject(MedicalProblemFormService);
   private matDialog: MatDialog = inject(MatDialog);
-
   ngOnInit(): void {
+    this.displayMenu(false, false);
     initializeActionData('', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
     this.problemService.find(id).subscribe(problem => {
@@ -113,7 +112,7 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     if (this.editForm.value.commentMessage) {
       const commentObj = {
         text: this.editForm.value.commentMessage,
-        author: this.sessionInfoService.author.getValue(),
+        author: 'will be added by the system',
       };
       this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
       this.editForm.value.comments!.push(commentObj);
@@ -185,11 +184,6 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   private subscribeToSaveResponse(result: Observable<IMedicalProblem>, navigate: boolean, isUpdate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(navigate, isUpdate),
-      error: () => this.onSaveError(),
     });
-  }
-
-  private onSaveError(): void {
-    alert('error');
   }
 }

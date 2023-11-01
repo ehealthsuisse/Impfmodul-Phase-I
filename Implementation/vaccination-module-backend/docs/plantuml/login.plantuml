@@ -13,20 +13,21 @@ participant IdP
 Browser         -> PortalFE            : login
 PortalFE        -> PortalBE            : /signature/createQueryString
 PortalBE        -> PortalFE            : queryString
-activate ImpfmodulFE  
+
 PortalFE        -> ImpfmodulFE         : webCall(queryString)
 ImpfmodulFE     -> ImpfmodulBE         : /signature/validate (queryString)
+ImpfmodulBE     -> ImpfmodulBE         : parse queryString
+
 alt OK
+ImpfmodulBE     -> ImpfmodulBE         : save SessionId
 ImpfmodulBE     -> ImpfmodulFE         : OK
-ImpfmodulFE     -> ImpfmodulFE         : parse queryString
+
 ImpfmodulFE     -> Browser             : logged
 
 else NOK Timestamp > 2s or wrong signature
 
 ImpfmodulBE     -> ImpfmodulFE         : NOK
 ImpfmodulFE     -> Browser             : error
-
-deactivate ImpfmodulFE
 
 end
 

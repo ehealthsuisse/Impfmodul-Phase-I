@@ -1,22 +1,8 @@
-.header {
-  height: 120px;
-}
-
-.mobile-header {
-  height: 50px;
-}
-
-.main-content {
+.display {
   display: grid;
-  grid-template-columns: 1fr;
   place-items: center;
-  align-items: flex-start;
-  margin-top: 10px;
+  grid-template-rows: 1fr;
 }
-
-.mobile-main-content {
-  //display: grid;
-  place-items: center;
-  width: 100%;
-  margin-top: 5px;
+.hide {
+  display: none;
 }

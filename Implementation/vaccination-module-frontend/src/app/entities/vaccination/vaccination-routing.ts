@@ -17,12 +17,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Routes } from '@angular/router';
+import { AuthGuard } from '../../core/guards/auth.guard';
 
 export const VACCINATION_ROUTE: Routes = [
   {
     path: '',
     loadComponent: () => import('./main-components').then(c => c.VaccinationListComponent),
     title: 'VACCINATION.TITLE',
+    canActivate: [AuthGuard],
   },
   {
     path: ':id/detail',
@@ -31,6 +33,7 @@ export const VACCINATION_ROUTE: Routes = [
     data: {
       type: 'vaccination',
     },
+    canActivate: [AuthGuard],
   },
   {
     path: ':id/edit',
@@ -39,6 +42,7 @@ export const VACCINATION_ROUTE: Routes = [
     data: {
       type: 'vaccination',
     },
+    canActivate: [AuthGuard],
   },
   {
     path: 'new',
@@ -47,5 +51,6 @@ export const VACCINATION_ROUTE: Routes = [
     data: {
       type: 'vaccination',
     },
+    canActivate: [AuthGuard],
   },
 ];

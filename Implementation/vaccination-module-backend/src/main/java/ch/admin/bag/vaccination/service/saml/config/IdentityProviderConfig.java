@@ -33,4 +33,14 @@ public class IdentityProviderConfig {
   /** Endpoint URL to resolve the SAML artifact */
   private String artifactResolutionServiceURL;
 
+  /** Endpoint URL for token renewal */
+  private String securityTokenServiceURL;
+
+  /** Endpoint URL for logout confirmation */
+  private String logoutURL;
+
+  /**
+   * Customized entityId which overrides the default entity id. Necessary work around for HIN-IDP.
+   */
+  private String entityId;
 }

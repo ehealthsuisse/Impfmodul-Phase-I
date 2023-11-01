@@ -95,10 +95,10 @@ ew==</ds:X509Certificate>
       <saml2:Subject xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
         <saml2:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" NameQualifier="https://ehealthsuisse.ihe-europe.net/idp/shibboleth" SPNameQualifier="https://develop-vaccination-module.local">remery</saml2:NameID>
         <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-          <saml2:SubjectConfirmationData Address="62.2.194.179" InResponseTo="_6bf9dc70d1bdb8e091a16983a57c6917" NotOnOrAfter="2022-08-15T10:15:16.982Z" Recipient="http://localhost:8080/saml/sso" />
+          <saml2:SubjectConfirmationData Address="62.2.194.179" InResponseTo="_6bf9dc70d1bdb8e091a16983a57c6917" NotOnOrAfter="2030-08-15T10:15:16.982Z" Recipient="http://localhost:8080/saml/sso" />
         </saml2:SubjectConfirmation>
       </saml2:Subject>
-      <saml2:Conditions NotBefore="2022-08-15T10:10:16.952Z" NotOnOrAfter="2022-08-15T10:15:16.952Z" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
+      <saml2:Conditions NotBefore="2022-08-15T10:10:16.952Z" NotOnOrAfter="2030-08-15T10:15:16.952Z" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
         <saml2:AudienceRestriction>
           <saml2:Audience>https://develop-vaccination-module.local</saml2:Audience>
         </saml2:AudienceRestriction>

@@ -16,9 +16,10 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, HostListener, Inject } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SharedLibsModule } from '../../shared-libs.module';
+import { DialogService } from '../../services';
 
 /**
  * Component used to display the help content.
@@ -29,7 +30,6 @@ import { SharedLibsModule } from '../../shared-libs.module';
   imports: [SharedLibsModule],
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpComponent {
   constructor(
@@ -39,8 +39,16 @@ export class HelpComponent {
       confirmText: string;
       body: string;
       title: string;
+      okClicked: boolean;
+      downloadClicked: boolean;
+      showActions: boolean;
+      showOk: boolean;
+      showDownload: boolean;
+      object: any;
+      button: { showOk?: boolean; showDownload?: boolean; showCancel?: boolean };
     },
-    private mdDialogRef: MatDialogRef<HelpComponent>
+    private mdDialogRef: MatDialogRef<HelpComponent>,
+    private dialogService: DialogService
   ) {}
 
   public cancel(): void {
@@ -49,9 +57,27 @@ export class HelpComponent {
 
   public close(value: any): void {
     this.mdDialogRef.close(value);
+    this.dialogService.closeDialog();
   }
 
   public confirm(): void {
+    this.close(true);
+  }
+
+  // Neue Methode 'ok'
+  public ok(): void {
+    this.close(true);
+  }
+
+  public download(): void {
+    const pdfContent = this.data.object; // Byte[] containing the PDF content
+
+    const blob = new Blob([pdfContent], { type: 'application/pdf' });
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = `${this.data.object}`; // Set the desired filename with the .pdf extension
+    downloadLink.click();
     this.close(true);
   }
 

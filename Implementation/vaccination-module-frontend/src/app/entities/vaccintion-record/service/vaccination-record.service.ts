@@ -32,8 +32,7 @@ import { SpinnerService } from '../../../shared/services/spinner.service';
 export class VaccinationRecordService {
   resource = ``;
   prefix = 'vaccinationRecord';
-  private _vaccinationRecord!: IVaccinationRecord;
-
+  private _patient!: string;
   constructor(
     private translateService: TranslateService,
     private configService: ConfigService,
@@ -41,11 +40,9 @@ export class VaccinationRecordService {
     private sessionInfoService: SessionInfoService,
     private spinnerService: SpinnerService
   ) {
-    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${this.sessionInfoService.queryParams.laaoid || '1.3.6.1.4.1.21367.13.20.30'}/localId/${this.sessionInfoService.queryParams.lpid || 'CHPAM4489'}`;
-  }
-
-  set vaccinationRecord(value: IVaccinationRecord) {
-    this._vaccinationRecord = value;
+    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${
+      this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
+    }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
   }
 
   queryOneRecord(): Observable<IVaccinationRecord> {
@@ -86,7 +83,20 @@ export class VaccinationRecordService {
     return this.http.get<IValueDTO[]>(`${this.configService.endpointPrefix}/utility/targetDiseases`);
   }
 
-  getPatient(): Observable<string> {
-    return this.http.get(`${this.configService.endpointPrefix}/${this.resource}/name`, { responseType: 'text' });
+  get patient(): string {
+    return this._patient;
   }
+
+  set patient(value: string) {
+    this._patient = value;
+  }
+}
+
+export function filterPatientRecordData(patientRecord: IVaccinationRecord): IVaccinationRecord {
+  patientRecord.vaccinations = patientRecord.vaccinations.filter(vaccination => !vaccination.hasErrors);
+  patientRecord.medicalProblems = patientRecord.medicalProblems.filter(medicalProblem => !medicalProblem.hasErrors);
+  patientRecord.pastIllnesses = patientRecord.pastIllnesses.filter(pastIllness => !pastIllness.hasErrors);
+  patientRecord.allergies = patientRecord.allergies.filter(allergy => !allergy.hasErrors);
+
+  return patientRecord;
 }

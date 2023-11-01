@@ -33,6 +33,8 @@ export interface IBaseDTO {
   comments?: IComment[];
   commentMessage?: string;
   json?: string;
+  content: any[];
+  hasErrors?: boolean;
   readonly createdAt?: Dayjs;
   readonly deleted?: boolean;
   readonly relatedId?: string;

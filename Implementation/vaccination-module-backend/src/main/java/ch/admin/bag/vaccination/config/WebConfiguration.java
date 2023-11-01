@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -51,6 +52,14 @@ public class WebConfiguration implements ServletContextInitializer {
     this.environment = environment;
   }
 
+  /**
+   * Sets sameSite attribute for cookies.
+   */
+  @Bean
+  public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
+    return CookieSameSiteSupplier.ofLax();
+  }
+
   @Bean
   public CorsFilter corsFilter() {
     return new CorsFilter(corsConfigurationSource());
@@ -66,18 +75,38 @@ public class WebConfiguration implements ServletContextInitializer {
     log.info("Web application fully configured");
   }
 
-  private CorsConfiguration corsConfiguration() {
-    var configuration = new CorsConfiguration();
-    configuration.setAllowedMethods(List.of("DELETE", "GET", "PUT", "POST"));
-    configuration.setAllowedOrigins(List.of(frontendUrl));
-    configuration.setAllowedHeaders(List.of("*"));
+  private CorsConfiguration corsConfiguration(boolean allowAllOrigins) {
+    var configuration = new CorsConfiguration() {
 
+      // usually empty origin is not allowed, here we accept it for the /saml/sso endpoint.
+      @Override
+      public String checkOrigin(String origin) {
+        if (allowAllOrigins) {
+          return CorsConfiguration.ALL;
+        }
+
+        return super.checkOrigin(origin);
+      };
+    };
+    configuration.applyPermitDefaultValues();
+    configuration.setAllowedMethods(List.of("DELETE", "GET", "PUT", "POST", "OPTIONS"));
+    configuration.addAllowedHeader(CorsConfiguration.ALL);
+
+    if (allowAllOrigins) {
+      configuration.addAllowedOrigin(CorsConfiguration.ALL);
+    } else {
+      // necessary to have session attributes
+      configuration.setAllowCredentials(true);
+      configuration.setAllowedOrigins(List.of(frontendUrl.split(",")));
+    }
     return configuration;
   }
 
   private CorsConfigurationSource corsConfigurationSource() {
     var source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfiguration());
+    // IDPs could try to connect with any origin
+    source.registerCorsConfiguration("/saml/sso", corsConfiguration(true));
+    source.registerCorsConfiguration("/**", corsConfiguration(false));
 
     return source;
   }

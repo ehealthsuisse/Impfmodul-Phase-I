@@ -2,7 +2,7 @@
 
 artifact SpringbootParent [
   spring-boot-starter-parent
-  2.7.11
+  2.7.1
   ====
 ]
 
@@ -10,7 +10,7 @@ artifact fhir_adapter as "fhir-adapter.jar" {
 
   artifact fhir [
     ca.uhn.hapi.fhir
-    6.2.5
+    6.2.1
     ====
     hapi-fhir-structures-r4
     ....

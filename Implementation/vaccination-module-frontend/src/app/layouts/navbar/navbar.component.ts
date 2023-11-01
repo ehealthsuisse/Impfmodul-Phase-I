@@ -16,19 +16,24 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { SessionStorageService } from 'ngx-webstorage';
-import { Observable } from 'rxjs';
-import { ConfigService } from '../../core/config/config.service';
-import { SessionInfoService } from '../../core/security/session-info.service';
-import { DetailsActionComponent } from '../../entities/common/details-action/details-action.component';
-import { PatientActionComponent } from '../../entities/common/patient-action/patient-action.component';
-import { changeLang, IHumanDTO, LANGUAGES } from '../../shared';
-import { PatientComponent } from '../../shared/component/patient/patient.component';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { IHumanDTO, LANGUAGES } from '../../shared';
 import { SharedDataService } from '../../shared/services/shared-data.service';
 import { SharedLibsModule } from '../../shared/shared-libs.module';
+import { PatientComponent } from '../../shared/component/patient/patient.component';
+import { PatientActionComponent } from '../../entities/common/patient-action/patient-action.component';
+import { DetailsActionComponent } from '../../entities/common/details-action/details-action.component';
+import { SessionInfoService } from '../../core/security/session-info.service';
+import { ConfigService } from '../../core/config/config.service';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BreakPointSensorComponent } from '../../shared/component/break-point-sensor/break-point-sensor.component';
+import { NavigationComponent } from './navigation/navigation.component';
+import { LanguageComponent } from './language/language.component';
+import { MatSidenav } from '@angular/material/sidenav';
+import { SpinnerService } from '../../shared/services/spinner.service';
+import { SamlService } from '../../core/security/saml.service';
+import { ErrorComponent } from '../error/error.component';
+import { PatientService } from '../../shared/component/patient/patient.service';
 
 /**
  * Used to display the top bar.
@@ -38,37 +43,61 @@ import { SharedLibsModule } from '../../shared/shared-libs.module';
   selector: 'vm-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
-  imports: [SharedLibsModule, PatientComponent, PatientActionComponent, DetailsActionComponent],
+  imports: [
+    SharedLibsModule,
+    PatientComponent,
+    PatientActionComponent,
+    DetailsActionComponent,
+    NavigationComponent,
+    LanguageComponent,
+    ErrorComponent,
+  ],
 })
-export class NavbarComponent implements OnInit, AfterViewInit {
+export class NavbarComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   languages = LANGUAGES;
   currentLanguage!: string;
-  translateService: TranslateService = inject(TranslateService);
-  sessionStorageService: SessionStorageService = inject(SessionStorageService);
   sharedDataService: SharedDataService = inject(SharedDataService);
+  spinnerService: SpinnerService = inject(SpinnerService);
   configService: any = inject(ConfigService);
   canVisit$!: Observable<boolean>;
-
   user: IHumanDTO = {} as IHumanDTO;
-
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
-  showMobileMenu: boolean = false;
-  showActionMenu: boolean = false;
-  showTabletMenu: boolean = false;
   canEdit: boolean = false;
-  isMobile: boolean = false;
-
-  public getScreenWidth: any;
-
-  constructor(private breakpointObserver: BreakpointObserver) {
-    this.getScreenWidth = window.innerWidth;
-    this.isMobile = this.breakpointObserver.isMatched(Breakpoints.Handset);
-  }
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  @ViewChild('sidenavAction') sidenavAction!: MatSidenav;
+  samlService: SamlService = inject(SamlService);
+  showActionSidenav: boolean = false;
+  showActionSidenavSubscription!: Subscription;
+  showPatientSidenav: boolean = false;
+  showPatientSidenavSubscription!: Subscription;
+  patient: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
+  isAuthorized: boolean = false;
+  patientService: PatientService = inject(PatientService);
 
   ngOnInit(): void {
+    this.patientService.patient.subscribe({
+      next: (patient: IHumanDTO) => {
+        this.patient.next(patient);
+      },
+    });
+    this.samlService.isSsoRedirectCompleted.subscribe({
+      next: (isAuthorized: boolean) => (this.isAuthorized = isAuthorized),
+    });
+    this.showActionSidenavSubscription = this.dialogService.showActionSidenav$.subscribe({
+      next: (show: boolean) => (this.showActionSidenav = show),
+    });
+
+    this.showPatientSidenavSubscription = this.dialogService.showPatientActionSidenav$.subscribe({
+      next: (show: boolean) => (this.showPatientSidenav = show),
+    });
+
     this.translateService.use(this.sessionInfoService.queryParams.lang?.toLocaleLowerCase().slice(0, 2)! || 'de');
     this.currentLanguage = this.sessionInfoService.queryParams.lang?.toLocaleLowerCase().slice(0, 2)! || 'de';
-    this.user = this.sessionInfoService.author.getValue();
+    this.sessionInfoService.author.subscribe({
+      next: (user: IHumanDTO) => {
+        this.user = user;
+      },
+    });
   }
 
   ngAfterViewInit(): void {
@@ -78,33 +107,12 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  changeLanguage = (languageKey: string): void => {
-    this.currentLanguage = changeLang(
-      languageKey,
-      this.sessionInfoService,
-      this.translateService,
-      this.sessionStorageService,
-      this.currentLanguage
-    );
-  };
-
-  toggleMenu = (): boolean => {
-    this.sharedDataService.showActionMenu = false;
-    this.showTabletMenu = false;
-    this.showMobileMenu = !this.showMobileMenu;
-    return this.showMobileMenu;
-  };
-  toggleTabletMenu = (): boolean => (this.showTabletMenu = !this.showTabletMenu);
-  toggleActionMenu = (): boolean => {
-    this.showMobileMenu = false;
-    this.showTabletMenu = false;
-    this.sharedDataService.showActionMenu = !this.sharedDataService.showActionMenu;
-    return this.sharedDataService.showActionMenu;
-  };
-  closeMenu = (): void => {
-    this.showMobileMenu = false;
-    this.showActionMenu = false;
-    this.showTabletMenu = false;
-    this.sharedDataService.showActionMenu = false;
-  };
+  ngOnDestroy(): void {
+    if (this.showActionSidenavSubscription) {
+      this.showActionSidenavSubscription.unsubscribe();
+    }
+    if (this.showPatientSidenavSubscription) {
+      this.showPatientSidenavSubscription.unsubscribe();
+    }
+  }
 }

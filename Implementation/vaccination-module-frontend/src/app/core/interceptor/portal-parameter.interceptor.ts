@@ -16,9 +16,10 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { IPortalParameter } from '../../model/portal-parameter';
 import { SessionInfoService } from '../security/session-info.service';
 
 @Injectable()
@@ -26,20 +27,24 @@ export class PortalParameterInterceptor implements HttpInterceptor {
   constructor(private sessionInfoService: SessionInfoService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const modifiedRequest = request.clone({
-      setHeaders: {
-        idp: this.sessionInfoService.queryParams.idp || '',
-        role: this.sessionInfoService.queryParams.role || 'HCP',
-        purpose: this.sessionInfoService.queryParams.purpose || 'NORM',
-        ugln: this.sessionInfoService.queryParams.ugln || '',
-        principalid: this.sessionInfoService.queryParams.principalid || '',
-        utitle: this.sessionInfoService.queryParams.utitle || 'Dr.',
-        ugname: this.sessionInfoService.queryParams.ugname || 'Peter',
-        ufname: this.sessionInfoService.queryParams.ufname || 'Müller',
-        principalname: this.sessionInfoService.queryParams.principalname || '',
-        laaoid: this.sessionInfoService.queryParams.laaoid || '',
-      },
+    const modifiedHeaders: { [header: string]: string | string[] } = {};
+    const queryParams = this.sessionInfoService.queryParams;
+
+    const optionalParameters: Array<keyof IPortalParameter> = ['ugln', 'principalid', 'utitle', 'principalname'];
+
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (!optionalParameters.includes(key as keyof IPortalParameter) || value) {
+        if (key !== 'sig') {
+          modifiedHeaders[`${key}`] = value;
+        }
+      }
     });
+
+    const modifiedRequest = request.clone({
+      setHeaders: modifiedHeaders,
+      withCredentials: true,
+    });
+
     return next.handle(modifiedRequest);
   }
 }

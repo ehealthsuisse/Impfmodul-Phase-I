@@ -20,9 +20,9 @@ package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirConverterIfc;
-import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -31,11 +31,10 @@ import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 class MedicalProblemServiceTest extends AbstractServiceTest {
   @Autowired
   private MedicalProblemService medicalProblemService;
@@ -49,11 +48,10 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     ValueDTO clinicalStatus = new ValueDTO("clinicalStatus", "clinicalStatus", "testsystem");
     ValueDTO verficationStatus = new ValueDTO("verficationStatus", "verficationStatus", "testsystem");
     String commentText = "BlaBla";
-    CommentDTO comment = new CommentDTO(null, recorder, commentText);
+    CommentDTO comment = new CommentDTO(null, recorder.getFullName(), commentText);
     MedicalProblemDTO dto = new MedicalProblemDTO(null, illnessCode, clinicalStatus, verficationStatus,
         LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, List.of(comment),
         "My organization AG");
-    dto.setAuthor(author);
 
     MedicalProblemDTO result = medicalProblemService.create(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
         "waldspital-Id-1234", dto, null);
@@ -64,10 +62,11 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(result.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
     assertThat(result.getConfidentiality().getCode()).isEqualTo("17621005");
     assertThat(result.getConfidentiality().getName()).isEqualTo("Normal");
-    assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirUtils.CONFIDENTIALITY_CODE_URL);
-    assertThat(result.getComments().get(0).getAuthor().getFullName()).isEqualTo(author.getUser().getFullName());
+    assertThat(result.getConfidentiality().getSystem()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem());
+    assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(result.getComments().get(0).getDate()).isNotNull();
+    assertThat(result.isValidated()).isTrue();
   }
 
   @Override
@@ -77,13 +76,13 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
         medicalProblemService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
 
-    List<MedicalProblemDTO> dtos = medicalProblemService.getAll(patientIdentifier, author, null, true);
+    List<MedicalProblemDTO> dtos = medicalProblemService.getAll(patientIdentifier, null, true);
     assertThat(dtos.size()).isEqualTo(1);
     assertThat(dtos.get(0).getId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
 
     MedicalProblemDTO result = medicalProblemService.delete(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
         "waldspital-Id-1234", "30327ea1-6893-4c65-896e-c32c394f1ec6", new ValueDTO("1141000195107", "Secret", "url"),
-        author, null);
+        null);
 
     assertThat(result.getRelatedId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
     assertThat(result.getVerificationStatus().getCode()).isEqualTo(FhirConverterIfc.ENTERED_IN_ERROR);
@@ -92,7 +91,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(result.getConfidentiality().getName()).isEqualTo("Secret");
     assertThat(result.getConfidentiality().getSystem()).isEqualTo("url");
 
-    dtos = medicalProblemService.getAll(patientIdentifier, author, null, true);
+    dtos = medicalProblemService.getAll(patientIdentifier, null, true);
     assertThat(dtos.size()).isEqualTo(0);
   }
 
@@ -100,30 +99,30 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
   @Test
   public void testGetAll() {
     List<MedicalProblemDTO> dtos =
-        medicalProblemService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
-            "1.2.3.4.123456.1",
-            "waldspital-Id-1234", author, null);
+        medicalProblemService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            "waldspital-Id-1234", null);
     assertThat(dtos.size()).isGreaterThan(0);
     assertThat(dtos.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(dtos.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
     assertThat(dtos.get(0).getId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
-    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("223366009");
+    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("402196005");
   }
 
   @Test
   public void testGetAll_GAZELLE() {
-    assertThat(
-        medicalProblemService.getAll(EPDCommunity.GAZELLE.name(),
-            "1.3.6.1.4.1.21367.13.20.3000",
-            EPDCommunity.DUMMY.name(), author, null))
-                .isNotEmpty();
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.GAZELLE.name(), EPDCommunity.DUMMY.name(), "1.3.6.1.4.1.21367.13.20.3000"));
+    assertThat(medicalProblemService.getAll(EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.21367.13.20.3000",
+        EPDCommunity.DUMMY.name(), null)).isNotEmpty();
+
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.GAZELLE.name(), "IHEBLUE-2599", "1.3.6.1.4.1.21367.13.20.3000"));
     List<MedicalProblemDTO> dtos =
-        medicalProblemService.getAll(EPDCommunity.GAZELLE.name(),
-            "1.3.6.1.4.1.21367.13.20.3000",
-            "IHEBLUE-2599", author, null);
+        medicalProblemService.getAll(EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.21367.13.20.3000",
+            "IHEBLUE-2599", null);
     assertThat(dtos.size()).isEqualTo(1);
     assertThat(dtos.get(0).getId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
-    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("223366009");
+    assertThat(dtos.get(0).getCode().getCode()).isEqualTo("402196005");
     assertThat(dtos.get(0).getClinicalStatus().getCode()).isEqualTo("active");
     assertThat(dtos.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
     assertThat(dtos.get(0).getJson()).contains("30327ea1-6893-4c65-896e-c32c394f1ec6");
@@ -136,7 +135,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
         medicalProblemService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
 
-    List<MedicalProblemDTO> dtos = medicalProblemService.getAll(patientIdentifier, author, null, true);
+    List<MedicalProblemDTO> dtos = medicalProblemService.getAll(patientIdentifier, null, true);
     assertThat(dtos.size()).isEqualTo(1);
 
     HumanNameDTO recorder = new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null);
@@ -145,8 +144,8 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
     ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
     String commentText = "BlaBla";
-    CommentDTO knownComment = new CommentDTO(LocalDateTime.now().minusDays(1), recorder, "test");
-    CommentDTO comment = new CommentDTO(null, author.getUser(), commentText);
+    CommentDTO knownComment = new CommentDTO(LocalDateTime.now().minusDays(1), recorder.getFullName(), "test");
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
 
     MedicalProblemDTO newDto = new MedicalProblemDTO(null, newIllnessCode, newClinicalStatus,
         newVerficationStatus,
@@ -164,11 +163,11 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(dto.getOrganization()).isEqualTo("My new organization AG");
     assertThat(dto.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(dto.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
-    assertThat(dto.getComments().get(0).getAuthor().getFullName()).isEqualTo(author.getUser().getFullName());
+    assertThat(dto.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(dto.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(dto.getComments().get(0).getDate()).isNotNull();
 
-    dtos = medicalProblemService.getAll(patientIdentifier, author, null, true);
+    dtos = medicalProblemService.getAll(patientIdentifier, null, true);
     assertThat(dtos.size()).isEqualTo(1);
   }
 
@@ -201,10 +200,16 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
   // @Test
   void getData_emptyData_EPDPLAYGROUND() {
     assertThat(
-        medicalProblemService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
-            "1.2.3.4.123456.1",
-            EPDCommunity.DUMMY.name(), author, null))
-                .isEmpty();
+        medicalProblemService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            EPDCommunity.DUMMY.name(), null)).isEmpty();
+  }
+
+  @BeforeEach
+  void setUp() {
+    super.before();
+
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "waldspital-Id-1234", "1.2.3.4.123456.1"));
   }
 
   @Test

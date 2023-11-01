@@ -1,11 +1,10 @@
+@import 'src/assets/scss/global';
+
 .mobile-mat-card {
   max-width: 100%;
   padding: 0;
   margin: 0;
-  mat-card,
-  mat-card-title {
-    transform: translateX(-20px);
-  }
+
   .mat-card-header,
   .mat-card-content {
     display: flex;
@@ -13,6 +12,7 @@
     justify-content: space-between;
     align-items: center;
   }
+
   .search-input-wrapper {
     width: 100%;
     margin: 0;
@@ -25,9 +25,9 @@
   margin: 0;
   display: flex;
   flex-direction: column;
+
   mat-card-title {
     padding: 0;
-    margin-left: -20px;
   }
 
   .search-input-wrapper {
@@ -40,4 +40,30 @@
     justify-content: space-between;
     align-items: center;
   }
+}
+
+.mat-card-actions {
+  @include flex-center(center, center, row);
+}
+
+.mat-elevation-z0 {
+  padding: 0 !important;
+}
+
+::ng-deep {
+  .mat-card-header-text {
+    margin: 0 !important;
+  }
+
+  .mat-flat-button {
+    min-width: auto;
+    padding: 0;
+  }
+}
+
+.mat-card-actions:not(.mat-card-actions-align-end) .mat-button:first-child,
+.mat-card-actions:not(.mat-card-actions-align-end) .mat-raised-button:first-child,
+.mat-card-actions:not(.mat-card-actions-align-end) .mat-stroked-button:first-child {
+  margin-left: 0;
+  margin-right: 35px;
 }

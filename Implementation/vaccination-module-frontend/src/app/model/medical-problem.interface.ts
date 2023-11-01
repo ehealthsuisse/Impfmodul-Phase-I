@@ -23,7 +23,7 @@ import { Author, IBaseDTO, IValueDTO } from '../shared';
 export interface IMedicalProblem extends IBaseDTO {
   recordedDate: Dayjs | string;
   begin: Dayjs;
-  end: Dayjs;
+  end: Dayjs | null;
   medicalProblemCode: IValueDTO;
   clinicalStatus: IValueDTO;
   verificationStatus: IValueDTO;

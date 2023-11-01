@@ -17,12 +17,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { ReplaySubject } from 'rxjs';
+import { IPortalParameter } from 'src/app/model/portal-parameter';
 import { CryptoJsService } from './crypto-js.service';
 import { SessionInfoService } from './session-info.service';
-import { ConfigService } from '../config/config.service';
-import { ReplaySubject } from 'rxjs';
+import { SignatureService } from './signature.service';
 
 /**
  *  Service to verifiy initial web call from the portal.
@@ -32,35 +32,53 @@ import { ReplaySubject } from 'rxjs';
 })
 export class ValidationService {
   isValidationSuccessful: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private config: ConfigService,
-    private http: HttpClient,
-    private router: Router,
-    private cryptoService: CryptoJsService,
+  url: ReplaySubject<string> = new ReplaySubject<string>(1);
 
+  constructor(
+    private router: Router,
+    private signatureService: SignatureService,
+    private cryptoService: CryptoJsService,
     private sessionInfoService: SessionInfoService
   ) {}
-  validate = (backedUrl: string): boolean => {
-    let receivedContent = window.location.href.split('?')[1];
+
+  validate = (): void => {
+    const queryString = window.location.href.split('?')[1];
     const queryParams = new URLSearchParams(window.location.search);
     let receivedSignature = queryParams.get('sig')?.replace(/ /g, '+');
-    if (receivedSignature) {
-      let queryString = receivedContent.substring(0, receivedContent.lastIndexOf('sig') + 4) + receivedSignature;
 
-      this.http.post<boolean>(`${backedUrl}/signature/validate`, queryString).subscribe({
-        next: (e: boolean) => {
-          this.cryptoService.encryptPortalData(queryString);
-          this.cryptoService.encryptValidationStatus(e);
-          this.isValidationSuccessful.next(e);
-          this.sessionInfoService.initializeSessionInfo();
-          this.onValidationSuccess();
+    if (receivedSignature) {
+      this.sessionInfoService.queryParams = {
+        principalname: queryParams.get('principalname') ?? '',
+        principalid: queryParams.get('principalid') ?? '',
+        idp: queryParams.get('idp') ?? '',
+        laaoid: queryParams.get('laaoid') ?? '',
+        lang: queryParams.get('lang') ?? '',
+        lpid: queryParams.get('lpid') ?? '',
+        purpose: queryParams.get('purpose') ?? '',
+        role: queryParams.get('role') ?? '',
+        timestamp: queryParams.get('timestamp') ?? '',
+        ufname: queryParams.get('ufname') ?? '',
+        ugname: queryParams.get('ugname') ?? '',
+        utitle: queryParams.get('utitle') ?? '',
+        ugln: queryParams.get('ugln') ?? '',
+        sig: queryParams.get('sig') ?? '',
+      };
+
+      let query = queryString.substring(0, queryString.lastIndexOf('sig') + 4) + receivedSignature;
+      this.signatureService.validateQueryString(query).subscribe({
+        next: (isValid: boolean) => {
+          if (isValid) {
+            this.cleanUp();
+            this.cryptoService.encryptPortalData(queryString);
+            this.isValidationSuccessful.next(true);
+            this.onValidationSuccess();
+          } else {
+            this.isValidationSuccessful.next(false);
+            this.onValidationFailure();
+          }
         },
-        error: () => this.onValidationFailure(),
       });
-      return true;
     }
-    return false;
   };
 
   private onValidationSuccess = (): void => {
@@ -68,6 +86,18 @@ export class ValidationService {
   };
 
   private onValidationFailure = (): void => {
+    // reset query parameters due to invalid login call
+    this.sessionInfoService.queryParams = {} as IPortalParameter;
     this.router.navigateByUrl('/error');
+  };
+
+  private cleanUp(): void {
+    this.cleanUpSessionStorage();
+    this.cleanUpLocalStorage();
+  }
+
+  private cleanUpSessionStorage = (): void => sessionStorage.removeItem('vaccination-portal-data');
+  private cleanUpLocalStorage = (): void => {
+    localStorage.removeItem('vaccination-portal-data');
   };
 }

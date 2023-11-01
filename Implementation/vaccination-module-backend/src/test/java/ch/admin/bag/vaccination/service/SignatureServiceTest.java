@@ -19,18 +19,36 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.time.Instant;
+import java.util.Base64;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
+/**
+ * Tests signature encoded with Base64.
+ */
 @SpringBootTest
+@Slf4j
 class SignatureServiceTest {
 
+  private static final String PORTAL_PRESHAREDKEY = "portalKey";
+  private static final String HMAC_ALGORITM = "HmacSHA256";
   private static final long TIMESTAMP = 1663872899153l;
   private static final String SIMPLE_VALID_QUERY_STRING =
       "timestamp=1663872899153&sig=4teqsGrKzNhjfLCH+SYZE8Igu+cpwLpAxwCWdfGbWJA=";
+  private static final String SIMPLE_VALID_QUERY_STRING_HEX_ENCODE =
+      "timestamp=1663872899153&sig=e2d7aab06acaccd8637cb087f9261913c220bbe729c0ba40c7009675f19b5890";
   private static final String QUERY_STRING_WITHOUT_SIGNATURE =
       "timestamp=1663872899153";
   private static final String QUERY_STRING_EMPTY_SIGNATURE =
@@ -42,6 +60,19 @@ class SignatureServiceTest {
 
   @Autowired
   private SignatureService signatureService;
+
+  @Test
+  void currentTimestamp_tsInSecondsComparedToNow_returnTrue() throws Exception {
+    boolean timestampInSeconds = true;
+    ReflectionTestUtils.setField(signatureService, "isPortalTimestampInSeconds", timestampInSeconds);
+
+    Long allowedDerivation = (Long) ReflectionTestUtils.getField(signatureService, "portalTimestampDerivation") / 1000;
+    long tsInSeconds = signatureService.getCurrentTimestamp();
+    long epochMilli = Instant.now().toEpochMilli();
+
+    log.warn("Timstamp in sec: {}, Comparison: {}", tsInSeconds, epochMilli / 1000);
+    assertTrue((epochMilli / 1000 - tsInSeconds) < allowedDerivation);
+  }
 
   @Test
   void getSamlCredentials_noInput_noExceptionOccures_validCertificate() {
@@ -78,15 +109,59 @@ class SignatureServiceTest {
   }
 
   @Test
-  void validateQueryString_missingTimestamp_returnFalse() {
+  void validateQueryString_missingTimestamp_returnFalse() throws Exception {
+    Field timestampCheckField = SignatureService.class.getDeclaredField("portalTimestampCheck");
+    timestampCheckField.setAccessible(true);
+    ReflectionUtils.setField(timestampCheckField, signatureService, true);
+
     assertThat(signatureService.validateQueryString(QUERY_STRING_MISSING_TIMESTAMP)).isFalse();
+  }
+
+  @Test
+  void validateQueryString_tsInSeconds_returnTrue() throws Exception {
+    boolean timestampInSeconds = true;
+    ReflectionTestUtils.setField(signatureService, "isPortalTimestampInSeconds", timestampInSeconds);
+    long epochInSeconds = Instant.now().toEpochMilli() / 1000;
+
+    String queryString = "timestamp=" + epochInSeconds;
+    queryString = addSignature(queryString).substring(1);
+
+    assertTrue(signatureService.validateQueryString(queryString));
   }
 
   @Test
   void validateQueryString_validTimeStampAndSignature_returnTrue() throws Exception {
     SignatureService customSignatureService = createServiceWithDefaultTimestamp();
+    ReflectionTestUtils.setField(customSignatureService, "encodeSignatureBase64", true);
 
     assertThat(customSignatureService.validateQueryString(SIMPLE_VALID_QUERY_STRING)).isTrue();
+
+    ReflectionTestUtils.setField(customSignatureService, "encodeSignatureBase64", false);
+    assertThat(customSignatureService.validateQueryString(SIMPLE_VALID_QUERY_STRING_HEX_ENCODE)).isTrue();
+  }
+
+  private String addSignature(String queryString) {
+    try {
+      byte[] calculateHMac = calculateHMac(PORTAL_PRESHAREDKEY, queryString);
+      String encodedSignature = Base64.getEncoder().encodeToString(calculateHMac);
+      String queryStringWithSignature =
+          "?" + queryString + "&sig=" + encodedSignature;
+
+      log.info("Resulting queryStringWithSignature {}", queryStringWithSignature);
+      return queryStringWithSignature;
+    } catch (GeneralSecurityException ex) {
+      log.error("Generating signature failed: {}", ex.getMessage());
+      throw new RuntimeException(ex);
+    }
+  }
+
+  private byte[] calculateHMac(String key, String data) throws GeneralSecurityException {
+    Mac hmac = Mac.getInstance(HMAC_ALGORITM);
+    SecretKeySpec secretKey =
+        new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITM);
+    hmac.init(secretKey);
+
+    return hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
   }
 
   private SignatureService createServiceWithDefaultTimestamp() throws NoSuchFieldException {
@@ -98,10 +173,7 @@ class SignatureServiceTest {
       }
     };
 
-    Field pskField = SignatureService.class.getDeclaredField("portalPresharedKey");
-    pskField.setAccessible(true);
-    Object pskValue = ReflectionUtils.getField(pskField, signatureService);
-    ReflectionUtils.setField(pskField, customSignatureService, pskValue);
+    ReflectionTestUtils.setField(customSignatureService, "portalPresharedKey", PORTAL_PRESHAREDKEY);
     return customSignatureService;
   }
 

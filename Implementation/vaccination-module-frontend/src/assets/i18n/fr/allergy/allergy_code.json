@@ -29,6 +29,9 @@
     "219095000": "effet indésirable du vaccin contre la fièvre jaune",
     "1162644007": "effet indésirable du vaccin antigénique à protéine Spike recombinante contre le COVID-19",
     "1217476001": "réaction anaphylactique due au vaccin",
-    "293120003": "effet indésirable d'un vaccin contre la variole"
+    "293120003": "effet indésirable d'un vaccin contre la variole",
+    "allergyvaccinevarizella": "Effet indésirable du vaccin contre la varicelle",
+    "allergyvaccinehpv": "Effet indésirable du vaccin contre le papillomavirus humain",
+    "allergyvaccineherpeszoster": "Effet indésirable du vaccin contre le zona"
   }
 }

@@ -7,4 +7,10 @@
   <mat-card-content>
     <p class="dialog-message" [vmTranslate]="data.body"></p>
   </mat-card-content>
+  <mat-card-actions *ngIf="data.showActions">
+    <button mat-button color="primary" *ngIf="data.button.showDownload" (click)="download()" [vmTranslate]="'buttons.DOWNLOAD'">
+      download
+    </button>
+    <button mat-button color="warn" *ngIf="data.button.showOk" (click)="ok()">ok</button>
+  </mat-card-actions>
 </mat-card>

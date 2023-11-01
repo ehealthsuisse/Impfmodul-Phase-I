@@ -17,10 +17,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { NavbarComponent } from './navbar.component';
+import { Route } from '@angular/router';
 
-class ROUTE {}
-
-export const NAVBAR_ROUTING: ROUTE = {
+export const NAVBAR_ROUTING: Route = {
   path: '',
   component: NavbarComponent,
   outlet: 'navbar',

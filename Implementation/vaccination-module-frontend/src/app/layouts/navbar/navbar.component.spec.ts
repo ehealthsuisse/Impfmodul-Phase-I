@@ -40,11 +40,6 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should detect chane language', () => {
-    const spy = spyOn(component, 'changeLanguage');
-    component.changeLanguage('');
-    expect(spy).toHaveBeenCalled();
-  });
   it('should call onInit', function () {
     let oninit = spyOn(component, 'ngOnInit');
     component.ngOnInit();

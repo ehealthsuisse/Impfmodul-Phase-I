@@ -1,0 +1,11 @@
+@import '@angular/material/theming';
+@import '_palette';
+
+@include mat-core();
+@include angular-material-typography($typography-config);
+@include strong-focus-indicators() @include structural-styling() $my-primary: mat-palette($primary-green, 500);
+$my-accent: mat-palette($primary-green, 900);
+
+$my-theme: mat-light-theme($my-primary, $my-accent);
+
+@include angular-material-theme($my-theme);

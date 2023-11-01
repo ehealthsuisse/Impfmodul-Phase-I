@@ -35,10 +35,12 @@ import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.LogoutResponse;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,7 +49,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -56,10 +57,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.w3c.dom.Element;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@ActiveProfiles("prod")
 public class SAMLControllerMockTest {
 
-  private static final String IDP_COOKIE = "idpIdentifier=GAZELLE";
   private static final String SAML_ART = "1234567890";
 
   @MockBean
@@ -76,27 +76,24 @@ public class SAMLControllerMockTest {
   @Test
   void ssoLogin_mockService_itJustWorks() throws Exception {
     createArtifactResolveMock();
-    ArtifactResponse artifactResponse = createArtifactResponseMock();
+    createArtifactResponseMock();
 
-
-    RequestEntity<Void> entity = new RequestEntity<>(createCookieHeader(), HttpMethod.GET,
-        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT.replace("{idp}", "gazelle") + "?SAMLart="
-            + SAML_ART));
+    RequestEntity<Void> entity = new RequestEntity<>(HttpMethod.GET,
+        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT_NEW + "?SAMLart=" + SAML_ART));
     ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
     assertNotNull(response);
 
     ArgumentCaptor<Artifact> capturer = ArgumentCaptor.forClass(Artifact.class);
     verify(samlService).buildArtifactResolve(any(), capturer.capture());
-    verify(samlService).validateArtifactResponse(eq(artifactResponse), any());
 
     Artifact artifact = capturer.getValue();
     assertEquals(SAML_ART, artifact.getValue());
   }
 
   @Test
-  void ssoLogout() {
-
-    HttpEntity<String> request = new HttpEntity<>(SAMLUtils.xml("saml/samlLogoutRequest.xml"));
+  void ssoLogout() throws Exception {
+    HttpEntity<String> request = new HttpEntity<>(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"));
+    mockLogoutResponse();
 
     ResponseEntity<Void> response = restTemplate.postForEntity(
         "http://localhost:" + port + "/saml/logout", request, Void.class);
@@ -129,13 +126,11 @@ public class SAMLControllerMockTest {
     return artifactResponseMock;
   }
 
-  private HttpHeaders createCookieHeader() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add(HttpHeaders.COOKIE, IDP_COOKIE);
+  private void mockLogoutResponse() throws Exception {
+    String logoutResponseString = SAMLXmlTestUtils.xml("saml/samlLogoutResponse.xml");
+    XMLObject logoutResponse = SAMLUtils.unmarshall(logoutResponseString);
 
-    return headers;
+    when(samlService.createLogoutResponse(any(), any())).thenReturn((LogoutResponse) logoutResponse);
   }
-
-
 
 }

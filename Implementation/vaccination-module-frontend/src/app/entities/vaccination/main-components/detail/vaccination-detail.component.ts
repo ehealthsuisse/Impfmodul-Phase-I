@@ -46,6 +46,7 @@ export class VaccinationDetailComponent extends BreakPointSensorComponent implem
   }
 
   ngOnInit(): void {
+    this.displayMenu(true, false);
     let id = this.activatedRoute.snapshot.params['id'];
     this.vaccinationService.find(id).subscribe(vaccine => {
       if (vaccine) {

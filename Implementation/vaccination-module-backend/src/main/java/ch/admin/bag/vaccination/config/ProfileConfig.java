@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
  *
  */
 @Configuration
+@Getter
 public class ProfileConfig {
   @Value("${spring.profiles.active}")
   private String activeProfile;
@@ -34,14 +36,6 @@ public class ProfileConfig {
   @Value("${application.huskyLocalMode}")
   private Boolean huskyLocalMode = false;
   private boolean samlAuthenticationActive = false;
-
-  public Boolean getHuskyLocalMode() {
-    return huskyLocalMode;
-  }
-
-  public boolean isLocalMode() {
-    return localMode;
-  }
 
   public boolean isSamlAuthenticationActive() {
     return samlAuthenticationActive || isProd();

@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class ValueListService {
-  public static final String SWISSMEDIC_CS_SYSTEM = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs";
+  public static final String SWISSMEDIC_CS_SYSTEM = "authorized-vaccines";
   public static final String IMMUNIZATION_VACCINE_CODE_VALUELIST = "immunizationVaccineCode";
   public static final String CONDITION_CLINICAL_STATUS = "conditionClinicalStatus";
 

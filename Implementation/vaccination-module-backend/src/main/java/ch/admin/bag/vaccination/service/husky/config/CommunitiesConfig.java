@@ -35,7 +35,7 @@ public class CommunitiesConfig {
 
   public CommunityConfig getCommunityConfig(String communityIdentifier) {
     return communities.stream()
-        .filter(config -> config.getIdentifier().equals(communityIdentifier))
+        .filter(config -> config.getIdentifier().equalsIgnoreCase(communityIdentifier))
         .findFirst()
         .orElse(null);
   }

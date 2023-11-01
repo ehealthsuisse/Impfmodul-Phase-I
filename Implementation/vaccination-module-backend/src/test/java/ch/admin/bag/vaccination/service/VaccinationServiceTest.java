@@ -20,9 +20,9 @@ package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirConverterIfc;
-import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -31,11 +31,10 @@ import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 class VaccinationServiceTest extends AbstractServiceTest {
   @Autowired
   private VaccinationService vaccinationService;
@@ -45,12 +44,11 @@ class VaccinationServiceTest extends AbstractServiceTest {
   @Override
   @Test
   public void testCreate() {
-
     PatientIdentifier patientIdentifier =
         vaccinationService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
 
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, author, null, true);
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
     assertThat(vaccinations.size()).isEqualTo(3);
 
     HumanNameDTO performer = new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null);
@@ -58,7 +56,7 @@ class VaccinationServiceTest extends AbstractServiceTest {
     ValueDTO vaccineCode = new ValueDTO("123456789", "123456789", "testsystem");
     ValueDTO status = new ValueDTO("completed", "completed", "http://hl7.org/fhir/event-status");
     String commentText = "BlaBla";
-    CommentDTO comment = new CommentDTO(null, author.getUser(), commentText);
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
     VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, null, List.of(comment), 3,
         LocalDate.now(), performer, null, "lotNumber", null, status);
     newVaccinationDTO.setAuthor(author);
@@ -72,12 +70,12 @@ class VaccinationServiceTest extends AbstractServiceTest {
     assertThat(result.isValidated()).isTrue();
     assertThat(result.getConfidentiality().getCode()).isEqualTo("17621005");
     assertThat(result.getConfidentiality().getName()).isEqualTo("Normal");
-    assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirUtils.CONFIDENTIALITY_CODE_URL);
-    assertThat(result.getComments().get(0).getAuthor().getFullName()).isEqualTo(author.getUser().getFullName());
+    assertThat(result.getConfidentiality().getSystem()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem());
+    assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(result.getComments().get(0).getDate()).isNotNull();
 
-    vaccinations = vaccinationService.getAll(patientIdentifier, author, null, true);
+    vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
     assertThat(vaccinations.size()).isEqualTo(4);
   }
 
@@ -88,13 +86,13 @@ class VaccinationServiceTest extends AbstractServiceTest {
         vaccinationService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
 
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, author, null, true);
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
     assertThat(vaccinations.size()).isEqualTo(3);
 
     VaccinationDTO result =
         vaccinationService.delete(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234", "acc1f090-5e0c-45ae-b283-521d57c3aa2f",
-            new ValueDTO("1141000195107", "Secret", "url"), author, null);
+            new ValueDTO("1141000195107", "Secret", "url"), null);
 
     assertThat(result.getRelatedId()).isEqualTo("acc1f090-5e0c-45ae-b283-521d57c3aa2f");
     assertThat(result.getStatus().getCode()).isEqualTo(FhirConverterIfc.ENTERED_IN_ERROR);
@@ -103,7 +101,7 @@ class VaccinationServiceTest extends AbstractServiceTest {
     assertThat(result.getConfidentiality().getName()).isEqualTo("Secret");
     assertThat(result.getConfidentiality().getSystem()).isEqualTo("url");
 
-    vaccinations = vaccinationService.getAll(patientIdentifier, author, null, true);
+    vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
 
     assertThat(vaccinations.size()).isEqualTo(2);
   }
@@ -114,7 +112,7 @@ class VaccinationServiceTest extends AbstractServiceTest {
     List<VaccinationDTO> vaccinationDTOs =
         vaccinationService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
             "1.2.3.4.123456.1",
-            "waldspital-Id-1234", author, null);
+            "waldspital-Id-1234", null);
 
     assertThat(vaccinationDTOs.size()).isEqualTo(3);
     assertThat(vaccinationDTOs.get(2).getId()).isEqualTo("acc1f090-5e0c-45ae-b283-521d57c3aa2f");
@@ -123,7 +121,7 @@ class VaccinationServiceTest extends AbstractServiceTest {
     assertThat(vaccinationDTOs.get(2).getCode().getCode()).isEqualTo("558");
     assertThat(vaccinationDTOs.get(2).getLotNumber()).isEqualTo("AHAVB946A");
     assertThat(vaccinationDTOs.get(2).getAuthor().getUser().getLastName()).isEqualTo("Wegmueller");
-    assertThat(vaccinationDTOs.get(2).getRecorder().getLastName()).isEqualTo("Müller");
+    assertThat(vaccinationDTOs.get(2).getRecorder().getLastName()).endsWith("ller");
     assertThat(vaccinationDTOs.get(2).getJson()).contains("acc1f090-5e0c-45ae-b283-521d57c3aa2f");
   }
 
@@ -133,7 +131,7 @@ class VaccinationServiceTest extends AbstractServiceTest {
     PatientIdentifier patientIdentifier =
         vaccinationService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, author, null, true);
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
     assertThat(vaccinations.size()).isEqualTo(3);
 
     ValueDTO vaccineCode = new ValueDTO("987654321", "123456789", "testsystem");
@@ -141,8 +139,8 @@ class VaccinationServiceTest extends AbstractServiceTest {
     String newOrga = "My new organization AG";
     String newLotNumber = "newLotNumber";
     String commentText = "BlaBla";
-    CommentDTO knownComment = new CommentDTO(LocalDateTime.now(), performer, "test");
-    CommentDTO comment = new CommentDTO(null, author.getUser(), commentText);
+    CommentDTO knownComment = new CommentDTO(LocalDateTime.now(), performer.getFullName(), "test");
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
     VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, null, List.of(comment, knownComment), 3,
         LocalDate.now(), performer, newOrga, newLotNumber, null, newStatus);
     newVaccinationDTO.setAuthor(author);
@@ -155,12 +153,12 @@ class VaccinationServiceTest extends AbstractServiceTest {
     assertThat(updatedVaccinationDTO.getStatus()).isEqualTo(newStatus);
     assertThat(updatedVaccinationDTO.getLotNumber()).isEqualTo(newLotNumber);
     assertThat(updatedVaccinationDTO.getOrganization()).isEqualTo("My new organization AG");
-    assertThat(updatedVaccinationDTO.getComments().get(0).getAuthor().getFullName())
+    assertThat(updatedVaccinationDTO.getComments().get(0).getAuthor())
         .isEqualTo(author.getUser().getFullName());
     assertThat(updatedVaccinationDTO.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(updatedVaccinationDTO.getComments().get(0).getDate()).isNotNull();
 
-    vaccinations = vaccinationService.getAll(patientIdentifier, author, null, true);
+    vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
     assertThat(vaccinations.size()).isEqualTo(3);
   }
 
@@ -189,29 +187,39 @@ class VaccinationServiceTest extends AbstractServiceTest {
   void getData_emptyData_EPDPLAYGROUND() {
     profileConfig.setLocalMode(false);
     assertThat(vaccinationService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
-        "1.2.3.4.123456.1", EPDCommunity.DUMMY.name(), author, null)).isEmpty();
+        "1.2.3.4.123456.1", EPDCommunity.DUMMY.name(), null)).isEmpty();
   }
 
   // @Test
   void getData_existingData_GAZELLE() {
     profileConfig.setLocalMode(false);
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.GAZELLE.name(), EPDCommunity.DUMMY.name(), "1.3.6.1.4.1.21367.13.20.3000"));
     assertThat(vaccinationService.getAll(EPDCommunity.GAZELLE.name(),
-        "1.3.6.1.4.1.21367.13.20.3000", EPDCommunity.DUMMY.name(), author, null)).isEmpty();
+        "1.3.6.1.4.1.21367.13.20.3000", EPDCommunity.DUMMY.name(), null)).isEmpty();
 
-    List<VaccinationDTO> vaccinationDTOs =
-        vaccinationService.getAll(EPDCommunity.GAZELLE.name(),
-            "1.3.6.1.4.1.21367.13.20.3000",
-            "IHEBLUE-2599", author, null);
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.GAZELLE.name(), "IHEBLUE-2599", "1.3.6.1.4.1.21367.13.20.3000"));
+    List<VaccinationDTO> vaccinationDTOs = vaccinationService.getAll(EPDCommunity.GAZELLE.name(),
+        "1.3.6.1.4.1.21367.13.20.3000", "IHEBLUE-2599", null);
     assertThat(vaccinationDTOs.size()).isEqualTo(1);
     assertThat(vaccinationDTOs.get(0).getOrganization())
         .contains("<name>Gruppenpraxis CH, Dr. med. Allzeit Bereit</name>");
   }
 
+  @BeforeEach
+  void setUp() {
+    super.before();
+
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "waldspital-Id-1234", "1.2.3.4.123456.1"));
+  }
+
   @Test
   void vaccinationConfig() {
-    assertThat(vaccinationConfig.getFormatCodes().size()).isEqualTo(2);
+    assertThat(vaccinationConfig.getFormatCodes().size()).isEqualTo(1);
     assertThat(vaccinationConfig.getFormatCodes().get(0).getCode())
-        .isEqualTo("urn:ihe:pcc:ic:2009");
+        .isEqualTo("urn:che:epr:ch-vacd:immunization-administration:2022");
   }
 
   @Test

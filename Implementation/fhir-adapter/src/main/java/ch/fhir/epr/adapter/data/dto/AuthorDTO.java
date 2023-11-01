@@ -22,11 +22,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class AuthorDTO {
   private HumanNameDTO user;
   private String organisation;
@@ -42,5 +44,9 @@ public class AuthorDTO {
 
   public AuthorDTO(HumanNameDTO user, String role, String gln) {
     this(user, null, role, null, gln, null, null);
+  }
+
+  public String getFullName() {
+    return user != null ? user.getFullName() : "";
   }
 }

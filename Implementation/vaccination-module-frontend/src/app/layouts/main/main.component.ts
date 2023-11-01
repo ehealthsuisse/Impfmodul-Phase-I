@@ -20,7 +20,7 @@ import { AfterViewChecked, ChangeDetectorRef, Component, inject, Inject } from '
 import { SpinnerService } from '../../shared/services/spinner.service';
 import { TranslateService } from '@ngx-translate/core';
 import { DOCUMENT } from '@angular/common';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { SamlService } from '../../core/security/saml.service';
 
 @Component({
   selector: 'vm-main',
@@ -31,25 +31,9 @@ export class MainComponent implements AfterViewChecked {
   isMobile: boolean = false;
   isDesktop: boolean = false;
   spinnerService: SpinnerService = inject(SpinnerService);
+  samlService: SamlService = inject(SamlService);
 
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private translateService: TranslateService,
-    @Inject(DOCUMENT) private document: Document,
-    private breakpointObserver: BreakpointObserver
-  ) {
-    this.breakpointObserver.observe(['(max-width: 600px)']).subscribe({
-      next: result => {
-        this.isMobile = result.matches;
-      },
-    });
-
-    this.breakpointObserver.observe(['(min-width: 601px)']).subscribe({
-      next: result => {
-        this.isDesktop = result.matches;
-      },
-    });
-  }
+  constructor(private cdr: ChangeDetectorRef, private translateService: TranslateService, @Inject(DOCUMENT) private document: Document) {}
 
   ngAfterViewChecked(): void {
     this.cdr.detectChanges();
