@@ -1,3 +1,9 @@
+# November 2023 - Hotfix Release 1.3.1
+
+This release contains a hotfix for the vaccination-module-backend incl. its valuelists.
+In the valuelists, many system urls have been updated according to the FHIR implementation guide.
+Additionally, it is now again possible to choose a vaccine code from the list. Due to a mismatch with the corresponding value list, no entry was selectable.
+
 # November 2023 - Release 1.3
 
 Perfect present for Halloween, **Version 1.3** of the vaccination module is available.

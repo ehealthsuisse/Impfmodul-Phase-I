@@ -71,7 +71,7 @@ public class ValueListServiceTest {
       if (ValueListService.IMMUNIZATION_VACCINE_CODE_VALUELIST.equals(list.getName())) {
         foundResult = true;
         list.getEntries().forEach(entry -> {
-          boolean shouldBeVisible = ValueListService.SWISSMEDIC_CS_SYSTEM.equals(entry.getSystem());
+          boolean shouldBeVisible = ValueListService.SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem());
           assertThat(entry.isAllowDisplay()).isEqualTo(shouldBeVisible);
         });
       }
