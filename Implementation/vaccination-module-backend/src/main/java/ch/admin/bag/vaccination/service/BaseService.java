@@ -138,7 +138,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     List<T> dtos = new ArrayList<>();
     List<T> dtoWithErrors = new ArrayList<>();
     List<EPRDocument> eprDocuments = getData(patientIdentifier, assertion);
-    List<String> invalid = new ArrayList<>();
+    List<EPRDocument> invalid = new ArrayList<>();
 
     for (EPRDocument doc : eprDocuments) {
       Bundle bundle = fhirAdapter.unmarshallFromString(doc.getJsonOrXmlFhirContent());
@@ -146,12 +146,12 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
       if (bundle != null) {
         jsonDtos.addAll(fhirAdapter.getDTOs(getDtoClass(), bundle));
         jsonDtos.forEach(dto -> {
-            dto.setValidated(doc.getIsValidated() != null ? doc.getIsValidated() : dto.isValidated());
-            dto.setJson(doc.getJsonOrXmlFhirContent());
+          dto.setValidated(doc.getIsValidated() != null ? doc.getIsValidated() : dto.isValidated());
+          dto.setJson(doc.getJsonOrXmlFhirContent());
         });
       } else {
         dtoWithErrors.add(createFailureDto(doc.getJsonOrXmlFhirContent()));
-        invalid.add(doc.getJsonOrXmlFhirContent());
+        invalid.add(doc);
       }
       dtos.addAll(jsonDtos);
     }
@@ -288,6 +288,11 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     return dto;
   }
 
+  private EPRDocument createValidatedDocument(AuthorDTO author, String json) {
+    boolean isValidated = Arrays.asList(HCP, ASS, TCU).contains(author.getRole());
+    return new EPRDocument(isValidated, json, null);
+  }
+
   private List<EPRDocument> fetchDocuments(PatientIdentifier patientIdentifier, AuthorDTO author,
       Assertion assertion, boolean useInternal) {
     List<DocumentEntry> documentEntries =
@@ -311,7 +316,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
   }
 
   private List<EPRDocument> getData(PatientIdentifier patientIdentifier, Assertion assertion) {
-    if (accessToPatientNotLinkedToSession(patientIdentifier)) {
+    if (!profileConfig.isLocalMode() && accessToPatientNotLinkedToSession(patientIdentifier)) {
       return Collections.emptyList();
     }
 
@@ -326,18 +331,17 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
     if (profileConfig.isLocalMode()) {
       log.debug(LOAD_DATA_FOR_FROM + " Filesystem", patientIdentifier.getPatientInfo().getFullName());
-      return fhirAdapter.getLocalEntities().stream().map(localEntity ->
-              new EPRDocument(null, localEntity, null)).collect(Collectors.toList());
-    } else {
-      log.debug(LOAD_DATA_FOR_FROM + " EPD Backend", patientIdentifier.getPatientInfo().getFullName());
-      log.debug("Fetching documents from internal repository.");
-      eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, true));
-      log.debug("Fetching documents from external repository.");
-      eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, false));
+      return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(null, localEntity, null))
+          .collect(Collectors.toList());
+    }
+    log.debug(LOAD_DATA_FOR_FROM + " EPD Backend", patientIdentifier.getPatientInfo().getFullName());
+    log.debug("Fetching documents from internal repository.");
+    eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, true));
+    log.debug("Fetching documents from external repository.");
+    eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, false));
 
-      for (EPRDocument doc : eprDocuments) {
-        handleRetrievedDocument(doc);
-      }
+    for (EPRDocument doc : eprDocuments) {
+      handleRetrievedDocument(doc);
     }
 
     return eprDocuments;
@@ -380,10 +384,5 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
           return matchingDocuments.stream().map(doc -> new EPRDocument(isValidated, doc));
         })
         .collect(Collectors.toList());
-  }
-
-  private EPRDocument createValidatedDocument(AuthorDTO author, String json) {
-    boolean isValidated = Arrays.asList(HCP, ASS, TCU).contains(author.getRole());
-    return new EPRDocument(isValidated, json, null);
   }
 }

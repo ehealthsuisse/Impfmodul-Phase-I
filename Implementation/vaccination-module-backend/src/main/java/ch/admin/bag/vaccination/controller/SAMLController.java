@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.XMLObject;
@@ -79,12 +80,18 @@ public class SAMLController {
 
   @GetMapping("/saml/login")
   @Operation(description = "empty login")
-  public String login(HttpServletResponse response) throws IOException {
+  public String login(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // For development purpose only!
     // For local mode, the SAMLFilter is not active, therefor authentication mechanism is not used and
     // user needs to be manually forwarded to the vaccination record
     if (profileConfig.isLocalMode()) {
-      return "http://localhost:9000/vaccination-record";
+      HttpSessionUtils.initializeValidDummySession(request);
+      boolean isLocalhost = request.getRemoteAddr().equals("127.0.0.1");
+      String serverName = request.getServerName().replace("-backend", "");
+      return request.getScheme() + "://"
+          + serverName
+          + (isLocalhost ? ":9000" : "")
+          + "/vaccination-record";
     }
 
     return null;

@@ -51,6 +51,10 @@
 }
 
 ::ng-deep {
+  .mat-card-header {
+    display: inline;
+  }
+
   .mat-card-header-text {
     margin: 0 !important;
   }

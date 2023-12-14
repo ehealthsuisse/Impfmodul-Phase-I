@@ -20,6 +20,7 @@ package ch.admin.bag.vaccination.service;
 
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
+import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -65,11 +66,17 @@ public final class HttpSessionUtils {
   }
 
   public static Map<String, String> getQueryParameters(String queryString) {
-    Map<String, String> paramsList = Stream.of(queryString.split("&"))
+    return Stream.of(queryString.split("&"))
         .collect(Collectors.toMap(entry -> entry.substring(0, entry.indexOf("=")).toLowerCase(),
-            entry -> decode(entry.substring(entry.indexOf("=") + 1, entry.length()))));
+            entry -> decode(entry.substring(entry.indexOf("=") + 1))));
+  }
 
-    return paramsList;
+  public static void initializeValidDummySession(HttpServletRequest request) {
+    setParameterInSession(request, HttpSessionUtils.INITIAL_CALL_VALID, true);
+    setParameterInSession(request, HttpSessionUtils.AUTHOR, new AuthorDTO(
+        new HumanNameDTO("Peter", "Müller", null, null, null), "HCP", "GLN"));
+    setParameterInSession(request, HttpSessionUtils.IDP, "Dummy");
+    setParameterInSession(request, HttpSessionUtils.PURPOSE, "NORM");
   }
 
   public static void setParameterInSession(HttpServletRequest request, String paramName, Object value) {

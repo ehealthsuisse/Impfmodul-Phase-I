@@ -62,10 +62,10 @@ public final class AssertionUtils {
   public static org.projecthusky.xua.saml2.Assertion getAssertionFromSession() {
     HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     HttpSession session = request.getSession(false);
+    SecurityContext context = session != null ? (SecurityContext) session
+        .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) : null;
     org.opensaml.saml.saml2.core.Assertion assertion =
-        session != null ? ((SAMLAuthentication) ((SecurityContext) session
-            .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)).getAuthentication())
-                .getAssertion()
+        session != null && context != null ? ((SAMLAuthentication) context.getAuthentication()).getAssertion()
             : null;
 
     if (assertion == null) {

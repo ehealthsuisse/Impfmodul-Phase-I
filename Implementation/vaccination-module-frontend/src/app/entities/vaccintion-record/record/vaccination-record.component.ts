@@ -78,17 +78,16 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
     if (this.getScreenWidth < 780) {
       this.patientRender = false;
     }
-    return (this.subscription = this.vaccinationRecordService.queryOneRecord().subscribe({
-      next: value => {
+    return (this.subscription = this.record$.subscribe({
+      next: ([value]) => {
         this.checkAndOpenErrorDialog([...value.allergies, ...value.vaccinations, ...value.pastIllnesses, ...value.medicalProblems]);
         value = filterPatientRecordData(value);
         this.sharedDataService.setSessionStorage();
-        this.record$.subscribe(([]) => {
-          this.allergies = new MatTableDataSource<IAdverseEvent>(this.mapper.allergyTranslateMapper(value.allergies));
-          this.vaccinations = new MatTableDataSource<IVaccination>(this.mapper.vaccinationTranslateMapper(value.vaccinations));
-          this.illnesses = new MatTableDataSource<IInfectiousDiseases>(this.mapper.illnessesTranslateMapper(value.pastIllnesses));
-          this.medicalProblems = new MatTableDataSource<IMedicalProblem>(this.mapper.problemTranslateMapper(value.medicalProblems));
-        });
+
+        this.allergies = new MatTableDataSource<IAdverseEvent>(this.mapper.allergyTranslateMapper(value.allergies));
+        this.vaccinations = new MatTableDataSource<IVaccination>(this.mapper.vaccinationTranslateMapper(value.vaccinations));
+        this.illnesses = new MatTableDataSource<IInfectiousDiseases>(this.mapper.illnessesTranslateMapper(value.pastIllnesses));
+        this.medicalProblems = new MatTableDataSource<IMedicalProblem>(this.mapper.problemTranslateMapper(value.medicalProblems));
 
         this.patientService.patient.next(value.patient);
         this.spinnerService.hide();

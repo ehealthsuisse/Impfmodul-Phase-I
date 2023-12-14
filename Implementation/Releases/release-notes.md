@@ -1,3 +1,13 @@
+# December 2023 - Hotfix Release 1.3.2
+
+During the tests of several providers, a few bugs were discovered which we fixed in this version.
+Both frontend and backend version are concerned:
+* Concurrent Transaction: There was an error on the internally utilized Husky Library [Link](https://github.com/project-husky/husky/issues/94) which lead to errors if multiple transactions had to be processed in parallel. This issue was fixed and an intermediate version of husky was added as the release cycle of the husky project takes some more time.
+* White Screen during login: An timing issue has been fixed which could lead to a white screen upon login.
+* Spinner disappeared to early: Fixed an issue where the entries of the vaccination record could not be seen but the spinner had already disappeared
+* Fixed the PDF export which was not executed if the application was built as JAR.
+* Fixed some UI related issues
+
 # November 2023 - Hotfix Release 1.3.1
 
 This release contains a hotfix for the vaccination-module-backend incl. its valuelists.

@@ -153,7 +153,7 @@ main {
   }
   &__mobile {
     @include flex-center(space-between, center, row);
-    padding: 0 10px;
+    padding: 0 0px;
   }
 }
 .show {

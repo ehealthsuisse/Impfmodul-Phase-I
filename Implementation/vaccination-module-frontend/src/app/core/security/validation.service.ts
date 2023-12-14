@@ -18,7 +18,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReplaySubject } from 'rxjs';
+import { firstValueFrom, ReplaySubject, TimeoutError } from 'rxjs';
 import { IPortalParameter } from 'src/app/model/portal-parameter';
 import { CryptoJsService } from './crypto-js.service';
 import { SessionInfoService } from './session-info.service';
@@ -41,7 +41,7 @@ export class ValidationService {
     private sessionInfoService: SessionInfoService
   ) {}
 
-  validate = (): void => {
+  validate = async (): Promise<void> => {
     const queryString = window.location.href.split('?')[1];
     const queryParams = new URLSearchParams(window.location.search);
     let receivedSignature = queryParams.get('sig')?.replace(/ /g, '+');
@@ -64,22 +64,42 @@ export class ValidationService {
         sig: queryParams.get('sig') ?? '',
       };
 
-      let query = queryString.substring(0, queryString.lastIndexOf('sig') + 4) + receivedSignature;
-      this.signatureService.validateQueryString(query).subscribe({
-        next: (isValid: boolean) => {
-          if (isValid) {
-            this.cleanUp();
-            this.cryptoService.encryptPortalData(queryString);
-            this.isValidationSuccessful.next(true);
-            this.onValidationSuccess();
-          } else {
-            this.isValidationSuccessful.next(false);
-            this.onValidationFailure();
-          }
-        },
-      });
+      await this.validateQuerySync(queryString, receivedSignature);
     }
   };
+
+  // Modified to make the validate call synchronous, ensuring login call launches after the validate call returns
+  private async validateQuerySync(queryString: string, receivedSignature: string): Promise<void> {
+    let query = queryString.substring(0, queryString.lastIndexOf('sig') + 4) + receivedSignature;
+    try {
+      const isValid: boolean = await firstValueFrom(this.signatureService.validateQueryString(query));
+
+      if (isValid) {
+        this.handleValidationSuccess(queryString);
+      } else {
+        this.handleValidationFailure();
+      }
+    } catch (error) {
+      if (error instanceof TimeoutError) {
+        console.error('Timeout error occurred:', error);
+      } else {
+        console.error('An unexpected error occurred:', error);
+      }
+      this.handleValidationFailure();
+    }
+  }
+
+  private handleValidationSuccess(queryString: string): void {
+    this.cleanUp();
+    this.cryptoService.encryptPortalData(queryString);
+    this.isValidationSuccessful.next(true);
+    this.onValidationSuccess();
+  }
+
+  private handleValidationFailure(): void {
+    this.isValidationSuccessful.next(false);
+    this.onValidationFailure();
+  }
 
   private onValidationSuccess = (): void => {
     this.router.navigateByUrl('/');
