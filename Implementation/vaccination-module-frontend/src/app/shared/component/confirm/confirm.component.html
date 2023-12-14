@@ -1,11 +1,8 @@
 <mat-dialog-content *ngIf="data" role="dialog" [ngClass]="isMobile ? 'mobile-mat-dialog-content' : 'mat-dialog-content'">
   <mat-card class="mat-card mat-elevation-z0">
     <mat-card-header>
-      <mat-card-title
-        [vmTranslate]="data.button"
-        [attr.aria-labelledby]="'title-' + data.button"
-        id="'title-' + data.button"
-      ></mat-card-title>
+      <mat-card-title [vmTranslate]="data.button" [attr.aria-labelledby]="'title-' + data.button" id="'title-' + data.button">
+      </mat-card-title>
     </mat-card-header>
     <mat-card-content class="mat-card-content">
       <ng-content></ng-content>
@@ -48,6 +45,7 @@
       class="mat-button"
       color="accent"
       (click)="save()"
+      *ngIf="!data.value.id || !data.button.delete"
       [attr.aria-labelledby]="data.button"
       id="'submit-' + data.button.save"
     >

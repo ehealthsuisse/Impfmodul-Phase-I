@@ -199,6 +199,8 @@ class PastIllnessServiceTest extends AbstractServiceTest {
 
   @Test
   void getData_emptyData_EPDPLAYGROUND() {
+    profileConfig.setLocalMode(false);
+    profileConfig.setHuskyLocalMode(null);
     assertThat(pastIllnessService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
         EPDCommunity.DUMMY.name(), null)).isEmpty();
   }

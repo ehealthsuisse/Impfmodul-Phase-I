@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -41,10 +41,13 @@ export class BreakPointSensorComponent {
   dialogService = inject(DialogService);
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver
-      .observe([Breakpoints.Small, Breakpoints.HandsetPortrait, Breakpoints.Web, this.MY_TABLET_BREAKPOINT, this.MY_DESKTOP_BREAKPOINT])
+    this.breakpointObserver.observe([Breakpoints.XSmall,Breakpoints.Small,Breakpoints.HandsetPortrait,
+        Breakpoints.Web, this.MY_TABLET_BREAKPOINT, this.MY_DESKTOP_BREAKPOINT,
+      ])
       .subscribe(result => {
-        if (result.breakpoints[Breakpoints.Small] || result.breakpoints[Breakpoints.HandsetPortrait]) {
+        if (result.breakpoints[Breakpoints.XSmall] || result.breakpoints[Breakpoints.Small] ||
+          result.breakpoints[Breakpoints.HandsetPortrait]
+        ) {
           this.isMobile = true;
           this.isTablet = false;
           this.isDesktop = false;

@@ -24,8 +24,8 @@ export class WelcomeComponent {
           this.spinnerService.show();
           this.samlService.samlLogin().subscribe({
             next: response => {
-              // href only works for localhost forwards
-              if (response?.includes('localhost')) {
+              // Manually forward in localmode (both for localhost and internal dev environments)
+              if (response?.includes('localhost') || response?.includes('apps.ocp4.innershift.sodigital.io')) {
                 document.location.href = response;
               } else {
                 this.router.navigateByUrl('/vaccination-record');
