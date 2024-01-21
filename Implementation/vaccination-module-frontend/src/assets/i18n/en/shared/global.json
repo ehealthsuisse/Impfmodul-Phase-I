@@ -2,7 +2,7 @@
   "GLOBAL": {
     "ALLERGIES": "Adverse Events",
     "PAST_ILLNESSES": "Infectious Diseases",
-    "PROBLEM": "Medical Problems",
+    "PROBLEM": "Risk factors",
     "VACCINATIONS": "Vaccinations",
     "HOME": "Vaccination Record",
     "DATE": "Date",

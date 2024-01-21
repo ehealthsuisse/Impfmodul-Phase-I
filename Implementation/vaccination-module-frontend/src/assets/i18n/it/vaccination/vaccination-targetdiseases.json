@@ -6,7 +6,7 @@
     "36653000": "rosolia",
     "40468003": "epatite virale tipo A",
     "66071002": "epatite virale tipo B",
-    "16901001": "meningoencefalite verno-estiva",
+    "712986001": "meningoencefalite verno-estiva",
     "16541001": "febbre gialla",
     "76902006": "tetano",
     "63650001": "colera",
@@ -23,9 +23,12 @@
     "719865001": "influenza pandemica",
     "719590007": "influenza stagionale",
     "67924001": "vaiolo",
+    "359814004": "vaiolo delle scimmie",
     "240532009": "patologia causata da HPV (virus del papilloma umano)",
     "4740000": "herpes zoster",
     "23511006": "malattia da meningococchi",
-    "16814004": "malattia da pneumococchi"
+    "16814004": "malattia da pneumococchi",
+    "37109004": "EVD-Ebola virus disease",
+    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)"
   }
 }

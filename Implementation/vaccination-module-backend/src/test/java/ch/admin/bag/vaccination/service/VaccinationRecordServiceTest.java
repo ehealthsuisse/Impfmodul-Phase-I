@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirAdapter;
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
@@ -92,8 +93,8 @@ class VaccinationRecordServiceTest {
     log.error("created record + json {}", json);
 
     Bundle parsedBundle = fhirAdapter.unmarshallFromString(json);
-    assertThat(parsedBundle.getMeta().getProfile().get(0).getValue()).isEqualTo(FhirUtils.VACCINATION_RECORD_TYPE_URL);
-    parsedBundle.getMeta().getProfile().get(0).setValue(FhirUtils.VACCINATION_TYPE_URL);
+    assertThat(parsedBundle.getMeta().getProfile().get(0).getValue()).isEqualTo(FhirConstants.META_VACCINATION_RECORD_TYPE_URL);
+    parsedBundle.getMeta().getProfile().get(0).setValue(FhirConstants.META_VACCINATION_TYPE_URL);
     List<VaccinationDTO> vaccinationsResult = fhirAdapter.getDTOs(VaccinationDTO.class, parsedBundle);
     List<AllergyDTO> allergiesResult = fhirAdapter.getDTOs(AllergyDTO.class, parsedBundle);
     List<PastIllnessDTO> pastIllnessesResult = fhirAdapter.getDTOs(PastIllnessDTO.class, parsedBundle);

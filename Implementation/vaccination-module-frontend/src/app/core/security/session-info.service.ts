@@ -34,6 +34,7 @@ export class SessionInfoService {
   private _author: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
 
   private _isEmergency: boolean = false;
+  private _brokenEntries: boolean = false;
 
   get queryParams(): IPortalParameter {
     return this._queryParams;
@@ -63,6 +64,14 @@ export class SessionInfoService {
 
   set isEmergency(value: boolean) {
     this._isEmergency = value;
+  }
+
+  get hasBrokenEntries(): boolean {
+    return this._brokenEntries;
+  }
+
+  set hasBrokenEntries(value: boolean) {
+    this._brokenEntries = value;
   }
 
   isEmergencyMode(): boolean {

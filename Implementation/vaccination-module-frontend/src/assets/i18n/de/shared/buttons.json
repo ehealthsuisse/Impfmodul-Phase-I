@@ -17,10 +17,10 @@
     "EXPORT": "Exportieren/Drucken",
     "PRINT": "Drucken",
     "VALIDATE": "Validieren",
-    "ADD_ALLERGY": "Allergie hinzufügen",
+    "ADD_ALLERGY": "Nebenwirkung hinzufügen",
     "ADD_VACCINATION": "Impfung hinzufügen",
-    "ADD_PAST_ILLNESS": "Vorerkrankungen hinzufügen",
-    "ADD_PROBLEM": "Grunderkrankungen hinzufügen",
+    "ADD_PAST_ILLNESS": "Infektionskrankheit hinzufügen",
+    "ADD_PROBLEM": "Risikofaktor hinzufügen",
     "DOWNLOAD": "Herunterladen",
     "HELP": "Hilfe",
     "SAVE_AND_STAY": "Speichern und weiter hinzufügen"

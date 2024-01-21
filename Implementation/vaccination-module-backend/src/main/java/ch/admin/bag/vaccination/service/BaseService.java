@@ -18,16 +18,12 @@
  */
 package ch.admin.bag.vaccination.service;
 
-import static ch.admin.bag.vaccination.service.husky.HuskyUtils.ASS;
-import static ch.admin.bag.vaccination.service.husky.HuskyUtils.HCP;
-import static ch.admin.bag.vaccination.service.husky.HuskyUtils.TCU;
-import static ch.admin.bag.vaccination.service.husky.HuskyUtils.UPLOADER_ROLE_METADATA_KEY;
-
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.data.request.EPRDocument;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
+import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.config.FhirConfig;
@@ -39,12 +35,14 @@ import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
@@ -92,7 +90,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
       huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(createdBundle), json,
           newDTO, assertion);
       cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, json));
-      return fhirAdapter.getDTOs(getDtoClass(), createdBundle).get(0);
+      return parseBundle(patientIdentifier, createdBundle).get(0);
     }
 
     throw new TechnicalException("no bundle was created, check server logs.");
@@ -122,7 +120,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
           huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(deletedBundle), deletedJson,
               dto, assertion);
           cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, deletedJson));
-          T result = fhirAdapter.getDTOs(getDtoClass(), deletedBundle).get(0);
+          T result = parseBundle(patientIdentifier, deletedBundle).get(0);
           result.setDeleted(true);
           return result;
         }
@@ -144,7 +142,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
       Bundle bundle = fhirAdapter.unmarshallFromString(doc.getJsonOrXmlFhirContent());
       List<T> jsonDtos = new ArrayList<>();
       if (bundle != null) {
-        jsonDtos.addAll(fhirAdapter.getDTOs(getDtoClass(), bundle));
+        jsonDtos.addAll(parseBundle(patientIdentifier, bundle));
         jsonDtos.forEach(dto -> {
           dto.setValidated(doc.getIsValidated() != null ? doc.getIsValidated() : dto.isValidated());
           dto.setJson(doc.getJsonOrXmlFhirContent());
@@ -213,7 +211,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
           huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(updatedBundle), updatedJson,
               newDto, assertion);
           cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, updatedJson));
-          return fhirAdapter.getDTOs(getDtoClass(), updatedBundle).get(0);
+          return parseBundle(patientIdentifier, updatedBundle).get(0);
         }
       }
     }
@@ -267,6 +265,21 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     return new CacheIdentifierKey(patientIdentifier, author);
   }
 
+  private EPRDocument createEPRDocument(DocumentEntry entry, Map<String, RetrievedDocument> docMap) {
+    List<String> rolesMetadata = entry.getExtraMetadata().get(HuskyUtils.UPLOADER_ROLE_METADATA_KEY);
+    String[] roles = rolesMetadata.get(0).split("\\^", 2);
+    boolean isValidated = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(roles[0]);
+
+    RetrievedDocument retrievedDoc = docMap.get(entry.getUniqueId());
+    if (Objects.isNull(retrievedDoc)) {
+      log.error("Document not found for unique ID: " + entry.getUniqueId());
+      return null;
+    }
+
+    docMap.remove(retrievedDoc.getRequestData().getDocumentUniqueId());
+    return new EPRDocument(isValidated, retrievedDoc);
+  }
+
   @SuppressWarnings("unchecked")
   private T createFailureDto(String json) {
     T dto;
@@ -282,6 +295,8 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
       };
     }
 
+    dto.setId("-1");
+    dto.setCreatedAt(LocalDateTime.now());
     dto.setCode(new ValueDTO("---", "---", "---"));
     dto.setHasErrors(true);
     dto.setContent(json.getBytes(Charset.forName("UTF-8")));
@@ -289,7 +304,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
   }
 
   private EPRDocument createValidatedDocument(AuthorDTO author, String json) {
-    boolean isValidated = Arrays.asList(HCP, ASS, TCU).contains(author.getRole());
+    boolean isValidated = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(author.getRole());
     return new EPRDocument(isValidated, json, null);
   }
 
@@ -364,25 +379,27 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     doc.setJsonOrXmlFhirContent(document);
   }
 
+  private List<T> parseBundle(PatientIdentifier patientIdentifier, Bundle bundle) {
+    try {
+      return fhirAdapter.getDTOs(getDtoClass(), bundle);
+    } catch (Exception ex) {
+      log.error("Bundle from patient with ID {} could not be parsed.", patientIdentifier.getSpidExtension());
+      return List.of(createFailureDto(fhirAdapter.convertBundleToJson(bundle)));
+    }
+  }
+
   private List<EPRDocument> processAndValidateDocuments(
       List<DocumentEntry> documentEntries, List<RetrievedDocument> retrievedDocuments) {
-    Map<String, List<RetrievedDocument>> docMap = retrievedDocuments.stream()
-        .collect(Collectors.groupingBy(retrievedDocument -> retrievedDocument.getRequestData().getDocumentUniqueId()));
+    Map<String, RetrievedDocument> docMap = retrievedDocuments.stream()
+        .collect(Collectors.toMap(retrievedDocument -> retrievedDocument.getRequestData().getDocumentUniqueId(),
+            Function.identity()));
 
-    return documentEntries.stream()
-        .flatMap(documentEntry -> {
-          List<String> rolesMetadata = documentEntry.getExtraMetadata().get(
-              UPLOADER_ROLE_METADATA_KEY);
-          String[] roles = rolesMetadata.get(0).split("\\^", 2);
-          boolean isValidated = Arrays.asList(HCP, ASS, TCU).contains(roles[0]);
-
-          List<RetrievedDocument> matchingDocuments = docMap.get(documentEntry.getUniqueId());
-          if (Objects.isNull(matchingDocuments) || matchingDocuments.isEmpty()) {
-            throw new TechnicalException("Document not found for unique ID: " + documentEntry.getUniqueId());
-          }
-
-          return matchingDocuments.stream().map(doc -> new EPRDocument(isValidated, doc));
-        })
+    List<EPRDocument> eprDocuments = documentEntries.stream()
+        .map(entry -> createEPRDocument(entry, docMap))
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
+
+    docMap.values().forEach(retrievedDoc -> eprDocuments.add(new EPRDocument(null, retrievedDoc)));
+    return eprDocuments;
   }
 }

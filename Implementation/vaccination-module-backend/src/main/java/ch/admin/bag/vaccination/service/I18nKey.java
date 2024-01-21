@@ -32,9 +32,9 @@ public enum I18nKey {
   ADVERSE_EVENTS("Adverse Events", "Nebenwirkungen (UIE)", "Effets secondaires (EIV)",
       "Effetti indesiderati delle vaccinazioni (EIV)"), //
   PASTILLNESSES("Infectious Diseases", "Infektionskrankheiten", "Maladies infectieuses", "Malattie infettive"), //
-  MEDICAL_PROBLEMS("Medical Problems", "Grundkrankheiten", "Maladies chroniques", "Malattie croniche"), //
+  RISK_FACTORS("Risk Factors", "Risikofaktoren ", "Facteurs de risqué", "Fattori di rischio"), //
   PASTILLNESS("Infectious Disease", "Infektionskrankheit", "Maladie", "Malattie"), //
-  MEDICAL_PROBLEM("Medical Problem", "Grundkrankheit", "Maladie", "Malattie"), //
+  RISK_FACTOR("Risk Factor", "Risikofaktor", "Facteur de risqué", "Fattore di rischio"), //
 
   FIRSTNAME("First name", "Vorname", "Prénom", "Nome"), //
   LASTNAME("Last name", "Name", "Nom", "Cognome"), //

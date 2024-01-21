@@ -25,7 +25,6 @@ import org.projecthusky.common.model.Code;
 import org.projecthusky.communication.ch.enums.beta.PurposeOfUse;
 import org.projecthusky.communication.ch.enums.beta.Role;
 import org.projecthusky.xua.hl7v3.CE;
-import org.projecthusky.xua.hl7v3.impl.CodedWithEquivalentImpl;
 import org.projecthusky.xua.hl7v3.impl.CodedWithEquivalentsBuilder;
 
 /**
@@ -106,13 +105,11 @@ public class HuskyUtils {
 
   static private CE getCodedWithEquivalent(ValueSetEnumInterface value, String nsURI, String elementLocalName,
       String prefix) {
-    CodedWithEquivalentImpl coded = new CodedWithEquivalentsBuilder()
+    return new CodedWithEquivalentsBuilder()
         .code(value.getCodeValue())
         .codeSystem(value.getCodeSystemId())
         .displayName(value.getDisplayName(null))
         .buildObject(nsURI, elementLocalName, prefix);
-
-    return coded;
   }
 
 }

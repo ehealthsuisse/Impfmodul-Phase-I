@@ -1,3 +1,18 @@
+# January 2024 - Release 1.4.0
+Happy New Year everyone, we hope you had a good start!
+
+For the vaccination module, there are some news regarding the release 1.4.0.
+Both frontend and backend version are affected:
+* Redesign medical problems - in corresponding with eHealth Suisse, the medical problems have been renamed to risk factors to improve the understanding of the data. Hence, a lot of translations were adjusted.
+* Next to the value list of the risk factors, we have been updating the vaccination module (and the fhir library) to use the latest Fhir Implementation guide version, i.e. there are some changes in the document structure and in the value list content to be compliant to the CH:VACD validator [Link](https://ehealthsuisse.ihe-europe.net/evs/fhir/validator.seam?standard=41). There is one issue known for the validation. For the risk factor value list, there exists 2 values (Codes 72291000195105 and 72291000195108) which currently do not comply to the validator as we would need to name the swiss extension explicitely in the fhir format. We will do so with the next version, promised!
+* Added the possibility to export a vaccination record into an immunization administration document. This temporary feature is provided to some partners which are exporting data into the EPR.
+* Up to last version, we had to manually include the Husky Framework into our project. Now, we can officially use their maven dependency.
+* Additionally, there have been some bugfixes. 
+ * Fixed the issue that the vaccination module stops loading when the content of an entry was not correct.
+ * Fixed the issue that the vaccination module stops loading when the references within one document is wrong.
+ * Updated Spring Boot (2.7.18), FHIR (6.10.2), Husky (2.2.0) and some other dependencies. Note: We have not been using Spring Boot 3.x yet due to dependencies with Tomcat 10 (Jakarta) and the husky framework which is not ready yet. We are looking into it for the next version.
+ * Fixed some more translations
+
 # December 2023 - Hotfix Release 1.3.2
 
 During the tests of several providers, a few bugs were discovered which we fixed in this version.

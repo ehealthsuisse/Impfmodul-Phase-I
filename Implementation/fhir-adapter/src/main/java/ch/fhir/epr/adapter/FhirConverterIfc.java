@@ -44,27 +44,30 @@ import org.hl7.fhir.r4.model.Practitioner;
  *
  */
 public interface FhirConverterIfc {
-  public static final String ENTERED_IN_ERROR = "entered-in-error";
+  String ENTERED_IN_ERROR = "entered-in-error";
 
-  public LocalDateTime convertToLocalDateTime(Date value);
+  LocalDateTime convertToLocalDateTime(Date value);
 
-  public <T> void copyNotes(Bundle targetBundle, Bundle sourceBundle, Class<T> type);
+  <T> void copyNotes(Bundle targetBundle, Bundle sourceBundle, Class<T> type);
 
-  public Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto);
+  Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto);
 
-  public List<CommentDTO> createComments(Bundle bundle, List<Annotation> notes);
+  Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
+      boolean forceImmunizationAdministrationDocument);
 
-  public Bundle deleteBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
+  List<CommentDTO> createComments(Bundle bundle, List<Annotation> notes);
+
+  Bundle deleteBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       Composition compostion, DomainResource resource);
 
-  public AllergyDTO toAllergyDTO(AllergyIntolerance allergyIntolerance, Practitioner practitioner, String organization);
+  AllergyDTO toAllergyDTO(AllergyIntolerance allergyIntolerance, Practitioner practitioner, String organization);
 
-  public MedicalProblemDTO toMedicalProblemDTO(Condition condition, Practitioner practitioner, String organization);
+  MedicalProblemDTO toMedicalProblemDTO(Condition condition, Practitioner practitioner, String organization);
 
-  public PastIllnessDTO toPastIllnessDTO(Condition condition, Practitioner practitioner, String organization);
+  PastIllnessDTO toPastIllnessDTO(Condition condition, Practitioner practitioner, String organization);
 
-  public VaccinationDTO toVaccinationDTO(Immunization immunization, Practitioner practitioner, String organization);
+  VaccinationDTO toVaccinationDTO(Immunization immunization, Practitioner practitioner, String organization);
 
-  public Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto, Composition composition,
+  Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto, Composition composition,
       DomainResource resource);
 }

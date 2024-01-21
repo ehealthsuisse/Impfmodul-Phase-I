@@ -18,7 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
-import ch.fhir.epr.adapter.FhirUtils;
+import ch.fhir.epr.adapter.FhirConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,7 +57,7 @@ public abstract class BaseDTO {
   /** content in case of valid fhir document */
   private String json;
   /** confidentiality of an item, e.g. secret to indicate that it is only visible to the patient */
-  private ValueDTO confidentiality = FhirUtils.DEFAULT_CONFIDENTIALITY_CODE;
+  private ValueDTO confidentiality = FhirConstants.DEFAULT_CONFIDENTIALITY_CODE;
 
   // Special attributes not used by this library but useful if a bundle could not be parsed. In this
   // case an error DTO can be created and for example filled by the meta information of a document.

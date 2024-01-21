@@ -16,10 +16,10 @@
     "VERIFY": "Vérifier",
     "EXPORT": "Exporter/Imprimer",
     "VALIDATE": "Valider",
-    "ADD_ALLERGY": "Ajouter une allergie",
+    "ADD_ALLERGY": "Ajouter un effet secondaire",
     "ADD_VACCINATION": "Ajouter une Vaccination",
     "ADD_PAST_ILLNESS": "Ajouter une maladie antérieure",
-    "ADD_PROBLEM": "Ajouter une maladie chroniques",
+    "ADD_PROBLEM": "Ajouter un facteur de risqué",
     "DOWNLOAD": "Télécharger",
     "HELP": "Aider",
     "SAVE_AND_STAY": "Enregistrer et créer un autre"

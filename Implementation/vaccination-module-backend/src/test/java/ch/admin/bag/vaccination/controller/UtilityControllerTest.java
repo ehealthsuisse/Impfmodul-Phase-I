@@ -62,11 +62,11 @@ public class UtilityControllerTest {
         medicalProblemCodeFound = true;
         assertThat(valueListDTOs[i].getName()).isEqualTo("medicalProblemCode");
         assertThat(valueListDTOs[i].getEntries().size()).isGreaterThan(20);
-        assertThat(valueListDTOs[i].getEntries().get(1).getCode()).isEqualTo("449840001");
+        assertThat(valueListDTOs[i].getEntries().get(1).getCode()).isEqualTo("77386006");
         assertThat(valueListDTOs[i].getEntries().get(1).getName())
-            .isEqualTo("Cochlear prosthesis in situ (finding)");
+            .isEqualTo("Pregnancy (finding)");
         assertThat(valueListDTOs[i].getEntries().get(1).getSystem())
-            .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-complication-risks-cs");
+            .isEqualTo("http://snomed.info/sct");
       }
     }
     assertTrue(medicalProblemCodeFound);
@@ -100,9 +100,9 @@ public class UtilityControllerTest {
         .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs");
 
     assertThat(response.getBody()[0].getTargetDiseases().size()).isEqualTo(1);
-    assertThat(response.getBody()[0].getTargetDiseases().get(0).getCode()).isEqualTo("16901001");
+    assertThat(response.getBody()[0].getTargetDiseases().get(0).getCode()).isEqualTo("712986001");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getName())
-        .isEqualTo("Central European encephalitis (disorder)");
+        .isEqualTo("Tickborne encephalitis");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getSystem())
         .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
   }

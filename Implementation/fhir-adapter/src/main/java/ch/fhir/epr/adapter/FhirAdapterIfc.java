@@ -20,6 +20,7 @@ package ch.fhir.epr.adapter;
 
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Identifier;
@@ -30,28 +31,47 @@ import org.hl7.fhir.r4.model.Identifier;
  */
 public interface FhirAdapterIfc {
 
-  public String convertBundleToJson(Bundle createdBundle);
+  /**
+   * Converts a {@link Bundle} into a JSON string using the fhir library.
+   *
+   * @param bundle {@link Bundle}
+   * @return json formatted string of the bundle
+   */
+  String convertBundleToJson(Bundle bundle);
 
   /**
-   * Create a json for creation based on the HAPI/FHIR format.
+   * Create a bundle based on a create operation using the HAPI/FHIR format. The bundle will be a
+   * vaccination record, if <code>dto</code> is a {@link VaccinationRecordDTO}, otherwise it results
+   * in an immunization administration document.
    *
    * @param patientIdentifier {@link PatientIdentifier}
    * @param dto entity like vaccination, allergy, past-illness, medical-problem or VaccinationRecord
    * @return {@link Bundle}
    */
-  public Bundle create(PatientIdentifier patientIdentifier, BaseDTO dto);
+  Bundle create(PatientIdentifier patientIdentifier, BaseDTO dto);
 
   /**
-   * Create a json from deletion based on the HAPI/FHIR format.
+   * Always creates an immunization administration document, independently of what was given as
+   * <code>dto</code>. This method is only used for import purposes and might be removed in the
+   * future.
+   *
+   * @param patientIdentifier {@link PatientIdentifier}
+   * @param record {@link VaccinationRecordDTO}
+   * @return {@link Bundle}
+   */
+  Bundle createImmunizationAdministrationDocument(PatientIdentifier patientIdentifier, BaseDTO dto);
+
+  /**
+   * Create a bundle based on a delete operation using the HAPI/FHIR format.
    *
    * @param patientIdentifier {@link PatientIdentifier}
    * @param dto entity like vaccination, allergy, medical-problem or past illness
    * @param bundleToDelete the bundle which contains the entry to delete
    * @param uuid the {@link Identifier} of the item
-   * 
+   *
    * @return deleted bundle
    */
-  public Bundle delete(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle bundleToDelete, String uuid);
+  Bundle delete(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle bundleToDelete, String uuid);
 
   /**
    * Convert a unique entry within a bundle to the DTO.
@@ -62,7 +82,7 @@ public interface FhirAdapterIfc {
    *
    * @return the DTO
    */
-  public <T extends BaseDTO> T getDTO(Class<T> clazz, Bundle bundle, String uuid);
+  <T extends BaseDTO> T getDTO(Class<T> clazz, Bundle bundle, String uuid);
 
   /**
    * Convert a bundle to DTOs belonging to a specific class.
@@ -71,7 +91,14 @@ public interface FhirAdapterIfc {
    * @param bundle {@link Bundle}
    * @return the DTOs
    */
-  public <T extends BaseDTO> List<T> getDTOs(Class<T> clazz, Bundle bundle);
+  <T extends BaseDTO> List<T> getDTOs(Class<T> clazz, Bundle bundle);
+
+  /**
+   * Gets the local stored jsons (vaccinations, allergies, pastillnesses).
+   *
+   * @return the list of json content
+   */
+  List<String> getLocalEntities();
 
   /**
    * Create a bundle by a file content.
@@ -79,7 +106,7 @@ public interface FhirAdapterIfc {
    * @param fileContent
    * @return {@link Bundle}
    */
-  public Bundle unmarshallFromString(String fileContent);
+  Bundle unmarshallFromString(String fileContent);
 
   /**
    * Create a new bundle which updates the existing one.
@@ -88,16 +115,9 @@ public interface FhirAdapterIfc {
    * @param dto entity like vaccination, allergy, medical-problem or past illness
    * @param bundleToUpdate the bundle which contains the entry to update
    * @param uuid the {@link Identifier} of the item
-   * 
+   *
    * @return {@link Bundle}
    */
-  public Bundle update(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle bundleToUpdate, String uuid);
-
-  /**
-   * Gets the local stored jsons (vaccinations, allergies, pastillnesses).
-   *
-   * @return the list of json content
-   */
-  List<String> getLocalEntities();
+  Bundle update(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle bundleToUpdate, String uuid);
 
 }

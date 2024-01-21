@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
@@ -60,9 +61,9 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(result.getVerificationStatus()).isEqualTo(verficationStatus);
     assertThat(result.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(result.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
-    assertThat(result.getConfidentiality().getCode()).isEqualTo("17621005");
-    assertThat(result.getConfidentiality().getName()).isEqualTo("Normal");
-    assertThat(result.getConfidentiality().getSystem()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem());
+    assertThat(result.getConfidentiality().getCode()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getCode());
+    assertThat(result.getConfidentiality().getName()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getName());
+    assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirConstants.SNOMED_SYSTEM_URL);
     assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(result.getComments().get(0).getDate()).isNotNull();
@@ -142,13 +143,13 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
 
     ValueDTO newIllnessCode = new ValueDTO("newCode", "newCode", "testsystem");
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
-    ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
+    ValueDTO newVerificationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
     String commentText = "BlaBla";
     CommentDTO knownComment = new CommentDTO(LocalDateTime.now().minusDays(1), recorder.getFullName(), "test");
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
 
     MedicalProblemDTO newDto = new MedicalProblemDTO(null, newIllnessCode, newClinicalStatus,
-        newVerficationStatus,
+        newVerificationStatus,
         LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, List.of(knownComment, comment),
         "My new organization AG");
     newDto.setAuthor(author);
@@ -159,7 +160,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(dto.getRelatedId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
     assertThat(dto.getCode()).isEqualTo(newIllnessCode);
     assertThat(dto.getClinicalStatus()).isEqualTo(newClinicalStatus);
-    assertThat(dto.getVerificationStatus()).isEqualTo(newVerficationStatus);
+    assertThat(dto.getVerificationStatus()).isEqualTo(newVerificationStatus);
     assertThat(dto.getOrganization()).isEqualTo("My new organization AG");
     assertThat(dto.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(dto.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
@@ -177,10 +178,10 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     HumanNameDTO recorder = new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null);
     ValueDTO newIllnessCode = new ValueDTO("newCode", "newCode", "testsystem");
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
-    ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
+    ValueDTO newVerificationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
 
     MedicalProblemDTO newDto = new MedicalProblemDTO(null, newIllnessCode, newClinicalStatus,
-        newVerficationStatus,
+        newVerificationStatus,
         LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, List.of(),
         "My new organization AG");
     newDto.setAuthor(author);
@@ -191,7 +192,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(dto.getRelatedId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
     assertThat(dto.getCode()).isEqualTo(newIllnessCode);
     assertThat(dto.getClinicalStatus()).isEqualTo(newClinicalStatus);
-    assertThat(dto.getVerificationStatus()).isEqualTo(newVerficationStatus);
+    assertThat(dto.getVerificationStatus()).isEqualTo(newVerificationStatus);
     assertThat(dto.getOrganization()).isEqualTo("My new organization AG");
     assertThat(dto.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(dto.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));

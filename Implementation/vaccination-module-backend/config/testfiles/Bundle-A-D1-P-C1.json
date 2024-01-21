@@ -26,7 +26,7 @@
         "language": "en-US",
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D1-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>June 1, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (qualifier value) (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D1-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>June 1, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr></table></div>"
         },
         "extension": [
           {
@@ -69,7 +69,7 @@
                   {
                     "system": "http://snomed.info/sct",
                     "code": "17621005",
-                    "display": "Normal (qualifier value)"
+                    "display": "Normal"
                   }
                 ]
               }
@@ -329,12 +329,6 @@
             "valueReference": {
               "reference": "Patient/TC-patient"
             }
-          },
-          {
-            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-medication-reference",
-            "valueReference": {
-              "reference": "Medication/TC-IMMUN-MEDIC-HAVRIX1440"
-            }
           }
         ],
         "identifier": [
@@ -400,76 +394,6 @@
             "doseNumberPositiveInt": 1
           }
         ]
-      }
-    },
-    {
-      "fullUrl": "http://test.fhir.ch/r4/Medication/TC-IMMUN-MEDIC-HAVRIX1440",
-      "resource": {
-        "resourceType": "Medication",
-        "id": "TC-IMMUN-MEDIC-HAVRIX1440",
-        "meta": {
-          "profile": [
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medication-for-immunization"
-          ]
-        },
-        "text": {
-          "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Medication</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Medication \"TC-IMMUN-MEDIC-HAVRIX1440\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-medication-for-immunization.html\">CH VACD Medication For Immunization</a></p></div><p><b>code</b>: HAVRIX 1440 Inj Susp <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (unknown#7680005580054)</span></p><p><b>status</b>: active</p><p><b>manufacturer</b>: <a href=\"#Organization_TC-ORG-GSK\">See above (Organization/TC-ORG-GSK)</a></p><p><b>form</b>: Suspension for injection <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://fhir.ch/ig/ch-emed/2.1.0/CodeSystem-edqm-standardterms.html\">EDQM - Standard Terms</a>#11202000)</span></p><p><b>amount</b>: 1 milliliter<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code mL = 'mL')</span>/1 Syringe (unit of presentation)<span style=\"background: LightGoldenRodYellow\"> (Details: SNOMED CT code 733020007 = 'Syringe')</span></p><h3>Ingredients</h3><table class=\"grid\"><tr><td>-</td><td><b>Item[x]</b></td></tr><tr><td>*</td><td>Immunologic substance (substance) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#106181007)</span></td></tr></table><h3>Batches</h3><table class=\"grid\"><tr><td>-</td><td><b>LotNumber</b></td></tr><tr><td>*</td><td>AHAVB946A</td></tr></table></div>"
-        },
-        "code": {
-          "coding": [
-            {
-              "system": "urn:oid:2.51.1.1",
-              "code": "7680005580054",
-              "display": "HAVRIX 1440 Inj Susp"
-            }
-          ],
-          "text": "HAVRIX 1440 Inj Susp"
-        },
-        "status": "active",
-        "manufacturer": {
-          "reference": "Organization/TC-ORG-GSK"
-        },
-        "form": {
-          "coding": [
-            {
-              "system": "urn:oid:0.4.0.127.0.16.1.1.2.1",
-              "code": "11202000",
-              "display": "Suspension for injection"
-            }
-          ]
-        },
-        "amount": {
-          "numerator": {
-            "value": 1,
-            "unit": "milliliter",
-            "system": "http://unitsofmeasure.org",
-            "code": "mL"
-          },
-          "denominator": {
-            "value": 1,
-            "unit": "Syringe (unit of presentation)",
-            "system": "http://snomed.info/sct",
-            "code": "733020007"
-          }
-        },
-        "ingredient": [
-          {
-            "itemCodeableConcept": {
-              "coding": [
-                {
-                  "system": "http://snomed.info/sct",
-                  "code": "106181007",
-                  "display": "Immunologic substance (substance)"
-                }
-              ],
-              "text": "Immunologic substance (substance)"
-            }
-          }
-        ],
-        "batch": {
-          "lotNumber": "AHAVB946A"
-        }
       }
     },
     {

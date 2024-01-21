@@ -19,7 +19,7 @@
     "ADD_ALLERGY": "Add adverse event",
     "ADD_VACCINATION": "Add vaccination",
     "ADD_PAST_ILLNESS": "Add infectious disease",
-    "ADD_MEDICAL_PROBLEMS": "Add medical problem",
+    "ADD_PROBLEM": "Add risk factor",
     "DOWNLOAD": "Download",
     "HELP": "Help",
     "SAVE_AND_STAY": "Save and create another"

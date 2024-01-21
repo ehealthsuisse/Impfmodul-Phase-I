@@ -8,13 +8,13 @@ vaccines-to-targetdiseases:
     - code: 683
       name: FSME-Immun 0.25 ml Junior
       target:
-        - code: 16901001
-          name: Central European encephalitis (disorder)
+        - code: 712986001
+          name: Tickborne encephalitis
     - code: 450
       name: FSME-Immun CC
       target:
-        - code: 16901001
-          name: Central European encephalitis (disorder)
+        - code: 712986001
+          name: Tickborne encephalitis
     - code: 656
       name: NeisVac-C
       target:
@@ -23,13 +23,13 @@ vaccines-to-targetdiseases:
     - code: 627
       name: Encepur N
       target:
-        - code: 16901001
-          name: Central European encephalitis (disorder)
+        - code: 712986001
+          name: Tickborne encephalitis
     - code: 628
       name: Encepur N Kinder / Enfants
       target:
-        - code: 16901001
-          name: Central European encephalitis (disorder)
+        - code: 712986001
+          name: Tickborne encephalitis
     - code: 572
       name: Epaxal
       target:
@@ -354,16 +354,25 @@ vaccines-to-targetdiseases:
           name: Tetanus (disorder)
         - code: 397430003
           name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 711-01
+      name: Diphtherie- und Tetanus-Adsorbatimpfstoff für Kinder unter 8 Jahren
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 711-02
+      name: Diphtherie- und Tetanus-Adsorbatimpfstoff für Erwachsene und Kinder ab 7 Jahren
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
     - code: 704
       name: Dukoral
       target:
         - code: 63650001
           name: Cholera (disorder)
-    - code: 417
-      name: Tollwut Impfstoff Mérieux
-      target:
-        - code: 14168008
-          name: Rabies (disorder)
     - code: 483
       name: Rimevax
       target:
@@ -473,16 +482,6 @@ vaccines-to-targetdiseases:
       target:
         - code: 76902006
           name: Tetanus (disorder)
-    - code: 627
-      name: Encepur N
-      target:
-        - code: 16901001
-          name: Central European encephalitis (disorder)
-    - code: 628
-      name: Encepur N Kinder / Enfants
-      target:
-        - code: 16901001
-          name: Central European encephalitis (disorder)
     - code: 62961
       name: Fluarix Tetra
       target:
@@ -550,6 +549,11 @@ vaccines-to-targetdiseases:
           name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
     - code: 68710-02
       name: Comirnaty® 10 Mikrogramm/Dosis
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 68710-03
+      name: Comirnaty® 3 Mikrogramm/Dosis
       target:
         - code: 840539006
           name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
@@ -636,3 +640,53 @@ vaccines-to-targetdiseases:
           name: Mumps (disorder)
         - code: 38907003
           name: Varicella (disorder)
+    - code: 69123
+      name: Spikevax Bivalent Original / Omicron 10 mg/ml, Fertigspritze
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69010
+      name: Spikevax, Fertigspritze
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69047
+      name: Comirnaty® Original/Omicron BA.1 15/15 µg pro Dosis
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69127
+      name: Comirnaty Original/Omicron BA. 4-5 0.225 mg
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69189
+      name: Spikevax Bivalent Original / Omicron BA.4-5, dispersion for injection
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69211
+      name: Spikevax Bivalent Original / Omicron BA.4-5, Fertigspritze
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 68752
+      name: Vaxneuvance, Injektionssuspension
+      target:
+        - code: 16814004
+          name: Pneumococcal infectious disease (disorder)
+    - code: 69465
+      name: Spikevax XBB.1.5 0.10 mg/ml, Dispersion zur Injektion
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69484
+      name: Spikevax XBB.1.5 0.10 mg/ml, Dispersion zur Injektion
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69488
+      name: Comirnaty Omicron XBB.1.5 (30 Mikrogramm)/Dosis, Injektionsdispersion
+      target:
+        - code: 840539006
+          name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)

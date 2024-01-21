@@ -6,7 +6,7 @@
     "36653000": "rubéole",
     "40468003": "hépatite virale de type A",
     "66071002": "hépatite virale de type B",
-    "16901001": "encéphalite à tiques d'Europe centrale",
+    "712986001": "encéphalite à tiques d'Europe centrale",
     "16541001": "fièvre jaune",
     "76902006": "tétanos",
     "63650001": "choléra",
@@ -23,9 +23,12 @@
     "719865001": "grippe pandémique",
     "719590007": "grippe saisonnière",
     "67924001": "variole",
+    "359814004": "variole du singe",
     "240532009": "infection par les HPV (papillomavirus humains)",
     "4740000": "zona",
     "23511006": "infection à méningocoques",
-    "16814004": "infection à pneumocoques"
+    "16814004": "infection à pneumocoques",
+    "37109004": "EVD-Ebola virus disease",
+    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)"
   }
 }

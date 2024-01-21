@@ -45,7 +45,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -256,7 +255,7 @@ public class PdfService {
     contentStream.beginText();
     contentStream.newLineAtOffset(MARGIN, pdfDocument.getYPositionOfTheLastLine());
     contentStream.setNonStrokingColor(COLOR_DARKBLUE);
-    writeText(I18nKey.MEDICAL_PROBLEM.getTranslation(vaccinationRecordDTO.getLang()), contentStream);
+    writeText(I18nKey.RISK_FACTORS.getTranslation(vaccinationRecordDTO.getLang()), contentStream);
     contentStream.endText();
     contentStream.close();
     updateYposition(15, pdfDocument);
@@ -274,7 +273,7 @@ public class PdfService {
       throws IOException {
     List<String> headers = List.of(I18nKey.VALIDATED.getTranslation(lang), I18nKey.DATE.getTranslation(lang),
         I18nKey.BEGIN.getTranslation(lang), I18nKey.END.getTranslation(lang),
-        I18nKey.MEDICAL_PROBLEM.getTranslation(lang), I18nKey.CLINICAL_STATUS.getTranslation(lang));
+        I18nKey.RISK_FACTOR.getTranslation(lang), I18nKey.CLINICAL_STATUS.getTranslation(lang));
 
     addTableHeader(table, height, headers, MEDICAL_PROBLEMS_TABLE_WITHS, pdfDocument);
   }

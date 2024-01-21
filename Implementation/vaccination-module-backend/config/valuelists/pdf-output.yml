@@ -18,7 +18,7 @@ pdf-output:
     codes:
       - 40468003 # Viral hepatitis, type A (disorder)
       - 23511006 # Meningokokken-Erkrankung
-      - 16901001 # Frühsommer-Meningoenzephalitis (FSME)
+      - 712986001 # Frühsommer-Meningoenzephalitis (FSME)
       - 38907003 # Windpocken/varicelle
       - 56717001 # Tuberkulose
       - 4740000  # Herpes zoster

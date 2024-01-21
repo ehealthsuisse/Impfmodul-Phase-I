@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
@@ -75,7 +76,7 @@ class HuskyAdapterWriteDocumentTest {
     VaccinationDTO vaccination = new VaccinationDTO();
     vaccination.setAuthor(authorDTO);
     vaccination.setOccurrenceDate(LocalDate.now());
-    vaccination.setConfidentiality(FhirUtils.DEFAULT_CONFIDENTIALITY_CODE);
+    vaccination.setConfidentiality(FhirConstants.DEFAULT_CONFIDENTIALITY_CODE);
     return vaccination;
   }
 
