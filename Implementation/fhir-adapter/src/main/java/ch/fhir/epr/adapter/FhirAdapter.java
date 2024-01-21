@@ -82,13 +82,12 @@ public class FhirAdapter implements FhirAdapterIfc {
 
   @Override
   public Bundle create(PatientIdentifier patientIdentifier, BaseDTO dto) {
-    try {
-      FhirContext ctx = getFhirContext();
-      return fhirConverter.createBundle(ctx, patientIdentifier, dto);
-    } catch (Exception e) {
-      log.warn("Exception:{}", e);
-      throw new TechnicalException(e.getMessage());
-    }
+    return create(patientIdentifier, dto, false);
+  }
+
+  @Override
+  public Bundle createImmunizationAdministrationDocument(PatientIdentifier patientIdentifier, BaseDTO dto) {
+    return create(patientIdentifier, dto, true);
   }
 
   @Override
@@ -177,8 +176,7 @@ public class FhirAdapter implements FhirAdapterIfc {
   public String marshall(Bundle bundle) {
     try {
       FhirContext ctx = getFhirContext();
-      String json = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle);
-      return json;
+      return ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(bundle);
     } catch (Exception e) {
       log.warn("Exception:{}", e.toString());
       return null;
@@ -244,8 +242,7 @@ public class FhirAdapter implements FhirAdapterIfc {
    * @return The {@link AllergyIntolerance}
    */
   protected AllergyIntolerance getAllergyIntolerance(Bundle bundle) {
-    AllergyIntolerance allergyIntolerance = FhirUtils.getResource(AllergyIntolerance.class, bundle);
-    return allergyIntolerance;
+    return FhirUtils.getResource(AllergyIntolerance.class, bundle);
   }
 
   /**
@@ -255,8 +252,7 @@ public class FhirAdapter implements FhirAdapterIfc {
    * @return The {@link Immunization}
    */
   protected Immunization getImmunization(Bundle bundle) {
-    Immunization immunization = FhirUtils.getResource(Immunization.class, bundle);
-    return immunization;
+    return FhirUtils.getResource(Immunization.class, bundle);
   }
 
   /**
@@ -346,6 +342,17 @@ public class FhirAdapter implements FhirAdapterIfc {
     }
   }
 
+  private Bundle create(PatientIdentifier patientIdentifier, BaseDTO dto,
+      boolean forceImmunizationAdministratoinDocument) {
+    try {
+      FhirContext ctx = getFhirContext();
+      return fhirConverter.createBundle(ctx, patientIdentifier, dto, forceImmunizationAdministratoinDocument);
+    } catch (Exception e) {
+      log.warn("Exception:{}", e);
+      throw new TechnicalException(e.getMessage());
+    }
+  }
+
   private AllergyDTO getAllergyDTO(Bundle bundle, AllergyIntolerance allergyIntolerance) {
     Practitioner practitioner = null;
     String organization = null;
@@ -373,6 +380,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     return fhirContext;
   }
 
+
   private <T extends BaseDTO> Class<?> getResourceType(Class<T> clazz) {
     Class<?> type = null;
     if (clazz.equals(VaccinationDTO.class)) {
@@ -388,7 +396,6 @@ public class FhirAdapter implements FhirAdapterIfc {
     }
     return type;
   }
-
 
   private <T> SectionType getSectionType(Class<T> clazz) {
     SectionType type = null;

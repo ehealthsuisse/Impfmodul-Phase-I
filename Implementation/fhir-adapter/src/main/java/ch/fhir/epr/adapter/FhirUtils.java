@@ -22,6 +22,7 @@ import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -36,6 +37,7 @@ import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Immunization;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
@@ -43,13 +45,8 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 
 @Slf4j
-public class FhirUtils {
-  public static final String VACCINATION_RECORD_TYPE_URL =
-      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-vaccination-record";
-  public static final String VACCINATION_TYPE_URL =
-      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration";
-  public static final ValueDTO DEFAULT_CONFIDENTIALITY_CODE =
-      new ValueDTO("17621005", "Normal", "2.16.840.1.113883.6.96");
+@NoArgsConstructor
+public final class FhirUtils {
 
   public static SectionComponent getSectionByType(Composition composition, SectionType type) {
     for (SectionComponent sectionComponent : composition.getSection()) {
@@ -129,19 +126,20 @@ public class FhirUtils {
     return result;
   }
 
+  static Organization getOrganization(Bundle bundle, String id) {
+    return getResource(Organization.class, bundle, id);
+  }
+
   static Patient getPatient(Bundle bundle, String id) {
-    Patient patient = getResource(Patient.class, bundle, id);
-    return patient;
+    return getResource(Patient.class, bundle, id);
   }
 
   static Practitioner getPractitioner(Bundle bundle, String id) {
-    Practitioner practitioner = getResource(Practitioner.class, bundle, id);
-    return practitioner;
+    return getResource(Practitioner.class, bundle, id);
   }
 
   static PractitionerRole getPractitionerRole(Bundle bundle, String id) {
-    PractitionerRole practitionerRole = getResource(PractitionerRole.class, bundle, id);
-    return practitionerRole;
+    return getResource(PractitionerRole.class, bundle, id);
   }
 
   static Resource getResource(Bundle bundle, String identifier) {
@@ -155,7 +153,7 @@ public class FhirUtils {
 
         String bundleIdentifier = getIdentifierValue(resource);
         if (bundleIdentifier != null) {
-          bundleIdentifier = bundleIdentifier.replace(FhirConverter.DEFAULT_ID_PREFIX, "");
+          bundleIdentifier = bundleIdentifier.replace(FhirConstants.DEFAULT_ID_PREFIX, "");
         }
 
         if (identifier.equals(bundleIdentifier)) {
@@ -219,16 +217,11 @@ public class FhirUtils {
   }
 
   static boolean isVaccinationRecord(Bundle bundle) {
-    if (bundle == null) {
+    if ((bundle == null) || (bundle.getMeta() == null) || bundle.getMeta().getProfile() == null
+        || bundle.getMeta().getProfile().isEmpty()) {
       return false;
     }
-    if (bundle.getMeta() == null) {
-      return false;
-    }
-    if (bundle.getMeta().getProfile() == null || bundle.getMeta().getProfile().isEmpty()) {
-      return false;
-    }
-    if (VACCINATION_RECORD_TYPE_URL.equals(bundle.getMeta().getProfile().get(0).getValue())) {
+    if (FhirConstants.META_VACCINATION_RECORD_TYPE_URL.equals(bundle.getMeta().getProfile().get(0).getValue())) {
       return true;
     }
     return false;

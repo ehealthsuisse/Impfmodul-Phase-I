@@ -131,7 +131,7 @@ class FhirConverterTest {
     when(dto.getAuthor()).thenReturn(author);
     PatientIdentifier identifier = mock(PatientIdentifier.class);
 
-    ReflectionTestUtils.invokeMethod(fhirConverter, "createComposition", bundle, dto, identifier);
+    ReflectionTestUtils.invokeMethod(fhirConverter, "createComposition", bundle, dto, identifier, false);
 
     author = FhirUtils.getAuthor(bundle);
     assertEquals(principalId, author.getGln());

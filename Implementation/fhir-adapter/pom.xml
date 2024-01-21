@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.admin.bag</groupId>
   <artifactId>fhir-adapter</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.1.0</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.11</version>
+    <version>2.7.18</version>
   </parent>
 
   <name>FHIR Adapter library</name>
@@ -19,7 +19,7 @@
     <connection>scm:git:https://innersource.soprasteria.com/bit/bag/fhir-adapter</connection>
     <developerConnection>scm:git:https://innersource.soprasteria.com/bit/bag/fhir-adapter</developerConnection>
     <url>https://innersource.soprasteria.com/bit/bag/fhir-adapter</url>
-    <tag>HEAD</tag>
+    <tag>fhir-adapter-1.1.0</tag>
   </scm>
 
   <properties>
@@ -30,7 +30,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <junit.version>5.9.3</junit.version>
-    <fhir.version>6.2.5</fhir.version>
+    <fhir.version>6.10.2</fhir.version>
   </properties>
 
   <repositories>
@@ -47,6 +47,11 @@
         <artifactId>lombok-maven-plugin</artifactId>
         <version>1.18.20.0</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.15.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
