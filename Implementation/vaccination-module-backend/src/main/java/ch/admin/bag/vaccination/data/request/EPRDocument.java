@@ -25,15 +25,18 @@ import lombok.NoArgsConstructor;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.RetrievedDocument;
 
 /**
- * EPRDocument class was created to be able to validate if the Retrieved Document
- * was created, modified or deleted by the medical staff or by a patient
- * It contains both validation information and the document retrieved from EPD
+ * EPRDocument class was created to be able to validate if the Retrieved Document was created,
+ * modified or deleted by an HCP or ASS or by a PAT or REP. It contains both validation information
+ * and the document retrieved from EPD.
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class EPRDocument implements Serializable {
-  /** Show validation status of the XDS metadata, will be null if no metada is present, e.g. during local mode. */
+  /**
+   * Show validation status of the XDS metadata, will be null if no metadata is present, e.g. during
+   * local mode.
+   */
   private Boolean isValidated;
   private String jsonOrXmlFhirContent;
   private transient RetrievedDocument retrievedDocument;

@@ -26,7 +26,7 @@
         "language": "en-US",
         "text": {
           "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D5-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:c2e1d265-f3fa-4023-92a3-2e9efe1ca192</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>September 1, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (qualifier value) (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr><tr><td>Comments</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><h3>Immunization Administration</h3><p><b>Id: </b>A-D5-P-C1-Composition</p><p><b>Identifier: </b><span>urn:ietf:rfc:3986#urn:uuid:c2e1d265-f3fa-4023-92a3-2e9efe1ca192</span></p><p><b>Status: </b>Final</p><p><b>Code: </b><span>Immunization record (http://snomed.info/sct#41000179103)</span></p><p><b>Patient: </b><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p><p><b>Date: </b>September 1, 2021</p><p><b>Authors:</b></p><table><tr><td><p><a href=\"Patient-TC-patient.html\">Patient/TC-patient</a> Wegmueller Monika</p></td></tr></table><p><b>Confidentiality: </b>null<span> Normal (http://snomed.info/sct#17621005)</span></p><p><b>Sections:</b></p><table><tr><td>Immunization Administration</td></tr><tr><td>Comments</td></tr></table></div>"
         },
         "extension": [
           {
@@ -69,7 +69,7 @@
                   {
                     "system": "http://snomed.info/sct",
                     "code": "17621005",
-                    "display": "Normal (qualifier value)"
+                    "display": "Normal"
                   }
                 ]
               }
@@ -395,7 +395,7 @@
         },
         "text": {
           "status": "extensions",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Immunization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Immunization \"TCA03-IMMUN5-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-immunization.html\">CH VACD Immunization</a></p></div><p><b>CH VACD Extension Immunization Recorder Reference</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>CH VACD Extension Immunization Medication Reference</b>: <a href=\"#Medication_TC-IMMUN-MEDIC-FSMEIMMCC\">See above (Medication/TC-IMMUN-MEDIC-FSMEIMMCC)</a></p><p><b>identifier</b>: id: 74b1e856-c0fb-47da-aab1-08541eacc21c</p><p><b>status</b>: completed</p><p><b>vaccineCode</b>: FSME-Immun CC <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-swissmedic-cs.html\">Swiss Medic Authorized Vaccines Codesystem</a>#450)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>occurrence</b>: 2021-09-01</p><p><b>recorded</b>: 2021-09-01 12:00:00+0200</p><p><b>lotNumber</b>: 12-34244</p><p><b>route</b>: Intramuscular use <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (standardterms.edqm.eu#20035000)</span></p><h3>Performers</h3><table class=\"grid\"><tr><td>-</td><td><b>Actor</b></td></tr><tr><td>*</td><td><a href=\"#PractitionerRole_TC-HCP2-ORG2-ROLE-performer\">See above (PractitionerRole/TC-HCP2-ORG2-ROLE-performer)</a></td></tr></table><h3>ProtocolApplieds</h3><table class=\"grid\"><tr><td>-</td><td><b>TargetDisease</b></td><td><b>DoseNumber[x]</b></td></tr><tr><td>*</td><td>Central European encephalitis (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#16901001)</span></td><td>1</td></tr></table></div>"
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: Immunization</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource Immunization \"TCA03-IMMUN5-patient\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ch-vacd-immunization.html\">CH VACD Immunization</a></p></div><p><b>CH VACD Extension Immunization Recorder Reference</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>CH VACD Extension Immunization Medication Reference</b>: <a href=\"#Medication_TC-IMMUN-MEDIC-FSMEIMMCC\">See above (Medication/TC-IMMUN-MEDIC-FSMEIMMCC)</a></p><p><b>identifier</b>: id: 74b1e856-c0fb-47da-aab1-08541eacc21c</p><p><b>status</b>: completed</p><p><b>vaccineCode</b>: FSME-Immun CC <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-ch-vacd-swissmedic-cs.html\">Swiss Medic Authorized Vaccines Codesystem</a>#450)</span></p><p><b>patient</b>: <a href=\"#Patient_TC-patient\">See above (Patient/TC-patient)</a></p><p><b>occurrence</b>: 2021-09-01</p><p><b>recorded</b>: 2021-09-01 12:00:00+0200</p><p><b>lotNumber</b>: 12-34244</p><p><b>route</b>: Intramuscular use <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (standardterms.edqm.eu#20035000)</span></p><h3>Performers</h3><table class=\"grid\"><tr><td>-</td><td><b>Actor</b></td></tr><tr><td>*</td><td><a href=\"#PractitionerRole_TC-HCP2-ORG2-ROLE-performer\">See above (PractitionerRole/TC-HCP2-ORG2-ROLE-performer)</a></td></tr></table><h3>ProtocolApplieds</h3><table class=\"grid\"><tr><td>-</td><td><b>TargetDisease</b></td><td><b>DoseNumber[x]</b></td></tr><tr><td>*</td><td>Central European encephalitis (disorder) <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT</a>#712986001)</span></td><td>1</td></tr></table></div>"
         },
         "extension": [
           {
@@ -456,8 +456,8 @@
                 "coding": [
                   {
                     "system": "http://snomed.info/sct",
-                    "code": "16901001",
-                    "display": "Central European encephalitis (disorder)"
+                    "code": "712986001",
+                    "display": "Tickborne encephalitis"
                   }
                 ]
               }

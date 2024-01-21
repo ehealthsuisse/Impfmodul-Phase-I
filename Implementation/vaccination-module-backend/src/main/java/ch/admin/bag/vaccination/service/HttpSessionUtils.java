@@ -74,7 +74,7 @@ public final class HttpSessionUtils {
   public static void initializeValidDummySession(HttpServletRequest request) {
     setParameterInSession(request, HttpSessionUtils.INITIAL_CALL_VALID, true);
     setParameterInSession(request, HttpSessionUtils.AUTHOR, new AuthorDTO(
-        new HumanNameDTO("Peter", "Müller", null, null, null), "HCP", "GLN"));
+        new HumanNameDTO("Peter", "Müller", null, null, null), "HCP", "7600000000000"));
     setParameterInSession(request, HttpSessionUtils.IDP, "Dummy");
     setParameterInSession(request, HttpSessionUtils.PURPOSE, "NORM");
   }

@@ -3,7 +3,6 @@ testCases:
   - config/testfiles/Bundle-B-D2-HCP1-C1.json
   - config/testfiles/Bundle-B-D3-HCP1-C1.json
   - config/testfiles/Bundle-D-D3-HCP1-C1.json
-  - config/testfiles/Bundle-error.json
 
 baseURL: https://www.e-health-suisse.ch/
 patientRoles:

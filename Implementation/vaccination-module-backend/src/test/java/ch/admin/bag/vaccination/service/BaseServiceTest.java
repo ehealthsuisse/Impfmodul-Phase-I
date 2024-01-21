@@ -18,9 +18,8 @@
  */
 package ch.admin.bag.vaccination.service;
 
-import static ch.admin.bag.vaccination.service.husky.HuskyUtils.HCP;
-import static ch.admin.bag.vaccination.service.husky.HuskyUtils.PAT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,17 +27,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
+import ch.admin.bag.vaccination.data.request.EPRDocument;
+import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
-
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.openehealth.ipf.commons.ihe.xds.core.requests.DocumentReference;
+import org.openehealth.ipf.commons.ihe.xds.core.responses.RetrievedDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -58,6 +62,8 @@ class BaseServiceTest {
   private ProfileConfig profileConfig;
   @Autowired
   private VaccinationService vaccinationService;
+  @Autowired
+  private BaseService<VaccinationDTO> baseService;
   @Mock
   private HttpServletRequest mockRequest;
 
@@ -74,6 +80,33 @@ class BaseServiceTest {
     assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", "laaoid", null, null));
     // all parameters are set, however we do not have a valid community, a different exception is thrown
     assertThrows(TechnicalException.class, () -> allergyService.getAll("communityId", "laaoid", "localId", null));
+  }
+
+  @Test
+  void processAndValidateDocuments_documentsUnprocessed_haveNullIsValidated() {
+    RetrievedDocument newRetrieveDoc = new RetrievedDocument();
+    newRetrieveDoc.setRequestData(new DocumentReference(null, "test", null));
+
+    List<EPRDocument> eprDocuments = ReflectionTestUtils.invokeMethod(baseService, "processAndValidateDocuments",
+        Collections.EMPTY_LIST, List.of(newRetrieveDoc));
+
+    assertEquals(1, eprDocuments.size());
+    assertTrue(eprDocuments.stream().anyMatch(eprDocument -> Objects.isNull(eprDocument.getIsValidated())));
+  }
+
+  @Test
+  void readEPDdataAndValidateDocumentBasedOnRole() {
+    PatientIdentifier patientIdentifier = vaccinationService.getPatientIdentifier(
+        EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.12559.11.20.1", "CHPAM9810");
+    mockHttpServletRequest(patientIdentifier);
+
+    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
+
+    assertThat(vaccinations).isNotEmpty();
+    assertThat(vaccinations.get(0).isValidated()).isTrue();
+    assertThat(vaccinations.get(0).getAuthor().getRole()).isEqualTo(HuskyUtils.HCP);
+    assertThat(vaccinations.get(1).isValidated()).isFalse();
+    assertThat(vaccinations.get(1).getAuthor().getRole()).isEqualTo(HuskyUtils.PAT);
   }
 
   @Test
@@ -94,23 +127,6 @@ class BaseServiceTest {
     boolean resultInvalidAccess =
         ReflectionTestUtils.invokeMethod(allergyService, "accessToPatientNotLinkedToSession", invalidIdentifier);
     assertTrue(resultInvalidAccess);
-  }
-
-  @Test
-  void readEPDdataAndValidateDocumentBasedOnRole() {
-    PatientIdentifier patientIdentifier =
-        vaccinationService.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.12559.11.20.1",
-            "CHPAM9810");
-
-    mockHttpServletRequest(patientIdentifier);
-
-    List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
-
-    assertThat(vaccinations).isNotEmpty();
-    assertThat(vaccinations.get(0).isValidated()).isTrue();
-    assertThat(vaccinations.get(0).getAuthor().getRole()).isEqualTo(HCP);
-    assertThat(vaccinations.get(1).isValidated()).isFalse();
-    assertThat(vaccinations.get(1).getAuthor().getRole()).isEqualTo(PAT);
   }
 
   private void mockHttpServletRequest(PatientIdentifier validIdentifier) {

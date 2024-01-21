@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
@@ -63,9 +64,9 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(result.getClinicalStatus()).isEqualTo(clinicalStatus);
     assertThat(result.getVerificationStatus()).isEqualTo(verficationStatus);
     assertThat(result.getType()).isEqualTo(type);
-    assertThat(result.getConfidentiality().getCode()).isEqualTo("17621005");
-    assertThat(result.getConfidentiality().getName()).isEqualTo("Normal");
-    assertThat(result.getConfidentiality().getSystem()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem());
+    assertThat(result.getConfidentiality().getCode()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getCode());
+    assertThat(result.getConfidentiality().getName()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getName());
+    assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirConstants.SNOMED_SYSTEM_URL);
     assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
     assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
     assertThat(result.getComments().get(0).getDate()).isNotNull();

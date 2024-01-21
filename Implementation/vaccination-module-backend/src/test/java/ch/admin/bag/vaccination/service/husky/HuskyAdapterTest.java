@@ -33,6 +33,7 @@ import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.admin.bag.vaccination.service.husky.config.OidConfig;
 import ch.admin.bag.vaccination.service.husky.config.RepositoryConfig;
 import ch.admin.bag.vaccination.service.saml.SAMLXmlTestUtils;
+import ch.admin.bag.vaccination.utils.SSLValidation;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
@@ -94,6 +95,7 @@ class HuskyAdapterTest {
 
   @BeforeAll
   void beforeAll() throws Exception {
+    SSLValidation.disableChecks();
     syslogServer.startup();
   }
 

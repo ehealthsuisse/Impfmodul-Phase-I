@@ -30,7 +30,7 @@ import ch.admin.bag.vaccination.service.husky.config.RepositoryConfig;
 import ch.admin.bag.vaccination.service.husky.config.SenderConfig;
 import ch.admin.bag.vaccination.service.saml.SAMLUtils;
 import ch.fhir.epr.adapter.FhirAdapter;
-import ch.fhir.epr.adapter.FhirConverter;
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
@@ -395,7 +395,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     Author author = toAuthor(authorDTO);
     metadata.setUniqueId(OidGenerator.uniqueOid().toString());
     metadata.setSourceId(EhcVersions.getCurrentVersion().getOid());
-    metadata.setEntryUUID(FhirConverter.DEFAULT_ID_PREFIX + UUID.randomUUID());
+    metadata.setEntryUUID(FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID());
     metadata.addAuthor(author);
     metadata.setDestinationPatientId(globalIdentifier);
   }
@@ -414,11 +414,11 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   private PatientIdentifier createDummyPatientIdentifier(String communityIdentifier, String oid, String localId) {
     PatientIdentifier dummy = new PatientIdentifier(communityIdentifier, localId, oid);
     dummy.setPatientInfo(
-        new HumanNameDTO("Max", "Mustermann", null, LocalDate.now(), "MALE"));
+        new HumanNameDTO("Max", "Mustermann", null, LocalDate.of(1900, 1, 1), "MALE"));
     dummy.setGlobalAuthority("global authority");
     dummy.setGlobalExtension("global extension");
     dummy.setSpidExtension("spid extension");
-    dummy.setSpidRootAuthority("spid authority");
+    dummy.setSpidRootAuthority("urn:oid:1.2.3.4");
 
     return dummy;
   }
@@ -577,16 +577,14 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   private void increaseConfidentiality(BaseDTO dto) {
     ValueDTO confidentiality = dto.getConfidentiality();
 
-    switch (confidentiality.getCode()) {
+    confidentiality = switch (confidentiality.getCode()) {
       case "17621005": // Normal
-        confidentiality = HuskyUtils.RESTRICTED_CONFIDENTIALITY_CODE;
-        break;
+        yield HuskyUtils.RESTRICTED_CONFIDENTIALITY_CODE;
       case "263856008": // Restricted
-        confidentiality = HuskyUtils.SECRET_CONFIDENTIALITY_CODE;
-        break;
+        yield HuskyUtils.SECRET_CONFIDENTIALITY_CODE;
       default:
         throw new TechnicalException("Writing failed after increasing confidentiality");
-    }
+    };
 
     dto.setConfidentiality(confidentiality);
   }
@@ -691,7 +689,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       return response.getStatus().name();
     }
     if (Boolean.TRUE.equals(profileConfig.getHuskyLocalMode())) {
-      uuid = uuid.replace(FhirConverter.DEFAULT_ID_PREFIX, "");
+      uuid = uuid.replace(FhirConstants.DEFAULT_ID_PREFIX, "");
       String filepath = Paths.get(FhirAdapter.CONFIG_TESTFILES_JSON, uuid + ".json").toString();
       try (PrintStream out = new PrintStream(new FileOutputStream(filepath))) {
         out.print(json);
