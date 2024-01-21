@@ -1,5 +1,5 @@
 {
   "backendURL": "http://localhost:8080",
-  "communityId": "MyCommunityIdentifier",
+  "communityId": "GAZELLE",
   "allowStartWithoutInitialCall": false
 }

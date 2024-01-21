@@ -40,7 +40,16 @@ export function createErrorDialogBody(errorBody: string, translateService: Trans
 export function vaccinationRecordErrorDialog(errorBody: string, translateService: TranslateService, allPatientData: IBaseDTO[]): string {
   const bodyHeader = translateService.instant(errorBody);
   const filteredData = allPatientData.filter(e => e.hasErrors);
-  const filteredCount = filteredData.length;
+  
+  // remove duplicates
+  const uniqueData = filteredData.reduce((b: IBaseDTO[], a) => {
+    let i = b.findIndex(e => e.json === a.json)
+    if (i === -1) {
+      b.push(a)
+    }
+    return b;
+  }, []);
+  const filteredCount = uniqueData.length;
 
   const dynamicErrorMessage = translateService.instant(bodyHeader);
   const errorMessageBody = dynamicErrorMessage.replace('{{count}}', filteredCount.toString(), 'g');

@@ -1,11 +1,11 @@
 {
   "MEDICAL_PROBLEM": {
-    "TITLE": "Medical Problems",
+    "TITLE": "Risk factors",
     "FILTER": "Filter",
-    "DETAILS_HEADER": "Medical problem details",
-    "EDIT_HEADER": "Edit medical problem",
-    "NEW_HEADER": "Add medical problem",
-    "MEDICAL_PROBLEM_CODE": "Medical problem",
+    "DETAILS_HEADER": "Risk factor details",
+    "EDIT_HEADER": "Edit risk factor",
+    "NEW_HEADER": "Add risk factor",
+    "MEDICAL_PROBLEM_CODE": "Risk factor",
     "CLINICAL_STATUS": "Clinical status",
     "RECORDER": "Recorded by",
     "SEVERITY": "Severity",
@@ -13,6 +13,6 @@
     "BEGIN": "Begin",
     "END": "End",
     "ORGANIZATION": "Organisation",
-    "DATE": "Date of diagnosis"
+    "DATE": "Date of determination"
   }
 }

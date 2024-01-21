@@ -32,6 +32,7 @@
     "293120003": "Smallpox vaccine adverse reactionerse reaction",
     "allergyvaccinevarizella": "Adverse reaction to component of vaccine product containing varicella antigen",
     "allergyvaccinehpv": "Adverse reaction to component of vaccine product containing human papillomavirus antigen",
-    "allergyvaccineherpeszoster": "Adverse reaction to component of vaccine product containing Herpes zoster"
+    "allergyvaccineherpeszoster": "Adverse reaction to component of vaccine product containing Herpes zoster",
+    "allergyvaccinefsme": "Adverse reaction to component of vaccine product containing tick-borne encephalitis virus antigen"
   }
 }

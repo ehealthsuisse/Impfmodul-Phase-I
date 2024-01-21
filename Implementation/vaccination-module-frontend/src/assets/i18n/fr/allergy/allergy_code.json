@@ -32,6 +32,7 @@
     "293120003": "effet indésirable d'un vaccin contre la variole",
     "allergyvaccinevarizella": "Effet indésirable du vaccin contre la varicelle",
     "allergyvaccinehpv": "Effet indésirable du vaccin contre le papillomavirus humain",
-    "allergyvaccineherpeszoster": "Effet indésirable du vaccin contre le zona"
+    "allergyvaccineherpeszoster": "Effet indésirable du vaccin contre le zona zoster",
+    "allergyvaccinefsme": "Effet indésirable du vaccin contre la FSME"
   }
 }

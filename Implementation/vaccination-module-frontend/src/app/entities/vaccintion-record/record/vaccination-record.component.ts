@@ -133,17 +133,20 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
 
   private checkAndOpenErrorDialog(patientData: IBaseDTO[]): void {
     patientData = patientData.filter(data => data.hasErrors);
-    for (const data of patientData) {
-      if (data.hasErrors) {
-        openVaccinationRecordErrorDialog(
-          'HELP.BROKEN.VACCINATION_RECORD.TITLE',
-          'HELP.BROKEN.VACCINATION_RECORD.BODY',
-          'HELP.BROKEN.VACCINATION_RECORD.FOOTER',
-          this.translateService,
-          this.dialogService,
-          patientData
-        );
-        break;
+    if (!this.sessionInfoService.hasBrokenEntries) {
+      for (const data of patientData) {
+        if (data.hasErrors) {
+          openVaccinationRecordErrorDialog(
+            'HELP.BROKEN.VACCINATION_RECORD.TITLE',
+            'HELP.BROKEN.VACCINATION_RECORD.BODY',
+            'HELP.BROKEN.VACCINATION_RECORD.FOOTER',
+            this.translateService,
+            this.dialogService,
+            patientData
+          );
+          this.sessionInfoService.hasBrokenEntries = true;
+          break;
+        }
       }
     }
   }

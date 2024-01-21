@@ -1,17 +1,17 @@
 {
   "MEDICAL_PROBLEM": {
-    "TITLE": "Maladies chronique",
+    "TITLE": "Facteurs de risqué",
     "FILTER": "Chercher",
-    "DETAILS_HEADER": "Détails sur la maladie chronique",
-    "EDIT_HEADER": "Modifier les détails de la maladie chronique",
-    "NEW_HEADER": "Ajouter une maladie chronique",
-    "MEDICAL_PROBLEM_CODE": "Maladie",
+    "DETAILS_HEADER": "Détails sur le facteur de risqué",
+    "EDIT_HEADER": "Modifier les détails de le facteur de risqué",
+    "NEW_HEADER": "Ajouter un facteur de risqué",
+    "MEDICAL_PROBLEM_CODE": "Facteur de risqué",
     "CLINICAL_STATUS": "Statut clinique",
     "RECORDER": "Enregistré par",
     "RECORDED_DATE": "Date",
     "BEGIN": "Début",
     "END": "Fin",
     "ORGANIZATION": "Organisation",
-    "DATE": "Date du diagnostic"
+    "DATE": "Date de la constatation"
   }
 }

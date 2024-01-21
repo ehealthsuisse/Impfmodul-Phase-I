@@ -17,10 +17,10 @@
     "EXPORT": "Esporta/Stampa",
     "PRINT": "Stampa",
     "VALIDATE": "Validate",
-    "ADD_ALLERGY": "Aggiungi allergia",
+    "ADD_ALLERGY": "Aggiungi effetti collaterali",
     "ADD_VACCINATION": "Aggiungi vaccinazione",
     "ADD_PAST_ILLNESS": "Aggiungi malattia passata",
-    "ADD_PROBLEM": "Aggiungi Malattie Croniche",
+    "ADD_PROBLEM": "Aggiungi fattore di rischio",
     "DOWNLOAD": "scaricare",
     "HELP": "Aiuto",
     "SAVE_AND_STAY": "Salva e crea un altro"
