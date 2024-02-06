@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 eHealth Suisse
+ * Copyright (c) 2022 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,21 +16,21 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.fhir.epr.adapter.data.dto;
+package ch.fhir.epr.adapter.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import ch.fhir.epr.adapter.exception.ValidationException;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import org.junit.jupiter.api.Test;
+/**
+ * Class containing all validation utils
+ */
+@NoArgsConstructor
+public class ValidationUtils {
 
-public class AllergyDTOTest {
-
-  @Test
-  void getDateOfDay_noInput_returnOccurrenceDate() {
-    AllergyDTO dto = new AllergyDTO();
-    LocalDate now = LocalDate.now();
-    dto.setOccurrenceDate(now);
-
-    assertEquals(now, dto.getDateOfEvent());
+  public static int isPositiveNumber(String field, int value) {
+    if (value < 1) {
+      throw new ValidationException("The field " + field + " should be positive and greater than 0");
+    }
+    return value;
   }
 }

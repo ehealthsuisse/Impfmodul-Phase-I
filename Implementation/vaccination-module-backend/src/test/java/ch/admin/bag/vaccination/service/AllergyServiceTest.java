@@ -19,11 +19,15 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.verify;
 
+import ch.admin.bag.vaccination.service.husky.HuskyAdapter;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirConstants;
-import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
@@ -35,10 +39,13 @@ import org.hl7.fhir.r4.model.AllergyIntolerance.AllergyIntoleranceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 class AllergyServiceTest extends AbstractServiceTest {
   @Autowired
   private AllergyService allergyService;
+  @SpyBean
+  private HuskyAdapter huskyAdapter;
 
   @Override
   @Test
@@ -88,7 +95,7 @@ class AllergyServiceTest extends AbstractServiceTest {
             "waldspital-Id-1234", "00476f5f-f3b7-4e49-9b52-5ec88d65c18e",
             new ValueDTO("1141000195107", "Secret", "url"), null);
     assertThat(result.getRelatedId()).isEqualTo("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
-    assertThat(result.getVerificationStatus().getCode()).isEqualTo(FhirConverterIfc.ENTERED_IN_ERROR);
+    assertThat(result.getVerificationStatus().getCode()).isEqualTo(FhirConstants.ENTERED_IN_ERROR);
     assertThat(result.isDeleted()).isTrue();
     assertThat(result.getConfidentiality().getCode()).isEqualTo("1141000195107");
     assertThat(result.getConfidentiality().getName()).isEqualTo("Secret");
@@ -97,6 +104,14 @@ class AllergyServiceTest extends AbstractServiceTest {
     allergies = allergyService.getAll(patientIdentifier, null, true);
 
     assertThat(allergies.size()).isEqualTo(0);
+
+    // delete the resource again
+    allergyService.delete(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+        "waldspital-Id-1234", "00476f5f-f3b7-4e49-9b52-5ec88d65c18e",
+        new ValueDTO("1141000195107", "Secret", "url"), null);
+
+    // check that no deletion file was created after the second deletion
+    verify(huskyAdapter, atMostOnce()).writeDocument(any(), anyString(), anyString(), any(), any());
   }
 
   @Override

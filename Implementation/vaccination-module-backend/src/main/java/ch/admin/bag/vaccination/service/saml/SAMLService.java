@@ -262,16 +262,16 @@ public class SAMLService implements SAMLServiceIfc {
         SecurityContextHolder.clearContext();
       } else if (millisUntilExpiry < oneMinutesInMillis) {
         String idp = samlAuthentication.getIdp();
-        log.info("Refreshing token for {} and IDP {}", samlAuthentication.getName(), idp);
+        log.debug("Refreshing token for {} and IDP {}", samlAuthentication.getName(), idp);
         IdentityProviderConfig idpConfig = idpProviders.getProviderConfig(idp);
         String stsURL = idpConfig.getSecurityTokenServiceURL();
         if (stsURL != null) {
           try {
             Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL);
             samlAuthentication.setAssertion(renewedAssertion);
-            log.info("Renewal successful.");
+            log.debug("Renewal successful.");
           } catch (Exception ex) {
-            log.error("Refresh failed.");
+            log.error("Refresh failed for {} and IPD {}.", samlAuthentication.getName(), idp);
           }
         } else {
           log.warn("Security token service URL not set.");

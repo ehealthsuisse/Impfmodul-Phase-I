@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
@@ -29,7 +30,9 @@ import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -39,8 +42,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.hl7.fhir.r4.model.Bundle;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -52,19 +59,22 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @SpringBootTest
 @ActiveProfiles("test")
+@TestInstance(Lifecycle.PER_CLASS)
 public class PdfServiceTest {
+
   @Autowired
   private PdfService pdfService;
   @Autowired
   private FhirAdapter fhirAdapter;
 
-  @Test
-  public void test_pdf_creation() throws Exception {
-    List<AllergyDTO> allergyDTOs = new ArrayList<>();
-    List<PastIllnessDTO> pastIllnessDTOs = new ArrayList<>();
-    List<VaccinationDTO> vaccinationDTOs = new ArrayList<>();
-    List<MedicalProblemDTO> medicalProblemDTOs = new ArrayList<>();
+  private final List<AllergyDTO> allergyDTOs = new ArrayList<>();
+  private final List<PastIllnessDTO> pastIllnessDTOs = new ArrayList<>();
+  private final List<VaccinationDTO> vaccinationDTOs = new ArrayList<>();
+  private final List<MedicalProblemDTO> medicalProblemDTOs = new ArrayList<>();
+  private HumanNameDTO patient;
 
+  @BeforeAll
+  void setUp() {
     List<String> localJsons = fhirAdapter.getLocalEntities();
     for (String localJson : localJsons) {
       Bundle bundle = fhirAdapter.unmarshallFromString(localJson);
@@ -73,7 +83,11 @@ public class PdfServiceTest {
       vaccinationDTOs.addAll(fhirAdapter.getDTOs(VaccinationDTO.class, bundle));
       medicalProblemDTOs.addAll(fhirAdapter.getDTOs(MedicalProblemDTO.class, bundle));
     }
+    patient = new HumanNameDTO("Hans", "Müller", "Herr", LocalDate.now(), "MALE");
+  }
 
+  @Test
+  public void test_pdf_creation() throws Exception {
     allergyDTOs.get(0).setComments(Arrays.asList(
         new CommentDTO(LocalDateTime.now().minusDays(10), " Dr. Michel Dupont ",
             "Comment1\nNewLine"),
@@ -98,8 +112,6 @@ public class PdfServiceTest {
             new ValueDTO("777", "myDisease", "myySystem")),
         null, 1234, LocalDate.now(), new HumanNameDTO("Michel", "Dupont", "Dr", null, null),
         "organization", "lotNumber", new ValueDTO("reason", null, null), new ValueDTO("status", null, null)));
-
-    HumanNameDTO patient = new HumanNameDTO("Hans", "Müller", "Herr", LocalDate.now(), "MALE");
 
     InputStream stream = pdfService.create(
         new VaccinationRecordDTO("de", patient, allergyDTOs, pastIllnessDTOs, vaccinationDTOs, medicalProblemDTOs,
@@ -136,7 +148,7 @@ public class PdfServiceTest {
   }
 
   @Test
-  public void test_translation() throws Exception {
+  public void test_translation() {
     assertThat(I18nKey.BIRTHDAY.getTranslation("en")).isEqualTo("Birthday");
     assertThat(I18nKey.BIRTHDAY.getTranslation("de")).isEqualTo("Geburtsdatum");
     assertThat(I18nKey.BIRTHDAY.getTranslation("fr")).isEqualTo("Date de naissance");
@@ -145,10 +157,25 @@ public class PdfServiceTest {
     assertThat(I18nKey.BIRTHDAY.getTranslation(null)).isEqualTo("Birthday");
   }
 
+  @Test
+  public void test_pdfCreated_isEncrypted() throws IOException {
+    InputStream stream = pdfService.create(
+        new VaccinationRecordDTO("en", patient, allergyDTOs, pastIllnessDTOs, vaccinationDTOs, medicalProblemDTOs,
+            Arrays.asList(
+                new ValueDTO("397430003", "Diphtheria", null),
+                new ValueDTO("40468003", "Viral hepatitis, type A", null),
+                new ValueDTO("777", "myDisease_en", null))));
+
+    PDDocument doc = PDDocument.load(stream);
+    // check that generated PDF is encrypted
+    assertTrue(doc.isEncrypted());
+    doc.close();
+
+  }
+
   private void generatePDF(String filename, InputStream stream) throws Exception {
     File pdfFile = new File(filename);
     Files.copy(stream, pdfFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     IOUtils.closeQuietly(stream);
   }
-
 }

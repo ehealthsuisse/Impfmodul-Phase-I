@@ -1,0 +1,29 @@
+<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap-env:Body>
+    <samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Destination="https://sp.ihe-europe.net/Shibboleth.sso/SLO/SOAP" ID="s2a50934f00d8fac04ca35c2bd98375bc97848a22e" IssueInstant="2023-04-13T14:19:28Z" NotOnOrAfter="2023-04-13T14:23:58Z" Version="2.0">
+      <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">SwissID SAML2 IDP</saml:Issuer>
+      <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:SignedInfo>
+          <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+          <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+          <ds:Reference URI="#s2a50934f00d8fac04ca35c2bd98375bc97848a22e">
+            <ds:Transforms>
+              <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+              <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+            </ds:Transforms>
+            <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+            <ds:DigestValue>GzjGPSV4SkwZjVV7I3507GfkZeZRbjinVq2bEbEjsIM=</ds:DigestValue>
+          </ds:Reference>
+        </ds:SignedInfo>
+        <ds:SignatureValue>hydkdnzN47VpbVQ2wFN23iSVo+ETFe79eMauHx+5OZ7ggx9VDSEFJNS10jI7rALZDc0EfHO/Krfh0jQxJMTJORQAkhnONsn69UgU+Xec0n5uCed4inY6iqdHGxLV+pyRrkFOVCnoKVbsoq7EO50qti/YJvcqRjryDEL6hVIvN0ytaQcsaroI1ukMkeRdI0ePrJkXQRyNCa1qpC6oqNt0nR4MTaqLW/XPoXzZe944zwQmFI1z8nC79CyMhB4qWsKdovDfrm+3wFXNWBwWp8VBdeHY0WZm/8cF7DvCKnCDIhfm7rUdZM+JILcp3pjyJqipkXyIdKWXRlweZWgbJJt5NQ==</ds:SignatureValue>
+        <ds:KeyInfo>
+          <ds:X509Data>
+            <ds:X509Certificate>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</ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </ds:Signature>
+      <saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="SwissID SAML2 IDP" SPNameQualifier="https://sp.ihe-europe.net/shibboleth">9d099472-179e-41eb-b417-005056826d01</saml:NameID>
+      <samlp:SessionIndex>s208eed66e681da8c990f68c9296f6835960b54801</samlp:SessionIndex>
+    </samlp:LogoutRequest>
+  </soap-env:Body>
+</soap-env:Envelope>

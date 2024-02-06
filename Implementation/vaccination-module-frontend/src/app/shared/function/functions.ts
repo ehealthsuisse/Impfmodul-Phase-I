@@ -85,7 +85,7 @@ export function downloadRecordValue<T extends IBaseDTO>(t: T, patient: IHumanDTO
   document.body.removeChild(element);
 }
 
-export function deleteRecord<T>(matDialog: MatDialog, dialogComponent: Type<any>, service: any, baseDetails: T, details: any): void {
+export function deleteRecord<T>(matDialog: MatDialog, dialogComponent: Type<any>, service: any, baseDetails: T, details: IBaseDTO): void {
   const dialogData = {
     value: { ...baseDetails },
     button: { delete: 'buttons.DELETE' },

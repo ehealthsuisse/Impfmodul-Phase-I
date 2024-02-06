@@ -81,6 +81,7 @@ export class MedicalProblemFormService {
     const firstName = isHCP ? authorInfo.firstName : '';
     const lastName = isHCP ? authorInfo.lastName : '';
     const prefix = isHCP ? authorInfo.prefix : '';
+    const organization = this.sessionInfo.queryParams.organization;
     return new FormGroup<ProblemFormGroupContent>({
       id: new FormControl(
         { value: medicalProblemRawValue.id, disabled: true },
@@ -101,7 +102,7 @@ export class MedicalProblemFormService {
         lastName: new FormControl(lastName),
         prefix: new FormControl(prefix),
       }),
-      organization: new FormControl(),
+      organization: new FormControl(organization),
       comments: new FormControl([]),
       commentMessage: new FormControl(),
       confidentiality: new FormControl(),

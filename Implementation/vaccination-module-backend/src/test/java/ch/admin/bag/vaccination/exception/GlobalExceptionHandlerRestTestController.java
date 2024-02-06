@@ -19,6 +19,8 @@
 package ch.admin.bag.vaccination.exception;
 
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import ch.fhir.epr.adapter.exception.ValidationException;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

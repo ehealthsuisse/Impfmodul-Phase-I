@@ -79,6 +79,41 @@ public final class HttpSessionUtils {
     setParameterInSession(request, HttpSessionUtils.PURPOSE, "NORM");
   }
 
+  /**
+   * Checks whether the requested patient identifier is the same for which the session was
+   * established.
+   *
+   * @param requestedPatientIdentifier {@link PatientIdentifier}
+   * @return false if a mismatch was detected.
+   */
+  public static boolean isValidAccessToPatientInformation(PatientIdentifier requestedPatientIdentifier) {
+    String requestedLocalExtension = requestedPatientIdentifier.getLocalExtenstion();
+    String requestedLocalAssigningAuthority = requestedPatientIdentifier.getLocalAssigningAuthority();
+
+    PatientIdentifier identifier = getPatientIdentifierFromSession();
+    if (identifier == null) {
+      log.debug("No patient identifier found in session.");
+      return false;
+    }
+
+    AuthorDTO author = getAuthorFromSession();
+    String linkedLocalExtension = identifier.getLocalExtenstion();
+    String linkedLocalAssigningAuthority = identifier.getLocalAssigningAuthority();
+
+    boolean isAccessInvalid = !linkedLocalExtension.equalsIgnoreCase(requestedLocalExtension)
+        || !linkedLocalAssigningAuthority.equalsIgnoreCase(requestedLocalAssigningAuthority);
+
+    if (isAccessInvalid) {
+      log.warn(
+          "Invalid EPD access detected. User: {} - linked Session: {} - requested access to: {}",
+          author != null ? author.getFullName() : "Unknown",
+          Map.of("LocalId", linkedLocalExtension, "LocalAssigningAuthorityOid", linkedLocalAssigningAuthority),
+          Map.of("LocalId", requestedLocalExtension, "LocalAssigningAuthorityOid", requestedLocalAssigningAuthority));
+    }
+
+    return !isAccessInvalid;
+  }
+
   public static void setParameterInSession(HttpServletRequest request, String paramName, Object value) {
     request.getSession().setAttribute(paramName, value);
   }
@@ -97,13 +132,10 @@ public final class HttpSessionUtils {
     HttpSession session = request.getSession(false);
 
     if (session == null) {
-      log.warn("Could not request {} from session because session is null.", param);
+      log.debug("Could not request {} from session because session is null.", param);
       return null;
     }
 
     return (T) session.getAttribute(param);
   }
-
-
-
 }

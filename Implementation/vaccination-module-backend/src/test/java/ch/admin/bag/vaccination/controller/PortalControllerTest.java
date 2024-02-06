@@ -25,10 +25,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.service.SignatureService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,37 +54,51 @@ class PortalControllerTest {
   private SignatureService signatureService;
 
   @Test
-  void validateQueryParams_noInput_returnFalse() throws JsonProcessingException {
+  void validateQueryParams_noInput_returnFalse() {
     // Test with valid parameters
     Map<String, String> queryMap = createMap();
-    boolean result = sendContentToWebservice(queryMap);
-    assertTrue(result);
+    assertWebServiceResult(queryMap, null, null, true);
 
-    // Test with missing GLN for HCP role
-    queryMap.put("ugln", null); // Set GLN to null for this test
-    result = sendContentToWebservice(queryMap);
-    assertFalse(result);
+    // Test with missing GLN (set to null) for HCP role
+    assertWebServiceResult(queryMap, "ugln", null, false);
+
+    // Test with missing organization (set to empty string) for HCP role
+    assertWebServiceResult(queryMap, "organization", "", false);
 
     // Test with valid parameters and role set to ASS
     queryMap.put("role", "ASS"); // Set the role to ASS for this test
     queryMap.put("ugln", ANY_CONTENT);
     queryMap.put("principalid", ANY_CONTENT);
     queryMap.put("principalname", ANY_CONTENT);
+    queryMap.put("organization", ANY_CONTENT);
+    assertWebServiceResult(queryMap, null, null, true);
 
-    result = sendContentToWebservice(queryMap);
-    assertTrue(result);
+    // Test with missing principalId (set to null) for ASS role
+    assertWebServiceResult(queryMap, "principalid", null, false);
 
-    // Test with missing principalId and principalName for ASS role
-    queryMap.put("principalid", null); // Set principalId to null for this test
-    result = sendContentToWebservice(queryMap);
-    assertFalse(result);
+    // Test with missing organization (set to null) for ASS role
+    assertWebServiceResult(queryMap, "organization", null, false);
   }
 
   @Test
-  void validateQueryString_anyContent_forwardToService() throws JsonProcessingException {
+  void validateQueryString_anyContent_forwardToService() {
     sendContentToWebservice(ANY_CONTENT, false);
 
     verify(signatureService).validateQueryString(ANY_CONTENT);
+  }
+
+  private void assertWebServiceResult(Map<String, String> queryMap, String parameterName, String parameterValue,
+      boolean expectedResult) {
+    if (Objects.nonNull(parameterName)) {
+      queryMap.put(parameterName, parameterValue);
+    }
+
+    boolean result = sendContentToWebservice(queryMap);
+    if (expectedResult) {
+      assertTrue(result);
+    } else {
+      assertFalse(result);
+    }
   }
 
   private Map<String, String> createMap() {
@@ -100,6 +114,7 @@ class PortalControllerTest {
     params.put("timestamp", ANY_CONTENT);
     params.put("ufname", ANY_CONTENT);
     params.put("ugname", ANY_CONTENT);
+    params.put("organization", ANY_CONTENT);
 
     return params;
   }
@@ -108,11 +123,11 @@ class PortalControllerTest {
     return "http://localhost:" + port + inEndpoint;
   }
 
-  private boolean sendContentToWebservice(Object content) throws JsonProcessingException {
+  private boolean sendContentToWebservice(Object content) {
     return sendContentToWebservice(content, true);
   }
 
-  private boolean sendContentToWebservice(Object content, boolean isValid) throws JsonProcessingException {
+  private boolean sendContentToWebservice(Object content, boolean isValid) {
     String contentString = content.toString();
     String endpoint = createURL(PortalController.ENDPOINT_VALIDATE);
     if (content instanceof Map<?, ?> map) {

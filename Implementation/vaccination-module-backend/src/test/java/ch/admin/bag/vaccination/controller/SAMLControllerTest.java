@@ -87,6 +87,11 @@ public class SAMLControllerTest {
     performLogout("saml/samlSoapLogoutRequest.xml");
   }
 
+  @Test
+  void sendSoapSamlLogoutRequest_swissId_expectValidResponse() {
+    performLogout("saml/samlLogoutRequestSwissId.xml");
+  }
+
   @BeforeEach
   void setUp() {
     when(profileConfig.isSamlAuthenticationActive()).thenReturn(true);

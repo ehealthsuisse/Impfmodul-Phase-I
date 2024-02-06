@@ -19,7 +19,7 @@
     "NO_ENTRIES_FOUND": "Keine passenden Einträge gefunden",
     "COMMENT": "Kommentar",
     "ERROR": "Fehler",
-    "ERROR_403": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen. Sie müssen auf diese Seite über das EPD-Portal zugreifen.",
+    "ERROR_403": "Der Aufruf des Impfmoduls wurde abgelehnt oder hat zu lange gedauert. Bitte probieren Sie erneut, mit Ihrem EPD-Portal auf das Impfmodul zugreifen.",
     "UNSUPPORTED_LANGUAGE": "Die Sprache {{ lang }} wird nicht unterstützt.",
     "ERROR_404": "Die angeforderte Seite wurde nicht gefunden.",
     "UNEXPECTED_ERROR": "Es ist ein unerwarteter Fehler aufgetreten. Die gewünschte Aktion konnte nicht ausgeführt werden.",

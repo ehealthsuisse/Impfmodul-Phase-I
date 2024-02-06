@@ -1,7 +1,7 @@
 {
   "GLOBAL": {
     "ALLERGIES": "Effets secondaires (EIV)",
-    "PROBLEM": "Facteurs de risqué",
+    "PROBLEM": "Facteurs de risque",
     "VACCINATIONS": "Vaccins",
     "HOME": "Carnet de vaccination",
     "DATE": "Date",
@@ -18,9 +18,9 @@
     "SEARCH": "Recherche",
     "COMMENT": "Commentaire",
     "ERROR": "Erreur",
-    "ERROR_403": "Vous n'êtes pas autorisé à accéder à cette page. Vous devez accéder à cette page depuis le portail EPD.",
+    "ERROR_403": "L'accès au module de vaccination a été refusé ou a pris trop de temps. Veuillez réessayer d'accéder au module de vaccination avec votre portail EPD.",
     "UNSUPPORTED_LANGUAGE": "La langue {{lang}} n'est pas prise en charge.",
-    "ERROR_404": "La page que vous recherchez n'existe pas",
+    "ERROR_404": "La page que vous recherchez n'existe pas.",
     "UNEXPECTED_ERROR": "Une erreur inattendue s'est produite. L'action demandée n'a pas pu être effectuée.",
     "SNEAKBAR_CONFIRM": "Entité enregistrée avec succès",
     "END_DATE_BEFORE_START_DATE": "La fin doit se situer après le début.",

@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ch.fhir.epr.TestMain;
 import ch.fhir.epr.adapter.config.FhirConfig;
@@ -118,23 +119,30 @@ class FhirConverterTest {
   }
 
   @Test
+  void createBundle_confidentialitySet_replaceSnomedInBundleButKeepDTOUnchanged() {
+    vaccinationDTO.setConfidentiality(FhirConstants.DEFAULT_CONFIDENTIALITY_CODE);
+    PatientIdentifier identifier = mock(PatientIdentifier.class);
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
+    assertEquals("http://snomed.info/sct", FhirUtils.getConfidentiality(bundle).getSystem());
+    assertEquals(FhirConstants.CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED,
+        vaccinationDTO.getConfidentiality().getSystem());
+  }
+
+  @Test
   void fillAuthor_assistentRole_usePrincipalId() {
     Bundle bundle = new Bundle();
     BaseDTO dto = mock(VaccinationDTO.class);
 
     // author should be ASS role
-    AuthorDTO author = new AuthorDTO(humanNameDTO, "ASS", "gln");
-    String principalId = "principalId";
-    String principalName = "given family";
-    author.setPrincipalId(principalId);
-    author.setPrincipalName(principalName);
+    AuthorDTO author = createAuthor();
     when(dto.getAuthor()).thenReturn(author);
     PatientIdentifier identifier = mock(PatientIdentifier.class);
 
     ReflectionTestUtils.invokeMethod(fhirConverter, "createComposition", bundle, dto, identifier, false);
 
     author = FhirUtils.getAuthor(bundle);
-    assertEquals(principalId, author.getGln());
+    assertEquals("principalId", author.getGln());
     assertEquals("given", author.getUser().getFirstName());
     assertEquals("family", author.getUser().getLastName());
   }
@@ -163,6 +171,7 @@ class FhirConverterTest {
     String organization = ORGANIZATION;
     vaccinationDTO = fhirConverter.toVaccinationDTO(immunization, practitioner, organization);
     vaccinationDTO.setComments(fhirConverter.createComments(null, immunization.getNote()));
+    vaccinationDTO.setAuthor(createAuthor());
 
     fhirConfig.setPractitionerRoles(List.of("ASS", "HCP"));
     fhirConfig.setPatientRoles(List.of("REP", "PAT"));
@@ -333,6 +342,15 @@ class FhirConverterTest {
     assertThat(humanNameDTO.toString()).hasToString(
         "HumanNameDTO(firstName=" + FIRST_NAME + ", lastName=" + LAST_NAME + ", prefix=" + PREFIX
             + ", birthday=null, gender=null)");
+  }
+
+  private AuthorDTO createAuthor() {
+    AuthorDTO author = new AuthorDTO(humanNameDTO, "ASS", "gln");
+    String principalId = "principalId";
+    String principalName = "given family";
+    author.setPrincipalId(principalId);
+    author.setPrincipalName(principalName);
+    return author;
   }
 
   private Identifier createIdentifier(String id) {

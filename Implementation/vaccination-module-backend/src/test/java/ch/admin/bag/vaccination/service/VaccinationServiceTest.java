@@ -19,11 +19,15 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.verify;
 
+import ch.admin.bag.vaccination.service.husky.HuskyAdapter;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirConstants;
-import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -35,12 +39,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 class VaccinationServiceTest extends AbstractServiceTest {
   @Autowired
   private VaccinationService vaccinationService;
   @Autowired
   private VaccinationConfig vaccinationConfig;
+  @SpyBean
+  private HuskyAdapter huskyAdapter;
 
   @Override
   @Test
@@ -96,7 +103,7 @@ class VaccinationServiceTest extends AbstractServiceTest {
             new ValueDTO("1141000195107", "Secret", "url"), null);
 
     assertThat(result.getRelatedId()).isEqualTo("acc1f090-5e0c-45ae-b283-521d57c3aa2f");
-    assertThat(result.getStatus().getCode()).isEqualTo(FhirConverterIfc.ENTERED_IN_ERROR);
+    assertThat(result.getStatus().getCode()).isEqualTo(FhirConstants.ENTERED_IN_ERROR);
     assertThat(result.isDeleted()).isTrue();
     assertThat(result.getConfidentiality().getCode()).isEqualTo("1141000195107");
     assertThat(result.getConfidentiality().getName()).isEqualTo("Secret");
@@ -105,6 +112,13 @@ class VaccinationServiceTest extends AbstractServiceTest {
     vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
 
     assertThat(vaccinations.size()).isEqualTo(2);
+
+    // delete the resource again
+    vaccinationService.delete(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1", "waldspital-Id-1234",
+        "acc1f090-5e0c-45ae-b283-521d57c3aa2f", new ValueDTO("1141000195107", "Secret", "url"), null);
+
+    // check that no deletion file was created after the second deletion
+    verify(huskyAdapter, atMostOnce()).writeDocument(any(), anyString(), anyString(), any(), any());
   }
 
   @Override
@@ -167,7 +181,8 @@ class VaccinationServiceTest extends AbstractServiceTest {
   @Test
   public void testValidate() {
     ValueDTO vaccineCode = new ValueDTO("987654321", "123456789", "testsystem");
-    ValueDTO newStatus = new ValueDTO("entered-in-error", "entered-in-error", "http://hl7.org/fhir/event-status");
+    ValueDTO newStatus = new ValueDTO(FhirConstants.ENTERED_IN_ERROR, FhirConstants.ENTERED_IN_ERROR,
+        "http://hl7.org/fhir/event-status");
     String newOrga = "My new organization AG";
     String newLotNumber = "newLotNumber";
     VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, null, null, 3,

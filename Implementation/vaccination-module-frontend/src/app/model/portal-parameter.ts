@@ -5,6 +5,7 @@ export interface IPortalParameter {
   laaoid: string;
   lang: string;
   lpid: string;
+  organization: string;
   purpose: string;
   role: string;
   timestamp: string;

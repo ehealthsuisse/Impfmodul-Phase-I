@@ -118,7 +118,7 @@ public class SignatureUtils {
     try {
       Element element = convertXMLObjectToElement(envelope, Envelope.class);
       SignatureUtils.verifyEnvelopeSignature(element, publicKey);
-      log.info("Envelop has a valid signature.");
+      log.debug("Envelop has a valid signature.");
     } catch (MarshallingException | MarshalException | XPathExpressionException e) {
       throw new RuntimeException(e);
     }

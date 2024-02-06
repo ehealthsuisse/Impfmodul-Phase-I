@@ -54,6 +54,7 @@ export class ValidationService {
         laaoid: queryParams.get('laaoid') ?? '',
         lang: queryParams.get('lang') ?? '',
         lpid: queryParams.get('lpid') ?? '',
+        organization: queryParams.get('organization') ?? '',
         purpose: queryParams.get('purpose') ?? '',
         role: queryParams.get('role') ?? '',
         timestamp: queryParams.get('timestamp') ?? '',

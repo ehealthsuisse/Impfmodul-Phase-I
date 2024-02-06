@@ -86,7 +86,7 @@ public class SAMLController {
     // user needs to be manually forwarded to the vaccination record
     if (profileConfig.isLocalMode()) {
       HttpSessionUtils.initializeValidDummySession(request);
-      boolean isLocalhost = request.getRemoteAddr().equals("127.0.0.1");
+      boolean isLocalhost = "127.0.0.1".equals(request.getRemoteAddr());
       String serverName = request.getServerName().replace("-backend", "");
       return request.getScheme() + "://"
           + serverName
@@ -105,7 +105,8 @@ public class SAMLController {
   @PostMapping("/saml/logout")
   @Operation(description = "SAML Logout")
   public String logout(@RequestBody String xml) {
-    log.info("Received samlLogout");
+    log.debug("Received samlLogout, to switch to TRACE log level");
+    log.trace("Saml logout request: {}", xml);
     try {
       XMLObject samlObject = SAMLUtils.unmarshall(xml);
       if (samlObject == null) {

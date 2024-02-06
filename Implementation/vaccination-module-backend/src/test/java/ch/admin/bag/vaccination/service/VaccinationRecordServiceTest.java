@@ -24,7 +24,6 @@ import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.FhirConstants;
-import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
@@ -53,21 +52,21 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 class VaccinationRecordServiceTest {
 
   private static final String EPDPLAYGROUND = "EPDPLAYGROUND";
-  @Autowired
-  private VaccinationRecordService vaccinationRecordService;
+
   @Autowired
   private AllergyService allergyService;
   @Autowired
-  private VaccinationService vaccinationService;
-  @Autowired
-  private PastIllnessService pastIllnessService;
+  private FhirAdapter fhirAdapter;
   @Autowired
   private MedicalProblemService medicalProblemService;
   @Autowired
-  private FhirAdapter fhirAdapter;
+  private PastIllnessService pastIllnessService;
   @Autowired
   private ProfileConfig profileConfig;
-  AuthorDTO author = new AuthorDTO(new HumanNameDTO("hor", "Aut", "Dr.", null, null), "HCP", "gln:1.2.3.4");
+  @Autowired
+  private VaccinationRecordService vaccinationRecordService;
+  @Autowired
+  private VaccinationService vaccinationService;
 
   @BeforeEach
   void before() {
@@ -75,6 +74,19 @@ class VaccinationRecordServiceTest {
     profileConfig.setHuskyLocalMode(null);
     setAuthorInSession(
         new AuthorDTO(new HumanNameDTO("Test Firstname", "Test Lastname", "Test Prefix", LocalDate.now(), "MALE")));
+  }
+
+  @Test
+  void getAll_patientNotLinkedToTheSession_shouldReturnPatientInfoNull() {
+    setPatientIdentifierInSession(
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "dummy", "dummy"));
+    PatientIdentifier patientIdentifier =
+        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "test", "test");
+    patientIdentifier.setPatientInfo(new HumanNameDTO("Firstname", "Lastname", "Prefix", LocalDate.now(), "FEMALE"));
+
+    VaccinationRecordDTO result = vaccinationRecordService.create(patientIdentifier, null);
+
+    assertThat(result.getPatient()).isNull();
   }
 
   @Test
@@ -93,7 +105,8 @@ class VaccinationRecordServiceTest {
     log.error("created record + json {}", json);
 
     Bundle parsedBundle = fhirAdapter.unmarshallFromString(json);
-    assertThat(parsedBundle.getMeta().getProfile().get(0).getValue()).isEqualTo(FhirConstants.META_VACCINATION_RECORD_TYPE_URL);
+    assertThat(parsedBundle.getMeta().getProfile().get(0).getValue())
+        .isEqualTo(FhirConstants.META_VACCINATION_RECORD_TYPE_URL);
     parsedBundle.getMeta().getProfile().get(0).setValue(FhirConstants.META_VACCINATION_TYPE_URL);
     List<VaccinationDTO> vaccinationsResult = fhirAdapter.getDTOs(VaccinationDTO.class, parsedBundle);
     List<AllergyDTO> allergiesResult = fhirAdapter.getDTOs(AllergyDTO.class, parsedBundle);
@@ -103,6 +116,7 @@ class VaccinationRecordServiceTest {
     assertThat(allergiesResult.size()).isEqualTo(allergies.size());
     assertThat(pastIllnessesResult.size()).isEqualTo(pastIllnesses.size());
   }
+
 
   private void setAuthorInSession(AuthorDTO author) {
     Objects.nonNull(author);

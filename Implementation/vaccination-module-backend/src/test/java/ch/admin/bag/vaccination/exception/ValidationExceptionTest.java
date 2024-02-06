@@ -20,6 +20,9 @@ package ch.admin.bag.vaccination.exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import ch.fhir.epr.adapter.exception.ValidationException;
+
 import org.junit.jupiter.api.Test;
 
 class ValidationExceptionTest {

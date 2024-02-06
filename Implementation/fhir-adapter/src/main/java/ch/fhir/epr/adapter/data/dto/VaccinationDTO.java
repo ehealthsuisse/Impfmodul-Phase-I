@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public class VaccinationDTO extends BaseDTO {
       List<CommentDTO> comments, Integer doseNumber, LocalDate occurrenceDate, HumanNameDTO performer,
       String organization, String lotNumber, ValueDTO reason, ValueDTO status) {
     this.targetDiseases = targetDiseases;
-    this.doseNumber = doseNumber;
+    this.doseNumber = ValidationUtils.isPositiveNumber("doseNumber", doseNumber);
     this.occurrenceDate = occurrenceDate;
     this.lotNumber = lotNumber;
     this.reason = reason;
@@ -70,5 +71,4 @@ public class VaccinationDTO extends BaseDTO {
   public void setVaccineCode(ValueDTO code) {
     setCode(code);
   }
-
 }

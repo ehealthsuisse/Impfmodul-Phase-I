@@ -30,7 +30,7 @@ export class PortalParameterInterceptor implements HttpInterceptor {
     const modifiedHeaders: { [header: string]: string | string[] } = {};
     const queryParams = this.sessionInfoService.queryParams;
 
-    const optionalParameters: Array<keyof IPortalParameter> = ['ugln', 'principalid', 'utitle', 'principalname'];
+    const optionalParameters: Array<keyof IPortalParameter> = ['ugln', 'principalid', 'utitle', 'principalname', 'organization'];
 
     Object.entries(queryParams).forEach(([key, value]) => {
       if (!optionalParameters.includes(key as keyof IPortalParameter) || value) {
