@@ -289,11 +289,12 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       Destination dest = getDestination(repositoryConfig);
       AffinityDomain affinityDomain = getAffinityDomain(dest);
       convenienceCommunication.setAffinityDomain(affinityDomain);
-      convenienceCommunication.clearDocuments();
+      ensureCorrectConfidentialitySystemUrl(dto);
 
       boolean success = false;
       String returnValue = "TEST";
       while (!success) {
+        convenienceCommunication.clearDocuments();
         returnValue = writeConsideringConfidentiality(uuid, json, dto, assertion,
             isVaccinationRecord, communityConfig, globalId, spid, localIdentifier, repositoryConfig);
         success = Status.SUCCESS.name().equals(returnValue);
@@ -421,6 +422,20 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     dummy.setSpidRootAuthority("urn:oid:1.2.3.4");
 
     return dummy;
+  }
+
+  // Necessary due to bundle contents containing a confidentiality url with snomed URL which must not
+  // be used for the metadata.
+  private void ensureCorrectConfidentialitySystemUrl(BaseDTO dto) {
+    if (dto.getConfidentiality().getSystem().contains("snomed")) {
+      if (HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getCode().equals(dto.getConfidentiality().getCode())) {
+        dto.setConfidentiality(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE);
+      } else if (HuskyUtils.RESTRICTED_CONFIDENTIALITY_CODE.getCode().equals(dto.getConfidentiality().getCode())) {
+        dto.setConfidentiality(HuskyUtils.RESTRICTED_CONFIDENTIALITY_CODE);
+      } else if (HuskyUtils.SECRET_CONFIDENTIALITY_CODE.getCode().equals(dto.getConfidentiality().getCode())) {
+        dto.setConfidentiality(HuskyUtils.SECRET_CONFIDENTIALITY_CODE);
+      }
+    }
   }
 
   private void fillPatientIdentifierByResult(PatientIdentifier patientIdentifier,

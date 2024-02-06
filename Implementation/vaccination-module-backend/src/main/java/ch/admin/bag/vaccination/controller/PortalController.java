@@ -60,6 +60,7 @@ public class PortalController {
 
   private static final String LOCAL_ASSIGNING_AUTHORITY_OID = "laaoid";
   private static final String LOCAL_PATIENT_ID = "lpid";
+  private static final String ORGANIZATION = "organization";
 
   static final String ENDPOINT_VALIDATE = "/signature/validate";
 
@@ -110,7 +111,7 @@ public class PortalController {
 
     AuthorDTO author = new AuthorDTO(
         user,
-        null,
+        paramsList.get(ORGANIZATION),
         paramsList.get(USER_ROLE),
         paramsList.get(PURPOSE),
         paramsList.get(USER_GLN),
@@ -146,33 +147,34 @@ public class PortalController {
   private boolean validateParameters(Map<String, String> params) {
     String role = params.get(USER_ROLE);
     String gln = params.get(USER_GLN);
+    String organization = params.get(ORGANIZATION);
     boolean mandatoryFieldsSet = isNotNullOrEmpty(params.get(IDP))
         && isNotNullOrEmpty(params.get(LOCAL_ASSIGNING_AUTHORITY_OID)) && isNotNullOrEmpty(params.get(LOCAL_PATIENT_ID))
         && isNotNullOrEmpty(params.get(LANG)) && isNotNullOrEmpty(params.get(PURPOSE))
         && isNotNullOrEmpty(role) && isNotNullOrEmpty(params.get(TIMESTAMP))
         && isNotNullOrEmpty(params.get(USER_FAMILY_NAME)) && isNotNullOrEmpty(params.get(USER_GIVEN_NAME));
+    logIfMissing(mandatoryFieldsSet, "Mandatory fields not all set", params);
 
-    if (!mandatoryFieldsSet) {
-      log.debug("Mandatory fields not all set: {}", params);
-    }
+    boolean hasGlnIfHcpOrAss = HCP.equalsIgnoreCase(role) || ASS.equalsIgnoreCase(role) ? isNotNullOrEmpty(gln) : true;
+    logIfMissing(hasGlnIfHcpOrAss, "GLN missing for HCP or ASS role", params);
 
-    boolean hasGlnIfHcpOrAss =
-        HCP.equalsIgnoreCase(role) || ASS.equalsIgnoreCase(role) ? isNotNullOrEmpty(gln) : true;
+    boolean hasPrincipalIdAndNameIfAss =
+        ASS.equalsIgnoreCase(role) ? isNotNullOrEmpty(gln) && isNotNullOrEmpty(params.get(PRINCIPAL_ID))
+            && isNotNullOrEmpty(params.get(PRINCIPAL_NAME)) : true;
+    logIfMissing(hasPrincipalIdAndNameIfAss, "principalId or name missing for ASS role", params);
 
-    if (!hasGlnIfHcpOrAss) {
-      log.debug("GLN missing for HCP or ASS role: {}", params);
-    }
-
-    boolean hasPrincipalIdAndNameIfAss = ASS.equalsIgnoreCase(role)
-        ? isNotNullOrEmpty(gln) && isNotNullOrEmpty(params.get(PRINCIPAL_ID))
-            && isNotNullOrEmpty(params.get(PRINCIPAL_NAME))
-        : true;
-
-    if (!hasPrincipalIdAndNameIfAss) {
-      log.debug("principalId or name missing for ASS role: {}", params);
-    }
+    // for the moment validation is not in place, but it will be in the future
+    boolean hasOrgIfHcpOrAss =
+        HCP.equalsIgnoreCase(role) || ASS.equalsIgnoreCase(role) ? isNotNullOrEmpty(organization) : true;
+    logIfMissing(hasOrgIfHcpOrAss, "Organization is missing for HCP or ASS role", params);
 
     return mandatoryFieldsSet && hasGlnIfHcpOrAss && hasPrincipalIdAndNameIfAss;
+  }
+
+  private void logIfMissing(boolean condition, String message, Map<String, String> params) {
+    if (!condition) {
+      log.debug(message + ": {}", params);
+    }
   }
 
   private boolean validateSignature(String queryString) {

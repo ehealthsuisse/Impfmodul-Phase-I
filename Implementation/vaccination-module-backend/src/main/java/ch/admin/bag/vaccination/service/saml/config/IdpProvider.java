@@ -18,7 +18,8 @@
  */
 package ch.admin.bag.vaccination.service.saml.config;
 
-import ch.admin.bag.vaccination.exception.ValidationException;
+import ch.fhir.epr.adapter.exception.ValidationException;
+
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;

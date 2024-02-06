@@ -25,11 +25,16 @@ import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.config.FhirConfig;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
+import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
+import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.InputStream;
@@ -42,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +65,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
+public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   private static final String LOAD_DATA_FOR_FROM = "Load data for {} from";
   @Autowired
   protected LifeCycleService lifeCycleService;
@@ -86,11 +92,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
     Bundle createdBundle = fhirAdapter.create(patientIdentifier, newDTO);
     if (createdBundle != null) {
-      String json = fhirAdapter.convertBundleToJson(createdBundle);
-      huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(createdBundle), json,
-          newDTO, assertion);
-      cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, json));
-      return parseBundle(patientIdentifier, createdBundle).get(0);
+      return getDTOAfterParsingBundle(newDTO, assertion, createdBundle, patientIdentifier, author);
     }
 
     throw new TechnicalException("no bundle was created, check server logs.");
@@ -103,6 +105,22 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
 
     List<EPRDocument> eprDocuments = getData(patientIdentifier, assertion);
+
+    // Check if the deletion candidate was already deleted
+    // If the EPRDocument contains the toDeleteUuid and also has the status entered-in-error, it means
+    // that it was already deleted
+    eprDocuments = eprDocuments.stream()
+        .filter(eprDocument -> eprDocument.getJsonOrXmlFhirContent().contains(toDeleteUuid)).toList();
+    Optional<T> deletedResource = eprDocuments.stream()
+        .filter(eprDocument -> eprDocument.getJsonOrXmlFhirContent().contains(FhirConstants.ENTERED_IN_ERROR))
+        .map(eprDocument -> fhirAdapter.unmarshallFromString(eprDocument.getJsonOrXmlFhirContent()))
+        .map(alreadyDeletedBundle -> parseBundle(patientIdentifier, alreadyDeletedBundle).get(0))
+        .findFirst();
+
+    if (deletedResource.isPresent()) {
+      return deletedResource.get();
+    }
+
     for (EPRDocument doc : eprDocuments) {
       Bundle bundleToDelete = fhirAdapter.unmarshallFromString(doc.getJsonOrXmlFhirContent());
 
@@ -116,13 +134,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
 
         Bundle deletedBundle = fhirAdapter.delete(patientIdentifier, dto, bundleToDelete, toDeleteUuid);
         if (deletedBundle != null) {
-          String deletedJson = fhirAdapter.convertBundleToJson(deletedBundle);
-          huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(deletedBundle), deletedJson,
-              dto, assertion);
-          cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, deletedJson));
-          T result = parseBundle(patientIdentifier, deletedBundle).get(0);
-          result.setDeleted(true);
-          return result;
+          return getDTOAfterParsingBundle(dto, assertion, deletedBundle, patientIdentifier, author);
         }
       }
     }
@@ -207,11 +219,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
         Bundle updatedBundle =
             fhirAdapter.update(patientIdentifier, newDto, bundleToUpdate, toUpdateUuid);
         if (updatedBundle != null) {
-          String updatedJson = fhirAdapter.convertBundleToJson(updatedBundle);
-          huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(updatedBundle), updatedJson,
-              newDto, assertion);
-          cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, updatedJson));
-          return parseBundle(patientIdentifier, updatedBundle).get(0);
+          return getDTOAfterParsingBundle(newDto, assertion, updatedBundle, patientIdentifier, author);
         }
       }
     }
@@ -231,33 +239,9 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     return update(communityIdentifier, oid, localId, toUpdateUuid, newDto, assertion);
   }
 
-  protected abstract Class<T> getDtoClass();
-
-  private boolean accessToPatientNotLinkedToSession(PatientIdentifier requestedPatientIdentifier) {
-    String requestedLocalExtenstion = requestedPatientIdentifier.getLocalExtenstion();
-    String requestedLocalAssigningAuthority = requestedPatientIdentifier.getLocalAssigningAuthority();
-
-    PatientIdentifier identifier = HttpSessionUtils.getPatientIdentifierFromSession();
-    if (identifier == null) {
-      throw new TechnicalException("No patient identifier found in session.");
-    }
-
-    AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
-    String linkedLocalExtenstion = identifier.getLocalExtenstion();
-    String linkedLocalAssigningAuthority = identifier.getLocalAssigningAuthority();
-
-    boolean isAccessInvalid = !linkedLocalExtenstion.equalsIgnoreCase(requestedLocalExtenstion)
-        || !linkedLocalAssigningAuthority.equalsIgnoreCase(requestedLocalAssigningAuthority);
-
-    if (isAccessInvalid) {
-      log.warn(
-          "Invalid EPD access detected. User: {} - linked Session: {} - requested access to: {}",
-          author != null ? author.getFullName() : "Unknown",
-          Map.of("LocalId", linkedLocalExtenstion, "LocalAssigningAuthorityOid", linkedLocalAssigningAuthority),
-          Map.of("LocalId", requestedLocalExtenstion, "LocalAssigningAuthorityOid", requestedLocalAssigningAuthority));
-    }
-
-    return isAccessInvalid;
+  @SuppressWarnings("unchecked")
+  protected Class<T> getDtoClass() {
+    return (Class<T>) BaseDTO.class;
   }
 
   private CacheIdentifierKey createCacheIdentifier(PatientIdentifier patientIdentifier) {
@@ -331,7 +315,7 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
   }
 
   private List<EPRDocument> getData(PatientIdentifier patientIdentifier, Assertion assertion) {
-    if (!profileConfig.isLocalMode() && accessToPatientNotLinkedToSession(patientIdentifier)) {
+    if (!profileConfig.isLocalMode() && !HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier)) {
       return Collections.emptyList();
     }
 
@@ -374,14 +358,38 @@ public abstract class BaseService<T extends BaseDTO> implements BaseServiceIfc<T
     }
   }
 
+  private T getDTOAfterParsingBundle(T newOrUpdatedDto, Assertion assertion, Bundle newOrUpdatedBundle,
+      PatientIdentifier patientIdentifier,
+      AuthorDTO author) {
+    String updatedJson = fhirAdapter.convertBundleToJson(newOrUpdatedBundle);
+    huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(newOrUpdatedBundle), updatedJson,
+        newOrUpdatedDto, assertion);
+    cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, updatedJson));
+    return parseBundle(patientIdentifier, newOrUpdatedBundle).get(0);
+  }
+
   private void handleRetrievedDocument(EPRDocument doc) {
     String document = getDocumentData(doc.getRetrievedDocument());
     doc.setJsonOrXmlFhirContent(document);
   }
 
+  @SuppressWarnings("unchecked")
   private List<T> parseBundle(PatientIdentifier patientIdentifier, Bundle bundle) {
+    Class<T> dtoClass = getDtoClass();
+
     try {
-      return fhirAdapter.getDTOs(getDtoClass(), bundle);
+      if (BaseDTO.class != dtoClass) {
+        return fhirAdapter.getDTOs(dtoClass, bundle);
+      }
+
+      // for base class, fetch all entities
+      List<BaseDTO> results = new ArrayList<>();
+      results.addAll(fhirAdapter.getDTOs(VaccinationDTO.class, bundle));
+      results.addAll(fhirAdapter.getDTOs(AllergyDTO.class, bundle));
+      results.addAll(fhirAdapter.getDTOs(MedicalProblemDTO.class, bundle));
+      results.addAll(fhirAdapter.getDTOs(PastIllnessDTO.class, bundle));
+
+      return (List<T>) results;
     } catch (Exception ex) {
       log.error("Bundle from patient with ID {} could not be parsed.", patientIdentifier.getSpidExtension());
       return List.of(createFailureDto(fhirAdapter.convertBundleToJson(bundle)));

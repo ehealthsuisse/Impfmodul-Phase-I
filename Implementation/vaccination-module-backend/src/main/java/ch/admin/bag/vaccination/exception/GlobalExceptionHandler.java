@@ -18,6 +18,8 @@
  */
 package ch.admin.bag.vaccination.exception;
 
+import ch.fhir.epr.adapter.exception.ValidationException;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;

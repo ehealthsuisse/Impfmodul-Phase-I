@@ -19,11 +19,15 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.verify;
 
+import ch.admin.bag.vaccination.service.husky.HuskyAdapter;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.FhirConstants;
-import ch.fhir.epr.adapter.FhirConverterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -35,10 +39,13 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 class MedicalProblemServiceTest extends AbstractServiceTest {
   @Autowired
   private MedicalProblemService medicalProblemService;
+  @SpyBean
+  private HuskyAdapter huskyAdapter;
 
   @Test
   @Override
@@ -86,7 +93,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
         null);
 
     assertThat(result.getRelatedId()).isEqualTo("30327ea1-6893-4c65-896e-c32c394f1ec6");
-    assertThat(result.getVerificationStatus().getCode()).isEqualTo(FhirConverterIfc.ENTERED_IN_ERROR);
+    assertThat(result.getVerificationStatus().getCode()).isEqualTo(FhirConstants.ENTERED_IN_ERROR);
     assertThat(result.isDeleted()).isTrue();
     assertThat(result.getConfidentiality().getCode()).isEqualTo("1141000195107");
     assertThat(result.getConfidentiality().getName()).isEqualTo("Secret");
@@ -94,6 +101,13 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
 
     dtos = medicalProblemService.getAll(patientIdentifier, null, true);
     assertThat(dtos.size()).isEqualTo(0);
+
+    // delete the resource again
+    medicalProblemService.delete(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1", "waldspital-Id-1234",
+        "30327ea1-6893-4c65-896e-c32c394f1ec6", new ValueDTO("1141000195107", "Secret", "url"), null);
+
+    // check that no deletion file was created after the second deletion
+    verify(huskyAdapter, atMostOnce()).writeDocument(any(), anyString(), anyString(), any(), any());
   }
 
   @Override

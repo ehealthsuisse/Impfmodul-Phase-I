@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -54,9 +55,14 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.xml.XmpSerializer;
@@ -96,26 +102,26 @@ public class PdfService {
   private static final float FONT_SIZE_TITLE = 15;
   private static final String BOLD = "bold";
   private static final String OBLIQUE = "oblique";
+  private static final String EMPTY_USER_PASSWORD = "";
 
   @Autowired
   private PdfOutputConfig pdfOutputConfig;
 
   public InputStream create(VaccinationRecordDTO vaccinationRecordDTO) {
-    try {
-      PDDocument document = createDocumentAndItsMeta();
+    try (PDDocument document = createDocumentAndItsMeta();
+        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       PdfDocument pdfDocument = new PdfDocument(document);
       fillDocumentContent(vaccinationRecordDTO, pdfDocument);
 
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
       document.save(out);
-      document.close();
 
+      out.flush();
       byte[] pdf = out.toByteArray();
       ByteArrayInputStream validateIn = new ByteArrayInputStream(pdf);
       validatePdf(validateIn);
       validateIn.close();
 
-      return new ByteArrayInputStream(pdf);
+      return setReadOnlyPermissions(pdf);
     } catch (Exception ex) {
       log.error("error while exportToPDF {}", ex.getMessage());
       throw new TechnicalException("Pdf generation failed", ex);
@@ -658,6 +664,40 @@ public class PdfService {
     for (Cell<PDPage> cell : row.getCells()) {
       cell.setFillColor(rowBackgoundColor);
     }
+  }
+
+  private InputStream setReadOnlyPermissions(byte[] pdfFile) throws IOException {
+    try (PDDocument doc = PDDocument.load(pdfFile);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+      doc.protect(getStandardProtectionPolicy());
+      doc.save(bos);
+
+      return new ByteArrayInputStream(bos.toByteArray());
+    } catch (Exception exception) {
+      log.error("Error while adding read-only protection to PDF {}", exception.getMessage());
+      throw exception;
+    }
+  }
+
+  private StandardProtectionPolicy getStandardProtectionPolicy() {
+    int keyLength = 256;
+
+    AccessPermission ap = new AccessPermission();
+
+    // Disable all
+    ap.setCanModifyAnnotations(false);
+    ap.setCanAssembleDocument(false);
+    ap.setCanFillInForm(false);
+    ap.setCanModify(false);
+    ap.setCanExtractContent(false);
+    ap.setCanExtractForAccessibility(false);
+
+    // The user password is empty ("") so user can read without password. The admin password is
+    // set to lock/encrypt the document.
+    StandardProtectionPolicy spp = new StandardProtectionPolicy(UUID.randomUUID().toString(), EMPTY_USER_PASSWORD, ap);
+    spp.setEncryptionKeyLength(keyLength);
+    spp.setPermissions(ap);
+    return spp;
   }
 
   private void swapColor(PdfDocument pdfDocument) {
