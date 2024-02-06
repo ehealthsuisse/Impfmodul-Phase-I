@@ -1,3 +1,29 @@
+# February 2024 - Hotfix Release 1.4.2
+The new version contains mostly bugfixes which were discoverd during the official audit.   
+It is important to fix those topics before going live. 
+
+Changes Fhir Library
+* Adapted bundle creation to correctly retrieve organizations and practitioners, even if practitionerRole is not present.
+* Added few input validation
+
+Changes Vaccination Modul Backend 
+* Allow logging of the SAML logout request before it is processed, see logging.properties file. 
+* Fixed a performance issue when loading the vaccination record
+* Fixed the issue which allowed a document to be deleted multiple times
+* Fixed the issue which allowed an attacker to read patient information when a foreign session was hijacked.
+* Decreased some log-levels to DEBUG to reduce log volume
+* Added a read-only protection to the generated PDFs
+* Fixed the issue which lead to the wrong system URL being used for the confidentiality code
+* Fixed the issue that documents could not be uploaded if EPD setting was put to only allow restricted or secrets documents
+
+Changes Vaccination Modul Frontend  
+* Add an organization parameter to the initial call to prefill it in the UI. This feature will be refined in the spring release. 
+* Fixed the issue that the wrong confidentiality code was used in a delete call
+* Adapted few translations
+
+# January 2024 - Hotfix Release 1.4.1
+Version was not published, all changes are included in 1.4.2. 
+
 # January 2024 - Release 1.4.0
 Happy New Year everyone, we hope you had a good start!
 
