@@ -68,4 +68,7 @@ public final class FhirConstants {
       new ValueDTO("17621005", "Normal", CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED);
 
   public static final String SNOMED_SYSTEM_URL = "http://snomed.info/sct";
+
+  /** Status constants */
+  public static final String ENTERED_IN_ERROR = "entered-in-error";
 }

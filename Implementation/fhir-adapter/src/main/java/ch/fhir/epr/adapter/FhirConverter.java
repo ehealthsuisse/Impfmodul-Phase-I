@@ -238,7 +238,7 @@ public class FhirConverter implements FhirConverterIfc {
         null,
         organization);
 
-    allergyDTO.setDeleted(FhirConverterIfc.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
+    allergyDTO.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
     allergyDTO.setRelatedId(getCrossReference(allergyIntolerance));
 
     return allergyDTO;
@@ -260,7 +260,7 @@ public class FhirConverter implements FhirConverterIfc {
         new MedicalProblemDTO(id, code, clinicalStatus, verificationStatus, recordedData,
             begin, end, recorder, null, organization);
 
-    dto.setDeleted(FhirConverterIfc.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
+    dto.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
     dto.setRelatedId(getCrossReference(condition));
 
     return dto;
@@ -282,7 +282,7 @@ public class FhirConverter implements FhirConverterIfc {
         new PastIllnessDTO(id, code, clinicalStatus, verificationStatus, recordedData,
             begin, end, recorder, null, organization);
 
-    pastIllnessDTO.setDeleted(FhirConverterIfc.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
+    pastIllnessDTO.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
     pastIllnessDTO.setRelatedId(getCrossReference(condition));
 
     return pastIllnessDTO;
@@ -327,7 +327,7 @@ public class FhirConverter implements FhirConverterIfc {
         reason,
         status);
 
-    vaccinationDTO.setDeleted(FhirConverterIfc.ENTERED_IN_ERROR.equalsIgnoreCase(status.getCode()));
+    vaccinationDTO.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(status.getCode()));
     vaccinationDTO.setRelatedId(getCrossReference(immunization));
 
     return vaccinationDTO;
@@ -543,16 +543,14 @@ public class FhirConverter implements FhirConverterIfc {
 
     Extension confidentialityExtension = composition.getConfidentialityElement().addExtension();
     confidentialityExtension.setUrl(FhirConstants.CONFIDENTIALITY_CODE_EXTENSION_URL);
-    CodeableConcept confidentiality = FhirUtils.toCodeableConcept(FhirConstants.DEFAULT_CONFIDENTIALITY_CODE);
-    if (dto.getConfidentiality() != null) {
-      String system = dto.getConfidentiality().getSystem();
-      // replace definition by snomed url to be conform to new validator - only used for bundle not for
-      // XDS metadata
-      if (FhirConstants.CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED.equals(system)
-          || FhirConstants.CONFIDENTIALITY_CODE_SYSTEM_SECRET.equals(system)) {
-        dto.getConfidentiality().setSystem(FhirConstants.SNOMED_SYSTEM_URL);
-      }
-      confidentiality = FhirUtils.toCodeableConcept(dto.getConfidentiality());
+    // replace definition by snomed url to be conform to new validator - only used for bundle not for
+    // XDS metadata
+    CodeableConcept confidentiality = FhirUtils.toCodeableConcept(
+        dto.getConfidentiality() != null ? dto.getConfidentiality() : FhirConstants.DEFAULT_CONFIDENTIALITY_CODE);
+    String system = confidentiality.getCodingFirstRep().getSystem();
+    if (FhirConstants.CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED.equals(system)
+        || FhirConstants.CONFIDENTIALITY_CODE_SYSTEM_SECRET.equals(system)) {
+      confidentiality.getCodingFirstRep().setSystem(FhirConstants.SNOMED_SYSTEM_URL);
     }
     confidentialityExtension.setValue(confidentiality);
 
@@ -897,7 +895,7 @@ public class FhirConverter implements FhirConverterIfc {
   }
 
   private void markResourceDeleted(DomainResource resource) {
-    CodeableConcept enteredInError = createCodeableConcept(ENTERED_IN_ERROR, "Entered in Error", null);
+    CodeableConcept enteredInError = createCodeableConcept(FhirConstants.ENTERED_IN_ERROR, "Entered in Error", null);
     if (resource instanceof Immunization immunization) {
       immunization.setStatus(ImmunizationStatus.ENTEREDINERROR);
     } else if (resource instanceof AllergyIntolerance allergyIntolerance) {

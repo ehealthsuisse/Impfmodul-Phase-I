@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 eHealth Suisse
+ * Copyright (c) 2022 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,21 +16,35 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.fhir.epr.adapter.data.dto;
+package ch.fhir.epr.adapter.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
+import ch.fhir.epr.adapter.exception.ValidationException;
 import org.junit.jupiter.api.Test;
 
-public class AllergyDTOTest {
+public class ValidationUtilsTest {
+  @Test
+  void testDoseNumberNegativeValue_shouldThrowException() {
+    ValidationException exception = assertThrows(ValidationException.class,
+        () -> ValidationUtils.isPositiveNumber("doseNumber", -1));
+
+    assertTrue(exception.getMessage().contains("The field doseNumber should be positive and greater than 0"));
+  }
 
   @Test
-  void getDateOfDay_noInput_returnOccurrenceDate() {
-    AllergyDTO dto = new AllergyDTO();
-    LocalDate now = LocalDate.now();
-    dto.setOccurrenceDate(now);
+  void testDoseNumberZero_shouldThrowException() {
+    ValidationException exception = assertThrows(ValidationException.class,
+        () -> ValidationUtils.isPositiveNumber("doseNumber", 0));
 
-    assertEquals(now, dto.getDateOfEvent());
+    assertTrue(exception.getMessage().contains("The field doseNumber should be positive and greater than 0"));
+  }
+
+  @Test
+  void testDoseNumberPositiveAndGreaterThanZero_shouldReturnTheNumber() {
+    int doseNumber = ValidationUtils.isPositiveNumber("doseNumber", 11);
+    assertEquals(11, doseNumber);
   }
 }

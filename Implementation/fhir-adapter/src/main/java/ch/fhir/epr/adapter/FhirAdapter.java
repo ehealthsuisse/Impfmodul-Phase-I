@@ -236,26 +236,6 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   /**
-   * Gets the {@link AllergyIntolerance} of a Bundle.
-   *
-   * @param bundle The {@link Bundle}
-   * @return The {@link AllergyIntolerance}
-   */
-  protected AllergyIntolerance getAllergyIntolerance(Bundle bundle) {
-    return FhirUtils.getResource(AllergyIntolerance.class, bundle);
-  }
-
-  /**
-   * Gets the {@link Immunization} of a Bundle.
-   *
-   * @param bundle The {@link Bundle}
-   * @return The {@link Immunization}
-   */
-  protected Immunization getImmunization(Bundle bundle) {
-    return FhirUtils.getResource(Immunization.class, bundle);
-  }
-
-  /**
    * Gets the list of the json files defining a Bundle
    *
    * @return the list of json files.
@@ -273,17 +253,10 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   protected MedicalProblemDTO getMedicalProblemDTO(Bundle bundle, Condition condition) {
-    Practitioner practitioner = null;
-    String organization = null;
     PractitionerRole practitionerRole =
         FhirUtils.getPractitionerRole(bundle, condition.getRecorder().getReference());
-    if (practitionerRole != null) {
-      practitioner =
-          FhirUtils.getPractitioner(bundle, practitionerRole.getPractitioner().getReference());
-      organization = practitionerRole.hasOrganization()
-          ? getOrganization(bundle, practitionerRole.getOrganization().getReference()).getName()
-          : null;
-    }
+    Practitioner practitioner = getPractitioner(bundle, practitionerRole);
+    String organization = getOrganization(bundle, practitionerRole);
 
     MedicalProblemDTO dto = fhirConverter.toMedicalProblemDTO(condition, practitioner, organization);
     dto.setComments(fhirConverter.createComments(bundle, condition.getNote()));
@@ -295,17 +268,10 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   protected PastIllnessDTO getPastIllnessDTO(Bundle bundle, Condition condition) {
-    Practitioner practitioner = null;
-    String organization = null;
     PractitionerRole practitionerRole =
         FhirUtils.getPractitionerRole(bundle, condition.getRecorder().getReference());
-    if (practitionerRole != null) {
-      practitioner =
-          FhirUtils.getPractitioner(bundle, practitionerRole.getPractitioner().getReference());
-      organization = practitionerRole.hasOrganization()
-          ? getOrganization(bundle, practitionerRole.getOrganization().getReference()).getName()
-          : null;
-    }
+    Practitioner practitioner = getPractitioner(bundle, practitionerRole);
+    String organization = getOrganization(bundle, practitionerRole);
 
     PastIllnessDTO dto = fhirConverter.toPastIllnessDTO(condition, practitioner, organization);
     dto.setComments(fhirConverter.createComments(bundle, condition.getNote()));
@@ -354,18 +320,10 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   private AllergyDTO getAllergyDTO(Bundle bundle, AllergyIntolerance allergyIntolerance) {
-    Practitioner practitioner = null;
-    String organization = null;
-    if (allergyIntolerance.getRecorder() != null) {
-      PractitionerRole practitionerRole =
-          FhirUtils.getPractitionerRole(bundle, allergyIntolerance.getRecorder().getReference());
-      if (practitionerRole != null) {
-        practitioner = FhirUtils.getPractitioner(bundle, practitionerRole.getPractitioner().getReference());
-        organization = practitionerRole.hasOrganization()
-            ? getOrganization(bundle, practitionerRole.getOrganization().getReference()).getName()
-            : null;
-      }
-    }
+    PractitionerRole practitionerRole =
+        FhirUtils.getPractitionerRole(bundle, allergyIntolerance.getRecorder().getReference());
+    Practitioner practitioner = getPractitioner(bundle, practitionerRole);
+    String organization = getOrganization(bundle, practitionerRole);
 
     AllergyDTO dto = fhirConverter.toAllergyDTO(allergyIntolerance, practitioner, organization);
     dto.setComments(fhirConverter.createComments(bundle, allergyIntolerance.getNote()));
@@ -380,6 +338,26 @@ public class FhirAdapter implements FhirAdapterIfc {
     return fhirContext;
   }
 
+
+  private String getOrganization(Bundle bundle, PractitionerRole practitionerRole) {
+    if (practitionerRole != null) {
+      return practitionerRole.hasOrganization()
+          ? getOrganization(bundle, practitionerRole.getOrganization().getReference()).getName()
+          : null;
+    }
+
+    // Fallback if no practitioner role is set
+    Organization organization = FhirUtils.getResource(Organization.class, bundle);
+    return organization != null ? organization.getName() : null;
+  }
+
+  private Practitioner getPractitioner(Bundle bundle, PractitionerRole practitionerRole) {
+    if (practitionerRole != null) {
+      return FhirUtils.getPractitioner(bundle, practitionerRole.getPractitioner().getReference());
+    }
+
+    return FhirUtils.getResource(Practitioner.class, bundle);
+  }
 
   private <T extends BaseDTO> Class<?> getResourceType(Class<T> clazz) {
     Class<?> type = null;
@@ -417,11 +395,8 @@ public class FhirAdapter implements FhirAdapterIfc {
   private VaccinationDTO getVaccinationDTO(Bundle bundle, Immunization immunization) {
     PractitionerRole practitionerRole =
         FhirUtils.getPractitionerRole(bundle, immunization.getPerformerFirstRep().getActor().getReference());
-    String organization = practitionerRole.hasOrganization()
-        ? getOrganization(bundle, practitionerRole.getOrganization().getReference()).getName()
-        : null;
-    Practitioner practitioner =
-        FhirUtils.getPractitioner(bundle, practitionerRole.getPractitioner().getReference());
+    Practitioner practitioner = getPractitioner(bundle, practitionerRole);
+    String organization = getOrganization(bundle, practitionerRole);
 
     VaccinationDTO dto = fhirConverter.toVaccinationDTO(immunization, practitioner, organization);
     dto.setComments(fhirConverter.createComments(bundle, immunization.getNote()));

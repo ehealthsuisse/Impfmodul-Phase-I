@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 eHealth Suisse
+ * Copyright (c) 2022 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,21 +16,19 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.fhir.epr.adapter.data.dto;
+package ch.fhir.epr.adapter.exception;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import org.junit.jupiter.api.Test;
+@NoArgsConstructor
+public class ValidationException extends TechnicalException {
 
-public class AllergyDTOTest {
-
-  @Test
-  void getDateOfDay_noInput_returnOccurrenceDate() {
-    AllergyDTO dto = new AllergyDTO();
-    LocalDate now = LocalDate.now();
-    dto.setOccurrenceDate(now);
-
-    assertEquals(now, dto.getDateOfEvent());
+  public ValidationException(String messageKey) {
+    super(messageKey);
   }
+
+  public ValidationException(String messageKey, Throwable cause) {
+    super(messageKey, cause);
+  }
+
 }

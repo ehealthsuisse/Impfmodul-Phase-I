@@ -44,8 +44,6 @@ import org.hl7.fhir.r4.model.Practitioner;
  *
  */
 public interface FhirConverterIfc {
-  String ENTERED_IN_ERROR = "entered-in-error";
-
   LocalDateTime convertToLocalDateTime(Date value);
 
   <T> void copyNotes(Bundle targetBundle, Bundle sourceBundle, Class<T> type);
