@@ -116,7 +116,7 @@ export class SessionInfoService {
   }
 
   isOptionalParameter(parameter: string): boolean {
-    const optionalParameters: string[] = ['ugln', 'principalid', 'utitle', 'principalname'];
+    const optionalParameters: string[] = ['ugln', 'principalid', 'utitle', 'principalname', 'organization'];
     return optionalParameters.includes(parameter);
   }
 }

@@ -1,10 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable, of, shareReplay, take, tap } from 'rxjs';
 import { ConfigService } from '../../core/config/config.service';
 import { SessionInfoService } from '../../core/security/session-info.service';
 import { IBaseDTO, IValueDTO } from '../interfaces';
 import { SpinnerService } from './spinner.service';
+import { ConfidentialityService } from '../component/confidentiality/confidentiality.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,8 @@ export abstract class MainHttpService<T extends IBaseDTO> {
     private configService: ConfigService,
     private http: HttpClient,
     private sessionInfoService: SessionInfoService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private confidentialityService: ConfidentialityService = inject(ConfidentialityService)
   ) {
     this.resource = `communityIdentifier/${this.configService.communityId}/oid/${
       this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
@@ -51,10 +53,11 @@ export abstract class MainHttpService<T extends IBaseDTO> {
       .pipe(tap(() => this.spinnerService.hide()));
   }
 
-  deleteWithBody(id: string, body: IValueDTO): any {
+  deleteWithBody(id: string): any {
     this.spinnerService.show();
+    const confidentiality: IValueDTO = this.confidentialityService.confidentialityStatus;
     return this.http
-      .delete(`${this.configService.endpointPrefix}/${this.prefix}/${this.resource}/uuid/${id}`, { body })
+      .delete(`${this.configService.endpointPrefix}/${this.prefix}/${this.resource}/uuid/${id}`, { body: confidentiality })
       .pipe(tap(() => this.spinnerService.hide()));
   }
 

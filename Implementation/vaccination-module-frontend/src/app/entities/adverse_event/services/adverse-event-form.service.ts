@@ -79,6 +79,7 @@ export class AdverseEventFormService {
     const firstName = isHCP ? authorInfo.firstName : '';
     const lastName = isHCP ? authorInfo.lastName : '';
     const prefix = isHCP ? authorInfo.prefix : '';
+    const organization = this.sessionInfo.queryParams.organization;
     return new FormGroup<AdverseEventFormGroupContent>({
       id: new FormControl(
         { value: allergyRawValue.id, disabled: true },
@@ -95,7 +96,7 @@ export class AdverseEventFormService {
         lastName: new FormControl(lastName),
         prefix: new FormControl(prefix),
       }),
-      organization: new FormControl(),
+      organization: new FormControl(organization),
       comments: new FormControl([]),
       commentMessage: new FormControl(),
       confidentiality: new FormControl(),

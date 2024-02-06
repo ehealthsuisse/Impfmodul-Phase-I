@@ -22,7 +22,6 @@ import dayjs from 'dayjs';
 import { IVaccination } from '../../../model/vaccination.interface';
 import { VaccinationService } from './vaccination.service';
 import { RouterTestingModule } from '@angular/router/testing';
-import { IValueDTO } from '../../../shared';
 
 describe('Vaccination Service', () => {
   let service: VaccinationService;
@@ -171,7 +170,7 @@ describe('Vaccination Service', () => {
     });
 
     it('should delete a Vaccination', () => {
-      service.deleteWithBody('123', {} as IValueDTO).subscribe((resp: any) => (expectedResult = resp.ok));
+      service.deleteWithBody('123').subscribe((resp: any) => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ status: 200 });

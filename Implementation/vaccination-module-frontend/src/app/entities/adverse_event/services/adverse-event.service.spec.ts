@@ -20,7 +20,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import dayjs from 'dayjs';
 import { IAdverseEvent } from '../../../model';
-import { IValueDTO } from '../../../shared';
 import { AdverseEventService } from './adverse-event.service';
 
 describe('Vaccination Service', () => {
@@ -159,7 +158,7 @@ describe('Vaccination Service', () => {
     });
 
     it('should delete a Vaccination', () => {
-      service.deleteWithBody('123', {} as IValueDTO).subscribe((resp: any) => (expectedResult = resp.ok));
+      service.deleteWithBody('123').subscribe((resp: any) => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ clinicalStatus: 200 });

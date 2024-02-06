@@ -19,7 +19,7 @@
     "NO_ENTRIES_FOUND": "No matching records found",
     "COMMENT": "Comment",
     "ERROR": "Error",
-    "ERROR_403": "You are not authorized to access this page. You must access this page from the EPD portal.",
+    "ERROR_403": "Accessing the vaccination module was rejected or took too long. Please try again to access the vaccination module with your EPD portal.",
     "UNSUPPORTED_LANGUAGE": "The {{lang}} language is not supported by the vaccination module.",
     "ERROR_404": "The page you are looking for does not exist",
     "UNEXPECTED_ERROR": "An unexpected error occurred. The requested action could not be performed.",

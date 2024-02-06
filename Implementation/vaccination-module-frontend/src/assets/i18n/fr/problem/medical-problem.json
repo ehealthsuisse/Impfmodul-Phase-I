@@ -1,11 +1,11 @@
 {
   "MEDICAL_PROBLEM": {
-    "TITLE": "Facteurs de risqué",
+    "TITLE": "Facteurs de risque",
     "FILTER": "Chercher",
-    "DETAILS_HEADER": "Détails sur le facteur de risqué",
-    "EDIT_HEADER": "Modifier les détails de le facteur de risqué",
-    "NEW_HEADER": "Ajouter un facteur de risqué",
-    "MEDICAL_PROBLEM_CODE": "Facteur de risqué",
+    "DETAILS_HEADER": "Détails sur le facteur de risque",
+    "EDIT_HEADER": "Modifier les détails de le facteur de risque",
+    "NEW_HEADER": "Ajouter un facteur de risque",
+    "MEDICAL_PROBLEM_CODE": "Facteur de risque",
     "CLINICAL_STATUS": "Statut clinique",
     "RECORDER": "Enregistré par",
     "RECORDED_DATE": "Date",

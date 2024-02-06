@@ -85,7 +85,7 @@ export class VaccinationFormService {
     const firstName = isHCP ? authorInfo.firstName : '';
     const lastName = isHCP ? authorInfo.lastName : '';
     const prefix = isHCP ? authorInfo.prefix : '';
-    
+    const organization = this.sessionInfo.queryParams.organization;
     return new FormGroup<VaccinationFormGroupContent>({
       id: new FormControl(
         { value: vaccinationRawValue.id, disabled: true },
@@ -107,7 +107,7 @@ export class VaccinationFormService {
         lastName: new FormControl(lastName),
         prefix: new FormControl(prefix),
       }),
-      organization: new FormControl(),
+      organization: new FormControl(organization),
       comments: new FormControl([]),
       commentMessage: new FormControl(),
     } as any);

@@ -19,7 +19,7 @@
     "SEARCH": "Cerca",
     "COMMENT": "Commento",
     "ERROR": "Errore",
-    "ERROR_403": "Non sei autorizzato ad accedere a questa pagina. Devi accedere a questa pagina dal portale EPD.",
+    "ERROR_403": "L'accesso al modulo di immunizzazione è stato rifiutato o ha richiesto troppo tempo. Riprovare ad accedere al modulo di immunizzazione con il portale EPD.",
     "UNSUPPORTED_LANGUAGE": "La lingua {{lang}} non è supportata.",
     "SNEAKBAR_CONFIRM": "Entità salvata con successo.",
     "ERROR_404": "La pagina richiesta non è stata trovata.",

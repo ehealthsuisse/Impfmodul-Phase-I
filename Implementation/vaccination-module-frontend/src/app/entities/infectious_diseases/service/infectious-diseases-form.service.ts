@@ -80,6 +80,7 @@ export class InfectiousDiseasesFormService {
     const firstName = isHCP ? authorInfo.firstName : '';
     const lastName = isHCP ? authorInfo.lastName : '';
     const prefix = isHCP ? authorInfo.prefix : '';
+    const organization = this.sessionInfo.queryParams.organization;
     return new FormGroup<InfectiousDiseasesFormGroupContent>({
       id: new FormControl(
         { value: illnessRawValue.id, disabled: true },
@@ -98,7 +99,7 @@ export class InfectiousDiseasesFormService {
         lastName: new FormControl(lastName),
         prefix: new FormControl(prefix),
       }),
-      organization: new FormControl(),
+      organization: new FormControl(organization),
       comments: new FormControl([]),
       commentMessage: new FormControl(),
       confidentiality: new FormControl(),
