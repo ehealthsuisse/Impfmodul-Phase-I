@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -41,7 +42,7 @@ public class AllergyDTO extends BaseDTO {
   public AllergyDTO(String id, LocalDate occurrenceDate, ValueDTO code, ValueDTO criticality,
       ValueDTO clinicalStatus, ValueDTO verificationStatus, ValueDTO type, HumanNameDTO recorder,
       List<CommentDTO> comments, String organization) {
-    this.occurrenceDate = occurrenceDate;
+    this.occurrenceDate = ValidationUtils.isDateNotNull("occurrenceDate", occurrenceDate);
     this.criticality = criticality;
     this.clinicalStatus = clinicalStatus;
     this.verificationStatus = verificationStatus;

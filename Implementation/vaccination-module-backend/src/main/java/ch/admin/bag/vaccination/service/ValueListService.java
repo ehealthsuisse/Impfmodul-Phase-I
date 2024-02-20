@@ -20,6 +20,8 @@ package ch.admin.bag.vaccination.service;
 
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
+import ch.admin.bag.vaccination.utils.PriorityComparator;
+import ch.admin.bag.vaccination.utils.PriorityValue;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +34,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,13 +92,18 @@ public class ValueListService {
     return dtos;
   }
 
-  private ValueDTO createCodeSystemDTOs(String valueLine) {
+  private PriorityValue createCodeSystemDTOs(String valueLine) {
     String[] codeValuePair = valueLine.split(";");
+    int priority = 0;
     String code = codeValuePair[0];
     String value = codeValuePair[1].trim();
     String system = codeValuePair[2].trim();
 
-    return new ValueDTO(code, value, system);
+    if (codeValuePair.length > 3) {
+      priority = Integer.parseInt(codeValuePair[3]);
+    }
+
+    return new PriorityValue(priority, new ValueDTO(code, value, system));
   }
 
   private ValueListDTO createValueList(Path file) {
@@ -106,7 +112,9 @@ public class ValueListService {
       String name = file.getFileName().toString().replace(".properties", "");
       List<ValueDTO> listCodeSystemDTO = fileContentLines.stream()
           .map(this::createCodeSystemDTOs)
-          .collect(Collectors.toList());
+          .sorted(new PriorityComparator())
+          .map(PriorityValue::getDto)
+          .toList();
 
       return new ValueListDTO(name, listCodeSystemDTO);
     } catch (IOException ex) {

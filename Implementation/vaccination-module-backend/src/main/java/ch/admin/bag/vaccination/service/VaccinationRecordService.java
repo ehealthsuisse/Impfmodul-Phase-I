@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.service;
 
+import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
@@ -54,6 +55,9 @@ public class VaccinationRecordService {
   @Autowired
   private BaseService<BaseDTO> baseService;
 
+  @Autowired
+  private ProfileConfig profileConfig;
+
   /**
    * Create a json of a {@link VaccinationRecordDTO}
    *
@@ -75,7 +79,9 @@ public class VaccinationRecordService {
     List<PastIllnessDTO> pastIllnesses = entities.parallelStream().filter(entity -> entity instanceof PastIllnessDTO)
         .map(entity -> (PastIllnessDTO) entity).toList();
 
-    boolean isValidAccess = HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier);
+    boolean isValidAccess =
+        profileConfig.isLocalMode() || HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier);
+
     VaccinationRecordDTO record = new VaccinationRecordDTO(createAuthor,
         isValidAccess ? patientIdentifier.getPatientInfo() : null, allergies, pastIllnesses, vaccinations,
         medicalProblems);

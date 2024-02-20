@@ -152,7 +152,7 @@ public class FhirConverter implements FhirConverterIfc {
     Bundle bundle = createBundle(ctx, !forceImmunizationAdministrationDocument && dto instanceof VaccinationRecordDTO);
     Composition composition =
         createComposition(bundle, dto, patientIdentifier, forceImmunizationAdministrationDocument);
-    createPatient(bundle, composition, patientIdentifier, "Patient-0001", true);
+    createPatient(bundle, composition, patientIdentifier, "Patient-0001");
 
     if (dto instanceof VaccinationRecordDTO) {
       return createVaccinationRecord(bundle, (VaccinationRecordDTO) dto);
@@ -532,7 +532,7 @@ public class FhirConverter implements FhirConverterIfc {
       composition.addAuthor(new Reference("Patient/Patient-author"));
       PatientIdentifier authorPatientIdentifier = new PatientIdentifier(null, null, null);
       authorPatientIdentifier.setPatientInfo(dto.getAuthor().getUser());
-      createPatient(bundle, composition, authorPatientIdentifier, "Patient-author", false);
+      createPatient(bundle, composition, authorPatientIdentifier, "Patient-author");
     } else {
       throw new TechnicalException("role:" + dto.getAuthor().getRole() + " not supported");
     }
@@ -671,15 +671,12 @@ public class FhirConverter implements FhirConverterIfc {
 
   @SuppressWarnings("deprecation")
   private void createPatient(Bundle bundle, Composition composition, PatientIdentifier patientIdentifier,
-      String patientId, boolean useSPID) {
-    Identifier identifier;
-    if (useSPID) {
-      identifier = new Identifier();
-      identifier.setValue(patientIdentifier.getSpidExtension());
-      identifier.setSystem(patientIdentifier.getSpidRootAuthority());
-    } else {
-      identifier = createIdentifier();
-    }
+      String patientId) {
+    Identifier identifier = new Identifier();
+    identifier.setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID() :
+        patientIdentifier.getSpidExtension());
+    identifier.setSystem(FhirConstants.PATIENT_SYSTEM_URL_PREFIX + patientIdentifier.getSpidRootAuthority());
+
     Patient patient = new Patient();
     patient.setId(patientId);
     patient.setIdentifier(List.of(identifier));

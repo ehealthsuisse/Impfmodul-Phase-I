@@ -209,6 +209,9 @@ class FhirConverterTest {
     when(allergyIntolerance.getCriticality()).thenReturn(AllergyIntoleranceCriticality.UNABLETOASSESS);
     when(allergyIntolerance.getClinicalStatus()).thenReturn(CODEABLE_CONCEPT);
     when(allergyIntolerance.getVerificationStatus()).thenReturn(CODEABLE_CONCEPT);
+    when(allergyIntolerance.getRecordedDate()).thenReturn(
+        Date.from(ZonedDateTime.of(LocalDate.now(), LocalTime.of(0, 0), ZoneOffset.UTC).toInstant()));
+
 
     // Call the method to test
     AllergyDTO allergyDTO = fhirConverter.toAllergyDTO(allergyIntolerance, practitioner, organization);
@@ -246,6 +249,8 @@ class FhirConverterTest {
         Date.from(ZonedDateTime.of(today, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant())));
     when(condition.getAbatementDateTimeType()).thenReturn(new DateTimeType(
         Date.from(ZonedDateTime.of(today, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant())));
+    when(condition.getRecordedDate()).thenReturn(
+        Date.from(ZonedDateTime.of(today, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant()));
 
     // Call the method to test
     MedicalProblemDTO medicalProblemDTO = fhirConverter.toMedicalProblemDTO(condition, practitioner, organization);
@@ -285,6 +290,8 @@ class FhirConverterTest {
         Date.from(ZonedDateTime.of(today, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant())));
     when(condition.getAbatementDateTimeType()).thenReturn(new DateTimeType(
         Date.from(ZonedDateTime.of(today, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant())));
+    when(condition.getRecordedDate()).thenReturn(
+        Date.from(ZonedDateTime.of(today, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant()));
 
     // Call the method to test
     PastIllnessDTO pastIllnessDTO = fhirConverter.toPastIllnessDTO(condition, practitioner, organization);

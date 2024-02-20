@@ -62,9 +62,9 @@ public class UtilityControllerTest {
         medicalProblemCodeFound = true;
         assertThat(valueListDTOs[i].getName()).isEqualTo("medicalProblemCode");
         assertThat(valueListDTOs[i].getEntries().size()).isGreaterThan(20);
-        assertThat(valueListDTOs[i].getEntries().get(1).getCode()).isEqualTo("77386006");
+        assertThat(valueListDTOs[i].getEntries().get(1).getCode()).isEqualTo("1237030002");
         assertThat(valueListDTOs[i].getEntries().get(1).getName())
-            .isEqualTo("Pregnancy (finding)");
+            .isEqualTo("At increased risk of exposure to Bordetella pertussis (finding)");
         assertThat(valueListDTOs[i].getEntries().get(1).getSystem())
             .isEqualTo("http://snomed.info/sct");
       }

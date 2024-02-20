@@ -24,6 +24,12 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+#### February 2024 - Release 1.5.0
+Extension of the vaccination module with the following functions:
+
+1. New Design of Adverse Event section in the PDF report
+2. Allow configurational sorting of the value lists
+3. Slight adjustments for the FHIR bundle creation and value lists.
 
 #### February 2024 - Hotfix Release 1.4.2
 Improving the vaccination module based on user, provider and audit feedback.

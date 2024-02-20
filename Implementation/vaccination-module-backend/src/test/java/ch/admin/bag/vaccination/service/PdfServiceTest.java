@@ -30,7 +30,6 @@ import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +89,7 @@ public class PdfServiceTest {
   public void test_pdf_creation() throws Exception {
     allergyDTOs.get(0).setComments(Arrays.asList(
         new CommentDTO(LocalDateTime.now().minusDays(10), " Dr. Michel Dupont ",
-            "Comment1\nNewLine"),
+            "Comment1"),
         new CommentDTO(LocalDateTime.now().minusDays(5), " Dr. Michel Dupont ",
             "Comment2"),
         new CommentDTO(LocalDateTime.now().minusDays(1), " Dr. Michel Dupont ",

@@ -1,12 +1,28 @@
+# February 2024 - Release 1.5.0
+
+### Changes Fhir Library
+* Adapted patient creation for the FHIR documents, using now the correct prefix urn:oid for the system url. 
+
+### Changes Vaccination Modul Backend 
+* Redesigned adverse events on the PDF report, thereby also fixed an issue where the text was not correctly linewrapped.
+* Support the sorting of the valuelists based on priorities (highest first). Priorities can be added as last csv value on each line.
+Values with same priorities are sorted alphabetically (based on english translation), Values without priority receive priority 0.
+* Changed mime type on back channel logout response to text/xml
+* Added few validations on input values to avoid errors in fhir bundles. 
+* Minor adaption to the vaccination code valuelist. 
+
+### Changes Vaccination Modul Frontend  
+* Fixed some translation issues
+
 # February 2024 - Hotfix Release 1.4.2
 The new version contains mostly bugfixes which were discoverd during the official audit.   
 It is important to fix those topics before going live. 
 
-Changes Fhir Library
+### Changes Fhir Library
 * Adapted bundle creation to correctly retrieve organizations and practitioners, even if practitionerRole is not present.
 * Added few input validation
 
-Changes Vaccination Modul Backend 
+### Changes Vaccination Modul Backend 
 * Allow logging of the SAML logout request before it is processed, see logging.properties file. 
 * Fixed a performance issue when loading the vaccination record
 * Fixed the issue which allowed a document to be deleted multiple times
@@ -16,7 +32,7 @@ Changes Vaccination Modul Backend
 * Fixed the issue which lead to the wrong system URL being used for the confidentiality code
 * Fixed the issue that documents could not be uploaded if EPD setting was put to only allow restricted or secrets documents
 
-Changes Vaccination Modul Frontend  
+### Changes Vaccination Modul Frontend  
 * Add an organization parameter to the initial call to prefill it in the UI. This feature will be refined in the spring release. 
 * Fixed the issue that the wrong confidentiality code was used in a delete call
 * Adapted few translations

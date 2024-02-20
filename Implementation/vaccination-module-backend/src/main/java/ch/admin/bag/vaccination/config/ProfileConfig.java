@@ -44,7 +44,7 @@ public class ProfileConfig {
   /**
    * Allows setting the local mode.
    *
-   * @param localMode true to write local file, false to write in the EPD, null to write nothing
+   * @param huskyLocalMode true to write local file, false to write in the EPD, null to write nothing
    */
   public void setHuskyLocalMode(Boolean huskyLocalMode) {
     if (!isProd()) {
