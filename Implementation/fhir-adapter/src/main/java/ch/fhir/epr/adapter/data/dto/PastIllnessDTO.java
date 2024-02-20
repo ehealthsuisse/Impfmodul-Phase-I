@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -45,7 +46,7 @@ public class PastIllnessDTO extends BaseDTO {
     this.end = end;
     this.clinicalStatus = clinicalStatus;
     this.verificationStatus = verificationStatus;
-    this.recordedDate = recordedDate;
+    this.recordedDate = ValidationUtils.isDateNotNull("recordedDate", recordedDate);
     setId(id);
     setCode(code);
     setRecorder(recorder);

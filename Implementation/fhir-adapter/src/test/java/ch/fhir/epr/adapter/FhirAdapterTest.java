@@ -303,16 +303,15 @@ class FhirAdapterTest {
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-0001").getIdentifierFirstRep().getValue())
         .isEqualTo("12.34.56.78");
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-0001").getIdentifierFirstRep().getSystem())
-        .isEqualTo("2.16.756.5.30.1.127.3.10.3");
+        .isEqualTo("urn:oid:2.16.756.5.30.1.127.3.10.3");
     assertThat(FhirUtils.getAuthor(bundle).getUser().getLastName()).isEqualTo("Doe");
-    assertThat(FhirUtils.getAuthor(bundle).getRole()).isEqualTo("HCP");
     assertThat(FhirUtils.getAuthor(bundle).getRole()).isEqualTo("HCP");
     assertThat(FhirUtils.getConfidentiality(bundle).getSystem()).isEqualTo(FhirConstants.SNOMED_SYSTEM_URL);
     assertThat(bundle.getMeta().getProfile().get(0).getValue()).isEqualTo(FhirConstants.META_VACCINATION_TYPE_URL);
 
 
     String json = fhirAdapter.marshall(bundle);
-    assertThat(json).contains("\"system\": \"2.16.756.5.30.1.127.3.10.3\"");
+    assertThat(json).contains("\"system\": \"urn:oid:2.16.756.5.30.1.127.3.10.3\"");
     assertThat(json).contains("\"value\": \"12.34.56.78\"");
     assertThat(json).contains(patientIdentifier.getLocalAssigningAuthority());
     assertThat(json).doesNotContain(patientIdentifier.getLocalExtenstion());
@@ -348,13 +347,13 @@ class FhirAdapterTest {
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-0001").getIdentifierFirstRep().getValue())
         .isEqualTo("12.34.56.78");
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-0001").getIdentifierFirstRep().getSystem())
-        .isEqualTo("2.16.756.5.30.1.127.3.10.3");
+        .isEqualTo("urn:oid:2.16.756.5.30.1.127.3.10.3");
 
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-author").getNameFirstRep().getFamily()).isEqualTo("Doe");
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-author").getIdentifierFirstRep().getValue())
         .isNotEqualTo("12.34.56.78");
     assertThat(FhirUtils.getPatient(bundle, "Patient/Patient-author").getIdentifierFirstRep().getSystem())
-        .isEqualTo("urn:ietf:rfc:3986");
+        .isEqualTo("urn:oid:2.16.756.5.30.1.127.3.10.3");
     assertThat(FhirUtils.getAuthor(bundle).getUser().getLastName()).isEqualTo("Doe");
     assertThat(FhirUtils.getAuthor(bundle).getRole()).isEqualTo("PAT");
     assertThat(FhirUtils.getOrganization(bundle, "Organization/Organization-0001").getName()).isEqualTo("-");

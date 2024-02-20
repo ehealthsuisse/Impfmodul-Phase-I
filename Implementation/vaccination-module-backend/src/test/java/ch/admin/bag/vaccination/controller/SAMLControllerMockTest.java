@@ -95,8 +95,8 @@ public class SAMLControllerMockTest {
     HttpEntity<String> request = new HttpEntity<>(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"));
     mockLogoutResponse();
 
-    ResponseEntity<Void> response = restTemplate.postForEntity(
-        "http://localhost:" + port + "/saml/logout", request, Void.class);
+    ResponseEntity<String> response = restTemplate.postForEntity(
+        "http://localhost:" + port + "/saml/logout", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(samlService).logout(eq("remery"));
   }

@@ -30,6 +30,7 @@ public final class FhirConstants {
   /** used for general UUID identifiers */
   public static final String DEFAULT_URN_SYSTEM_IDENTIFIER = "urn:ietf:rfc:3986";
   public static final String DEFAULT_ID_PREFIX = "urn:uuid:";
+  public static final String PATIENT_SYSTEM_URL_PREFIX = "urn:oid:";
 
   /** Fixed system url defined in the standard */
   public static final String FIXED_PRACTITIONER_SYSTEM = "urn:oid:2.51.1.3";

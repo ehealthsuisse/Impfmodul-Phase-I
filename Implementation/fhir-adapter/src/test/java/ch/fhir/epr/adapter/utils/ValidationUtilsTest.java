@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.fhir.epr.adapter.exception.ValidationException;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 public class ValidationUtilsTest {
@@ -46,5 +47,19 @@ public class ValidationUtilsTest {
   void testDoseNumberPositiveAndGreaterThanZero_shouldReturnTheNumber() {
     int doseNumber = ValidationUtils.isPositiveNumber("doseNumber", 11);
     assertEquals(11, doseNumber);
+  }
+
+  @Test
+  void testRecordedDate_nullValue_shouldThrowException() {
+    ValidationException exception = assertThrows(ValidationException.class,
+        () -> ValidationUtils.isDateNotNull("recordedDate", null));
+
+    assertTrue(exception.getMessage().contains("The field recordedDate should not be null"));
+  }
+
+  @Test
+  void testRecordedDate_validValue_shouldReturnValue() {
+    LocalDate recordedDate = ValidationUtils.isDateNotNull("recordedDate", LocalDate.of(2022, 10, 10));
+    assertEquals(LocalDate.of(2022, 10, 10), recordedDate);
   }
 }

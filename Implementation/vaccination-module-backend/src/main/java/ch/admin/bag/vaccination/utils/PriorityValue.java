@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2024 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,30 +16,20 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.fhir.epr.adapter.utils;
+package ch.admin.bag.vaccination.utils;
 
-import ch.fhir.epr.adapter.exception.ValidationException;
-import java.time.LocalDate;
-import java.util.Objects;
-import lombok.NoArgsConstructor;
+import ch.admin.bag.vaccination.data.dto.ValueListDTO;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * Class containing all validation utils
- */
-@NoArgsConstructor
-public class ValidationUtils {
+/** Wrapper class for {@link ValueDTO} created for attaching a priority */
+@AllArgsConstructor
+@Getter
+public class PriorityValue {
 
-  public static int isPositiveNumber(String field, int value) {
-    if (value < 1) {
-      throw new ValidationException("The field " + field + " should be positive and greater than 0");
-    }
-    return value;
-  }
+  /** if a priority exists ValueDTOs that have the highest number will be put first in {@link ValueListDTO} */
+  private int priority;
+  private ValueDTO dto;
 
-  public static LocalDate isDateNotNull(String field, LocalDate date) {
-    if (Objects.isNull(date)) {
-      throw new ValidationException("The field " + field + " should not be null");
-    }
-    return date;
-  }
 }

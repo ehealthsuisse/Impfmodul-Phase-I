@@ -19,6 +19,8 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
@@ -77,7 +79,7 @@ class VaccinationRecordServiceTest {
   }
 
   @Test
-  void getAll_patientNotLinkedToTheSession_shouldReturnPatientInfoNull() {
+  void getAll_patientNotLinkedToTheSession_shouldReturnPatientInfoNullIfNotInLocalMode() {
     setPatientIdentifierInSession(
         new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "dummy", "dummy"));
     PatientIdentifier patientIdentifier =
@@ -86,7 +88,13 @@ class VaccinationRecordServiceTest {
 
     VaccinationRecordDTO result = vaccinationRecordService.create(patientIdentifier, null);
 
-    assertThat(result.getPatient()).isNull();
+    // localMode is activated by before()
+    assertNotNull(result.getPatient());
+
+    // remove local mode and check one more time
+    profileConfig.setLocalMode(false);
+    result = vaccinationRecordService.create(patientIdentifier, null);
+    assertNull(result.getPatient());
   }
 
   @Test

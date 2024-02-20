@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2024 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,30 +16,25 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.fhir.epr.adapter.utils;
+package ch.admin.bag.vaccination.utils;
 
-import ch.fhir.epr.adapter.exception.ValidationException;
-import java.time.LocalDate;
-import java.util.Objects;
-import lombok.NoArgsConstructor;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
+import java.util.Comparator;
 
 /**
- * Class containing all validation utils
+ * Sorts {@link ValueDTO} by using the priority field attached with the help of the wrapper class {@link PriorityValue}
+ * In the case that priority is the same for multiple ValueDTOs, objects will nbe sorted alphabetically by name
  */
-@NoArgsConstructor
-public class ValidationUtils {
+public class PriorityComparator implements Comparator<PriorityValue> {
 
-  public static int isPositiveNumber(String field, int value) {
-    if (value < 1) {
-      throw new ValidationException("The field " + field + " should be positive and greater than 0");
-    }
-    return value;
-  }
+  @Override
+  public int compare(PriorityValue o1, PriorityValue o2) {
+    int priorityComparison = Integer.compare(o2.getPriority(), o1.getPriority());
 
-  public static LocalDate isDateNotNull(String field, LocalDate date) {
-    if (Objects.isNull(date)) {
-      throw new ValidationException("The field " + field + " should not be null");
+    if (priorityComparison != 0) {
+      return priorityComparison;
     }
-    return date;
+
+    return o1.getDto().getName().compareTo(o2.getDto().getName());
   }
 }

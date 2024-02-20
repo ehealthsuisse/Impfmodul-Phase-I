@@ -419,7 +419,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     dummy.setGlobalAuthority("global authority");
     dummy.setGlobalExtension("global extension");
     dummy.setSpidExtension("spid extension");
-    dummy.setSpidRootAuthority("urn:oid:1.2.3.4");
+    dummy.setSpidRootAuthority("1.2.3.4");
 
     return dummy;
   }

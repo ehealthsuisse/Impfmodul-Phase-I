@@ -102,7 +102,7 @@ public class SAMLController {
    *
    * @param xml the SAML message
    */
-  @PostMapping("/saml/logout")
+  @PostMapping(path = "/saml/logout", produces = "text/xml")
   @Operation(description = "SAML Logout")
   public String logout(@RequestBody String xml) {
     log.debug("Received samlLogout, to switch to TRACE log level");
