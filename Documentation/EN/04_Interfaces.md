@@ -36,6 +36,7 @@ The GET request uses the following parameters:
 * **ufname** - Family/Last name of the User as String
 * **ugname** - Given/First name of the User as String
 * **utitle** - Title of the user as String (optional)
+* **organization** - Name of the user's organization as String (optional)
 * **ugln** - Gln of the user, used for HCP and ASS (mandatory for roles HCP/ASS)
 * **lang** - Language {lang}_{locale} (z.B. EN_us)
 * **role** - EPR role of the user taken from Value Set { HCP, PAT, ASS, REP }

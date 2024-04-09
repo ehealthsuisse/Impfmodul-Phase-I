@@ -1,3 +1,35 @@
+# April 2024 - Release 1.6.0
+
+### Changes Fhir Library
+* Added more validations on the FHIR Adapter to ensure data integrity. 
+* Allow log pattern to be set using LOG_DATEFORMAT_PATTERN environment variable. See documentation for more information
+
+### Changes Vaccination Modul Backend 
+* Added possibility to hand over the user organization (attribute organization) from the portal in the initial web call.<br>
+  <b>Important:</b> From next feature release onwards, the field will be mandatory for roles HCP/ASS.
+* Added new configuration for samlMessageLifetime (see idp-config-local.yml) which was hard-coded before to 2000 ms
+* Adapted value lists for the PDF Output allowing to set a legal remark at the end of the PDF and to display vaccinations in an particular order. 
+* Fixed an issue where non-mentioned vaccination proctections on the pdf-output.yml were not added at the end.
+* Added language support for the EPR logo shown on the PDF output 
+* Added language support for the gender displayed on the PDF output
+* Fixed an layout issue with the PDF output when many entries had to be displayed.
+* Improved security by implementing CSRF Protection 
+* Improved security by adding a logout functionality. The logout will log out the user out of the vaccination module and it will stop the prolonging the extension of the IDP token. It is however not performing an IDP logout. 
+* Improved the non-productive local mode by allowing different users to log in.
+* Improved security by protecting against ID guessing. On the next release, it will also be planned to remove identifier from rest URLs completely.
+* Fixed an issue with the SAML Logout handling
+
+### Changes Vaccination Modul Frontend  
+* Removed several header values send to the backend. Instead, new X-XSRF-TOKEN header will be send to the backend to ensure the CSRF protection.
+* Allow possibility to show/hide the logout button in the configuration
+* Added input validation for the provided dates. 
+* Added version information on the UI showing frontend and backend version.
+* Added support to create new vaccination entries using vaccine code from the myvaccines valuelist incl. their mapping to the vaccination protections
+* Added language support to display different company logos.
+* Fixed navigation issue that the user was not corrected forwarded on the last visited page when editing or creating a new entry.
+* Fixed a language issue on the error page.
+* Fixed issues with the ordering of items. Items are now ordered by date. If multiple entries have same date, they are grouped by the used code with newest document first.
+
 # February 2024 - Release 1.5.0
 
 ### Changes Fhir Library
