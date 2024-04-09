@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Contains the mapping vaccine to targetDiseases.
- * 
+ *
  *
  */
 @Configuration
@@ -36,5 +36,6 @@ import org.springframework.context.annotation.Configuration;
 public class VaccinesToTargetDiseasesConfig {
   private String vaccineSystem;
   private String targetDiseaseSystem;
+  private String vaccineSystemBelowCode200;
   private List<VaccineToTargetDiseases> vaccines;
 }

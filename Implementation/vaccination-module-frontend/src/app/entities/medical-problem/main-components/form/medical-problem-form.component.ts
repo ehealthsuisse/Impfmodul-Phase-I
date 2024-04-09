@@ -25,7 +25,7 @@ import { finalize, Observable, ReplaySubject } from 'rxjs';
 import { IMedicalProblem } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { filterDropdownList, initializeActionData, openSnackBar, setDropDownInitialValue } from '../../../../shared/function';
+import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
@@ -132,13 +132,13 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
           problem.confidentiality = this.confidentialityService.confidentialityStatus;
           if (result.action === 'SAVE') {
             if (problem.id) {
-              this.subscribeToSaveResponse(this.problemService.update(problem), true, true);
+              this.subscribeToSaveResponse(this.problemService.update(problem), true);
             } else {
-              this.subscribeToSaveResponse(this.problemService.create(problem), true, false);
+              this.subscribeToSaveResponse(this.problemService.create(problem), true);
             }
           }
           if (result.action === 'SAVE_AND_STAY') {
-            this.subscribeToSaveResponse(this.problemService.create(problem), false, false);
+            this.subscribeToSaveResponse(this.problemService.create(problem), false);
           }
         },
       });
@@ -158,18 +158,12 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     });
   }
 
-  private onSaveSuccess(navigate: boolean, isUpdate: boolean): void {
-    if (isUpdate) {
-      this.router.navigate(['/medical-problem']);
-    }
-
+  private onSaveSuccess(navigate: boolean): void {
     if (navigate) {
-      window.history.back();
-    }
-    if (!navigate) {
+      routecall(this.router, this.sessionInfoService, '/medical-problem');
+    } else {
       openSnackBar(this.translateService, this.snackBar, 'HELP.MEDICAL_PROBLEM.SAVE_AND_STAY.BODY');
     }
-    this.isSaving = false;
   }
 
   private updateForm(problems: IMedicalProblem): void {
@@ -181,9 +175,9 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     this.isSaving = false;
   }
 
-  private subscribeToSaveResponse(result: Observable<IMedicalProblem>, navigate: boolean, isUpdate: boolean): void {
+  private subscribeToSaveResponse(result: Observable<IMedicalProblem>, navigate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(navigate, isUpdate),
+      next: () => this.onSaveSuccess(navigate),
     });
   }
 }

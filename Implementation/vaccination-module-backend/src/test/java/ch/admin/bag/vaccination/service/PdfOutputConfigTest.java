@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +42,7 @@ public class PdfOutputConfigTest {
 
   @Test
   void otherVaccinationCodes() {
-    assertThat(config.getOtherVaccination().getCodes().size()).isEqualTo(7);
+    assertThat(config.getOtherVaccination().getCodes().size()).isEqualTo(18);
     assertThat(config.getOtherVaccination().getCodes().get(0)).isEqualTo("40468003");
     assertThat(config.getOtherVaccination().getCodes().get(6)).isEqualTo("840539006");
   }

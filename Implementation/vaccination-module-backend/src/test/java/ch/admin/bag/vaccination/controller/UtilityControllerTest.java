@@ -26,6 +26,7 @@ import ch.admin.bag.vaccination.data.dto.ValueListDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -40,6 +41,9 @@ public class UtilityControllerTest {
 
   @LocalServerPort
   private int port;
+
+  @Value("${spring.application.version}")
+  private String backendVersion;
 
   @Autowired
   private TestRestTemplate restTemplate;
@@ -73,6 +77,16 @@ public class UtilityControllerTest {
   }
 
   @Test
+  void getBackendVersion_returnsExpectedVersion() {
+    ResponseEntity<String> response = restTemplate.getForEntity(
+        createURL("/utility/backendVersion"),
+        String.class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isEqualTo(backendVersion);
+  }
+
+  @Test
   void getTargetDiseases() {
     ResponseEntity<ValueDTO[]> response = restTemplate.getForEntity(
         createURL("/utility/targetDiseases"),
@@ -80,8 +94,10 @@ public class UtilityControllerTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().length).isGreaterThan(25);
-    assertThat(response.getBody()[27].getCode()).isEqualTo("36989005");
-    assertThat(response.getBody()[27].getName()).isEqualTo("Mumps (disorder)");
+    assertThat(response.getBody()[0].getCode()).isEqualTo("56717001");
+    assertThat(response.getBody()[0].getName()).isEqualTo("Tuberculosis (disorder)");
+    assertThat(response.getBody()[0].getSystem())
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
   }
 
   @Test
@@ -94,15 +110,15 @@ public class UtilityControllerTest {
     assertThat(response.getBody()).isNotEmpty();
     assertThat(response.getBody()).isInstanceOf(VaccineToTargetDiseasesDTO[].class);
     assertThat(response.getBody().length).isGreaterThan(80);
-    assertThat(response.getBody()[0].getVaccine().getCode()).isEqualTo("683");
-    assertThat(response.getBody()[0].getVaccine().getName()).isEqualTo("FSME-Immun 0.25 ml Junior");
+    assertThat(response.getBody()[0].getVaccine().getCode()).isEqualTo("14");
+    assertThat(response.getBody()[0].getVaccine().getName()).isEqualTo("MoRu-Viraten");
     assertThat(response.getBody()[0].getVaccine().getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs");
+        .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs");
 
-    assertThat(response.getBody()[0].getTargetDiseases().size()).isEqualTo(1);
-    assertThat(response.getBody()[0].getTargetDiseases().get(0).getCode()).isEqualTo("712986001");
+    assertThat(response.getBody()[0].getTargetDiseases().size()).isEqualTo(2);
+    assertThat(response.getBody()[0].getTargetDiseases().get(0).getCode()).isEqualTo("36653000");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getName())
-        .isEqualTo("Tickborne encephalitis");
+        .isEqualTo("Rubella");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getSystem())
         .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
   }

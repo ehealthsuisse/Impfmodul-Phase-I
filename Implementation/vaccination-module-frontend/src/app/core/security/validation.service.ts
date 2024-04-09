@@ -19,7 +19,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom, ReplaySubject, TimeoutError } from 'rxjs';
-import { IPortalParameter } from 'src/app/model/portal-parameter';
 import { CryptoJsService } from './crypto-js.service';
 import { SessionInfoService } from './session-info.service';
 import { SignatureService } from './signature.service';
@@ -107,8 +106,28 @@ export class ValidationService {
   };
 
   private onValidationFailure = (): void => {
-    // reset query parameters due to invalid login call
-    this.sessionInfoService.queryParams = {} as IPortalParameter;
+    // Preserve lang parameter
+    const langParam = this.sessionInfoService.queryParams.lang;
+
+    // Reset query parameters due to invalid login call, keeping the language parameter
+    this.sessionInfoService.queryParams = {
+      principalname: '',
+      principalid: '',
+      idp: '',
+      laaoid: '',
+      lang: langParam,
+      lpid: '',
+      organization: '',
+      purpose: '',
+      role: '',
+      timestamp: '',
+      ufname: '',
+      ugname: '',
+      utitle: '',
+      ugln: '',
+      sig: '',
+    };
+
     this.router.navigateByUrl('/error');
   };
 

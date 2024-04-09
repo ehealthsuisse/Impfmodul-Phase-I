@@ -3,8 +3,502 @@
 
 vaccines-to-targetdiseases:
   vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs
+  vaccineSystemBelowCode200: http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs
   targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm
   vaccines:
+  # myvaccines code
+    - code: 14
+      name: MoRu-Viraten
+      target:
+        - code: 36653000
+          name: Rubella
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 16
+      name: Orochol E
+      target:
+        - code: 63650001
+          name: Cholera (disorder)
+    - code: 17
+      name: Poliomyelitis Impfstoff Berna
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 23
+      name: Triviraten
+      target:
+        - code: 36653000
+          name: Rubella
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 25
+      name: Vivotif L
+      target:
+        - code: 4834000
+          name: Typhoid fever (disorder)
+    - code: 35
+      name: Infanrix DTPa
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 39
+      name: Infanrix Penta
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 47
+      name: Attenuvax
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 48
+      name: BCG
+      target:
+        - code: 56717001
+          name: Tuberculosis (disorder)
+    - code: 53
+      name: HBVAXPRO 5
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 55
+      name: Meningokokken-Impfstoff A+C Mérieux
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
+    - code: 56
+      name: Meruvax
+      target:
+        - code: 36653000
+          name: Rubella
+    - code: 73
+      name: Infanrix DTPa+Hib
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 74
+      name: Twinrix 360/10
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 75
+      name: Pluserix
+      target:
+        - code: 36653000
+          name: Rubella
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 76
+      name: Acel Immune
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 77
+      name: Acel P
+      target:
+        - code: 27836007
+          name: Pertussis (disorder)
+    - code: 78
+      name: Act-Hib
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 79
+      name: Anatoxal DiTePer
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+    - code: 80
+      name: Anatoxal DiTe Erwachsene
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+    - code: 81
+      name: Anatoxal DiTe N Erwachsene
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 82
+      name: Anatoxal Di
+      target:
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 83
+      name: Anatoxal Te
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+    - code: 84
+      name: Anatoxal Te N
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+    - code: 86
+      name: Arilvax
+      target:
+        - code: 16541001
+          name: Yellow fever (disorder)
+    - code: 87
+      name: BCG Vaccin Mérieux
+      target:
+        - code: 56717001
+          name: Tuberculosis (disorder)
+    - code: 88
+      name: Biviraten
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 91
+      name: Ervevax
+      target:
+        - code: 36653000
+          name: Rubella
+    - code: 92
+      name: HibTiter
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 93
+      name: Infanrix DTPa-HBV
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 94
+      name: Lyssavac Berna
+      target:
+        - code: 14168008
+          name: Rabies (disorder)
+    - code: 96
+      name: MM Vax
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 97
+      name: Mumaten
+      target:
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 98
+      name: Pedvax
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 99
+      name: Pentacoq
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 100
+      name: Pnu-Immune
+      target:
+        - code: 16814004
+          name: Pneumococcal infectious disease (disorder)
+    - code: 101
+      name: Polio Salk
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 102
+      name: Polio Sabin
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 103
+      name: Poloral
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 106
+      name: Tetracoq
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 107
+      name: Tetramune
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 110
+      name: Vaqta
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 111
+      name: Rubeaten
+      target:
+        - code: 36653000
+          name: Rubella
+    - code: 112
+      name: Rudivax
+      target:
+        - code: 36653000
+          name: Rubella
+    - code: 115
+      name: Havrix 360
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 117
+      name: Almevax
+      target:
+        - code: 36653000
+          name: Rubella
+    - code: 118
+      name: Hevac B
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 119
+      name: MMR-I
+      target:
+        - code: 36653000
+          name: Rubella
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 120
+      name: Moruman
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 121
+      name: Rimparix
+      target:
+        - code: 14189004
+          name: Measles (disorder)
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 122
+      name: Rubevac
+      target:
+        - code: 36653000
+          name: Rubella
+    - code: 123
+      name: Trimovax
+      target:
+        - code: 36653000
+          name: Rubella
+        - code: 36989005
+          name: Mumps (disorder)
+    - code: 126
+      name: Ditanrix pediatric
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 127
+      name: Eolarix
+      target:
+        - code: 36653000
+          name: Rubella
+        - code: 14189004
+          name: Measles (disorder)
+    - code: 128
+      name: FSME-Immun Injekt
+      target:
+        - code: 712986001
+          name: Tickborne encephalitis
+    - code: 133
+      name: ProHibit
+      target:
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 134
+      name: Anatoxal DiTe Kinder
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 136
+      name: Celtura
+      target:
+        - code: 719865001
+          name: Influenza caused by pandemic influenza virus (disorder)
+    - code: 137
+      name: Focetria
+      target:
+        - code: 719865001
+          name: Influenza caused by pandemic influenza virus (disorder)
+    - code: 138
+      name: K1, K2, K3
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 139
+      name: Koprowski
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 141
+      name: Pandemrix
+      target:
+        - code: 719865001
+          name: Influenza caused by pandemic influenza virus (disorder)
+    - code: 142
+      name: Prohibit DTP
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+        - code: 709410003
+          name: Haemophilus influenzae type b infection (disorder)
+    - code: 143
+      name: TAB oral
+      target:
+        - code: 4834000
+          name: Typhoid fever (disorder)
+    - code: 144
+      name: Variola
+      target:
+        - code: 67924001
+          name: Smallpox (disorder)
+    - code: 147
+      name: Polio Koprowski (K1-K3)
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 148
+      name: Polio Lilly
+      target:
+        - code: 398102009
+          name: Acute poliomyelitis (disorder)
+    - code: 151
+      name: Di Anatoxal
+      target:
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 154
+      name: DiTe Anatoxal Kinder / Enfants
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 155
+      name: DiTePer Anatoxal
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 162
+      name: HBVAX DNA 5
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 163
+      name: HBVAX DNA 10
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 164
+      name: HBVAX DNA 40
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 165
+      name: Havrix junior
+      target:
+        - code: 40468003
+          name: Viral hepatitis, type A (disorder)
+    - code: 166
+      name: Infanrix
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+        - code: 27836007
+          name: Pertussis (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
+    - code: 168
+      name: Tanrix
+      target:
+        - code: 76902006
+          name: Tetanus (disorder)
+    - code: 169
+      name: Vaccin variole
+      target:
+        - code: 67924001
+          name: Smallpox (disorder)
+    - code: 170
+      name: Engerix-B 40
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    - code: 172
+      name: Hepavax
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B (disorder)
+    # swiss medic code
     - code: 683
       name: FSME-Immun 0.25 ml Junior
       target:

@@ -45,7 +45,7 @@ public class VaccinationDTO extends BaseDTO {
       List<CommentDTO> comments, Integer doseNumber, LocalDate occurrenceDate, HumanNameDTO performer,
       String organization, String lotNumber, ValueDTO reason, ValueDTO status) {
     this.targetDiseases = targetDiseases;
-    this.doseNumber = ValidationUtils.isPositiveNumber("doseNumber", doseNumber);
+    this.doseNumber = doseNumber;
     this.occurrenceDate = occurrenceDate;
     this.lotNumber = lotNumber;
     this.reason = reason;
@@ -55,6 +55,7 @@ public class VaccinationDTO extends BaseDTO {
     setRecorder(performer);
     setOrganization(organization);
     setComments(comments);
+    ValidationUtils.isValid(this);
   }
 
   @Override

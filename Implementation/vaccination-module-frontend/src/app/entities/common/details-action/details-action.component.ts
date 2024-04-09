@@ -40,6 +40,7 @@ import { InfectiousDiseasesService } from '../../infectious_diseases/service/inf
 import { MedicalProblemService } from '../../medical-problem/service/medical-problem.service';
 import { VaccinationConfirmComponent } from '../../vaccination/helper-components/confirm/vaccination-confirm.component';
 import { VaccinationService } from '../../vaccination/services/vaccination.service';
+import { PatientService } from '../../../shared/component/patient/patient.service';
 
 @Component({
   selector: 'vm-details-action',
@@ -72,6 +73,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   dialog: DialogService = inject(DialogService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  patientService: PatientService = inject(PatientService);
   isEmergencyMode: boolean = false;
 
   @Input() helpDialogTitle!: string;
@@ -87,8 +89,6 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   }
 
   ngOnInit(): void {
-    this.itemId = this.sharedDataService.storedData['detailedItem'].id;
-    this.updateType();
     const role = this.sessionInfoService.author.getValue().role;
     this.canValidate = role === 'HCP' || role === 'ASS';
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
@@ -142,18 +142,20 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   download(): void {
     this.updateType();
     this.sharedDataService.showActionMenu = false;
+    const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.details.json!);
+    const jsonExtension = '.json';
     switch (this.type) {
       case 'vaccination':
-        downloadRecordValue<IVaccination>(this.details, this.patient, this.sessionInfoService);
+        downloadRecordValue<IVaccination>(this.details, this.patientService, url, jsonExtension);
         break;
       case 'infectious-diseases':
-        downloadRecordValue<IInfectiousDiseases>(this.details, this.patient, this.sessionInfoService);
+        downloadRecordValue<IInfectiousDiseases>(this.details, this.patientService, url, jsonExtension);
         break;
       case 'medical-problem':
-        downloadRecordValue<IMedicalProblem>(this.details, this.patient, this.sessionInfoService);
+        downloadRecordValue<IMedicalProblem>(this.details, this.patientService, url, jsonExtension);
         break;
       case 'allergy':
-        downloadRecordValue<IAdverseEvent>(this.details, this.patient, this.sessionInfoService);
+        downloadRecordValue<IAdverseEvent>(this.details, this.patientService, url, jsonExtension);
         break;
     }
   }
@@ -236,6 +238,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   }
 
   private updateType(): void {
+    this.itemId = this.sharedDataService.storedData['detailedItem'].id;
     this.sharedDataService.getSessionStorage();
     this.type = this.router.url.split('/')[1];
     this.details = this.router.url.split('/')[2];

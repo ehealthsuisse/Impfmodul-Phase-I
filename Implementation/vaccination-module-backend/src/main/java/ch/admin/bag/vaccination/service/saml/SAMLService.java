@@ -183,6 +183,7 @@ public class SAMLService implements SAMLServiceIfc {
   @Override
   public void invalidateSession(HttpSession httpSession) {
     removeSecurityContextFromSession(httpSession);
+    httpSession.invalidate();
   }
 
   @Override
@@ -237,9 +238,9 @@ public class SAMLService implements SAMLServiceIfc {
   }
 
   /**
-   * Checks every 10 secs if there is any IDP token which needs to be refreshed.
+   * Checks every 20 secs if there is any IDP token which needs to be refreshed.
    */
-  @Scheduled(fixedDelay = 10000)
+  @Scheduled(fixedDelay = 20000)
   public void refreshIdpTokens() {
     if (profilConfig.isLocalMode()) {
       log.debug("Refreshing IDP Tokens is skipped due to local mode!");
@@ -247,6 +248,7 @@ public class SAMLService implements SAMLServiceIfc {
     }
 
     List<String> toRemove = new ArrayList<>();
+    log.debug("Refreshing IDP tokens, currently {} active sessions.", sessionIdToSecurityContext.entrySet().size());
     for (Entry<String, SecurityContext> entry : sessionIdToSecurityContext.entrySet()) {
       SecurityContext context = entry.getValue();
       SAMLAuthentication samlAuthentication = (SAMLAuthentication) context.getAuthentication();
@@ -271,10 +273,10 @@ public class SAMLService implements SAMLServiceIfc {
             samlAuthentication.setAssertion(renewedAssertion);
             log.debug("Renewal successful.");
           } catch (Exception ex) {
-            log.error("Refresh failed for {} and IPD {}.", samlAuthentication.getName(), idp);
+            log.error("Refresh failed for {} and IDP {}.", samlAuthentication.getName(), idp);
           }
         } else {
-          log.warn("Security token service URL not set.");
+          log.warn("Security token service URL not set for IDP {}.", idp);
         }
       }
     }

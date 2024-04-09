@@ -25,10 +25,12 @@
     "ERROR_404": "La pagina richiesta non è stata trovata.",
     "UNEXPECTED_ERROR": "Si è verificato un errore imprevisto. L'azione richiesta non può essere eseguita.",
     "END_DATE_BEFORE_START_DATE": "La fine deve essere dopo l'inizio.",
+    "NOT_FUTURE_DATE": "La data non deve essere nel futuro.",
     "LOGO_VACCINATION_MODULE": "Logo del modulo vaccinazioni, andare al record di vaccinazione",
     "COMMUNITY_LOGO": "Logo della comunità",
     "DATE_FORMAT": "Inserisci la data. Usa il formato Giorno, Giorno, Punto, Mese, Mese, Punto, Anno, Anno, Anno, Anno. Ad esempio, 01.01.2023.",
     "LANGUAGE_HELP_TEXT": "Seleziona la lingua in cui vuoi utilizzare il modulo di vaccinazione.",
-    "NONE_OPTION": ""
+    "NONE_OPTION": "",
+    "LOGOUT": "Il logout è stato effettuato con successo, è possibile chiudere questa scheda e tornare a portale CIP."
   }
 }

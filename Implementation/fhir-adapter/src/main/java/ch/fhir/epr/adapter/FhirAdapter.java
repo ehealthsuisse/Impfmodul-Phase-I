@@ -28,6 +28,7 @@ import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import ch.fhir.epr.adapter.exception.ValidationException;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
@@ -135,9 +136,14 @@ public class FhirAdapter implements FhirAdapterIfc {
     SectionType sectionType = getSectionType(clazz);
     try {
       for (DomainResource resource : getSectionResources(bundle, sectionType)) {
-        T dto = parseFhirResource(clazz, bundle, resource);
-        if (dto != null) {
-          dtos.add(dto);
+        try {
+          T dto = parseFhirResource(clazz, bundle, resource);
+          if (dto != null) {
+            dtos.add(dto);
+          }
+        } catch (ValidationException ex) {
+          log.error("Resource parsing failed for " + clazz.getName() + " on bundle " + bundle.getId() +
+                  " with the following error message: {}", ex.getMessage());
         }
       }
     } catch (Exception e) {

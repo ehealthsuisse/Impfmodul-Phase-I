@@ -6,6 +6,8 @@ $logo-size-desktop: 60px;
 $logo-size-mobile: 40px;
 $community-logo-size-desktop: 150px !important;
 $community-logo-size-mobile: 150px !important;
+$logout-button-size-desktop: 30px !important;
+$logout-button-size-mobile: 30px !important;
 $toolbar-background-color: #fff;
 
 @mixin logoSize($width, $height) {
@@ -32,6 +34,19 @@ $toolbar-background-color: #fff;
   .community-logo img {
     max-width: $width;
     width: $width;
+  }
+
+  .community-logo .version {
+    width: $width;
+    font-size: 8px;
+    margin-top: 40px;
+  }
+}
+
+@mixin logout-button($width) {
+  .logout-button {
+    width: $width;
+    @include flex-center(right, center, row);
   }
 }
 
@@ -69,6 +84,7 @@ main {
     @include flex-center(space-around, center, row);
     @include logoSize($logo-size-desktop, $logo-size-desktop);
     @include communityLogoSize($community-logo-size-desktop);
+    @include logout-button($logout-button-size-desktop);
   }
 
   &__mobile {
@@ -132,6 +148,7 @@ main {
       flex-direction: column;
       height: 100%;
       @include flex-center(space-around, center, column);
+      display: grid;
 
       .patient-name {
         display: inline-flex;
@@ -158,4 +175,10 @@ main {
 }
 .show {
   @include flex-center(space-between, center, row);
+}
+
+.logout-icon {
+  composes: download-icon;
+  width: 30px;
+  height: 30px;
 }

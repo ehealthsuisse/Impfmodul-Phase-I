@@ -3,6 +3,9 @@ idp:
   # SP Entity ID that is known to the IdP
   knownEntityId: https://my.backend.url/
 
+  # Configuration how much derivation (in ms) is between sending an SAML request and receiving the response.
+  samlMessageLifetime: 2000
+  
   # Provide per Provider 
   supportedProvider:
   - identifier: GAZELLE

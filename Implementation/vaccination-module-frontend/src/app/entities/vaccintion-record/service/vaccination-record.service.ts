@@ -32,7 +32,9 @@ import { SpinnerService } from '../../../shared/services/spinner.service';
 export class VaccinationRecordService {
   resource = ``;
   prefix = 'vaccinationRecord';
+  backendVersion?: string;
   private _patient!: string;
+
   constructor(
     private translateService: TranslateService,
     private configService: ConfigService,
@@ -43,6 +45,7 @@ export class VaccinationRecordService {
     this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${
       this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
     }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
+    this.retrieveBackendVersion();
   }
 
   queryOneRecord(): Observable<IVaccinationRecord> {
@@ -89,6 +92,22 @@ export class VaccinationRecordService {
 
   set patient(value: string) {
     this._patient = value;
+  }
+
+  getVersion(): Observable<string> {
+    return this.http.get(`${this.configService.endpointPrefix}/utility/backendVersion`, { responseType: 'text' });
+  }
+
+  retrieveBackendVersion(): void {
+    this.getVersion().subscribe({
+      next: (backendVersion: string) => {
+        this.backendVersion = backendVersion;
+      },
+      error: (error: any) => {
+        console.error('Error fetching backend version:', error);
+        this.backendVersion = '-';
+      },
+    });
   }
 }
 

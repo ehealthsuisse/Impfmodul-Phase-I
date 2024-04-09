@@ -24,6 +24,14 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+#### April 2024 - Release 1.6.0
+Improving the vaccination module based on user, provider and audit feedback.
+
+1. Added possibility to create vaccinations based on older vaccine codes.
+2. Optimized PDF Output (one more time) to fix layouting issues when having many entries
+3. Improved input validation and usability
+4. Improved security features
+
 #### February 2024 - Release 1.5.0
 Extension of the vaccination module with the following functions:
 

@@ -63,7 +63,7 @@ public class ValueListServiceTest {
   }
 
   @Test
-  void getAllListOfValues_vaccinationList_doNotDisplayEntriesForNonSwissMedicSystem() {
+  void getAllListOfValues_vaccinationList_doNotDisplayEntriesForNonSwissMedicOrMyVaccinesSystem() {
     List<ValueListDTO> valueListDTO = valueListService.getAllListOfValues();
     boolean foundResult = false;
 
@@ -71,7 +71,8 @@ public class ValueListServiceTest {
       if (ValueListService.IMMUNIZATION_VACCINE_CODE_VALUELIST.equals(list.getName())) {
         foundResult = true;
         list.getEntries().forEach(entry -> {
-          boolean shouldBeVisible = ValueListService.SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem());
+          boolean shouldBeVisible = ValueListService.SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem())
+              || ValueListService.MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem());
           assertThat(entry.isAllowDisplay()).isEqualTo(shouldBeVisible);
         });
       }

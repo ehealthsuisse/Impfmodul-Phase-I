@@ -23,6 +23,7 @@
     "ADD_PROBLEM": "Risikofaktor hinzufügen",
     "DOWNLOAD": "Herunterladen",
     "HELP": "Hilfe",
-    "SAVE_AND_STAY": "Speichern und weiter hinzufügen"
+    "SAVE_AND_STAY": "Speichern und weiter hinzufügen",
+    "LOGOUT": "Abmelden"
   }
 }

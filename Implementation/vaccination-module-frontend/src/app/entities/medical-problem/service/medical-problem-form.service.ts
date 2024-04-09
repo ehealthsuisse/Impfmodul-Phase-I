@@ -23,7 +23,7 @@ import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { IMedicalProblem } from 'src/app/model/medical-problem.interface';
 import { SessionInfoService } from '../../../core/security/session-info.service';
-import { dateValidator } from '../../../core/validators/date-order-validator';
+import { dateValidator, notFutureDateValidator } from '../../../core/validators/date-order-validator';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
 
@@ -91,7 +91,7 @@ export class MedicalProblemFormService {
         }
       ),
 
-      recordedDate: new FormControl(new Date(), Validators.required),
+      recordedDate: new FormControl(new Date(), [Validators.required, notFutureDateValidator('recordedDate')]),
       begin: new FormControl(new Date(), [Validators.required]),
       end: new FormControl(null, [dateValidator()]),
       code: new FormControl(null, Validators.required),

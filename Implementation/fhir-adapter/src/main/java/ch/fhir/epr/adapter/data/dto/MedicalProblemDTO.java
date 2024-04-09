@@ -18,7 +18,6 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
-import ch.fhir.epr.adapter.FhirUtils;
 import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.time.LocalDate;
 import java.util.List;
@@ -47,12 +46,13 @@ public class MedicalProblemDTO extends BaseDTO {
     this.end = end;
     this.clinicalStatus = clinicalStatus;
     this.verificationStatus = verificationStatus;
-    this.recordedDate = ValidationUtils.isDateNotNull("recordedDate", recordedDate);
+    this.recordedDate = recordedDate;
     setId(id);
     setCode(code);
     setRecorder(recorder);
     setOrganization(organization);
     setComments(comments);
+    ValidationUtils.isValid(this);
   }
 
   @Override

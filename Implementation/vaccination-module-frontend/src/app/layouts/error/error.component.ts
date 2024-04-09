@@ -21,6 +21,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { SharedLibsModule } from '../../shared/shared-libs.module';
+import { SessionStorageService } from 'ngx-webstorage';
 
 /**
  * Componete is used to display the error content which is forwarded to in case of an invalid web request.
@@ -40,16 +41,24 @@ export class ErrorComponent implements OnInit, OnDestroy {
   errorKey?: string;
   errorCode?: number;
   langChangeSubscription?: Subscription;
+  textColor?: string;
 
-  constructor(private translateService: TranslateService, private route: ActivatedRoute) {}
+  constructor(
+    private translateService: TranslateService,
+    private route: ActivatedRoute,
+    private sessionStorageService: SessionStorageService
+  ) {
+    this.selectLanguage();
+  }
 
   ngOnInit(): void {
     this.route.data.subscribe(routeData => {
-      if (routeData['errorMessage']) {
-        this.errorKey = routeData['errorMessage'];
+      const errorMessage = routeData['errorMessage'];
+      this.textColor = errorMessage === 'GLOBAL.LOGOUT' ? 'black' : 'red';
+      if (errorMessage) {
+        this.errorKey = errorMessage;
         this.errorCode = routeData['errorCode'];
         this.getErrorMessageTranslation();
-        this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => this.getErrorMessageTranslation());
       }
     });
   }
@@ -66,6 +75,17 @@ export class ErrorComponent implements OnInit, OnDestroy {
       this.translateService.get(this.errorKey).subscribe(translatedErrorMessage => {
         this.errorMessage = translatedErrorMessage;
       });
+    }
+  }
+
+  private selectLanguage(): void {
+    const language = this.sessionStorageService.retrieve('lo');
+    if (language !== null) {
+      // Selected language from the drop-down menu
+      this.translateService.use(language);
+    } else {
+      // Language selected on Portal
+      this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => this.getErrorMessageTranslation());
     }
   }
 }

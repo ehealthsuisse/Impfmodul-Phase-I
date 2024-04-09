@@ -22,6 +22,7 @@
     "ADD_PROBLEM": "Add risk factor",
     "DOWNLOAD": "Download",
     "HELP": "Help",
-    "SAVE_AND_STAY": "Save and create another"
+    "SAVE_AND_STAY": "Save and create another",
+    "LOGOUT": "Logout"
   }
 }

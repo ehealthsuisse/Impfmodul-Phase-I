@@ -17,4 +17,5 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 export * from './error.interceptor';
-export * from './portal-parameter.interceptor';
+export * from './csrf.interceptor';
+export * from './saml.interceptor';

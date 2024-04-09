@@ -26,6 +26,7 @@ import { IAdverseEvent } from '../../../model';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
 import { SessionInfoService } from '../../../core/security/session-info.service';
+import { notFutureDateValidator } from '../../../core/validators/date-order-validator';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -89,7 +90,7 @@ export class AdverseEventFormService {
         }
       ),
 
-      occurrenceDate: new FormControl(new Date()),
+      occurrenceDate: new FormControl(new Date(), [Validators.required, notFutureDateValidator('occurrenceDate')]),
       code: new FormControl(null, Validators.required),
       recorder: new FormGroup({
         firstName: new FormControl(firstName),

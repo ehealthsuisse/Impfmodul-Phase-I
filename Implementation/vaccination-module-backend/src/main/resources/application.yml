@@ -3,6 +3,7 @@ server:
 spring:
   application:
     name: Vaccination Module for the EPR
+    version: '@project.version@'
   profiles:
     active: ${SPRING_CLOUDPROFILES_ACTIVE:local}
   config:

@@ -63,10 +63,11 @@ class VaccinationServiceTest extends AbstractServiceTest {
 
     ValueDTO vaccineCode = new ValueDTO("123456789", "123456789", "testsystem");
     ValueDTO status = new ValueDTO("completed", "completed", "http://hl7.org/fhir/event-status");
+    ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     String commentText = "BlaBla";
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
-    VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, null, List.of(comment), 3,
-        LocalDate.now(), performer, null, "lotNumber", null, status);
+    VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, List.of(targetDisease), List.of(comment),
+        3, LocalDate.now(), performer, null, "lotNumber", null, status);
     newVaccinationDTO.setAuthor(author);
 
     VaccinationDTO result = vaccinationService.create(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
@@ -151,12 +152,14 @@ class VaccinationServiceTest extends AbstractServiceTest {
 
     ValueDTO vaccineCode = new ValueDTO("987654321", "123456789", "testsystem");
     ValueDTO newStatus = new ValueDTO("completed", "completed", "http://hl7.org/fhir/event-status");
+    ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     String newOrga = "My new organization AG";
     String newLotNumber = "newLotNumber";
     String commentText = "BlaBla";
     CommentDTO knownComment = new CommentDTO(LocalDateTime.now(), performer.getFullName(), "test");
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
-    VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, null, List.of(comment, knownComment), 3,
+    VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, List.of(targetDisease),
+        List.of(comment, knownComment), 3,
         LocalDate.now(), performer, newOrga, newLotNumber, null, newStatus);
     newVaccinationDTO.setAuthor(author);
 
@@ -183,9 +186,10 @@ class VaccinationServiceTest extends AbstractServiceTest {
     ValueDTO vaccineCode = new ValueDTO("987654321", "123456789", "testsystem");
     ValueDTO newStatus = new ValueDTO(FhirConstants.ENTERED_IN_ERROR, FhirConstants.ENTERED_IN_ERROR,
         "http://hl7.org/fhir/event-status");
+    ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     String newOrga = "My new organization AG";
     String newLotNumber = "newLotNumber";
-    VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, null, null, 3,
+    VaccinationDTO newVaccinationDTO = new VaccinationDTO(null, vaccineCode, List.of(targetDisease), null, 3,
         LocalDate.now(), performer, newOrga, newLotNumber, null, newStatus);
     newVaccinationDTO.setAuthor(author);
 

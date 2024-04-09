@@ -25,7 +25,7 @@ import { finalize, Observable, ReplaySubject } from 'rxjs';
 import { IInfectiousDiseases } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { filterDropdownList, initializeActionData, openSnackBar, setDropDownInitialValue } from '../../../../shared/function';
+import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
@@ -124,14 +124,14 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
           illness.confidentiality = this.confidentialityService.confidentialityStatus;
           if (result.action === 'SAVE') {
             if (illness.id) {
-              this.subscribeToSaveResponse(this.illnessService.update(illness), true, true);
+              this.subscribeToSaveResponse(this.illnessService.update(illness), true);
             } else {
-              this.subscribeToSaveResponse(this.illnessService.create(illness), true, false);
+              this.subscribeToSaveResponse(this.illnessService.create(illness), true);
             }
           }
           if (result.action === 'SAVE_AND_STAY') {
             illness.confidentiality = this.illnessService.confidentialityStatus;
-            this.subscribeToSaveResponse(this.illnessService.create(illness), false, false);
+            this.subscribeToSaveResponse(this.illnessService.create(illness), false);
           }
         },
       });
@@ -147,19 +147,12 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
     });
   }
 
-  private onSaveSuccess(navigate: boolean, isUpdate: boolean): void {
-    if (isUpdate) {
-      this.router.navigate(['/infectious-diseases']);
-      return;
-    }
-
+  private onSaveSuccess(navigate: boolean): void {
     if (navigate) {
-      window.history.back();
-    }
-    if (!navigate) {
+      routecall(this.router, this.sessionInfoService, '/infectious-diseases');
+    } else {
       openSnackBar(this.translateService, this.snackBar, 'HELP.PAST_ILLNESS.SAVE_AND_STAY.BODY');
     }
-    this.isSaving = false;
   }
 
   private updateForm(illnesses: IInfectiousDiseases): void {
@@ -171,9 +164,9 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
     this.isSaving = false;
   }
 
-  private subscribeToSaveResponse(result: Observable<IInfectiousDiseases>, navigate: boolean, isUpdate: boolean): void {
+  private subscribeToSaveResponse(result: Observable<IInfectiousDiseases>, navigate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(navigate, isUpdate),
+      next: () => this.onSaveSuccess(navigate),
     });
   }
 }

@@ -18,6 +18,9 @@
   <mat-error *ngIf="formControl.hasError('endDateBeforeStartDate')">
     <div>{{ 'GLOBAL.END_DATE_BEFORE_START_DATE' | translate }}</div>
   </mat-error>
+  <mat-error *ngIf="formControl.hasError('futureDate')">
+    <div>{{ 'GLOBAL.NOT_FUTURE_DATE' | translate }}</div>
+  </mat-error>
 </mat-form-field>
 
 <mat-form-field *ngIf="!isEditable" class="detailed-card-content__form-field">

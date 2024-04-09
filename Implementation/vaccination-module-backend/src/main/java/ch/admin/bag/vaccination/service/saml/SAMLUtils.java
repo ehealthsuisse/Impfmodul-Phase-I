@@ -70,6 +70,7 @@ import org.opensaml.soap.wstrust.RequestSecurityTokenResponse;
 import org.opensaml.soap.wstrust.RequestedSecurityToken;
 import org.projecthusky.xua.communication.xua.XUserAssertionResponse;
 import org.projecthusky.xua.communication.xua.impl.XUserAssertionResponseImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -91,8 +92,11 @@ public class SAMLUtils {
     secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
   }
 
+  private static long SAML_MESSAGE_LIFETIME;
+
   public static String addEnvelope(String request) {
-    String open = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"
+    request = request.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "");
+    String open = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
         + "   <soapenv:Header/>\n"
         + "   <soapenv:Body>";
     String close = "</soapenv:Body>\n"
@@ -439,10 +443,14 @@ public class SAMLUtils {
       throws ComponentInitializationException, MessageHandlerException {
     MessageLifetimeSecurityHandler lifetimeSecurityHandler = new MessageLifetimeSecurityHandler();
     lifetimeSecurityHandler.setClockSkew(Duration.ofMillis(1000));
-    lifetimeSecurityHandler.setMessageLifetime(Duration.ofMillis(2000));
+    lifetimeSecurityHandler.setMessageLifetime(Duration.ofMillis(SAML_MESSAGE_LIFETIME));
     lifetimeSecurityHandler.setRequiredRule(true);
     lifetimeSecurityHandler.initialize();
     lifetimeSecurityHandler.invoke(context);
   }
 
+  @Value("${idp.samlMessageLifetime:2000}")
+  public void setNameStatic(long samlMessageLifetime) {
+    SAMLUtils.SAML_MESSAGE_LIFETIME = samlMessageLifetime;
+  }
 }

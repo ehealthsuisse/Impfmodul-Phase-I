@@ -25,10 +25,12 @@
     "UNEXPECTED_ERROR": "An unexpected error occurred. The requested action could not be performed.",
     "SNEAKBAR_CONFIRM": "Entity saved successfully",
     "END_DATE_BEFORE_START_DATE": "The end must be after the beginning.",
+    "NOT_FUTURE_DATE": "Date must not be in the future.",
     "LOGO_VACCINATION_MODULE": "Logo of the Vaccination Module, go to the vaccination record",
     "COMMUNITY_LOGO": "Logo of the community",
     "DATE_FORMAT": "Please enter the date. Use the format Day, Day, Dot, Month, Month, Dot, Year, Year, Year, Year. For example, 01.01.2023",
     "LANGUAGE_HELP_TEXT": "Select the language in which you want to use the vaccination module.",
-    "NONE_OPTION": ""
+    "NONE_OPTION": "",
+    "LOGOUT": "You have been successfully logged out, you can close this tab and return to the EPR-portal."
   }
 }

@@ -58,6 +58,7 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.hl7.fhir.r4.model.MarkdownType;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,6 +128,29 @@ class FhirConverterTest {
     assertEquals("http://snomed.info/sct", FhirUtils.getConfidentiality(bundle).getSystem());
     assertEquals(FhirConstants.CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED,
         vaccinationDTO.getConfidentiality().getSystem());
+  }
+
+  @Test
+  void createBundle_fillPatientWithKnownGender_patientGenderIsCorrectlySet() {
+    HumanNameDTO patient = new HumanNameDTO("First", "Last", "prefix", LocalDate.now(), "MALE");
+    PatientIdentifier identifier = mock(PatientIdentifier.class);
+    when(identifier.getPatientInfo()).thenReturn(patient);
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
+    Patient result = FhirUtils.getPatient(bundle, "Patient-0001");
+    assertEquals("MALE", result.getGender().name());
+  }
+
+  @Test
+  void createBundle_fillPatientWithUnknownGender_patientGenderIsSetUnknown() {
+    String unknownGender = "adfasdf";
+    HumanNameDTO patient = new HumanNameDTO("First", "Last", "prefix", LocalDate.now(), unknownGender);
+    PatientIdentifier identifier = mock(PatientIdentifier.class);
+    when(identifier.getPatientInfo()).thenReturn(patient);
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
+    Patient result = FhirUtils.getPatient(bundle, "Patient-0001");
+    assertEquals("UNKNOWN", result.getGender().name());
   }
 
   @Test
@@ -327,6 +351,7 @@ class FhirConverterTest {
     when(immunization.getOccurrenceDateTimeType()).thenReturn(new DateTimeType(new Date()));
     when(immunization.getStatus()).thenReturn(Immunization.ImmunizationStatus.COMPLETED);
     ImmunizationProtocolAppliedComponent protocolAppliedFirstRep = new ImmunizationProtocolAppliedComponent();
+    protocolAppliedFirstRep.setTargetDisease(List.of(CODEABLE_CONCEPT));
     protocolAppliedFirstRep.setDoseNumber(new PositiveIntType(1));
     when(immunization.getProtocolAppliedFirstRep()).thenReturn(protocolAppliedFirstRep);
     immunization.getProtocolAppliedFirstRep();

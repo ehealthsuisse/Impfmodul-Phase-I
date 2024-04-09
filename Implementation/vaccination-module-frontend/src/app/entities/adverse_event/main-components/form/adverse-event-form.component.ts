@@ -24,7 +24,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Observable, ReplaySubject } from 'rxjs';
 import { IAdverseEvent } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
-import { filterDropdownList, initializeActionData, openSnackBar, setDropDownInitialValue } from '../../../../shared/function';
+import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
@@ -123,13 +123,13 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
         allergy.confidentiality = this.confidentialityService.confidentialityStatus;
         if (result.action === 'SAVE') {
           if (allergy.id) {
-            this.subscribeToSaveResponse(this.adverseEventService.update(allergy), true, true);
+            this.subscribeToSaveResponse(this.adverseEventService.update(allergy), true);
           } else {
-            this.subscribeToSaveResponse(this.adverseEventService.create(allergy), true, false);
+            this.subscribeToSaveResponse(this.adverseEventService.create(allergy), true);
           }
         }
         if (result.action === 'SAVE_AND_STAY') {
-          this.subscribeToSaveResponse(this.adverseEventService.create(allergy), false, false);
+          this.subscribeToSaveResponse(this.adverseEventService.create(allergy), false);
         }
       });
   }
@@ -149,24 +149,18 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
     this.allergyFormService.resetForm(this.editForm, allergy);
   }
 
-  private subscribeToSaveResponse(result: Observable<IAdverseEvent>, navigate: boolean, isUpdate: boolean): void {
+  private subscribeToSaveResponse(result: Observable<IAdverseEvent>, navigate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(navigate, isUpdate),
+      next: () => this.onSaveSuccess(navigate),
     });
   }
 
-  private onSaveSuccess(navigate: boolean, isUpdate: boolean): void {
-    if (isUpdate) {
-      this.router.navigate(['/allergy']);
-    }
-
+  private onSaveSuccess(navigate: boolean): void {
     if (navigate) {
-      window.history.back();
-    }
-    if (!navigate) {
+      routecall(this.router, this.sessionInfoService, '/allergy');
+    } else {
       openSnackBar(this.translateService, this.snackBar, 'HELP.ALLERGY.SAVE_AND_STAY.BODY');
     }
-    this.isSaving = false;
   }
 
   private onSaveFinalize(): void {

@@ -22,6 +22,7 @@
     "ADD_PROBLEM": "Ajouter un facteur de risque",
     "DOWNLOAD": "Télécharger",
     "HELP": "Aider",
-    "SAVE_AND_STAY": "Enregistrer et créer un autre"
+    "SAVE_AND_STAY": "Enregistrer et créer un autre",
+    "LOGOUT": "Déconnexion"
   }
 }

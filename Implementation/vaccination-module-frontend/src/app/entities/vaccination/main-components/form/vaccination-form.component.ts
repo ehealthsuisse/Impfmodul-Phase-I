@@ -28,7 +28,7 @@ import { takeUntil } from 'rxjs/operators';
 import { IVaccination } from '../../../../model';
 import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValueDTO, MainWrapperComponent } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { filterDropdownList, initializeActionData, openSnackBar, setDropDownInitialValue } from '../../../../shared/function';
+import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { VaccinePredefinedDiseases } from '../../../../shared/interfaces/vaccination-with-disease.interface';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
@@ -167,13 +167,13 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
           vaccination.confidentiality = this.confidentialityService.confidentialityStatus;
           if (res.action === 'SAVE') {
             if (vaccination.id) {
-              this.subscribeToSaveResponse(this.vaccinationService.update(vaccination), true, true);
+              this.subscribeToSaveResponse(this.vaccinationService.update(vaccination), true);
             } else {
-              this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), true, false);
+              this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), true);
             }
           }
           if (res.action === 'SAVE_AND_STAY') {
-            this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), false, false);
+            this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), false);
           }
         },
       });
@@ -184,19 +184,12 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     this.unsubscribe$.complete();
   }
 
-  protected onSaveSuccess(navigate: boolean, isUpdate: boolean): void {
-    if (isUpdate) {
-      this.router.navigate(['/vaccination']);
-      return;
-    }
-
+  protected onSaveSuccess(navigate: boolean): void {
     if (navigate) {
-      window.history.back();
-    }
-    if (!navigate) {
+      routecall(this.router, this.sessionInfoService, '/vaccination');
+    } else {
       openSnackBar(this.translateService, this.snackBar, 'HELP.VACCINATION.SAVE_AND_STAY.BODY');
     }
-    this.isSaving = false;
   }
 
   protected updateForm(vaccination: IVaccination): void {
@@ -209,9 +202,9 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     this.isSaving = false;
   }
 
-  protected subscribeToSaveResponse(result: Observable<IVaccination>, navigate: boolean, isUpdate: boolean): void {
+  protected subscribeToSaveResponse(result: Observable<IVaccination>, navigate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(navigate, isUpdate),
+      next: () => this.onSaveSuccess(navigate),
     });
   }
 
@@ -221,7 +214,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
         options.map(option => {
           this.formOptions.set(
             option.name,
-            option.entries!.filter(entry => entry.allowDisplay)
+            option.entries!.filter(entry => entry.allowDisplay || (entry.code === this.vaccination?.code.code))
           );
           this.vaccinationFilteredList.next(this.formOptions.get('immunizationVaccineCode')!);
           this.reasons.next(this.formOptions.get('immunizationReasonCode')!);

@@ -61,13 +61,15 @@ The configuration of the vaccination module frontend is stored in file `assets\c
   "backendURL": "https://this.is.my.server.url/vaccination-module-backend",
   "communityId": "EPDBackend"
   "allowStartWithoutInitialCall": false
+  "isLogoutButtonVisible": true
 }
 ```
 It configs 2 parameter to be configured:
 - *backendURL* : Defines the URL of the vaccination module backend.
 - *communityId* : The OID of the community the vaccination module is connected to.
-- *allowStartWithoutInitialCall* : Allows the start of the vaccination module without the initial webcall.
+- *allowStartWithoutInitialCall* : Allows the start of the vaccination module without the initial webcall.<br>
 **Important**: Put *allowStartWithoutInitialCall* to false for productive use.
+- *isLogoutButtonVisible* : Allows showing/hiding the logout button.
 
 #### Backend
 
@@ -107,6 +109,7 @@ The following environment variables must be set appropriately:
  - *vaccination_config*: Defines the location of the configuration. The default is set to *config*. It's recommended to locate the config folder somewhere outside the `webroot` folder for security reasons.
  - *server.port*: Port number of the vaccination backend. The default is set to 8080.
  - *FRONTEND_URL*: Defines which frontend URL may connect to the vaccination backend. The default is set to \* which allows all URL. The value may be set to a specific URL Whitelist for security reasons.
+ - *LOG_DATEFORMAT_PATTERN*: Allows provider to define their own dateformat for the log entries. The format follows ISO8601.
 
 **Configuration of Test Operation Mode**  
 
@@ -209,6 +212,9 @@ idp:
   # SP Entity ID that is known to the IdP
   knownEntityId: myVaccinationModule
 
+  # Configuration how much derivation (in ms) is between sending an SAML request and receiving the response.
+  samlMessageLifetime: 2000
+
   # Provide per Provider
   supportedProvider:
   - identifier: GAZELLE
@@ -234,6 +240,7 @@ sp:
 
 The parameter are interpreted as follows:
 - knownEntityId: A Unique identifier of the Identity Provider in the vaccination module. Should be set to the URL of the Identity Provider endpoint.
+- samlMessageLifetime: Configuration how much derivation (in ms) is between sending an SAML request and receiving the response. If time is exceeded, there will be an exception in the SAML flow.
 - supportedProvider: Grouping element for Identity Provider settings.
 - supportedProvider.identifier: Label of the Identity Provider which is used in the Portal at vaccination startup.The label is used by the vaccination model to link to the Identity Provider the user logged in the portal.
 - supportedProvider.authnrequestURL: URL of the Identity Provider accepting *AuthNRequest*.

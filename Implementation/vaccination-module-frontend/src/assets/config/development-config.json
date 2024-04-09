@@ -1,5 +1,6 @@
 {
   "backendURL": "http://localhost:8080",
   "communityId": "GAZELLE",
-  "allowStartWithoutInitialCall": false
+  "allowStartWithoutInitialCall": false,
+  "isLogoutButtonVisible": true
 }

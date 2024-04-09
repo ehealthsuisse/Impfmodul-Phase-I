@@ -1,5 +1,6 @@
 {
   "backendURL": "https://master-vaccination-module-backend.apps.ocp4.innershift.sodigital.io",
   "communityId": "GAZELLE",
-  "allowStartWithoutInitialCall": true
+  "allowStartWithoutInitialCall": true,
+  "isLogoutButtonVisible": true
 }

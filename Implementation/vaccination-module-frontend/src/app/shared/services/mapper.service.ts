@@ -89,18 +89,44 @@ export class MapperService {
   }
 
   sortByOccurrenceDate(): ((a: IVaccination | IAdverseEvent, b: IVaccination | IAdverseEvent) => number) | undefined {
-    return (a, b) => this.sortByDate(a.occurrenceDate, b.occurrenceDate);
+    return (a, b) => this.sort(a.occurrenceDate, b.occurrenceDate, a.code?.name, b.code?.name, a.createdAt, b.createdAt);
   }
 
   sortByRecordedDate(): ((a: IInfectiousDiseases | IMedicalProblem, b: IInfectiousDiseases | IMedicalProblem) => number) | undefined {
-    return (a, b) => this.sortByDate(a.recordedDate, b.recordedDate);
+    return (a, b) => this.sort(a.recordedDate, b.recordedDate, a.code?.name, b.code?.name, a.createdAt, b.createdAt);
+  }
+
+  private sort(dateA: string | dayjs.Dayjs, dateB: string | dayjs.Dayjs, codeA: string, codeB: string, createdAtA: dayjs.Dayjs | undefined, createdAtB: dayjs.Dayjs | undefined): number {
+    let sort = this.sortByDate(dateA, dateB);
+
+    // fallback to createdAt if occurrenceDate is the same
+    if (sort === 0 && createdAtA && createdAtB) {
+      if (codeA === codeB) {
+        return this.sortByDate(createdAtA, createdAtB);
+      } else {  
+        return codeA < codeB ? 1 : -1;
+      }
+    }
+
+    return sort;
   }
 
   private sortByDate(a: dayjs.Dayjs | string, b: dayjs.Dayjs | string): number {
+    let aDay = a;
+    let bDay = b;
+
     if (typeof a === 'string') {
-      return dayjs(a).isBefore(dayjs(b)) ? 1 : -1;
+      aDay = dayjs(a);
+      bDay = dayjs(b);
+    } else {
+      aDay = a;
+      bDay = b;
     }
 
-    return a.isBefore(b) ? 1 : -1;
+    if (aDay.isSame(bDay)) {
+      return 0;
+    } 
+
+    return aDay.isBefore(bDay) ? 1 : -1;
   }
 }

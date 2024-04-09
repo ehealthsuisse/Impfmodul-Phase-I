@@ -72,8 +72,8 @@ public class VaccinationRecordControllerTest {
     ValueDTO vaccineCode = new ValueDTO("123456789", "123456789", "testsystem");
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
     VaccinationDTO vaccinationDTO = new VaccinationDTO(null, vaccineCode,
-        Arrays.asList(new ValueDTO("777", "myDisease", "mySystem")), null, 3, LocalDate.now(), performer,
-        null, "lotNumber", null, status);
+        Arrays.asList(new ValueDTO("777", "myDisease", "mySystem")), null, 3,
+        LocalDate.now(), performer, null, "lotNumber", null, status);
 
     List<VaccinationDTO> vaccinationDTOs = Arrays.asList(vaccinationDTO);
 

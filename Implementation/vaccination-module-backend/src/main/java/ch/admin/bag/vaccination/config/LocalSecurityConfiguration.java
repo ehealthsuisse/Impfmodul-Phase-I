@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -36,7 +37,7 @@ import org.springframework.web.filter.CorsFilter;
  * </p>
  */
 @Configuration
-@Profile("local | test")
+@Profile("local")
 public class LocalSecurityConfiguration {
 
   @Autowired
@@ -45,15 +46,18 @@ public class LocalSecurityConfiguration {
   @Bean
   SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
     http.addFilter(corsFilter)
-        .csrf().disable()
+        .csrf()
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .ignoringAntMatchers("/saml/**")
+        .and()
         .authorizeRequests()
         .anyRequest().anonymous()
         .and()
+        .logout(logout -> logout.logoutUrl("/logout"))
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     return http.build();
   }
-
 }
 

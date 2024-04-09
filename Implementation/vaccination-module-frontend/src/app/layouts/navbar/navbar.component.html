@@ -12,6 +12,11 @@
         />
         <mat-label class="mat-label mat-list-item">{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
       </div>
+      <div class="logout-button" *ngIf="isVisible">
+        <button mat-icon-button role="button" (click)="samlService.logout(); sidenav.toggle()">
+          <img class="logout-icon" src="./assets/images/logout.png" alt="Logout button image" />
+        </button>
+      </div>
       <vm-language></vm-language>
       <vm-navigation (toggleSidenav)="sidenav.toggle()"></vm-navigation>
       <div aria-hidden="true" class="community-logo">
@@ -20,6 +25,7 @@
           src="./assets/logos/company.png"
           [attr.aria-label]="'GLOBAL.COMMUNITY_LOGO' | translate"
         />
+        <div class="version">Backend: {{ backendVersion }} | Frontend: {{ frontendVersion }}</div>
       </div>
     </div>
   </mat-sidenav>
@@ -54,6 +60,16 @@
       </div>
       <vm-navigation></vm-navigation>
       <vm-language></vm-language>
+      <div class="logout-button" *ngIf="isVisible">
+        <button mat-icon-button role="button" (click)="samlService.logout()">
+          <img
+            alt="{{ 'buttons.LOGOUT' | translate }}"
+            matTooltip="{{ 'buttons.LOGOUT' | translate }}"
+            class="logout-icon"
+            src="./assets/images/logout.png"
+          />
+        </button>
+      </div>
       <div fxLayout="column" fxLayoutAlign="flex-start" class="navbar__community">
         <div aria-hidden="true" class="community-logo">
           <img

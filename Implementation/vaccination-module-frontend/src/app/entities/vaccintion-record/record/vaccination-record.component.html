@@ -37,7 +37,7 @@
       </div>
 
       <vm-table-wrapper
-        [dataSource]="vaccinations | sortByDate : 'occurrenceDate'"
+        [dataSource]="vaccinations"
         [displayedColumns]="vaccinationColumns"
         [translationPrefix]="'VACCINATION.'"
         [fullWidth]="'100%'"
@@ -62,7 +62,7 @@
         </button>
       </div>
       <vm-table-wrapper
-        [dataSource]="allergies | sortByDate : 'occurrenceDate'"
+        [dataSource]="allergies"
         [displayedColumns]="allergyColumns"
         [translationPrefix]="'ALLERGY.'"
         [fullWidth]="'100%'"
@@ -90,7 +90,7 @@
         </button>
       </div>
       <vm-table-wrapper
-        [dataSource]="illnesses | sortByDate : 'recordedDate'"
+        [dataSource]="illnesses"
         [displayedColumns]="illnessesColumns"
         [translationPrefix]="'ILLNESS.'"
         [fullWidth]="'100%'"
@@ -120,13 +120,16 @@
       </div>
 
       <vm-table-wrapper
-        [dataSource]="medicalProblems | sortByDate : 'occurrenceDate'"
+        [dataSource]="medicalProblems"
         [displayedColumns]="medicalProblemColumns"
         [translationPrefix]="'MEDICAL_PROBLEM.'"
         [fullWidth]="'100%'"
         (rowClick)="navigateToMedicalProblem($event)"
       >
       </vm-table-wrapper>
+    </mat-card-content>
+    <mat-card-content *ngIf="!isMobile">
+      <div fxLayout="row" fxLayoutAlign="center center">Backend: {{ backendVersion }} | Frontend: {{ frontendVersion }}</div>
     </mat-card-content>
   </mat-card>
 </section>

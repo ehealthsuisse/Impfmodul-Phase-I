@@ -22,7 +22,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { SessionInfoService } from '../../../core/security/session-info.service';
-import { dateValidator } from '../../../core/validators/date-order-validator';
+import { dateValidator, notFutureDateValidator } from '../../../core/validators/date-order-validator';
 import { IInfectiousDiseases } from '../../../model';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
@@ -90,8 +90,8 @@ export class InfectiousDiseasesFormService {
         }
       ),
 
-      recordedDate: new FormControl(new Date(), Validators.required),
-      begin: new FormControl(new Date(), Validators.required),
+      recordedDate: new FormControl(new Date(), [Validators.required, notFutureDateValidator('recordedDate')]),
+      begin: new FormControl(new Date(), [Validators.required, notFutureDateValidator('begin')]),
       end: new FormControl(null, [dateValidator()]),
       code: new FormControl(null, Validators.required),
       recorder: new FormGroup({

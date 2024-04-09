@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.service;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -40,7 +41,10 @@ public enum I18nKey {
   LASTNAME("Last name", "Name", "Nom", "Cognome"), //
   BIRTHDAY("Birthday", "Geburtsdatum", "Date de naissance", "Data di nascita"), //
   GENDER("Gender", "Geschlecht", "Genre", "Genere"), //
-
+  MALE("male", "männlich", "masculin", "maschile"), //
+  FEMALE("female", "weiblich", "féminin", "femminile"), //
+  UNDIFFERENTIATED("undifferentiated", "ohne Angabe", "non-binaire", "indifferenziato"), //
+  UNKNOWN("not specified", "keine Angabe", "aucune indication", "non specificato"), //
   DATE("Date", "Datum", "Date", "Data"), //
   BEGIN("Begin", "Beginn", "Début", "Data di inizio"), //
   END("End", "Ende", "Fin", "Data di fine"), //
@@ -51,8 +55,16 @@ public enum I18nKey {
   TREATING("Performer", "Geimpft Von", "Vacciné Par", "Vaccinato da"), //
   VALIDATED("Validated", "Validiert", "Validé", "Validato"), //
   PRINTED1("EPR Vaccination record", "EPD Impfausweis", "DEP carnet de vaccination",
-      "CCE libretto delle vaccinazioni"), //
-  PRINTED2("Printed on: ", "Gedruckt am: ", "Imprimé sur: ", "Stampato su: ");
+      "CIP Libretto delle vaccinazioni"), //
+  PRINTED2("Printed on: ", "Gedruckt am: ", "Imprimé sur: ", "Stampato su: "), //
+  LEGAL_REMARK("The vaccination card is not an official document.", "Der Impfausweis ist kein amtliches Dokument.",
+      "Le carnet de vaccination n'est pas un document officiel.",
+      "Il libretto di vaccinazione non è un documento ufficiale."), //
+  LOGO_FILE_NAME("/Logo_EN_EPR.jpg", "/Logo_DE_EPD.jpg", "/Logo_FR_DEP.jpg", "/Logo_IT_CIP.jpg");
+
+  public static boolean exists(String gender) {
+    return Arrays.asList(values()).stream().filter(value -> value.name().equals(gender)).findAny().isPresent();
+  }
 
   private final String en;
   private final String de;
@@ -77,7 +89,6 @@ public enum I18nKey {
       default -> Locale.ENGLISH;
     };
   }
-
 
   public String getTranslation(String lang) {
     if (lang == null) {
