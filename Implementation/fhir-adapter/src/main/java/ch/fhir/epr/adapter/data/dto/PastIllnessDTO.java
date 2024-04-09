@@ -46,12 +46,13 @@ public class PastIllnessDTO extends BaseDTO {
     this.end = end;
     this.clinicalStatus = clinicalStatus;
     this.verificationStatus = verificationStatus;
-    this.recordedDate = ValidationUtils.isDateNotNull("recordedDate", recordedDate);
+    this.recordedDate = recordedDate;
     setId(id);
     setCode(code);
     setRecorder(recorder);
     setOrganization(organization);
     setComments(comments);
+    ValidationUtils.isValid(this);
   }
 
   @Override

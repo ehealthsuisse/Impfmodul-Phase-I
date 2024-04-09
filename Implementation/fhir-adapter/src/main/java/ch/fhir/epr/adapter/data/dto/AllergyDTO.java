@@ -42,7 +42,7 @@ public class AllergyDTO extends BaseDTO {
   public AllergyDTO(String id, LocalDate occurrenceDate, ValueDTO code, ValueDTO criticality,
       ValueDTO clinicalStatus, ValueDTO verificationStatus, ValueDTO type, HumanNameDTO recorder,
       List<CommentDTO> comments, String organization) {
-    this.occurrenceDate = ValidationUtils.isDateNotNull("occurrenceDate", occurrenceDate);
+    this.occurrenceDate = occurrenceDate;
     this.criticality = criticality;
     this.clinicalStatus = clinicalStatus;
     this.verificationStatus = verificationStatus;
@@ -52,6 +52,7 @@ public class AllergyDTO extends BaseDTO {
     setRecorder(recorder);
     setOrganization(organization);
     setComments(comments);
+    ValidationUtils.isValid(this);
   }
 
   @Override

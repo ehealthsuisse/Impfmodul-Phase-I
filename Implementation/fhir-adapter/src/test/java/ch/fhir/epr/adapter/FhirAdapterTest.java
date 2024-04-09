@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import jdk.jfr.Description;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.AllergyIntolerance;
 import org.hl7.fhir.r4.model.AllergyIntolerance.AllergyIntoleranceCategory;
@@ -748,6 +749,15 @@ class FhirAdapterTest {
     assertNull(fhirAdapter.unmarshallFromString(""));
   }
 
+  @Test
+  @Description("This test verifies the parsing of a bundle containing 2 Immunization records. The first record is deemed "
+      + "invalid due to a missing occurrence date and is excluded from further processing. Parsing continues, and the "
+      + "second record is validated.")
+  void parsingBundle_immunizationWithoutOccurenceDateIsExcluded_parsingContinues() {
+    Bundle bundle = createBundle("testfiles/Bundle-A-D6-HCP1-C1-parsingBundleTest.json");
+    assertThat(fhirAdapter.getDTOs(VaccinationDTO.class, bundle).size()).isEqualTo(1);
+  }
+
   private AuthorDTO createAuthor() {
     return new AuthorDTO(new HumanNameDTO("John", "Doe", "Mr", null, null),
         null, null, null, "gln:11.22.33.44", null, null);
@@ -771,8 +781,9 @@ class FhirAdapterTest {
 
     ValueDTO vaccineCode = new ValueDTO("123456789", "123456789", "testsystem");
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
+    ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     VaccinationDTO vaccinationDTO =
-        new VaccinationDTO(null, vaccineCode, null, null, 3, LocalDate.now(), performer, null, "lotNumber", null,
+        new VaccinationDTO(null, vaccineCode, List.of(targetDisease), null, 3, LocalDate.now(), performer, null, "lotNumber", null,
             status);
     vaccinationDTO.setAuthor(author);
     return vaccinationDTO;

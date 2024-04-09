@@ -304,12 +304,12 @@ public class FhirConverter implements FhirConverterIfc {
         immunization.getProtocolAppliedFirstRep();
     Integer doseNumber = protocolAppliedFirstRep.getDoseNumberPositiveIntType().getValue();
     List<ValueDTO> targetDiseases = protocolAppliedFirstRep.getTargetDisease().stream()
-        .map(targetDisease -> FhirUtils.toValueDTO(targetDisease))
+        .map(FhirUtils::toValueDTO)
         .collect(Collectors.toList());
 
     String lotNumber = immunization.getLotNumber();
     ValueDTO reason = immunization.getReasonCode().stream().findFirst()
-        .map(reasonCode -> FhirUtils.toValueDTO(reasonCode)).orElse(null);
+        .map(FhirUtils::toValueDTO).orElse(null);
 
     ValueDTO status = new ValueDTO(immunization.getStatus().toCode(),
         immunization.getStatus().getDisplay(), immunization.getStatus().getSystem());
@@ -335,13 +335,13 @@ public class FhirConverter implements FhirConverterIfc {
 
   @Override
   public Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
-      Composition compostion, DomainResource resource) {
+      Composition composition, DomainResource resource) {
     Bundle bundle = createBundle(ctx, patientIdentifier, dto);
 
     CompositionRelatesToComponent crc = new CompositionRelatesToComponent();
     crc.setCode(DocumentRelationshipType.REPLACES);
     Reference targetReference = new Reference();
-    targetReference.setReference(FhirUtils.getIdentifierValue(compostion));
+    targetReference.setReference(FhirUtils.getIdentifierValue(composition));
     crc.setTarget(targetReference);
     ((Composition) bundle.getEntryFirstRep().getResource()).setRelatesTo(Arrays.asList(crc));
 
@@ -350,7 +350,7 @@ public class FhirConverter implements FhirConverterIfc {
       markResourceDeleted(updatedResource);
     }
 
-    createCrossReference(compostion, resource, updatedResource);
+    createCrossReference(composition, resource, updatedResource);
     return bundle;
   }
 
@@ -374,6 +374,21 @@ public class FhirConverter implements FhirConverterIfc {
       annotation = allergyIntolerance.addNote();
     }
     return annotation;
+  }
+
+  private void convertAndSetGender(Patient patient, HumanNameDTO patientInfo) {
+    boolean found = false;
+    for (AdministrativeGender gender : AdministrativeGender.values()) {
+      if (gender.name().equals(patientInfo.getGender())) {
+        found = true;
+        patient.setGender(AdministrativeGender.valueOf(patientInfo.getGender()));
+        break;
+      }
+    }
+
+    if (!found) {
+      patient.setGender(AdministrativeGender.UNKNOWN);
+    }
   }
 
   private Date convertToDate(LocalDate dateToConvert) {
@@ -674,7 +689,7 @@ public class FhirConverter implements FhirConverterIfc {
       String patientId) {
     Identifier identifier = new Identifier();
     identifier.setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID() :
-        patientIdentifier.getSpidExtension());
+      patientIdentifier.getSpidExtension());
     identifier.setSystem(FhirConstants.PATIENT_SYSTEM_URL_PREFIX + patientIdentifier.getSpidRootAuthority());
 
     Patient patient = new Patient();
@@ -686,9 +701,7 @@ public class FhirConverter implements FhirConverterIfc {
       patient.addName().setFamily(patientInfo.getLastName()).addGiven(patientInfo.getFirstName())
           .addPrefix(patientInfo.getPrefix());
       patient.setBirthDate(convertToDate(patientInfo.getBirthday()));
-      patient.setGender(
-          patientInfo.getGender() != null ? AdministrativeGender.valueOf(patientInfo.getGender())
-              : null);
+      convertAndSetGender(patient, patientInfo);
     } else {
       patient.addName().setFamily("emptyFamily").addGiven("emptyGiven").addPrefix("emptyPrefix");
       // For system generated data birthdate should be 1900-01-01
