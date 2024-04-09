@@ -34,6 +34,7 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { PatientService } from '../../../shared/component/patient/patient.service';
 import { openVaccinationRecordErrorDialog } from '../../../shared/component/help/dialogContent';
+import { environment } from '../../../../environment';
 
 @Component({
   selector: 'vm-vaccination-record',
@@ -64,6 +65,8 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   patient: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
   patientService: PatientService = inject(PatientService);
   isEmergencyMode: boolean = false;
+  backendVersion?: string;
+  frontendVersion: string = environment.VERSION;
 
   ngOnInit(): void {
     this.dialogService.showActionSidenav(true);
@@ -71,6 +74,7 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
     this.getRecord();
     initializeActionData('record', this.sharedDataService);
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
+    this.backendVersion = this.vaccinationRecordService.backendVersion;
   }
 
   getRecord(): Subscription {
@@ -96,18 +100,22 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   }
 
   navigateToAllergy(row: IAdverseEvent): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigate(['allergy', row.id, 'detail']);
   }
 
   navigateToIllness(row: IInfectiousDiseases): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigate(['infectious-diseases', row.id, 'detail']);
   }
 
   navigateToVaccination(row: IVaccination): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigate(['vaccination', row.id, 'detail']);
   }
 
   navigateToMedicalProblem(row: IMedicalProblem): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigate(['medical-problem', row.id, 'detail']);
   }
 
@@ -116,18 +124,22 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   }
 
   addVaccination(): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigateByUrl('vaccination/new');
   }
 
   addMedicalProblem(): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigateByUrl('medical-problem/new');
   }
 
   addIllness(): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigateByUrl('infectious-diseases/new');
   }
 
   addAllergy(): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigateByUrl('allergy/new');
   }
 

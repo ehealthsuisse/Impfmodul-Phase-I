@@ -35,6 +35,7 @@ export class SessionInfoService {
 
   private _isEmergency: boolean = false;
   private _brokenEntries: boolean = false;
+  private _isFromVaccinationRecord: boolean = false;
 
   get queryParams(): IPortalParameter {
     return this._queryParams;
@@ -72,6 +73,14 @@ export class SessionInfoService {
 
   set hasBrokenEntries(value: boolean) {
     this._brokenEntries = value;
+  }
+
+  get isFromVaccinationRecord(): boolean {
+    return this._isFromVaccinationRecord;
+  }
+
+  set isFromVaccinationRecord(value: boolean) {
+    this._isFromVaccinationRecord = value;
   }
 
   isEmergencyMode(): boolean {

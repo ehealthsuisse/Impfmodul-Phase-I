@@ -25,7 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { AppRoutingModule } from './app-routing.module';
-import { ErrorInterceptor, FooterComponent, MainComponent, NavbarComponent, PortalParameterInterceptor } from './core';
+import { ErrorInterceptor, FooterComponent, MainComponent, NavbarComponent } from './core';
 import { TranslationModule } from './shared';
 import { SharedModule } from './shared/shared.module';
 import { TitleStrategy } from '@angular/router';
@@ -35,6 +35,7 @@ import { ValidationService } from './core/security/validation.service';
 import { ConfigService } from './core/config/config.service';
 import { SessionInfoService } from './core/security/session-info.service';
 import { SamlInterceptor } from './core/interceptor/saml.interceptor';
+import { CsrfInterceptor } from './core/interceptor/csrf.interceptor';
 
 export function initializeConfigApp(configService: ConfigService): any {
   return () => configService.initialize();
@@ -75,11 +76,7 @@ export function initializeSessionInfo(sessionInfoService: SessionInfoService) {
     { provide: TranslateService },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: SamlInterceptor, multi: true },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: PortalParameterInterceptor,
-      multi: true,
-    },
+    { provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true },
     { provide: TitleStrategy, useClass: CustomPageTitleStrategy },
     {
       provide: APP_INITIALIZER,

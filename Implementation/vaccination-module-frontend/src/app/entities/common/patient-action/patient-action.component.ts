@@ -17,7 +17,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { DATE_FORMAT, DialogService, IValueDTO } from '../../../shared';
+import { DialogService, IValueDTO } from '../../../shared';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { downloadRecordValue, openSnackBar } from '../../../shared/function';
@@ -26,8 +26,8 @@ import { filterPatientRecordData, VaccinationRecordService } from '../../vaccint
 import { SpinnerService } from '../../../shared/services/spinner.service';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
-import dayjs from 'dayjs';
 import { SessionInfoService } from '../../../core/security/session-info.service';
+import { PatientService } from '../../../shared/component/patient/patient.service';
 
 @Component({
   selector: 'vm-patient-action',
@@ -43,6 +43,7 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
   translationService: TranslateService = inject(TranslateService);
   dialog: DialogService = inject(DialogService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
+  patientService: PatientService = inject(PatientService);
   isEmergencyMode: boolean = false;
 
   ngOnInit(): void {
@@ -51,7 +52,11 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
 
   download = (): Subscription => {
     return this.vaccinationRecordService.queryOneRecord().subscribe({
-      next: record => downloadRecordValue<IVaccinationRecord>(record, this.sessionInfoService.author.getValue(), this.sessionInfoService),
+      next: record => {
+        const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(record.json!);
+        const jsonExtension = '.json';
+        downloadRecordValue<IVaccinationRecord>(record, this.patientService, url, jsonExtension);
+      },
     });
   };
 
@@ -145,16 +150,8 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
       .subscribe(response => {
         const blob = new Blob([response], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        const { prefix, lastName, firstName } = this.sessionInfoService.author.getValue();
-        link.download = `${prefix ? prefix + '_' : ''}${lastName ? lastName + '_' : ''}${firstName ? firstName + '_' : ''}${dayjs().format(
-          DATE_FORMAT
-        )}.pdf`;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const pdfExtension = '.pdf';
+        downloadRecordValue(record, this.patientService, url, pdfExtension);
       });
   }
 }

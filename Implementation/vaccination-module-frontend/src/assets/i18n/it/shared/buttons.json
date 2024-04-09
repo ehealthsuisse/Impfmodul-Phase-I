@@ -23,6 +23,7 @@
     "ADD_PROBLEM": "Aggiungi fattore di rischio",
     "DOWNLOAD": "scaricare",
     "HELP": "Aiuto",
-    "SAVE_AND_STAY": "Salva e crea un altro"
+    "SAVE_AND_STAY": "Salva e crea un altro",
+    "LOGOUT": "Esci"
   }
 }

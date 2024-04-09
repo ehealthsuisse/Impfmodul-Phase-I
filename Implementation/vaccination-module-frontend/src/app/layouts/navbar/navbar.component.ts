@@ -34,6 +34,8 @@ import { SpinnerService } from '../../shared/services/spinner.service';
 import { SamlService } from '../../core/security/saml.service';
 import { ErrorComponent } from '../error/error.component';
 import { PatientService } from '../../shared/component/patient/patient.service';
+import { VaccinationRecordService } from '../../entities/vaccintion-record/service/vaccination-record.service';
+import { environment } from '../../../environment';
 
 /**
  * Used to display the top bar.
@@ -73,6 +75,10 @@ export class NavbarComponent extends BreakPointSensorComponent implements OnInit
   patient: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
   isAuthorized: boolean = false;
   patientService: PatientService = inject(PatientService);
+  isVisible: boolean = true;
+  vaccinationRecordService: VaccinationRecordService = inject(VaccinationRecordService);
+  backendVersion?: string;
+  frontendVersion: string = environment.VERSION;
 
   ngOnInit(): void {
     this.patientService.patient.subscribe({
@@ -98,6 +104,8 @@ export class NavbarComponent extends BreakPointSensorComponent implements OnInit
         this.user = user;
       },
     });
+    this.isVisible = this.configService.isLogoutButtonVisible;
+    this.backendVersion = this.vaccinationRecordService.backendVersion;
   }
 
   ngAfterViewInit(): void {

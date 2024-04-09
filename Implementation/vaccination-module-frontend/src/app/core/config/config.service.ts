@@ -11,6 +11,7 @@ export class ConfigService {
   private _defaultLaaoid: string = '1.3.6.1.4.1.21367.13.20.3000';
   private _defaultLpid: string = 'CHPAM4489';
   private _canActivate: boolean = false;
+  private _isLogoutButtonVisible: boolean = true;
 
   get communityId(): string {
     return this._communityId;
@@ -44,6 +45,14 @@ export class ConfigService {
     this._endpointPrefix = value;
   }
 
+  get isLogoutButtonVisible(): boolean {
+    return this._isLogoutButtonVisible;
+  }
+
+  set isLogoutButtonVisible(value: boolean) {
+    this._isLogoutButtonVisible = value;
+  }
+
   async initialize(): Promise<void> {
     await this.loadConfig();
   }
@@ -60,5 +69,6 @@ export class ConfigService {
     this.endpointPrefix = config.backendURL;
     this.communityId = config.communityId;
     this.canActivate = config.allowStartWithoutInitialCall;
+    this.isLogoutButtonVisible = config.isLogoutButtonVisible;
   }
 }

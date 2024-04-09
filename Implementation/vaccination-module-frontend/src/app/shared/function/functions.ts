@@ -30,6 +30,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { SessionInfoService } from '../../core/security/session-info.service';
 import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../date';
+import { Router } from '@angular/router';
+import { PatientService } from '../component/patient/patient.service';
 
 /*
  * @param humanDTO
@@ -71,18 +73,17 @@ export function filterDropdownList(list: IValueDTO[], filteredList: ReplaySubjec
   filteredList.next(list.filter(vaccine => vaccine.name.toLowerCase().indexOf(searchKeyWord) > -1));
 }
 
-export function downloadRecordValue<T extends IBaseDTO>(t: T, patient: IHumanDTO, sessionInfoService: SessionInfoService): void {
-  let element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(t.json!));
-  const { prefix, lastName, firstName } = sessionInfoService.author.getValue();
-  const fileName = `${prefix ? prefix + '_' : ''}${lastName ? lastName + '_' : ''}${firstName ? firstName + '_' : ''}${dayjs().format(
-    DATE_FORMAT
-  )}.json`;
-  element.setAttribute('download', fileName);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
+export function downloadRecordValue<T extends IBaseDTO>(t: T, patientService: PatientService, url: string, docExtension: string): void {
+  let link = document.createElement('a');
+  link.href = url;
+  const patient = patientService.patient.getValue();
+  link.download = `${patient.prefix ? patient.prefix + '_' : ''}${patient.lastName ? patient.lastName + '_' : ''}${
+    patient.firstName ? patient.firstName + '_' : ''
+  }${dayjs().format(DATE_FORMAT)}${docExtension}`;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 export function deleteRecord<T>(matDialog: MatDialog, dialogComponent: Type<any>, service: any, baseDetails: T, details: IBaseDTO): void {
@@ -168,4 +169,14 @@ export function openSnackBar(translate: TranslateService, snackBar: MatSnackBar,
     horizontalPosition: 'center',
     verticalPosition: 'top',
   });
+}
+
+export function routecall(router: Router, sessionInfoService: SessionInfoService, extension: string): void {
+  const routeToVaccinationRecord = sessionInfoService.isFromVaccinationRecord;
+  sessionInfoService.isFromVaccinationRecord = false;
+  if (!routeToVaccinationRecord) {
+    router.navigate([extension]);
+  } else {
+    router.navigate(['/vaccination-record']);
+  }
 }

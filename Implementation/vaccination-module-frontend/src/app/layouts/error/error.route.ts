@@ -42,6 +42,13 @@ export const ERROR_ROUTE: Routes = [
     },
   },
   {
+    path: 'logout',
+    component: ErrorComponent,
+    data: {
+      errorMessage: 'GLOBAL.LOGOUT',
+    },
+  },
+  {
     path: '**',
     component: ErrorComponent,
     title: 'GLOBAL.ERROR',

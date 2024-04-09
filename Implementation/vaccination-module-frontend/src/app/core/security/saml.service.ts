@@ -21,6 +21,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, shareReplay, tap } from 'rxjs';
 import { ConfigService } from '../config/config.service';
 import { SessionInfoService } from './session-info.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +33,12 @@ export class SamlService {
 
   private _authStateSubject = new BehaviorSubject<'not-started' | 'in-progress' | 'completed'>('not-started');
 
-  constructor(private http: HttpClient, private sessionInfoService: SessionInfoService, private configService: ConfigService) {}
+  constructor(
+    private http: HttpClient,
+    private sessionInfoService: SessionInfoService,
+    private configService: ConfigService,
+    private router: Router
+  ) {}
 
   isAuthenticated = (): Observable<boolean> => {
     if (this.isSsoRedirectCompleted.getValue()) {
@@ -58,6 +64,14 @@ export class SamlService {
     const params = new HttpParams({ fromObject: { SAMLart: samlArtifact, RelayState: idpIdentifier } });
     return this.http.get(`${this.configService.endpointPrefix}/saml/ssoNew`, { params, observe: 'response' });
   };
+
+  // Although the local logout is not using any saml implementation, it was put here to not open yet another service.
+  logout(): void {
+    this.http.post(this.configService.endpointPrefix + '/logout', {}).subscribe(() => {
+      this.isSsoRedirectCompleted.next(false);
+      this.router.navigate(['/logout']);
+    });
+  }
 
   get authStateSubject(): BehaviorSubject<'not-started' | 'in-progress' | 'completed'> {
     return this._authStateSubject;
