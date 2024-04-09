@@ -36,6 +36,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -76,10 +77,12 @@ public class SecurityConfiguration {
   SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
     HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     http.addFilter(corsFilter)
-        .csrf().disable()
+        .csrf()
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .ignoringAntMatchers("/saml/**")
+        .and()
         .authorizeRequests()
-
-        // allow SAML authentication and logout
+        // allow SAML authentication and back channel logout
         .antMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
 
         // allow access to actuators
@@ -103,7 +106,8 @@ public class SecurityConfiguration {
         .authenticationManager(authManager)
         .securityContext((securityContext) -> securityContext
             .securityContextRepository(securityContextRepository)
-            .requireExplicitSave(true));
+            .requireExplicitSave(true))
+        .logout(logout -> logout.logoutUrl("/logout"));
 
     return http.build();
   }
@@ -121,7 +125,7 @@ public class SecurityConfiguration {
    * <ul>
    * <li>Allowed endpoint -> do nothing
    * <li>Protected endpoint and unauthenticated -> forward to idp.
-   * <li>Protected endpoint and samlArtificat request -> let SAMLAuthfilter handle it.
+   * <li>Protected endpoint and samlArtifact request -> let SAMLAuthfilter handle it.
    * <li>Protected endpoint and authenticated -> check context.
    *
    * @return {@link Filter}

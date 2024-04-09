@@ -117,7 +117,7 @@ public interface SAMLServiceIfc {
   /**
    * As the name indicates sends and receives the artifact resolve item.
    *
-   * @param idpIdentifier Identifier of the idp config
+   * @param idpConfig Identifier of the idp config
    * @param artifactResolve {@link ArtifactResolve}
    * @return {@link ArtifactResponse}
    */

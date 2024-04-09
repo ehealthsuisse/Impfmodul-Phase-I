@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2024 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -16,26 +16,27 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package ch.admin.bag.vaccination.service;
+package ch.admin.bag.vaccination.utils;
 
+import java.util.Comparator;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import java.util.stream.Collectors;
 
 /**
- * Contains the mapping vaccine to targetDiseases.
- *
- *
+ * Utility class for sorting lists of objects by their date
  */
-@Configuration
-@ConfigurationProperties(prefix = "vaccines-to-targetdiseases")
-@Getter
-@Setter
-public class VaccinesToTargetDiseasesConfig {
-  private String vaccineSystem;
-  private String targetDiseaseSystem;
-  private String vaccineSystemBelowCode200;
-  private List<VaccineToTargetDiseases> vaccines;
+public class DateComparator {
+  /**
+   * Sorts a list of objects by date in descending order.
+   *
+   * @param list       the list of objects to be sorted
+   * @param comparator the comparator used for sorting by date
+   * @param <T>        the type of objects in the list
+   * @return the sorted list
+   */
+  public static <T> List<T> sortByDateDesc(List<T> list, Comparator<T> comparator) {
+    return list.stream()
+        .sorted(comparator.reversed())
+        .collect(Collectors.toList());
+  }
 }

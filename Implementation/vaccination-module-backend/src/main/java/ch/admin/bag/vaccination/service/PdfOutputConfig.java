@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Contains the info to generate the vaccincation part of the pdf.
+ * Contains the info to generate the vaccination part of the pdf.
  * 
  *
  */
@@ -35,4 +35,5 @@ import org.springframework.context.annotation.Configuration;
 public class PdfOutputConfig {
   private PdfVaccinationOutputConfig basicVaccination;
   private PdfVaccinationOutputConfig otherVaccination;
+  private boolean legalCommentVisible;
 }

@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ValueListService {
   public static final String SWISSMEDIC_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs";
+  public static final String MYVACCINES_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs";
   public static final String IMMUNIZATION_VACCINE_CODE_VALUELIST = "immunizationVaccineCode";
   public static final String CONDITION_CLINICAL_STATUS = "conditionClinicalStatus";
 
@@ -76,6 +77,7 @@ public class ValueListService {
     Map<String, ValueDTO> values = new HashMap<>();
     for (VaccineToTargetDiseases v2td : vaccinesToTargetDiseasesConfig.getVaccines()) {
       for (ValueDTO targetDisease : v2td.getTarget()) {
+        v2td.setTargetSystem(vaccinesToTargetDiseasesConfig.getTargetDiseaseSystem());
         values.putIfAbsent(targetDisease.getCode(), targetDisease);
       }
     }
@@ -86,7 +88,10 @@ public class ValueListService {
     List<VaccineToTargetDiseasesDTO> dtos = new ArrayList<>();
     for (VaccineToTargetDiseases v2td : vaccinesToTargetDiseasesConfig.getVaccines()) {
       v2td.setTargetSystem(vaccinesToTargetDiseasesConfig.getTargetDiseaseSystem());
-      dtos.add(new VaccineToTargetDiseasesDTO(v2td.getVaccine(vaccinesToTargetDiseasesConfig.getVaccineSystem()),
+      dtos.add(new VaccineToTargetDiseasesDTO(
+          v2td.getVaccine(
+              isCodeSmaller200(v2td.getCode()) ? vaccinesToTargetDiseasesConfig.getVaccineSystemBelowCode200()
+                  : vaccinesToTargetDiseasesConfig.getTargetDiseaseSystem()),
           v2td.getTarget()));
     }
     return dtos;
@@ -106,6 +111,7 @@ public class ValueListService {
     return new PriorityValue(priority, new ValueDTO(code, value, system));
   }
 
+
   private ValueListDTO createValueList(Path file) {
     try {
       List<String> fileContentLines = Files.readAllLines(file, StandardCharsets.UTF_8);
@@ -123,10 +129,22 @@ public class ValueListService {
     }
   }
 
+  private boolean isCodeSmaller200(String code) {
+    try {
+      return Integer.parseInt(code) <= 200;
+    } catch (NumberFormatException ex) {
+      return false;
+    }
+  }
+
   private void modifyVisibilities(ValueListDTO createdValueList) {
     if (IMMUNIZATION_VACCINE_CODE_VALUELIST.equals(createdValueList.getName())) {
       createdValueList.getEntries().stream()
-          .filter(entry -> !SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem()))
+          .filter(entry -> {
+            boolean isSuisseMedicVaccination = SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem());
+            boolean isMyVaccinesVaccination = MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem());
+            return !(isSuisseMedicVaccination || isMyVaccinesVaccination);
+          })
           .forEach(entry -> entry.setAllowDisplay(false));
     } else if (CONDITION_CLINICAL_STATUS.equals(createdValueList.getName())) {
       // allow only active and inactive

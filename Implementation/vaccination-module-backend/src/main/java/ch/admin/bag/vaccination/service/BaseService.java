@@ -156,7 +156,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       if (bundle != null) {
         jsonDtos.addAll(parseBundle(patientIdentifier, bundle));
         jsonDtos.forEach(dto -> {
-          dto.setValidated(doc.getIsValidated() != null ? doc.getIsValidated() : dto.isValidated());
+          dto.setValidated(doc.isTrusted() && dto.isValidated());
           dto.setJson(doc.getJsonOrXmlFhirContent());
         });
       } else {
@@ -195,10 +195,19 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       boolean isLifecycleActive) {
     PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
 
-    return getAll(patientIdentifier, assertion, isLifecycleActive);
+    if (patientIdentifier != null) {
+      return getAll(patientIdentifier, assertion, isLifecycleActive);
+    }
+
+    return Collections.emptyList();
   }
 
   public PatientIdentifier getPatientIdentifier(String communityIdentifier, String oid, String localId) {
+    PatientIdentifier patientIdentifier = new PatientIdentifier(communityIdentifier, localId, oid);
+    if (!profileConfig.isLocalMode() && !HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier)) {
+      return null;
+    }
+
     return huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId);
   }
 
@@ -252,7 +261,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   private EPRDocument createEPRDocument(DocumentEntry entry, Map<String, RetrievedDocument> docMap) {
     List<String> rolesMetadata = entry.getExtraMetadata().get(HuskyUtils.UPLOADER_ROLE_METADATA_KEY);
     String[] roles = rolesMetadata.get(0).split("\\^", 2);
-    boolean isValidated = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(roles[0]);
+    boolean isTrusted = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(roles[0]);
 
     RetrievedDocument retrievedDoc = docMap.get(entry.getUniqueId());
     if (Objects.isNull(retrievedDoc)) {
@@ -261,7 +270,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     }
 
     docMap.remove(retrievedDoc.getRequestData().getDocumentUniqueId());
-    return new EPRDocument(isValidated, retrievedDoc);
+    return new EPRDocument(isTrusted, retrievedDoc);
   }
 
   @SuppressWarnings("unchecked")
@@ -288,8 +297,8 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   }
 
   private EPRDocument createValidatedDocument(AuthorDTO author, String json) {
-    boolean isValidated = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(author.getRole());
-    return new EPRDocument(isValidated, json, null);
+    boolean isTrusted = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(author.getRole());
+    return new EPRDocument(isTrusted, json, null);
   }
 
   private List<EPRDocument> fetchDocuments(PatientIdentifier patientIdentifier, AuthorDTO author,
@@ -315,7 +324,9 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   }
 
   private List<EPRDocument> getData(PatientIdentifier patientIdentifier, Assertion assertion) {
-    if (!profileConfig.isLocalMode() && !HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier)) {
+    boolean patientIdentifierCouldNotBeResolved = patientIdentifier == null;
+    if (patientIdentifierCouldNotBeResolved
+        || (!profileConfig.isLocalMode() && !HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier))) {
       return Collections.emptyList();
     }
 
@@ -330,7 +341,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
 
     if (profileConfig.isLocalMode()) {
       log.debug(LOAD_DATA_FOR_FROM + " Filesystem", patientIdentifier.getPatientInfo().getFullName());
-      return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(null, localEntity, null))
+      return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(true, localEntity, null))
           .collect(Collectors.toList());
     }
     log.debug(LOAD_DATA_FOR_FROM + " EPD Backend", patientIdentifier.getPatientInfo().getFullName());
@@ -407,7 +418,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    docMap.values().forEach(retrievedDoc -> eprDocuments.add(new EPRDocument(null, retrievedDoc)));
+    docMap.values().forEach(retrievedDoc -> eprDocuments.add(new EPRDocument(true, retrievedDoc)));
     return eprDocuments;
   }
 }

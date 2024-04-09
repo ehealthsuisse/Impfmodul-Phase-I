@@ -1,4 +1,5 @@
 pdf-output:
+  legalCommentVisible: true
   basicVaccination:
     keepEmpty: true
     codes:
@@ -23,3 +24,14 @@ pdf-output:
       - 56717001 # Tuberkulose
       - 4740000  # Herpes zoster
       - 840539006 # COVID-19
+      - 14168008 # Tollwut
+      - 16541001 # Gelbfieber
+      - 63650001 # Cholera
+      - 18624000 # Rotavirus disease
+      - 4834000 # Typhoid fever
+      - 52947006 # Japanese encephalitis
+      - 719865001 # Influenza caused by pandemic influenza virus
+      - 719590007 # Influenza caused by seasonal influenza virus
+      - 67924001 # Smallpox
+      - 359814004 # Monkeypox
+      - 37109004 # EVD-Ebola virus disease

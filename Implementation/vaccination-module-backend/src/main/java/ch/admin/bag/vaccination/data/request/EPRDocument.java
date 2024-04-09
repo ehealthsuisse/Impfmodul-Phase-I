@@ -33,15 +33,12 @@ import org.openehealth.ipf.commons.ihe.xds.core.responses.RetrievedDocument;
 @NoArgsConstructor
 @Data
 public class EPRDocument implements Serializable {
-  /**
-   * Show validation status of the XDS metadata, will be null if no metadata is present, e.g. during
-   * local mode.
-   */
-  private Boolean isValidated;
+
+  private boolean isTrusted;
   private String jsonOrXmlFhirContent;
   private transient RetrievedDocument retrievedDocument;
 
-  public EPRDocument(Boolean isValidated, RetrievedDocument retrievedDocument) {
-    this(isValidated, null, retrievedDocument);
+  public EPRDocument(boolean isTrusted, RetrievedDocument retrievedDocument) {
+    this(isTrusted, null, retrievedDocument);
   }
 }

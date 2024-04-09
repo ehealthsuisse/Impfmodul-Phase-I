@@ -20,7 +20,8 @@ package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,10 +32,8 @@ import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
-import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +54,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @SpringBootTest
 @ActiveProfiles("test")
 class BaseServiceTest {
+  private static final String OTHER_LOCAL_ID = "OTHER_LOCAL_ID";
   @Autowired
   private AllergyService allergyService;
   @Autowired
@@ -73,16 +73,37 @@ class BaseServiceTest {
   }
 
   @Test
-  void create_invalidPatientInformation_throwException() {
-    assertThrows(NullPointerException.class, () -> allergyService.getAll(null, null, null, null));
-    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", null, null, null));
-    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", "laaoid", null, null));
-    // all parameters are set, however we do not have a valid community, a different exception is thrown
-    assertThrows(TechnicalException.class, () -> allergyService.getAll("communityId", "laaoid", "localId", null));
+  void create_invalidPatientInformation_returnEmptyList() {
+    assertThat(allergyService.getAll(null, null, null, null)).isEmpty();
+    assertThat(allergyService.getAll("communityId", null, null, null)).isEmpty();
+    assertThat(allergyService.getAll("communityId", "laaoid", null, null)).isEmpty();
+    assertThat(allergyService.getAll("communityId", "laaoid", "localId", null)).isEmpty();
   }
 
   @Test
-  void processAndValidateDocuments_documentsUnprocessed_haveNullIsValidated() {
+  void getPatientIdentifier_otherIDAsInSession_returnNull() {
+    PatientIdentifier patientIdentifier = mockPatientIdentifier();
+
+    patientIdentifier = allergyService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
+        patientIdentifier.getLocalAssigningAuthority(), OTHER_LOCAL_ID);
+
+    assertNull(patientIdentifier);
+  }
+
+  @Test
+  void getPatientIdentifier_sameIDAsInSession_filledPatientInfo() {
+    PatientIdentifier patientIdentifier = mockPatientIdentifier();
+
+    patientIdentifier = allergyService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
+        patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion());
+
+    assertNotNull(patientIdentifier);
+    assertNotNull(patientIdentifier.getPatientInfo());
+  }
+
+
+  @Test
+  void processAndValidateDocuments_documentsUnprocessed_isTrustedIsTrue() {
     RetrievedDocument newRetrieveDoc = new RetrievedDocument();
     newRetrieveDoc.setRequestData(new DocumentReference(null, "test", null));
 
@@ -90,14 +111,14 @@ class BaseServiceTest {
         Collections.EMPTY_LIST, List.of(newRetrieveDoc));
 
     assertEquals(1, eprDocuments.size());
-    assertTrue(eprDocuments.stream().anyMatch(eprDocument -> Objects.isNull(eprDocument.getIsValidated())));
+    assertTrue(eprDocuments.stream().anyMatch(EPRDocument::isTrusted));
   }
 
   @Test
   void readEPDdataAndValidateDocumentBasedOnRole() {
-    PatientIdentifier patientIdentifier = vaccinationService.getPatientIdentifier(
-        EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.12559.11.20.1", "CHPAM9810");
-    mockHttpServletRequest(patientIdentifier);
+    PatientIdentifier patientIdentifier = mockPatientIdentifier();
+    patientIdentifier = vaccinationService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
+        patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion());
 
     List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
 
@@ -116,5 +137,15 @@ class BaseServiceTest {
 
     // Mock the RequestContextHolder
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
+  }
+
+  private PatientIdentifier mockPatientIdentifier() {
+    String communityIdentifier = EPDCommunity.GAZELLE.name();
+    String oid = "1.3.6.1.4.1.12559.11.20.1";
+    String localId = "CHPAM9810";
+    PatientIdentifier patientIdentifier = new PatientIdentifier(communityIdentifier, localId, oid);
+    mockHttpServletRequest(patientIdentifier);
+
+    return patientIdentifier;
   }
 }

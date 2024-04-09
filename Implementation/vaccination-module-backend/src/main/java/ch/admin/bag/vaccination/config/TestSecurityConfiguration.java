@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022 eHealth Suisse
+ * Copyright (c) 2024 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -25,11 +25,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
- * Local, non productive, security config which is not using SAML authentication.
+ * Test, non productive, security config which is not using SAML authentication and Csrf protection
  *
  * <p>
  * <b>Attention</b> Running the non productive profile is a security risk as all services are
@@ -37,8 +36,8 @@ import org.springframework.web.filter.CorsFilter;
  * </p>
  */
 @Configuration
-@Profile("local")
-public class LocalSecurityConfiguration {
+@Profile("test")
+public class TestSecurityConfiguration {
 
   @Autowired
   private CorsFilter corsFilter;
@@ -46,18 +45,13 @@ public class LocalSecurityConfiguration {
   @Bean
   SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
     http.addFilter(corsFilter)
-        .csrf()
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .ignoringAntMatchers("/saml/**")
-        .and()
+        .csrf().disable()
         .authorizeRequests()
         .anyRequest().anonymous()
         .and()
-        .logout(logout -> logout.logoutUrl("/logout"))
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     return http.build();
   }
 }
-

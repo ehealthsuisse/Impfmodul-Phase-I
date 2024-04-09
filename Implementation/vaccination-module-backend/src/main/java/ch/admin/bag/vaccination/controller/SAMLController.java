@@ -82,10 +82,14 @@ public class SAMLController {
   @Operation(description = "empty login")
   public String login(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // For development purpose only!
+    // If no session was initiated on local mode, use dummy session
+    if (profileConfig.isLocalMode() && !HttpSessionUtils.getIsInitialCallValidFromSession()) {
+      HttpSessionUtils.initializeValidDummySession(request);
+    }
+
     // For local mode, the SAMLFilter is not active, therefor authentication mechanism is not used and
     // user needs to be manually forwarded to the vaccination record
     if (profileConfig.isLocalMode()) {
-      HttpSessionUtils.initializeValidDummySession(request);
       boolean isLocalhost = "127.0.0.1".equals(request.getRemoteAddr());
       String serverName = request.getServerName().replace("-backend", "");
       return request.getScheme() + "://"
@@ -98,12 +102,12 @@ public class SAMLController {
   }
 
   /**
-   * Logouts a session.
+   * Back channel logout from session.
    *
    * @param xml the SAML message
    */
-  @PostMapping(path = "/saml/logout", produces = "text/xml")
-  @Operation(description = "SAML Logout")
+  @PostMapping("/saml/logout")
+  @Operation(description = "Back channel SAML Logout")
   public String logout(@RequestBody String xml) {
     log.debug("Received samlLogout, to switch to TRACE log level");
     log.trace("Saml logout request: {}", xml);
@@ -162,5 +166,4 @@ public class SAMLController {
     LogoutResponse logoutResponse = samlService.createLogoutResponse(idp, logoutRequest);
     return SAMLUtils.addEnvelope(SAMLUtils.convertElementToString(logoutResponse));
   }
-
 }

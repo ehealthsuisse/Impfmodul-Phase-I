@@ -355,7 +355,8 @@ public class LifeCycleServiceTest {
       String counter = String.valueOf(i);
       allergieDTOs[i - 1] = new AllergyDTO(counter, LocalDate.now(), new ValueDTO(counter, counter, "testsystem"), null,
           null,
-          null, null, new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null, null);
+          null, null, new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null,
+          null);
       allergieDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
     }
   }
@@ -364,7 +365,7 @@ public class LifeCycleServiceTest {
     for (int i = 1; i <= 4; i++) {
       String counter = String.valueOf(i);
       problemDTOs[i - 1] = new MedicalProblemDTO(counter, new ValueDTO(counter, counter, "testsystem"), null,
-          null, LocalDate.now(), null, null,
+          null, LocalDate.now(), LocalDate.now().minusDays(3), null,
           new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null, null);
       problemDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
     }
@@ -374,7 +375,7 @@ public class LifeCycleServiceTest {
     for (int i = 1; i <= 4; i++) {
       String counter = String.valueOf(i);
       pastIllnessDTOs[i - 1] = new PastIllnessDTO(counter, new ValueDTO(counter, counter, "testsystem"), null,
-          null, LocalDate.now(), null, null,
+          null, LocalDate.now(), LocalDate.now().minusDays(10), null,
           new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null, null);
       pastIllnessDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
     }
@@ -382,11 +383,14 @@ public class LifeCycleServiceTest {
 
   private void createVaccinations() {
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
+    ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     for (int i = 1; i <= 4; i++) {
       String counter = String.valueOf(i);
-      vaccinationDTOs[i - 1] = new VaccinationDTO(counter, new ValueDTO(counter, counter, "testsystem"), null, null, i,
-          LocalDate.now(), new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.", null, null), null,
-          "lotNumber" + counter, null, status);
+      vaccinationDTOs[i - 1] = new VaccinationDTO(counter, new ValueDTO(counter, counter, "testsystem"),
+          List.of(targetDisease),
+          null, i,
+          LocalDate.now(), new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.",
+          null, null), null, "lotNumber" + counter, null, status);
       vaccinationDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
     }
   }

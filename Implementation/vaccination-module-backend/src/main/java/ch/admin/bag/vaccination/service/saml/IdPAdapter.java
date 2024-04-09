@@ -169,9 +169,12 @@ public class IdPAdapter {
   private void getInformation(Exception e) {
     Throwable detail = e;
     log.debug("Get all error messages during refresh.");
-    while (detail.getCause() != null) {
+    int i = 1;
+    // log maximal 5 inner exceptions
+    while (detail.getCause() != null && !detail.equals(detail.getCause()) && i <= 5) {
       detail = e.getCause();
       log.debug(e.getMessage());
+      i++;
     }
   }
 

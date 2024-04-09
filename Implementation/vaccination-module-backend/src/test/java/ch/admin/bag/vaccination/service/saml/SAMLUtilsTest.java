@@ -19,13 +19,16 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
+import org.mockito.Spy;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  *
@@ -35,6 +38,9 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class SAMLUtilsTest {
+
+  @Spy
+  private SAMLUtils samlUtils;
 
   public static String replaceInstantByNow(String xml) {
     Instant now = Instant.now();
@@ -60,5 +66,16 @@ public class SAMLUtilsTest {
     assertThat(logoutRequest.getNameID().getValue()).isEqualTo("remery");
     assertThat(logoutRequest.getIssuer().getValue()).isEqualTo("http://sp.example.com/demo1/metadata.php");
     assertThat(logoutRequest.getIssueInstant().toString()).isEqualTo("2014-07-18T01:13:06Z");
+  }
+
+  @Test
+  void verifyStaticField_injection() {
+    long expectedLifetime = 2000L;
+    ReflectionTestUtils.setField(samlUtils, "SAML_MESSAGE_LIFETIME", expectedLifetime);
+
+    samlUtils.setNameStatic(expectedLifetime);
+
+    long actualLifetime = (long) ReflectionTestUtils.getField(samlUtils, "SAML_MESSAGE_LIFETIME");
+    assertEquals(expectedLifetime, actualLifetime);
   }
 }

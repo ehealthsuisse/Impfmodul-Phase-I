@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +44,12 @@ public class UtilityController {
   @Autowired
   private Cache cache;
 
+  @Value("${spring.application.version}")
+  private String backendVersion;
+
   @GetMapping("/clearCache")
   public String clearCache() {
-    log.info("Clearing caches");
+    log.debug("Clearing caches");
     cache.clear();
 
     return "Cache was successfully cleared.";
@@ -53,19 +57,25 @@ public class UtilityController {
 
   @GetMapping("/getAllValuesLists")
   public List<ValueListDTO> getAllValuesList() {
-    log.info("getAllValuesLists");
+    log.debug("getAllValuesLists");
     return valueListService.getAllListOfValues();
   }
 
   @GetMapping("/targetDiseases")
   public Collection<ValueDTO> getTargetDiseases() {
-    log.info("getTargetDiseases");
+    log.debug("getTargetDiseases");
     return valueListService.getTargetDiseases();
   }
 
   @GetMapping("/vaccinesToTargetDiseases")
   public List<VaccineToTargetDiseasesDTO> getVaccinesToTargetDiseases() {
-    log.info("getVaccinesToTargetDiseases");
+    log.debug("getVaccinesToTargetDiseases");
     return valueListService.getVaccinesToTargetDiseases();
+  }
+
+  @GetMapping("/backendVersion")
+  public String getBackendVersion() {
+    log.debug("Retrieved backend version: {}", backendVersion);
+    return backendVersion;
   }
 }
