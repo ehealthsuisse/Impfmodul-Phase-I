@@ -26,6 +26,7 @@ import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -46,6 +47,11 @@ public class SAMLAuthProvider implements AuthenticationProvider {
 
   @Autowired
   private HttpServletRequest request;
+
+  @Value("${idp.samlMessageLifetime:2000}")
+  private long samlMessageLifetime;
+  @Value("${idp.samlMessageClockSkew:1000}")
+  private long samlMessageClockSkew;
 
   /**
    * <p>
@@ -68,7 +74,7 @@ public class SAMLAuthProvider implements AuthenticationProvider {
       ArtifactResponse artifactResponse =
           samlService.sendAndReceiveArtifactResolve(idpConfig, artifactResolve);
 
-      SAMLUtils.validateArtifactResponse(artifactResponse, request);
+      SAMLUtils.validateArtifactResponse(artifactResponse, request, samlMessageLifetime, samlMessageClockSkew);
       Assertion assertion = SAMLUtils.getAssertion(artifactResponse);
 
       boolean validAuthentication = assertion != null;

@@ -19,13 +19,13 @@
 package ch.admin.bag.vaccination.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -37,27 +37,30 @@ import org.springframework.web.filter.CorsFilter;
  * </p>
  */
 @Configuration
-@Profile("local")
-public class LocalSecurityConfiguration {
+@Profile("local | dev")
+public class LocalSecurityConfiguration extends AbsSecurityConfiguration {
 
   @Autowired
   private CorsFilter corsFilter;
+
+  @Value("${application.frontendDomain}")
+  private String frontendDomain;
 
   @Bean
   SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
     http.addFilter(corsFilter)
         .csrf()
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .ignoringAntMatchers("/saml/**")
+        .csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
+        .ignoringAntMatchers("/saml/**", "/signature/validate")
         .and()
         .authorizeRequests()
         .anyRequest().anonymous()
         .and()
-        .logout(logout -> logout.logoutUrl("/logout"))
         .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .logout(createLogoutConfig());
     return http.build();
   }
-}
 
+}

@@ -3,8 +3,11 @@ idp:
   # SP Entity ID that is known to the IdP
   knownEntityId: https://my.backend.url/
 
-  # Configuration how much derivation (in ms) is between sending an SAML request and receiving the response.
+  # SAML Message validation
+  # Allowed derivation (in ms) between sending an SAML request and receiving the response, default 2000
   samlMessageLifetime: 2000
+  # Allowed clockskew (there should be none if both run with the same NTP), default 1000
+  samlMessageClockSkew: 1000
   
   # Provide per Provider 
   supportedProvider:

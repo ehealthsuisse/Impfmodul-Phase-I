@@ -70,7 +70,6 @@ import org.opensaml.soap.wstrust.RequestSecurityTokenResponse;
 import org.opensaml.soap.wstrust.RequestedSecurityToken;
 import org.projecthusky.xua.communication.xua.XUserAssertionResponse;
 import org.projecthusky.xua.communication.xua.impl.XUserAssertionResponseImpl;
-import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -91,8 +90,6 @@ public class SAMLUtils {
   static {
     secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
   }
-
-  private static long SAML_MESSAGE_LIFETIME;
 
   public static String addEnvelope(String request) {
     request = request.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "");
@@ -358,9 +355,11 @@ public class SAMLUtils {
    *
    * @param artifactResponse {@link ArtifactResponse}
    * @param request {@link HttpServletRequest}
+   * @param samlMessageClockSkew allowed clock skew derivation in ms
+   * @param samlMessageLifetime allowed message time derivation in ms
    */
   public static void validateArtifactResponse(ArtifactResponse artifactResponse,
-      HttpServletRequest request) {
+      HttpServletRequest request, long samlMessageLifetime, long samlMessageClockSkew) {
     MessageContext context = new MessageContext();
     context.setMessage(artifactResponse);
 
@@ -369,7 +368,7 @@ public class SAMLUtils {
     messageInfoContext.setMessageIssueInstant(artifactResponse.getIssueInstant());
 
     try {
-      validateMessageLifetime(context);
+      validateMessageLifetime(context, samlMessageLifetime, samlMessageClockSkew);
     } catch (ComponentInitializationException | MessageHandlerException e) {
       throw new RuntimeException(e);
     }
@@ -439,18 +438,14 @@ public class SAMLUtils {
             .getURI());
   }
 
-  private static void validateMessageLifetime(MessageContext context)
-      throws ComponentInitializationException, MessageHandlerException {
+  private static void validateMessageLifetime(MessageContext context, long samlMessageLifetime,
+      long samlMessageClockSkew) throws ComponentInitializationException, MessageHandlerException {
     MessageLifetimeSecurityHandler lifetimeSecurityHandler = new MessageLifetimeSecurityHandler();
-    lifetimeSecurityHandler.setClockSkew(Duration.ofMillis(1000));
-    lifetimeSecurityHandler.setMessageLifetime(Duration.ofMillis(SAML_MESSAGE_LIFETIME));
+    lifetimeSecurityHandler.setMessageLifetime(Duration.ofMillis(samlMessageLifetime));
+    lifetimeSecurityHandler.setClockSkew(Duration.ofMillis(samlMessageClockSkew));
     lifetimeSecurityHandler.setRequiredRule(true);
     lifetimeSecurityHandler.initialize();
     lifetimeSecurityHandler.invoke(context);
   }
 
-  @Value("${idp.samlMessageLifetime:2000}")
-  public void setNameStatic(long samlMessageLifetime) {
-    SAMLUtils.SAML_MESSAGE_LIFETIME = samlMessageLifetime;
-  }
 }

@@ -976,6 +976,11 @@ vaccines-to-targetdiseases:
       target:
         - code: 76902006
           name: Tetanus (disorder)
+    - code: 65730
+      name: Bexsero
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)
     - code: 62961
       name: Fluarix Tetra
       target:
