@@ -1,4 +1,10 @@
-# April 2024 - Release 1.6.0
+# April 2024 - Release 1.6.0-RC2
+Included feedbacks provided by the providers
+* Reduced CSRF protection on /signature/validation endpoint, cookie is not known so far
+* Fixed another issue on CSRF when hosts are running on different domains
+* Allow SAML configuration for ClockSkew
+
+# April 2024 - Release 1.6.0-RC1
 
 ### Changes Fhir Library
 * Added more validations on the FHIR Adapter to ensure data integrity. 

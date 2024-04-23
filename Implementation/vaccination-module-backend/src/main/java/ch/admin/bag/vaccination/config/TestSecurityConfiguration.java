@@ -18,13 +18,24 @@
  */
 package ch.admin.bag.vaccination.config;
 
+import ch.admin.bag.vaccination.exception.FilterChainExceptionHandler;
+import ch.admin.bag.vaccination.service.saml.SAMLAuthProvider;
+import ch.admin.bag.vaccination.service.saml.SAMLFilter;
+import ch.admin.bag.vaccination.service.saml.SAMLService;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -37,20 +48,72 @@ import org.springframework.web.filter.CorsFilter;
  */
 @Configuration
 @Profile("test")
-public class TestSecurityConfiguration {
+public class TestSecurityConfiguration extends AbsSecurityConfiguration {
 
   @Autowired
   private CorsFilter corsFilter;
+  @Autowired
+  private SAMLService samlService;
+
+  @Autowired
+  private ProfileConfig profileConfig;
+
+  @Autowired
+  private FilterChainExceptionHandler filterChainExceptionHandler;
+
+  @Autowired
+  private SAMLAuthProvider samlAuthProvider;
+
+  @Value("${application.frontendDomain}")
+  private String frontendDomain;
+
+  /** Include our saml authentication provider in the list of providers */
+  @Bean
+  AuthenticationManager authManager(HttpSecurity http) throws Exception {
+    AuthenticationManagerBuilder authenticationManagerBuilder =
+        http.getSharedObject(AuthenticationManagerBuilder.class);
+    authenticationManagerBuilder.authenticationProvider(samlAuthProvider);
+
+    return authenticationManagerBuilder.build();
+  }
 
   @Bean
-  SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
+  SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
+    HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     http.addFilter(corsFilter)
         .csrf().disable()
         .authorizeRequests()
-        .anyRequest().anonymous()
+        // allow SAML authentication and back channel logout
+        .antMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
+
+        // allow access to actuators
+        .antMatchers("/actuator/health", "/actuator/health/**").permitAll()
+
+        // allow access to signature service
+        .antMatchers("/signature/**").permitAll()
+
+        // allow access to utility controller
+        .antMatchers("/utility/**").permitAll()
+
+        // forbid swagger
+        .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
+        .anyRequest().authenticated()
         .and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .addFilterBefore(createSAMLFilter(samlService, profileConfig), UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(createSAMLAuthFilter(authManager, securityContextRepository), SAMLFilter.class)
+        .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .authenticationManager(authManager)
+        .securityContext((securityContext) -> securityContext
+            .securityContextRepository(securityContextRepository)
+            .requireExplicitSave(true))
+        .logout(logout -> logout.logoutUrl("/logout")
+            .invalidateHttpSession(true)
+            .logoutSuccessHandler((request, response, authentication) -> {
+              response.setStatus(HttpServletResponse.SC_OK);
+            }));
+
 
     return http.build();
   }

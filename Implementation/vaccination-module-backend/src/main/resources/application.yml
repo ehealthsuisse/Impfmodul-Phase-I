@@ -53,6 +53,7 @@ application:
   huskyLocalMode: ${HUSKYLOCALMODE:false}
   # Specifies CORS Access-Control-Allow-Origin - * allows all origins)
   frontendUrl: ${FRONTEND_URL:http://localhost:4200,http://localhost:9000}
+  frontendDomain: ${FRONTEND_DOMAIN:}
   valueListPath: ${vaccination_config:config}/valuelists
 
 vaccination:

@@ -55,7 +55,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("prod")
+@ActiveProfiles("test")
 public class SAMLControllerTest {
   private static final String SAML_ART = "1234567890";
 

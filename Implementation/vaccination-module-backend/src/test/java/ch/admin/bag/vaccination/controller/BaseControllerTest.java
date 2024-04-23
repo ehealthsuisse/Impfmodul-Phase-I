@@ -21,13 +21,13 @@ package ch.admin.bag.vaccination.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 
 import ch.admin.bag.vaccination.service.VaccinationService;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import org.junit.jupiter.api.Test;
+import org.projecthusky.xua.saml2.impl.AssertionImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -60,7 +60,7 @@ class BaseControllerTest {
         request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(vaccinationService).create(eq("GAZELLE"), eq("1.3.6.1.4.1.21367.13.20.3000"), eq("CHPAM4489"),
-        any(VaccinationDTO.class), isNull());
+        any(VaccinationDTO.class), any(AssertionImpl.class));
   }
 
   @Test
@@ -72,7 +72,7 @@ class BaseControllerTest {
         HttpMethod.DELETE, request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(vaccinationService).delete(eq("EPDPLAYGROUND"), eq("1.2.3.4.123456.1"), eq("waldspital-Id-1234"),
-        eq("acc1f090-5e0c-45ae-b283-521d57c3aa2f"), eq(confidentiality), isNull());
+        eq("acc1f090-5e0c-45ae-b283-521d57c3aa2f"), eq(confidentiality), any(AssertionImpl.class));
   }
 
   @Test
@@ -82,7 +82,8 @@ class BaseControllerTest {
             + "/vaccination/communityIdentifier/GAZELLE/oid/1.3.6.1.4.1.21367.13.20.3000/localId/CHPAM4489",
         Object.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(vaccinationService).getAll(eq("GAZELLE"), eq("1.3.6.1.4.1.21367.13.20.3000"), eq("CHPAM4489"), isNull(),
+    verify(vaccinationService).getAll(eq("GAZELLE"), eq("1.3.6.1.4.1.21367.13.20.3000"), eq("CHPAM4489"),
+        any(AssertionImpl.class),
         eq(false));
   }
 
@@ -96,7 +97,7 @@ class BaseControllerTest {
         request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(vaccinationService).create(eq("EPDPLAYGROUND"), eq("1.2.3.4.123456.1"), eq("waldspital-Id-1234"),
-        any(VaccinationDTO.class), isNull());
+        any(VaccinationDTO.class), any(AssertionImpl.class));
   }
 
 }
