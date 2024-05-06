@@ -128,5 +128,9 @@ export class MedicalProblemFormService {
     form.patchValue({
       ...medicalProblemRawValue,
     } as any);
+
+    if (medicalProblem?.recorder === null) {
+      form.get('recorder')?.reset();
+    }
   }
 }

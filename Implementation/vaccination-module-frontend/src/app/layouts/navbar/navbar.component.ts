@@ -17,25 +17,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IHumanDTO, LANGUAGES } from '../../shared';
-import { SharedDataService } from '../../shared/services/shared-data.service';
-import { SharedLibsModule } from '../../shared/shared-libs.module';
-import { PatientComponent } from '../../shared/component/patient/patient.component';
-import { PatientActionComponent } from '../../entities/common/patient-action/patient-action.component';
-import { DetailsActionComponent } from '../../entities/common/details-action/details-action.component';
-import { SessionInfoService } from '../../core/security/session-info.service';
-import { ConfigService } from '../../core/config/config.service';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { BreakPointSensorComponent } from '../../shared/component/break-point-sensor/break-point-sensor.component';
-import { NavigationComponent } from './navigation/navigation.component';
-import { LanguageComponent } from './language/language.component';
 import { MatSidenav } from '@angular/material/sidenav';
-import { SpinnerService } from '../../shared/services/spinner.service';
-import { SamlService } from '../../core/security/saml.service';
-import { ErrorComponent } from '../error/error.component';
-import { PatientService } from '../../shared/component/patient/patient.service';
-import { VaccinationRecordService } from '../../entities/vaccintion-record/service/vaccination-record.service';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { environment } from '../../../environment';
+import { ConfigService } from '../../core/config/config.service';
+import { SamlService } from '../../core/security/saml.service';
+import { SessionInfoService } from '../../core/security/session-info.service';
+import { DetailsActionComponent } from '../../entities/common/details-action/details-action.component';
+import { PatientActionComponent } from '../../entities/common/patient-action/patient-action.component';
+import { VaccinationRecordService } from '../../entities/vaccintion-record/service/vaccination-record.service';
+import { IHumanDTO, LANGUAGES } from '../../shared';
+import { BreakPointSensorComponent } from '../../shared/component/break-point-sensor/break-point-sensor.component';
+import { PatientComponent } from '../../shared/component/patient/patient.component';
+import { PatientService } from '../../shared/component/patient/patient.service';
+import { SharedDataService } from '../../shared/services/shared-data.service';
+import { SpinnerService } from '../../shared/services/spinner.service';
+import { SharedLibsModule } from '../../shared/shared-libs.module';
+import { ErrorComponent } from '../error/error.component';
+import { LanguageComponent } from './language/language.component';
+import { NavigationComponent } from './navigation/navigation.component';
 
 /**
  * Used to display the top bar.
@@ -105,6 +105,11 @@ export class NavbarComponent extends BreakPointSensorComponent implements OnInit
       },
     });
     this.isVisible = this.configService.isLogoutButtonVisible;
+    this.initBackendVersion();
+  }
+
+  async initBackendVersion(): Promise<void> {
+    await this.vaccinationRecordService.getVersion();
     this.backendVersion = this.vaccinationRecordService.backendVersion;
   }
 

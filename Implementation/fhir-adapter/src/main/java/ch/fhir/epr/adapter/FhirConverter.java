@@ -688,8 +688,9 @@ public class FhirConverter implements FhirConverterIfc {
   private void createPatient(Bundle bundle, Composition composition, PatientIdentifier patientIdentifier,
       String patientId) {
     Identifier identifier = new Identifier();
-    identifier.setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID() :
-      patientIdentifier.getSpidExtension());
+    identifier
+        .setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID()
+            : patientIdentifier.getSpidExtension());
     identifier.setSystem(FhirConstants.PATIENT_SYSTEM_URL_PREFIX + patientIdentifier.getSpidRootAuthority());
 
     Patient patient = new Patient();
@@ -732,15 +733,18 @@ public class FhirConverter implements FhirConverterIfc {
 
   private PractitionerRole createPractitionerRole(Bundle bundle, HumanNameDTO practitionerName, String gln,
       String entryNumberString) {
-    Practitioner practitioner = createPractitioner(practitionerName, gln, entryNumberString);
-
     PractitionerRole practitionerRole = new PractitionerRole();
     practitionerRole.setId("PractitionerRole-" + entryNumberString);
-    practitionerRole.setPractitioner(new Reference("Practitioner/Practitioner-" + entryNumberString));
     practitionerRole.setMeta(createMeta(FhirConstants.META_PRACTITIONER_ROLE_URL));
-
-    addEntry(bundle, "Practitioner/", practitioner);
     addEntry(bundle, "PractitionerRole/", practitionerRole);
+
+    if (practitionerName != null && !practitionerName.getFirstName().isBlank()
+        && !practitionerName.getLastName().isBlank()) {
+      Practitioner practitioner = createPractitioner(practitionerName, gln, entryNumberString);
+      practitionerRole.setPractitioner(new Reference("Practitioner/Practitioner-" + entryNumberString));
+      addEntry(bundle, "Practitioner/", practitioner);
+    }
+
     return practitionerRole;
   }
 
@@ -772,6 +776,7 @@ public class FhirConverter implements FhirConverterIfc {
 
   private Bundle createVaccination(Bundle bundle, VaccinationDTO dto, int entryNumber) {
     String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
+
     PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), null, entryNumberString);
     createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
 

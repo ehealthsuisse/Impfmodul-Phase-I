@@ -1,3 +1,12 @@
+# April 2024 - Release 1.6.0-RC3
+Included feedbacks provided by the providers and users
+* Adjusted value lists to allow addition older vaccins (of myvaccins list)
+* Improved robustness in case of unwanted logouts
+* Reduced number of requests to backend regarding static information 
+* Fixed an issue where adding data with only organization was not corrected saved
+* Fixed an issue what validated documents be validated over and over again.
+* Fixed few translations in FR and DE
+
 # April 2024 - Release 1.6.0-RC2
 Included feedbacks provided by the providers
 * Reduced CSRF protection on /signature/validation endpoint, cookie is not known so far

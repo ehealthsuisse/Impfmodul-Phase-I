@@ -19,7 +19,6 @@
 package ch.admin.bag.vaccination.exception;
 
 import ch.fhir.epr.adapter.exception.ValidationException;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -46,6 +45,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   static final String TECHNICAL_ERROR_MESSAGE = "A technical error occured. Please check internal logs for details at ";
+
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  public ResponseEntity<String> accessDeniedExceptionHandler(AccessDeniedException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+  }
 
   @ExceptionHandler(BusinessException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)

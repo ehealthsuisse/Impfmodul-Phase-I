@@ -23,6 +23,7 @@ import ca.uhn.fhir.parser.IParser;
 import ch.fhir.epr.adapter.config.FhirConfig;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
@@ -143,7 +144,7 @@ public class FhirAdapter implements FhirAdapterIfc {
           }
         } catch (ValidationException ex) {
           log.error("Resource parsing failed for " + clazz.getName() + " on bundle " + bundle.getId() +
-                  " with the following error message: {}", ex.getMessage());
+              " with the following error message: {}", ex.getMessage());
         }
       }
     } catch (Exception e) {
@@ -315,10 +316,10 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   private Bundle create(PatientIdentifier patientIdentifier, BaseDTO dto,
-      boolean forceImmunizationAdministratoinDocument) {
+      boolean forceImmunizationAdministrationDocument) {
     try {
       FhirContext ctx = getFhirContext();
-      return fhirConverter.createBundle(ctx, patientIdentifier, dto, forceImmunizationAdministratoinDocument);
+      return fhirConverter.createBundle(ctx, patientIdentifier, dto, forceImmunizationAdministrationDocument);
     } catch (Exception e) {
       log.warn("Exception:{}", e);
       throw new TechnicalException(e.getMessage());
@@ -416,7 +417,30 @@ public class FhirAdapter implements FhirAdapterIfc {
     if (patient != null) {
       validated = false;
     }
+
+    AuthorDTO author = FhirUtils.getAuthor(bundle);
+    if (validated && isMeineImpfungenAuthor(author)) {
+      validated = false;
+    }
+
     return validated;
+  }
+
+  /**
+   * Special request for data migration of meineImpfungen.ch. All entries converted for
+   * meineImpfungen.ch have the author Nicolai Lütschg set. Those documents should however not be seen
+   * as validated. Mr. Lütschg wont ever be able to create validated documents which was approved by
+   * the customer.
+   *
+   * @param author {@link AuthorDTO}
+   *
+   * @return true, if author is Nicolai Lütschg
+   */
+  private boolean isMeineImpfungenAuthor(AuthorDTO author) {
+    boolean containsFirstName = author != null && author.getFullName().toLowerCase().contains("nicolai");
+    boolean containsLastName = author != null && author.getFullName().toLowerCase().contains("lütschg");
+
+    return containsFirstName && containsLastName;
   }
 
   private String jsonFromFile(String filename) {

@@ -20,7 +20,9 @@ package ch.fhir.epr.adapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.uhn.fhir.context.FhirContext;
 import ch.fhir.epr.TestMain;
@@ -125,6 +127,15 @@ class FhirAdapterTest {
   }
 
   @Test
+  @Description("This test verifies the parsing of a bundle containing 2 Immunization records. The first record is deemed "
+      + "invalid due to a missing occurrence date and is excluded from further processing. Parsing continues, and the "
+      + "second record is validated.")
+  void parsingBundle_immunizationWithoutOccurenceDateIsExcluded_parsingContinues() {
+    Bundle bundle = createBundle("testfiles/Bundle-A-D6-HCP1-C1-parsingBundleTest.json");
+    assertThat(fhirAdapter.getDTOs(VaccinationDTO.class, bundle).size()).isEqualTo(1);
+  }
+
+  @Test
   void test_A_D1() {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
 
@@ -163,6 +174,21 @@ class FhirAdapterTest {
     assertThat(vaccinationDTO.getComments().get(0).getText())
         .isEqualTo("Der Patient hat diese Impfung ohne jedwelcher nebenwirkungen gut vertragen.");
     assertThat(vaccinationDTO.getComments().get(0).getAuthor()).isEqualTo("Dr. med. Peter Müller");
+  }
+
+  @Test
+  void test_A_D1_authorNicolaiLütschg_isNotValidated() {
+    Bundle bundle =
+        fhirAdapter.unmarshallFromFile("src/test/resources/testfiles/Bundle-A-D1-P-C1-AuthorOtherPractitioner.json");
+    List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
+    VaccinationDTO vaccinationDTO = vaccinations.get(0);
+    assertTrue(vaccinationDTO.isValidated());
+
+    bundle =
+        fhirAdapter.unmarshallFromFile("src/test/resources/testfiles/Bundle-A-D1-P-C1-AuthorNicolaiLütschg.json");
+    vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
+    vaccinationDTO = vaccinations.get(0);
+    assertFalse(vaccinationDTO.isValidated());
   }
 
   @Test
@@ -749,15 +775,6 @@ class FhirAdapterTest {
     assertNull(fhirAdapter.unmarshallFromString(""));
   }
 
-  @Test
-  @Description("This test verifies the parsing of a bundle containing 2 Immunization records. The first record is deemed "
-      + "invalid due to a missing occurrence date and is excluded from further processing. Parsing continues, and the "
-      + "second record is validated.")
-  void parsingBundle_immunizationWithoutOccurenceDateIsExcluded_parsingContinues() {
-    Bundle bundle = createBundle("testfiles/Bundle-A-D6-HCP1-C1-parsingBundleTest.json");
-    assertThat(fhirAdapter.getDTOs(VaccinationDTO.class, bundle).size()).isEqualTo(1);
-  }
-
   private AuthorDTO createAuthor() {
     return new AuthorDTO(new HumanNameDTO("John", "Doe", "Mr", null, null),
         null, null, null, "gln:11.22.33.44", null, null);
@@ -783,8 +800,8 @@ class FhirAdapterTest {
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
     ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     VaccinationDTO vaccinationDTO =
-        new VaccinationDTO(null, vaccineCode, List.of(targetDisease), null, 3, LocalDate.now(), performer, null, "lotNumber", null,
-            status);
+        new VaccinationDTO(null, vaccineCode, List.of(targetDisease), null, 3, LocalDate.now(), performer, null,
+            "lotNumber", null, status);
     vaccinationDTO.setAuthor(author);
     return vaccinationDTO;
   }
