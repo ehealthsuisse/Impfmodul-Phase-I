@@ -30,6 +30,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+/**
+ * Explicit filterchain to resolve Exceptions during spring filter.
+ */
 @Component
 @Slf4j
 public class FilterChainExceptionHandler extends OncePerRequestFilter {
@@ -44,9 +47,9 @@ public class FilterChainExceptionHandler extends OncePerRequestFilter {
 
     try {
       filterChain.doFilter(request, response);
-    } catch (Exception e) {
-      log.error("Spring Security Filter Chain Exception:", e);
-      resolver.resolveException(request, response, null, e);
+    } catch (Exception ex) {
+      log.error("Spring Security Filter Chain Exception: {}", ex.getMessage());
+      resolver.resolveException(request, response, null, ex);
     }
   }
 }

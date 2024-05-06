@@ -58,6 +58,7 @@ import org.hl7.fhir.r4.model.Immunization;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent;
 import org.hl7.fhir.r4.model.Immunization.ImmunizationStatus;
 import org.hl7.fhir.r4.model.MarkdownType;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -151,6 +152,25 @@ class FhirConverterTest {
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
     Patient result = FhirUtils.getPatient(bundle, "Patient-0001");
     assertEquals("UNKNOWN", result.getGender().name());
+  }
+
+  @Test
+  void createBundle_withoutRecorder_noExceptionDuringWriteAndRead_noPractitionerCreated_organizationCorrectlyReturned() {
+    HumanNameDTO patient = new HumanNameDTO("First", "Last", "prefix", LocalDate.now(), "MALE");
+    PatientIdentifier identifier = mock(PatientIdentifier.class);
+    when(identifier.getPatientInfo()).thenReturn(patient);
+
+    vaccinationDTO.setRecorder(null);
+    // avoid having author as practitioner
+    vaccinationDTO.getAuthor().setRole("PAT");
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
+
+    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle);
+    Organization organization = FhirUtils.getResource(Organization.class, bundle);
+
+    assertNull(practitioner);
+    assertEquals(vaccinationDTO.getOrganization(), organization.getName());
   }
 
   @Test

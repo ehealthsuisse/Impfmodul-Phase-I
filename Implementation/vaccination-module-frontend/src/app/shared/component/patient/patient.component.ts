@@ -18,6 +18,7 @@
  */
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
+import { SessionInfoService } from 'src/app/core/security/session-info.service';
 import { PerformerToStringPipe } from '../../pipes';
 import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
 import { PatientService } from './patient.service';
@@ -32,15 +33,20 @@ import { PatientService } from './patient.service';
 })
 export class PatientComponent extends BreakPointSensorComponent implements AfterViewInit {
   patientService: PatientService = inject(PatientService);
+  sessionInfoService: SessionInfoService = inject(SessionInfoService);
   cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  patient: string = '';
+  patient?: string;
 
   ngAfterViewInit(): void {
-    this.patientService.fetchPatientName().subscribe({
-      next: patientName => {
-        this.patient = patientName;
-        this.cdr.detectChanges();
-      },
-    });
+    this.patient = this.sessionInfoService.patientName;
+    if (!this.patient) {
+      this.patientService.fetchPatientName().subscribe({
+        next: patientName => {
+          this.sessionInfoService.patientName = patientName;
+          this.patient = patientName;
+          this.cdr.detectChanges();
+        },
+      });
+    }
   }
 }

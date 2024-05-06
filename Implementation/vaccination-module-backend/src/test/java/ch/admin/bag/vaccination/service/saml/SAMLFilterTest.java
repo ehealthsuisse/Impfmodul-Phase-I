@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.service.saml;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
+import ch.admin.bag.vaccination.exception.AccessDeniedException;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
@@ -109,9 +111,9 @@ public class SAMLFilterTest {
   }
 
   @Test
-  void doFilter_securedURL_noAuthentication_noInitialCall_ignoreCall() throws Exception {
+  void doFilter_securedURL_noAuthentication_noInitialCall_throwAccessDeniedException() throws Exception {
     HttpServletRequest request = createMockRequest("/husky");
-    samlFilter.doFilter(request, response, filterChain);
+    assertThrows(AccessDeniedException.class, () -> samlFilter.doFilter(request, response, filterChain));
 
     verify(samlService, never()).redirectToIdp(anyString(), eq(response));
     verify(filterChain, never()).doFilter(request, response);
@@ -129,12 +131,11 @@ public class SAMLFilterTest {
   }
 
   @Test
-  void doFilter_securedURL_withAuthentication_noContext_validInitialCall_forwardToIDP() throws Exception {
+  void doFilter_securedURL_withAuthentication_noContext_validInitialCall_throwAccessDeniedException() throws Exception {
     HttpServletRequest request = createMockRequest("/husky", createAuthenticatedSession(null));
     when(request.getSession(false).getAttribute(HttpSessionUtils.INITIAL_CALL_VALID)).thenReturn(true);
 
-    samlFilter.doFilter(request, response, filterChain);
-    verify(samlService).redirectToIdp(anyString(), eq(response));
+    assertThrows(AccessDeniedException.class, () -> samlFilter.doFilter(request, response, filterChain));
     verify(filterChain, never()).doFilter(request, response);
   }
 

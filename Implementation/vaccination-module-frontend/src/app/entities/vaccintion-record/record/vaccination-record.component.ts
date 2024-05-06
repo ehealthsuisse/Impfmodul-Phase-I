@@ -20,28 +20,28 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
+import { environment } from '../../../../environment';
+import { SessionInfoService } from '../../../core/security/session-info.service';
 import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
 import { IBaseDTO, IHumanDTO, MapperService, TableWrapperComponent, trackLangChange } from '../../../shared';
+import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { openVaccinationRecordErrorDialog } from '../../../shared/component/help/dialogContent';
+import { PatientService } from '../../../shared/component/patient/patient.service';
+import { initializeActionData } from '../../../shared/function';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { SpinnerService } from '../../../shared/services/spinner.service';
 import { SharedComponentModule } from '../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
+import { PatientActionComponent } from '../../common/patient-action/patient-action.component';
 import { VaccinationListComponent } from '../../vaccination/main-components';
 import { filterPatientRecordData, VaccinationRecordService } from '../service/vaccination-record.service';
-import { PatientActionComponent } from '../../common/patient-action/patient-action.component';
-import { initializeActionData } from '../../../shared/function';
-import { SessionInfoService } from '../../../core/security/session-info.service';
-import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { PatientService } from '../../../shared/component/patient/patient.service';
-import { openVaccinationRecordErrorDialog } from '../../../shared/component/help/dialogContent';
-import { environment } from '../../../../environment';
 
 @Component({
   selector: 'vm-vaccination-record',
   standalone: true,
   imports: [SharedLibsModule, TableWrapperComponent, VaccinationListComponent, SharedComponentModule, PatientActionComponent],
   templateUrl: './vaccination-record.component.html',
-  styleUrls: ['./vaccination-record.component.scss'],
+  styleUrls: ['./vaccination-record.component.scss']
 })
 export class VaccinationRecordComponent extends BreakPointSensorComponent implements OnInit, OnDestroy {
   router = inject(Router);
@@ -74,7 +74,7 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
     this.getRecord();
     initializeActionData('record', this.sharedDataService);
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
-    this.backendVersion = this.vaccinationRecordService.backendVersion;
+    this.initBackendVersion();
   }
 
   getRecord(): Subscription {
@@ -141,6 +141,11 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   addAllergy(): void {
     this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigateByUrl('allergy/new');
+  }
+
+  async initBackendVersion(): Promise<void> {
+    await this.vaccinationRecordService.getVersion();
+    this.backendVersion = this.vaccinationRecordService.backendVersion;
   }
 
   private checkAndOpenErrorDialog(patientData: IBaseDTO[]): void {

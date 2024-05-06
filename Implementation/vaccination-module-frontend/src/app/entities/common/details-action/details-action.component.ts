@@ -19,7 +19,7 @@ import { MedicalProblemConfirmComponent } from './../../medical-problem/helper-c
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { CommonModule, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
 import { FlexModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -32,6 +32,7 @@ import { DialogService, IHumanDTO, TranslateDirective } from 'src/app/shared';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { PatientService } from '../../../shared/component/patient/patient.service';
 import { deleteRecord, downloadRecordValue } from '../../../shared/function';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { AdverseEventService } from '../../adverse_event/services/adverse-event.service';
@@ -40,7 +41,6 @@ import { InfectiousDiseasesService } from '../../infectious_diseases/service/inf
 import { MedicalProblemService } from '../../medical-problem/service/medical-problem.service';
 import { VaccinationConfirmComponent } from '../../vaccination/helper-components/confirm/vaccination-confirm.component';
 import { VaccinationService } from '../../vaccination/services/vaccination.service';
-import { PatientService } from '../../../shared/component/patient/patient.service';
 
 @Component({
   selector: 'vm-details-action',
@@ -89,6 +89,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   }
 
   ngOnInit(): void {
+    this.updateType();
     const role = this.sessionInfoService.author.getValue().role;
     this.canValidate = role === 'HCP' || role === 'ASS';
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();

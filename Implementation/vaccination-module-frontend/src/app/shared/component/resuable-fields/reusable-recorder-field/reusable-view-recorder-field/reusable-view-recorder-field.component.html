@@ -2,13 +2,13 @@
   <mat-label vmTranslate="MEDICAL_PROBLEM.RECORDER" [attr.aria-label]="'MEDICAL_PROBLEM.RECORDER' | translate"></mat-label>
   <div class="recorder--fields">
     <mat-form-field>
-      <input matInput disabled value="{{ recorder.prefix }}" [attr.aria-label]="recorder.prefix" />
+      <input matInput disabled value="{{ recorder?.prefix || '-'}}" [attr.aria-label]="recorder?.prefix" />
     </mat-form-field>
     <mat-form-field>
-      <input matInput disabled value="{{ recorder.firstName }}" [attr.aria-label]="recorder.firstName" />
+      <input matInput disabled value="{{ recorder?.firstName || '-'}}" [attr.aria-label]="recorder?.firstName" />
     </mat-form-field>
     <mat-form-field>
-      <input matInput disabled value="{{ recorder.lastName }}" [attr.aria-label]="recorder.lastName" />
+      <input matInput disabled value="{{ recorder?.lastName || '-'}}" [attr.aria-label]="recorder?.lastName" />
     </mat-form-field>
   </div>
 </mat-card>

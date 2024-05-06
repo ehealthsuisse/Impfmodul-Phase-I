@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import ch.fhir.epr.adapter.exception.ValidationException;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +30,17 @@ import org.springframework.http.ResponseEntity;
 class GlobalExceptionHandlerTest {
 
   private static final String ERROR_MESSAGE = "Error message";
-  private static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
-  private static final HttpStatus INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
-  private static final HttpStatus EXPECTATION_FAILED = HttpStatus.EXPECTATION_FAILED;
+
+  @Test
+  void accessDeniedExceptionHandler_ValidationException_getHttpStatusCodeGetMessage() {
+    AccessDeniedException vex = new AccessDeniedException(ERROR_MESSAGE, new Throwable(ERROR_MESSAGE));
+    GlobalExceptionHandler geh = new GlobalExceptionHandler();
+
+    ResponseEntity<String> resultGetMessageAndStatusCode = geh.accessDeniedExceptionHandler(vex);
+
+    assertEquals(ERROR_MESSAGE, resultGetMessageAndStatusCode.getBody());
+    assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, resultGetMessageAndStatusCode.getStatusCode());
+  }
 
   @Test
   void businessExceptionHandler_BusinessException_getHttpStatusCodeGetMessage() {
@@ -45,7 +52,7 @@ class GlobalExceptionHandlerTest {
         geh.businessExceptionHandler(bexGetMessageAndStatusCode);
 
     assertEquals(ERROR_MESSAGE, resultGetMessageAndStatusCode.getBody());
-    assertEquals(BAD_REQUEST, resultGetMessageAndStatusCode.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST, resultGetMessageAndStatusCode.getStatusCode());
   }
 
   @Test
@@ -56,7 +63,7 @@ class GlobalExceptionHandlerTest {
     ResponseEntity<String> resultGetMessageAndStatusCode = geh.technicalExceptionHandler(tex);
 
     assertThat(resultGetMessageAndStatusCode.getBody()).contains(GlobalExceptionHandler.TECHNICAL_ERROR_MESSAGE);
-    assertEquals(INTERNAL_SERVER_ERROR, resultGetMessageAndStatusCode.getStatusCode());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, resultGetMessageAndStatusCode.getStatusCode());
   }
 
   @Test
@@ -67,6 +74,6 @@ class GlobalExceptionHandlerTest {
     ResponseEntity<String> resultGetMessageAndStatusCode = geh.validationExceptionHandler(vex);
 
     assertEquals(ERROR_MESSAGE, resultGetMessageAndStatusCode.getBody());
-    assertEquals(EXPECTATION_FAILED, resultGetMessageAndStatusCode.getStatusCode());
+    assertEquals(HttpStatus.EXPECTATION_FAILED, resultGetMessageAndStatusCode.getStatusCode());
   }
 }

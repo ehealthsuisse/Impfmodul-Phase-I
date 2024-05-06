@@ -24,7 +24,7 @@ import { IHumanDTO, SharedDataService } from '../../shared';
 import { CryptoJsService } from './crypto-js.service';
 
 /**
- * Service to receive the parameters from the portal and store them into the session storage.
+ * Service to store all session relevant information in the session storage, e.g. the parameters from the portal or the patient name.
  */
 @Injectable({
   providedIn: 'root',
@@ -32,10 +32,20 @@ import { CryptoJsService } from './crypto-js.service';
 export class SessionInfoService {
   private _queryParams: IPortalParameter = {} as IPortalParameter;
   private _author: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
+  private _patientName?: string | undefined;
 
   private _isEmergency: boolean = false;
   private _brokenEntries: boolean = false;
   private _isFromVaccinationRecord: boolean = false;
+  private _csrfToken: string = '';
+
+  get patientName(): string | undefined {
+    return this._patientName;
+  }
+
+  set patientName(value: string | undefined) {
+    this._patientName = value;
+  }
 
   get queryParams(): IPortalParameter {
     return this._queryParams;
@@ -43,6 +53,14 @@ export class SessionInfoService {
 
   set queryParams(value: IPortalParameter) {
     this._queryParams = value;
+  }
+
+  get csrfToken(): string {
+    return this._csrfToken;
+  }
+
+  set csrfToken(value: string) {
+    this._csrfToken = value;
   }
 
   get author(): BehaviorSubject<IHumanDTO> {
@@ -53,7 +71,7 @@ export class SessionInfoService {
     this._author = value;
   }
 
-  constructor(private cryptoService: CryptoJsService, private sharedDataService: SharedDataService) {}
+  constructor(private cryptoService: CryptoJsService, private sharedDataService: SharedDataService) { }
 
   canValidate(): boolean {
     return this.queryParams.role === 'HCP' || this.queryParams.role === 'ASS';
@@ -102,10 +120,10 @@ export class SessionInfoService {
       }
       this.author.subscribe({
         next: e => {
-          this.queryParams.ufname = this.queryParams.ufname ?? 'Müller';
-          this.queryParams.ugname = this.queryParams.ugname ?? 'Peter';
+          this.queryParams.ufname = this.queryParams.ufname ?? '';
+          this.queryParams.ugname = this.queryParams.ugname ?? 'You are logged out.';
           this.queryParams.utitle = this.queryParams.utitle ?? '';
-          this.queryParams.role = this.queryParams.role ?? 'HCP';
+          this.queryParams.role = this.queryParams.role ?? 'PAT';
           this.queryParams.lang = this.queryParams.lang ?? 'DE_de';
           this.queryParams.purpose = this.queryParams.purpose ?? 'NORM';
           this.queryParams.idp = this.queryParams.idp ?? 'testIDP';

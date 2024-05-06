@@ -17,7 +17,7 @@
     "NO_ENTRIES_FOUND": "Aucun enregistrement correspondant trouvé",
     "SEARCH": "Recherche",
     "COMMENT": "Commentaire",
-    "ERROR": "Erreur",
+    "ERROR": "Erreur inattendue",
     "ERROR_403": "L'accès au module de vaccination a été refusé ou a pris trop de temps. Veuillez réessayer d'accéder au module de vaccination avec votre portail EPD.",
     "UNSUPPORTED_LANGUAGE": "La langue {{lang}} n'est pas prise en charge.",
     "ERROR_404": "La page que vous recherchez n'existe pas.",
@@ -30,6 +30,7 @@
     "LANGUAGE_HELP_TEXT": "Sélectionnez la langue dans laquelle vous souhaitez utiliser le module de vaccination.",
     "DATE_FORMAT": "Veuillez entrer la date. Utilisez le format Jour, Jour, Point, Mois, Mois, Point, Année, Année, Année, Année. Par exemple, 01.01.2023",
     "NONE_OPTION": "",
-    "LOGOUT": "Vous avez été déconnecté avec succès, vous pouvez fermer cet onglet et revenir au portail DEP."
+    "LOGOUT": "Vous avez été déconnecté avec succès, vous pouvez fermer cet onglet et revenir au portail DEP.",
+    "DISCONNECT": "La connexion au DEP a été interrompue. Veuillez fermer le module de vaccination et vous reconnecter à votre DPE. Vous pourrez ensuite redémarrer le module de vaccination dans votre aperçu des documents."
   }
 }

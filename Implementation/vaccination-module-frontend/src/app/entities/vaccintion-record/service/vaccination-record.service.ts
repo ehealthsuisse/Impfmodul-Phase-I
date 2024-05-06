@@ -19,11 +19,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { map, Observable, tap } from 'rxjs';
-import { IVaccinationRecord } from '../../../model';
-import { IValueDTO } from '../../../shared';
+import { firstValueFrom, map, Observable, tap } from 'rxjs';
 import { ConfigService } from '../../../core/config/config.service';
 import { SessionInfoService } from '../../../core/security/session-info.service';
+import { IVaccinationRecord } from '../../../model';
+import { IValueDTO } from '../../../shared';
 import { SpinnerService } from '../../../shared/services/spinner.service';
 
 @Injectable({
@@ -33,7 +33,6 @@ export class VaccinationRecordService {
   resource = ``;
   prefix = 'vaccinationRecord';
   backendVersion?: string;
-  private _patient!: string;
 
   constructor(
     private translateService: TranslateService,
@@ -42,10 +41,8 @@ export class VaccinationRecordService {
     private sessionInfoService: SessionInfoService,
     private spinnerService: SpinnerService
   ) {
-    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${
-      this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
-    }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
-    this.retrieveBackendVersion();
+    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
+      }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
   }
 
   queryOneRecord(): Observable<IVaccinationRecord> {
@@ -86,28 +83,18 @@ export class VaccinationRecordService {
     return this.http.get<IValueDTO[]>(`${this.configService.endpointPrefix}/utility/targetDiseases`);
   }
 
-  get patient(): string {
-    return this._patient;
-  }
+  async getVersion(): Promise<string> {
+    if (this.backendVersion) {
+      return this.backendVersion;
+    }
 
-  set patient(value: string) {
-    this._patient = value;
-  }
-
-  getVersion(): Observable<string> {
-    return this.http.get(`${this.configService.endpointPrefix}/utility/backendVersion`, { responseType: 'text' });
-  }
-
-  retrieveBackendVersion(): void {
-    this.getVersion().subscribe({
-      next: (backendVersion: string) => {
-        this.backendVersion = backendVersion;
-      },
-      error: (error: any) => {
+    this.backendVersion = await firstValueFrom(this.http.get(`${this.configService.endpointPrefix}/utility/backendVersion`, { responseType: 'text' }))
+      .catch((error: any) => {
         console.error('Error fetching backend version:', error);
         this.backendVersion = '-';
-      },
-    });
+      }) as string;
+
+    return this.backendVersion;
   }
 }
 

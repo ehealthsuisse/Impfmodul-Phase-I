@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
+import ch.admin.bag.vaccination.exception.AccessDeniedException;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -69,17 +70,15 @@ public class SAMLFilter extends GenericFilterBean {
 
       if (authenticatedSecurityContext == null) {
         log.error("An authenticated user must include a spring security context, please check session {}.");
-        forwardToIdp(httpServletRequest, httpServletResponse);
-        return;
+        throw new AccessDeniedException("GLOBAL.DISCONNECT");
       }
 
       if (!samlService.checkAndUpdateSessionInformation(httpSession)) {
         log.info("User was logged out while his current http session was still active, relogin is initialized.");
-        forwardToIdp(httpServletRequest, httpServletResponse);
-        return;
+        throw new AccessDeniedException("GLOBAL.DISCONNECT");
       }
     } else if (isToBeAuthenticated) {
-      forwardToIdp(httpServletRequest, httpServletResponse);
+      forwardToIdp(httpServletResponse);
       return;
     }
 
@@ -94,7 +93,7 @@ public class SAMLFilter extends GenericFilterBean {
     }
   }
 
-  private void forwardToIdp(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+  private void forwardToIdp(HttpServletResponse httpServletResponse) {
     String idpIdentifier = HttpSessionUtils.getIdpFromSession();
     boolean validInitialCall = HttpSessionUtils.getIsInitialCallValidFromSession();
     if (validInitialCall && idpIdentifier != null) {
@@ -102,6 +101,7 @@ public class SAMLFilter extends GenericFilterBean {
       samlService.redirectToIdp(idpIdentifier, httpServletResponse);
     } else if (!validInitialCall) {
       log.info("User did not have valid initial webcall, forward to IDP refused.");
+      throw new AccessDeniedException("GLOBAL.DISCONNECT");
     }
   }
 

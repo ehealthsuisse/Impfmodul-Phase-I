@@ -19,9 +19,11 @@
 package ch.admin.bag.vaccination.config;
 
 import ch.admin.bag.vaccination.exception.FilterChainExceptionHandler;
+import ch.admin.bag.vaccination.service.saml.SAMLAuthFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLAuthProvider;
 import ch.admin.bag.vaccination.service.saml.SAMLFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +50,7 @@ import org.springframework.web.filter.CorsFilter;
  */
 @Configuration
 @Profile("test")
-public class TestSecurityConfiguration extends AbsSecurityConfiguration {
+public class TestSecurityConfiguration {
 
   @Autowired
   private CorsFilter corsFilter;
@@ -69,7 +71,7 @@ public class TestSecurityConfiguration extends AbsSecurityConfiguration {
 
   /** Include our saml authentication provider in the list of providers */
   @Bean
-  AuthenticationManager authManager(HttpSecurity http) throws Exception {
+  public AuthenticationManager authManager(HttpSecurity http) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder =
         http.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder.authenticationProvider(samlAuthProvider);
@@ -99,7 +101,7 @@ public class TestSecurityConfiguration extends AbsSecurityConfiguration {
         .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
         .anyRequest().authenticated()
         .and()
-        .addFilterBefore(createSAMLFilter(samlService, profileConfig), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(createSAMLFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(createSAMLAuthFilter(authManager, securityContextRepository), SAMLFilter.class)
         .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -116,5 +118,27 @@ public class TestSecurityConfiguration extends AbsSecurityConfiguration {
 
 
     return http.build();
+  }
+
+  /**
+   * Filter handling the samlArt request from the client.
+   */
+  private Filter createSAMLAuthFilter(AuthenticationManager authManager,
+      HttpSessionSecurityContextRepository securityContextRepository) {
+    return new SAMLAuthFilter(authManager, securityContextRepository);
+  }
+
+  /**
+   * Filter handling the main uses cases
+   * <ul>
+   * <li>Allowed endpoint -> do nothing
+   * <li>Protected endpoint and unauthenticated -> forward to idp.
+   * <li>Protected endpoint and samlArtifact request -> let SAMLAuthfilter handle it.
+   * <li>Protected endpoint and authenticated -> check context.
+   *
+   * @return {@link Filter}
+   */
+  private Filter createSAMLFilter() {
+    return new SAMLFilter(samlService, profileConfig);
   }
 }

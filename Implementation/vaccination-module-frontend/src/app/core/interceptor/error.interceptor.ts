@@ -16,25 +16,25 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable, take, throwError, timer } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { SpinnerService } from '../../shared/services/spinner.service';
 import { DialogService } from '../../shared';
+import { SpinnerService } from '../../shared/services/spinner.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
   private errorDialogOpen = false;
 
-  constructor(public spinnerService: SpinnerService, private dialogService: DialogService) {}
+  constructor(public spinnerService: SpinnerService, private dialogService: DialogService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError(err => {
-        if (err.status >= 500) {
+        if (err.status >= 400) {
           if (!this.errorDialogOpen) {
-            const error = err.error || 'GLOBAL.UNEXPECTED_ERROR';
+            const error = err.status === 422 ? 'GLOBAL.DISCONNECT' : (err.error || 'GLOBAL.UNEXPECTED_ERROR');
             this.dialogService.openDialog('GLOBAL.ERROR', error, true, {}, { showOk: true });
             this.errorDialogOpen = true;
             // use time to open dialog only once even if multiple errors occur within 1 second.

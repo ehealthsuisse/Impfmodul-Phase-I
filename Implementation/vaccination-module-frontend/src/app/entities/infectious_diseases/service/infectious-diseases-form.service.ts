@@ -119,11 +119,15 @@ export class InfectiousDiseasesFormService {
     };
   }
 
-  resetForm(form: InfectiousDiseasesFormGroup, infectiousDiseases: IInfectiousDiseases): void {
-    const infectiousDiseasesRawValue = { ...this.getFormDefaults(), ...infectiousDiseases };
+  resetForm(form: InfectiousDiseasesFormGroup, infectiousDisease: IInfectiousDiseases): void {
+    const infectiousDiseasesRawValue = { ...this.getFormDefaults(), ...infectiousDisease };
 
     form.patchValue({
       ...infectiousDiseasesRawValue,
     } as any);
+
+    if (infectiousDisease?.recorder === null) {
+      form.get('recorder')?.reset();
+    }
   }
 }

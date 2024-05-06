@@ -21,10 +21,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { SessionInfoService } from '../../../core/security/session-info.service';
 import { IVaccination } from '../../../model';
 import { IComment, IValueDTO } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { SessionInfoService } from '../../../core/security/session-info.service';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -129,5 +129,9 @@ export class VaccinationFormService {
         ...vaccinationRawValue,
       } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
     );
+
+    if (vaccination?.recorder === null) {
+      form.get('recorder')?.reset();
+    }
   }
 }

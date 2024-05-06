@@ -22,11 +22,11 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { SessionInfoService } from '../../../core/security/session-info.service';
+import { notFutureDateValidator } from '../../../core/validators/date-order-validator';
 import { IAdverseEvent } from '../../../model';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { SessionInfoService } from '../../../core/security/session-info.service';
-import { notFutureDateValidator } from '../../../core/validators/date-order-validator';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -116,5 +116,9 @@ export class AdverseEventFormService {
     form.patchValue({
       ...allergyRawValue,
     } as any);
+
+    if (adverseEvent?.recorder === null) {
+      form.get('recorder')?.reset();
+    }
   }
 }

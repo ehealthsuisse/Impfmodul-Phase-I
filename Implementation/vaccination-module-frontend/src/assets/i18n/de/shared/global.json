@@ -18,7 +18,7 @@
     "SEARCH": "Suchen",
     "NO_ENTRIES_FOUND": "Keine passenden Einträge gefunden",
     "COMMENT": "Kommentar",
-    "ERROR": "Fehler",
+    "ERROR": "Unerwarteter Fehler",
     "ERROR_403": "Der Aufruf des Impfmoduls wurde abgelehnt oder hat zu lange gedauert. Bitte probieren Sie erneut, mit Ihrem EPD-Portal auf das Impfmodul zugreifen.",
     "UNSUPPORTED_LANGUAGE": "Die Sprache {{ lang }} wird nicht unterstützt.",
     "ERROR_404": "Die angeforderte Seite wurde nicht gefunden.",
@@ -31,6 +31,7 @@
     "DATE_FORMAT": "Bitte geben Sie das Datum ein. Verwenden Sie das Format Tag, Tag, Punkt, Monat, Monat, Punkt, Jahr, Jahr, Jahr, Jahr. Zum Beispiel, 01.01.2023",
     "LANGUAGE_HELP_TEXT": "Wählen Sie die Sprache aus, in der Sie das Impfmodul verwenden möchten",
     "NONE_OPTION": "",
-    "LOGOUT": "Sie wurden erfolgreich abgemeldet. Sie können diesen Tab schliessen und zum EPD-Portal zurückkehren."
+    "LOGOUT": "Sie wurden erfolgreich abgemeldet. Sie können diesen Tab schliessen und zum EPD-Portal zurückkehren.",
+    "DISCONNECT": "Die EPD-Verbindung wurde unterbrochen. Bitte schliessen Sie das Impfmodul und melden Sie sich erneut an Ihrem EPD an. Anschliessend können Sie das Impfmodul in Ihrer Dokumentenübersicht wieder starten."
   }
 }
