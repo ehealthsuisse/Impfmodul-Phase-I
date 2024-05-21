@@ -19,6 +19,7 @@
 package ch.fhir.epr.adapter.data.dto;
 
 import ch.fhir.epr.adapter.FhirConstants;
+import ch.fhir.epr.adapter.utils.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,5 +75,15 @@ public abstract class BaseDTO {
    */
   @JsonIgnore
   public abstract LocalDate getDateOfEvent();
+
+  /**
+   * Validates this entity, during read or delete operation, we are giving some more flexibility to
+   * what we allow, e.g. persons first or family name needn't be filled.
+   *
+   * @param isReadOrDelete <code>true</code> if it is a reading or delete operation on a bundle.
+   */
+  public void validate(boolean isReadOrDelete) {
+    ValidationUtils.isValid(this, isReadOrDelete);
+  }
 }
 

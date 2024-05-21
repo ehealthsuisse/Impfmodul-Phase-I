@@ -1,6 +1,6 @@
 {
   "name": "vaccination-module-frontend",
-  "version": "1.6.0-RC3",
+  "version": "1.6.0",
   "private": true,
   "scripts": {
     "build": "ng build --base-href=/",

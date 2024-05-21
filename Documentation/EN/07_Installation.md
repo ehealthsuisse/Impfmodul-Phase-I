@@ -59,9 +59,10 @@ The configuration of the vaccination module frontend is stored in file `assets\c
 ```
 {
   "backendURL": "https://this.is.my.server.url/vaccination-module-backend",
-  "communityId": "EPDBackend"
-  "allowStartWithoutInitialCall": false
-  "isLogoutButtonVisible": true
+  "communityId": "EPDBackend",
+  "allowStartWithoutInitialCall": false,
+  "isLogoutButtonVisible": true,
+  "logoutForwardUrl": ""
 }
 ```
 It configs 2 parameter to be configured:
@@ -70,6 +71,7 @@ It configs 2 parameter to be configured:
 - *allowStartWithoutInitialCall* : Allows the start of the vaccination module without the initial webcall.<br>
 **Important**: Put *allowStartWithoutInitialCall* to false for productive use.
 - *isLogoutButtonVisible* : Allows showing/hiding the logout button.
+- *logoutForwardUrl* : Possibility to add an URL to which the user will be forwarded. If kept empty, user will stay on the logout page.
 
 #### Backend
 

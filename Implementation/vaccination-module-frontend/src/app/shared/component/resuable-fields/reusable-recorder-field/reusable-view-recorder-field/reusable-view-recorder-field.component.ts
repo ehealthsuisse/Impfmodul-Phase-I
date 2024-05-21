@@ -9,6 +9,6 @@ import { IHumanDTO } from '../../../../interfaces';
   styleUrls: ['./reusable-view-recorder-field.component.scss'],
 })
 export class ReusableViewRecorderFieldComponent {
-  @Input() recorder!: IHumanDTO;
+  @Input() recorder!: IHumanDTO | undefined;
   @Input() organization!: string;
 }

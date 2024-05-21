@@ -206,7 +206,8 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   @Override
   public Assertion getXUserAssertion(AuthorDTO author, Assertion idpAssertion, Identificator spid,
       CommunityConfig communityConfig, String uriToAccess) throws Exception {
-    if (idpAssertion == null) {
+    if (idpAssertion == null || idpAssertion.getWrappedObject() == null
+        || ((org.opensaml.saml.saml2.core.Assertion) idpAssertion.getWrappedObject()).getIssueInstant() == null) {
       log.warn("IdP assertion is missing. In production environment, this is a major issue.");
       if (!allowEmptyIdPAssertion(communityConfig)) {
         throw new TechnicalException(
@@ -573,7 +574,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     }
 
     Patient patient = response.getPatients().get(0);
-    log.info("Found patient {} communityId: {}, local Assigning Authority {}, local extension: {}",
+    log.debug("Found patient {} communityId: {}, local Assigning Authority {}, local extension: {}",
         patient.getCompleteName(), communityIdentifier, localAssigningAuthorityOid, localId);
     fillPatientIdentifierByResult(patientIdentifier, response);
 

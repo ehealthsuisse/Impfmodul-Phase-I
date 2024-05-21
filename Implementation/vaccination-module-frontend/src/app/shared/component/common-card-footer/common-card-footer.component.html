@@ -3,34 +3,17 @@
     mat-raised-button
     type="button"
     role="button"
-    [attr.aria-label]="'buttons.PREVIOUS | translate'"
+    [attr.aria-label]="'buttons.BACK | translate'"
     class="previousBtn"
     (click)="previous()"
     (keydown.enter)="previous()"
   >
     <ng-container class="button-content">
-      <span class="button-text" [vmTranslate]="'buttons.PREVIOUS'"></span>
+      <span class="button-text" [vmTranslate]="'buttons.BACK'"></span>
     </ng-container>
   </button>
 
   <div class="actionBtns">
-    <button
-      mat-raised-button
-      type="button"
-      role="button"
-      [attr.aria-label]="'buttons.VALIDATE | translate'"
-      color="accent"
-      [disabled]="!item?.validated! || isEmergencyMode"
-      *ngIf="canValidate"
-      (click)="validateRecord($event)"
-      (keydown.enter)="validateRecord($event)"
-      class="mat-button"
-    >
-      <ng-container class="button-content">
-        <span class="button-text" [vmTranslate]="'buttons.VALIDATE'"></span>
-      </ng-container>
-    </button>
-
     <button
       mat-raised-button
       class="mat-button"

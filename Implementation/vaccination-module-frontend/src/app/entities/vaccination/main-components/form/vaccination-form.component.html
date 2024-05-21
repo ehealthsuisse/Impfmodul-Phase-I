@@ -36,11 +36,11 @@
               <ngx-mat-select-search
                 [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
                 [placeholderLabel]="'GLOBAL.SEARCH' | translate"
-                [formControl]="searchControl"
+                [formControl]="vaccinationFilterControl"
               ></ngx-mat-select-search>
             </mat-option>
             <mat-option
-              *ngFor="let vaccine of vaccinationFilteredList | async | filterPipe : searchControl.value : 'vaccination-names.'"
+              *ngFor="let vaccine of vaccinationFilteredList | async | filterPipe : vaccinationFilterControl.value : 'vaccination-names.'"
               [attr.aria-label]="'vaccination-names.' + vaccine.code | translate"
               vmTranslate="{{ 'vaccination-names.' + vaccine.code }}"
               [value]="vaccine"
@@ -146,7 +146,13 @@
 
             <mat-form-field class="recorder-form-field">
               <mat-label [attr.aria-label]="'USER.FIRSTNAME' | translate" vmTranslate="USER.FIRSTNAME">First Name </mat-label>
-              <input matInput [attr.aria-label]="'USER.FIRSTNAME' | translate" formControlName="firstName" #fName [required]="!org.value" />
+              <input
+                matInput
+                [attr.aria-label]="'USER.FIRSTNAME' | translate"
+                formControlName="firstName"
+                #fName
+                [required]="!org.value || !!lName.value"
+              />
             </mat-form-field>
 
             <mat-form-field class="recorder-form-field">
@@ -155,6 +161,7 @@
                 matInput
                 [attr.aria-label]="'USER.LASTNAME' | translate"
                 formControlName="lastName"
+                #lName
                 [required]="!org.value || !!fName.value"
               />
             </mat-form-field>
@@ -169,7 +176,7 @@
             [attr.aria-label]="'USER.ORGANIZATION' | translate"
             required="true"
             #org
-            [required]="!fName.value"
+            [required]="!fName.value || !lName.value"
             [placeholder]="'ALLERGY.ORGANIZATION' | translate"
           />
         </mat-form-field>
@@ -184,7 +191,6 @@
           [dialogBody]="helpDialogBody | translate"
           (edit)="save()"
           [disabled]="editForm.invalid || isSaving"
-          [canValidate]="canValidated"
         ></vm-common-card-footer>
       </form>
     </mat-card-content>

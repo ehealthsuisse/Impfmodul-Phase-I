@@ -1,8 +1,8 @@
 {
   "ALLERGY_VERIFICATION_STATUS": {
-    "unconfirmed": "Non confermato",
-    "confirmed": "Confermato",
-    "refuted": "Rifiutato",
-    "entered-in-error": "Inserito per errore"
+    "unconfirmed": "Unbestätigt",
+    "confirmed": "Bestätigt",
+    "refuted": "Widerlegt",
+    "entered-in-error": "Irrtümlich eingegeben"
   }
 }

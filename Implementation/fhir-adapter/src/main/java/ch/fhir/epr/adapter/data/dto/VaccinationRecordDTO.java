@@ -43,7 +43,7 @@ public class VaccinationRecordDTO extends BaseDTO {
   public VaccinationRecordDTO(AuthorDTO author, HumanNameDTO patient, List<AllergyDTO> allergies,
       List<PastIllnessDTO> pastIllnesses, List<VaccinationDTO> vaccinations, List<MedicalProblemDTO> medicalProblems) {
     setAuthor(author);
-    this.lang = "en";
+    lang = "en";
     this.patient = patient;
     this.allergies = allergies;
     this.pastIllnesses = pastIllnesses;
@@ -56,5 +56,17 @@ public class VaccinationRecordDTO extends BaseDTO {
   @Override
   public LocalDate getDateOfEvent() {
     throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Allow vaccination record to have incomplete data otherwise it is hard to store any legacy
+   * entries, i.e. use read option independent of the parameter.
+   */
+  @Override
+  public void validate(boolean isReadAction) {
+    allergies.forEach(dto -> dto.validate(true));
+    pastIllnesses.forEach(dto -> dto.validate(true));
+    vaccinations.forEach(dto -> dto.validate(true));
+    medicalProblems.forEach(dto -> dto.validate(true));
   }
 }

@@ -1,8 +1,9 @@
 {
   "GLOBAL": {
-    "ALLERGIES": "Effets secondaires (EIV)",
+    "ALLERGIES": "Effets indésirables (EIV)",
+    "PAST_ILLNESSES": "Maladies infectieuses",
     "PROBLEM": "Facteurs de risque",
-    "VACCINATIONS": "Vaccins",
+    "VACCINATIONS": "Vaccinations",
     "HOME": "Carnet de vaccination",
     "DATE": "Date",
     "NAME": "Nom",
@@ -26,11 +27,13 @@
     "END_DATE_BEFORE_START_DATE": "La fin doit se situer après le début.",
     "NOT_FUTURE_DATE": "La date ne doit pas se situer dans le futur.",
     "LOGO_VACCINATION_MODULE": "Logo du module de vaccination, aller au carnet de vaccination",
-    "COMMUNITY_LOGO": "Logo de la communauté.",
+    "COMMUNITY_LOGO": "Logo de la communauté (de référence)",
     "LANGUAGE_HELP_TEXT": "Sélectionnez la langue dans laquelle vous souhaitez utiliser le module de vaccination.",
     "DATE_FORMAT": "Veuillez entrer la date. Utilisez le format Jour, Jour, Point, Mois, Mois, Point, Année, Année, Année, Année. Par exemple, 01.01.2023",
     "NONE_OPTION": "",
     "LOGOUT": "Vous avez été déconnecté avec succès, vous pouvez fermer cet onglet et revenir au portail DEP.",
-    "DISCONNECT": "La connexion au DEP a été interrompue. Veuillez fermer le module de vaccination et vous reconnecter à votre DPE. Vous pourrez ensuite redémarrer le module de vaccination dans votre aperçu des documents."
+    "DISCONNECT": "La connexion au DEP a été interrompue. Veuillez fermer le module de vaccination et vous reconnecter à votre DPE. Vous pourrez ensuite redémarrer le module de vaccination dans votre aperçu des documents.",
+    "VALIDATION_TITLE": "Échec de la validation",
+    "VALIDATION_TEXT": "Veuillez corriger l'entrée pour la valider."
   }
 }

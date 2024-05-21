@@ -22,10 +22,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Observable, ReplaySubject } from 'rxjs';
+import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IMedicalProblem } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
+import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
+import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
+import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
@@ -33,12 +39,6 @@ import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { MedicalProblemConfirmComponent } from '../../helper-components/confirm/medical-problem-confirm.component';
 import { MedicalProblemFormService, ProblemFormGroup } from '../../service/medical-problem-form.service';
 import { MedicalProblemService } from '../../service/medical-problem.service';
-import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
-import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
-import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
-import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
-import { SessionInfoService } from '../../../../core/security/session-info.service';
 
 @Component({
   standalone: true,
@@ -75,7 +75,6 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   sharedDataService: SharedDataService = inject(SharedDataService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
-  searchControl = new FormControl();
   private problemFormService: MedicalProblemFormService = inject(MedicalProblemFormService);
   private matDialog: MatDialog = inject(MatDialog);
   ngOnInit(): void {
@@ -94,10 +93,6 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
           },
         });
       }
-    });
-
-    this.problemFilterControl.valueChanges.subscribe(() => {
-      filterDropdownList(this.formOptions.get('medicalProblemCode')!, this.problemFilteredList, this.problemFilterControl);
     });
 
     this.processFormOptions();
@@ -146,15 +141,16 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
 
   private processFormOptions(): void {
     this.formOptionsService.getAllOptions().subscribe({
-      next: options =>
+      next: options => {
         options.map(option => {
           this.formOptions.set(
             option.name,
             option.entries!.filter(entry => entry.allowDisplay)
           );
-          this.problemFilteredList.next(this.formOptions.get('medicalProblemCode')!);
-          this.problemStatus.next(this.formOptions.get('conditionClinicalStatus')!);
-        }),
+        });
+        this.problemFilteredList.next(this.formOptions.get('medicalProblemCode')!);
+        this.problemStatus.next(this.formOptions.get('conditionClinicalStatus')!);
+      }
     });
   }
 

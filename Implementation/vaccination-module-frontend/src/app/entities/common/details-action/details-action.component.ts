@@ -28,7 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService, IHumanDTO, TranslateDirective } from 'src/app/shared';
+import { DialogService, IBaseDTO, IHumanDTO, TranslateDirective } from 'src/app/shared';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
@@ -93,7 +93,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
     const role = this.sessionInfoService.author.getValue().role;
     this.canValidate = role === 'HCP' || role === 'ASS';
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
-    this.isDisabled = this.details?.validated || this.isEmergencyMode;
+    this.isDisabled = this.details?.validated || this.details?.updated || this.isEmergencyMode;
   }
 
   editRecord(): void {
@@ -190,23 +190,26 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
     let copy: any = {
       ...this.details,
     };
-    copy.author.role = this.sessionInfoService.author.getValue().role;
-    switch (this.type) {
-      case 'vaccination':
-        this.vaccinationService.validate(copy).subscribe(() => window.history.back());
-        break;
-      case 'infectious-diseases':
-        this.illnessService.validate(copy).subscribe(() => window.history.back());
-        break;
-      case 'medical-problem':
-        this.problemService.validate(copy).subscribe(() => window.history.back());
-        break;
-      case 'allergy':
-        this.adverseEventService.validate(copy).subscribe(() => window.history.back());
-        break;
-    }
 
-    this.sharedDataService.showActionMenu = false;
+    if (this.checkEntry(copy)) {
+      copy.author.role = this.sessionInfoService.author.getValue().role;
+      switch (this.type) {
+        case 'vaccination':
+          this.vaccinationService.validate(copy).subscribe(() => window.history.back());
+          break;
+        case 'infectious-diseases':
+          this.illnessService.validate(copy).subscribe(() => window.history.back());
+          break;
+        case 'medical-problem':
+          this.problemService.validate(copy).subscribe(() => window.history.back());
+          break;
+        case 'allergy':
+          this.adverseEventService.validate(copy).subscribe(() => window.history.back());
+          break;
+      }
+
+      this.sharedDataService.showActionMenu = false;
+    }
   }
 
   previous(): void {
@@ -236,6 +239,17 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
         });
         break;
     }
+  }
+
+  private checkEntry(dto: IBaseDTO): boolean {
+    let hasFirstName = dto.recorder?.firstName && dto.recorder?.firstName === '';
+    let hasLastName = dto.recorder?.lastName && dto.recorder?.lastName === '';
+    if (dto.recorder && (!hasFirstName || !hasLastName)) {
+      this.dialogService.openDialog('GLOBAL.VALIDATION_TITLE', 'GLOBAL.VALIDATION_TEXT');
+      return false;
+    }
+
+    return true;
   }
 
   private updateType(): void {

@@ -26,7 +26,7 @@ import { IValueDTO } from '../interfaces';
   standalone: true,
 })
 export class FilterPipePipe implements PipeTransform {
-  constructor(private translateService: TranslateService) {}
+  constructor(private translateService: TranslateService) { }
 
   transform(items: IValueDTO[] | null, searchText: string, translationKey: string): IValueDTO[] {
     if (!items || !searchText) {
@@ -35,7 +35,7 @@ export class FilterPipePipe implements PipeTransform {
     return items.filter(item => {
       if (item) {
         const translatedValue = this.translateService.instant(translationKey + item.code);
-        return translatedValue.toLowerCase().includes(searchText);
+        return translatedValue.toLowerCase().includes(searchText.toLowerCase());
       }
     });
   }

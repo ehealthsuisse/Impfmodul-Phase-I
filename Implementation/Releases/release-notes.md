@@ -1,3 +1,20 @@
+# June 2024 - Release 1.6.0
+This release wraps up all the RC-feedback for the next stable release.
+
+Additionally, following points changed:
+* Added footer to PDF output to show patient name and page number
+* Added the possibility to configure a logout forward URL which will forward the user 2 seconds after logout
+* Added the possibility to run the vaccination module without IDP authentication against the EPR playground
+* Fixed the issue that search in dropdown valuesets was only working for lower-case input
+* Fixed an issue where logged out IDP sessions tried to be prolonged 
+* Fixed an issue that CSRF header is no longer sent when value is empty (only during initial call)
+* Fixed validation to allow saving entries with only organization (without performer/recorder)
+* Reduced log output to not log personal data
+* Major review for DE, EN and FR translations
+* IT translation have been temporary removed, they will return next release after a thorough review
+* Minor adaptions for the value lists and their translations
+* Attention for Chrome browser, using an older version has caused crashes when closing a dropdown, please update to latest version.
+
 # April 2024 - Release 1.6.0-RC3
 Included feedbacks provided by the providers and users
 * Adjusted value lists to allow addition older vaccins (of myvaccins list)

@@ -23,9 +23,14 @@ export class CsrfInterceptor implements HttpInterceptor {
       this.sessionInfoService.csrfToken = csrfToken;
     }
 
+    let originalOrModifiedHeaders = request.headers;
+    if (!!this.sessionInfoService.csrfToken) {
+      originalOrModifiedHeaders = originalOrModifiedHeaders.set(headerName, this.sessionInfoService.csrfToken);
+    }
+
     this.checkValidSession(request);
     modifiedRequest = request.clone({
-      headers: request.headers.set(headerName, this.sessionInfoService.csrfToken),
+      headers: originalOrModifiedHeaders,
       withCredentials: true,
     });
     return next.handle(modifiedRequest);

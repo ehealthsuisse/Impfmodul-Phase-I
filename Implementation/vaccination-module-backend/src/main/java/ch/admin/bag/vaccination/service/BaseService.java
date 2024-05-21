@@ -339,22 +339,23 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       return cache.getData(cacheIdentifier);
     }
 
-    if (profileConfig.isLocalMode()) {
-      log.debug(LOAD_DATA_FOR_FROM + " Filesystem", patientIdentifier.getPatientInfo().getFullName());
-      return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(true, localEntity, null))
-          .collect(Collectors.toList());
-    }
-    log.debug(LOAD_DATA_FOR_FROM + " EPD Backend", patientIdentifier.getPatientInfo().getFullName());
-    log.debug("Fetching documents from internal repository.");
-    eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, true));
-    log.debug("Fetching documents from external repository.");
-    eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, false));
+    if (Boolean.FALSE.equals(profileConfig.getHuskyLocalMode())) {
+      log.debug(LOAD_DATA_FOR_FROM + " EPD Backend", patientIdentifier.getPatientInfo().getFullName());
+      log.debug("Fetching documents from internal repository.");
+      eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, true));
+      log.debug("Fetching documents from external repository.");
+      eprDocuments.addAll(fetchDocuments(patientIdentifier, author, assertion, false));
 
-    for (EPRDocument doc : eprDocuments) {
-      handleRetrievedDocument(doc);
+      for (EPRDocument doc : eprDocuments) {
+        handleRetrievedDocument(doc);
+      }
+
+      return eprDocuments;
     }
 
-    return eprDocuments;
+    log.debug(LOAD_DATA_FOR_FROM + " Filesystem", patientIdentifier.getPatientInfo().getFullName());
+    return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(true, localEntity, null))
+        .collect(Collectors.toList());
   }
 
   private String getDocumentData(RetrievedDocument retrievedDocument) {

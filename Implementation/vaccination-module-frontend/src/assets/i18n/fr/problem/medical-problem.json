@@ -1,7 +1,7 @@
 {
   "MEDICAL_PROBLEM": {
     "TITLE": "Facteurs de risque",
-    "FILTER": "Chercher",
+    "FILTER": "Rechercher",
     "DETAILS_HEADER": "Détails sur le facteur de risque",
     "EDIT_HEADER": "Modifier les détails de le facteur de risque",
     "NEW_HEADER": "Ajouter un facteur de risque",

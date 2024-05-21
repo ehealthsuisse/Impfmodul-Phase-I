@@ -35,15 +35,6 @@ import org.opensaml.saml.saml2.core.LogoutResponse;
 public interface SAMLServiceIfc {
 
   /**
-   * Creates a logout response based on a given logout request
-   *
-   * @param idp idp information needed to retrieve logout url
-   * @param logoutRequest {@link LogoutRequest}
-   * @return {@link LogoutResponse}
-   */
-  public LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest);
-
-  /**
    * Resolves the Artifact from the IDP.
    *
    * @param idpConfig {@link IdentityProviderConfig}
@@ -75,6 +66,15 @@ public interface SAMLServiceIfc {
    * @param request {@link HttpServletRequest}
    */
   void createDummyAuthentication(HttpServletRequest request);
+
+  /**
+   * Creates a logout response based on a given logout request
+   *
+   * @param idp idp information needed to retrieve logout url
+   * @param logoutRequest {@link LogoutRequest}
+   * @return {@link LogoutResponse}
+   */
+  LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest);
 
   /**
    * Gets the IDP config based on the identifiers specific in the idp-config.yml
@@ -113,6 +113,14 @@ public interface SAMLServiceIfc {
    * @param httpServletResponse {@link HttpServletResponse}
    */
   void redirectToIdp(String idpIdentifier, HttpServletResponse httpServletResponse);
+
+  /**
+   * Logs out a user by sessionId.
+   *
+   * @param sessionId HTTP sessionId of the user
+   * @return returns IDP string if available
+   */
+  String removeSession(String sessionId);
 
   /**
    * As the name indicates sends and receives the artifact resolve item.

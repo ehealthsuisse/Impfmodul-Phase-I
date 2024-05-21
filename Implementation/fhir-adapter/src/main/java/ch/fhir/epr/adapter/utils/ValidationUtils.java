@@ -27,6 +27,7 @@ import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.ValidationException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import lombok.NoArgsConstructor;
@@ -38,10 +39,26 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor
 public class ValidationUtils {
 
+  /**
+   * Fully validates the dto, as if in writing mode
+   *
+   * @param dto {@link BaseDTO}T
+   */
   public static void isValid(BaseDTO dto) {
+    isValid(dto, false);
+  }
+
+  /**
+   * Differenciate validation for read and write mode, especially for the recorder. In read mode, we
+   * allow either first or last name to be empty.
+   * 
+   * @param dto {@link BaseDTO}
+   * @param isReadOrDelete true for read or delete operations
+   */
+  public static void isValid(BaseDTO dto, boolean isReadOrDelete) {
     ValidationUtils.validateValueDTO(dto.getCode());
     if (Objects.nonNull(dto.getRecorder())) {
-      ValidationUtils.validateRecorder(dto.getRecorder());
+      ValidationUtils.validateRecorder(dto.getRecorder(), isReadOrDelete);
     } else {
       ValidationUtils.isStringNotNullOrEmpty("organization", dto.getOrganization());
     }
@@ -55,6 +72,10 @@ public class ValidationUtils {
     } else if (dto instanceof MedicalProblemDTO medicalProblem) {
       validateMedicalProblem(medicalProblem);
     }
+  }
+
+  private static boolean areAllStringNullOrEmpty(List<String> values) {
+    return values.stream().allMatch(value -> Objects.isNull(value) || StringUtils.isBlank(value));
   }
 
   private static void isDateInTheFuture(String field, LocalDate date) {
@@ -114,9 +135,18 @@ public class ValidationUtils {
     ValidationUtils.isDateInTheFuture("begin", pastIllness.getBegin());
   }
 
-  private static void validateRecorder(HumanNameDTO recorder) {
-    ValidationUtils.isStringNotNullOrEmpty("firstName", recorder.getFirstName());
-    ValidationUtils.isStringNotNullOrEmpty("lastName", recorder.getLastName());
+  private static void validateRecorder(HumanNameDTO recorder, boolean isRead) {
+    if (!isRead) {
+      ValidationUtils.isStringNotNullOrEmpty("firstName", recorder.getFirstName());
+    }
+
+    if (!isRead) {
+      ValidationUtils.isStringNotNullOrEmpty("lastName", recorder.getLastName());
+    }
+
+    if (isRead && areAllStringNullOrEmpty(Arrays.asList(recorder.getFirstName(), recorder.getLastName()))) {
+      throw new ValidationException("There needs to be either first or last name set for a valid person.");
+    }
   }
 
   private static void validateVaccination(VaccinationDTO vaccination) {

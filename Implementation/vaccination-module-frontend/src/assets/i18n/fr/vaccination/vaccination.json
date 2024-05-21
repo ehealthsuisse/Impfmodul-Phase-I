@@ -1,6 +1,6 @@
 {
   "VACCINATION": {
-    "TITLE": "Vaccins",
+    "TITLE": "Vaccinations",
     "DETAILS_HEADER": "Détails sur les vaccins",
     "EDIT_HEADER": "Modifier la vaccination",
     "NEW_HEADER": "Ajouter la vaccination",
@@ -8,7 +8,7 @@
     "TARGET_DISEASES": "Protection vaccinale",
     "DOSE_NUMBER": "Dose",
     "OCCURRENCE_DATE": "Date",
-    "RECORDER": "Vacciné par",
+    "RECORDER": "Administré par",
     "ORGANIZATION": "Organisation",
     "VALIDATED": "Validé",
     "VACCINATION_REASON": "Raisons de la vaccination",

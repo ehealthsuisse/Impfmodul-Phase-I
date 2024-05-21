@@ -149,6 +149,8 @@ public class FhirConverter implements FhirConverterIfc {
   @Override
   public Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       boolean forceImmunizationAdministrationDocument) {
+    dto.validate(dto.isDeleted());
+
     Bundle bundle = createBundle(ctx, !forceImmunizationAdministrationDocument && dto instanceof VaccinationRecordDTO);
     Composition composition =
         createComposition(bundle, dto, patientIdentifier, forceImmunizationAdministrationDocument);
@@ -304,6 +306,7 @@ public class FhirConverter implements FhirConverterIfc {
         immunization.getProtocolAppliedFirstRep();
     Integer doseNumber = protocolAppliedFirstRep.getDoseNumberPositiveIntType().getValue();
     List<ValueDTO> targetDiseases = protocolAppliedFirstRep.getTargetDisease().stream()
+        .map(FhirUtils::replaceLegacyTargetDiseaseCoding)
         .map(FhirUtils::toValueDTO)
         .collect(Collectors.toList());
 
@@ -360,8 +363,8 @@ public class FhirConverter implements FhirConverterIfc {
     }
 
     bundle.addEntry()
-        .setFullUrl(fhirConfig.getBaseURL() + url + resource.getIdElement().getValue())
-        .setResource(resource);
+      .setFullUrl(fhirConfig.getBaseURL() + url + resource.getIdElement().getValue())
+      .setResource(resource);
   }
 
   private Annotation addNote(DomainResource resource) {
@@ -465,8 +468,8 @@ public class FhirConverter implements FhirConverterIfc {
     }
 
     allergyIntolerance
-        .setCriticality(AllergyIntoleranceCriticality
-            .fromCode(dto.getCriticality() != null ? dto.getCriticality().getCode() : null));
+      .setCriticality(AllergyIntoleranceCriticality
+      .fromCode(dto.getCriticality() != null ? dto.getCriticality().getCode() : null));
 
     allergyIntolerance.setClinicalStatus(FhirUtils.toCodeableConcept(dto.getClinicalStatus()));
     allergyIntolerance.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
@@ -689,8 +692,8 @@ public class FhirConverter implements FhirConverterIfc {
       String patientId) {
     Identifier identifier = new Identifier();
     identifier
-        .setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID()
-            : patientIdentifier.getSpidExtension());
+      .setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID()
+      : patientIdentifier.getSpidExtension());
     identifier.setSystem(FhirConstants.PATIENT_SYSTEM_URL_PREFIX + patientIdentifier.getSpidRootAuthority());
 
     Patient patient = new Patient();
@@ -700,7 +703,7 @@ public class FhirConverter implements FhirConverterIfc {
     HumanNameDTO patientInfo = patientIdentifier.getPatientInfo();
     if (patientInfo != null) {
       patient.addName().setFamily(patientInfo.getLastName()).addGiven(patientInfo.getFirstName())
-          .addPrefix(patientInfo.getPrefix());
+        .addPrefix(patientInfo.getPrefix());
       patient.setBirthDate(convertToDate(patientInfo.getBirthday()));
       convertAndSetGender(patient, patientInfo);
     } else {
@@ -724,8 +727,8 @@ public class FhirConverter implements FhirConverterIfc {
 
     practitioner.setIdentifier(List.of(identifier));
     practitioner.addName().setFamily(practitionerName.getLastName())
-        .addGiven(practitionerName.getFirstName())
-        .addPrefix(practitionerName.getPrefix());
+      .addGiven(practitionerName.getFirstName())
+      .addPrefix(practitionerName.getPrefix());
 
     practitioner.setMeta(createMeta(FhirConstants.META_CORE_PRACTITIONER_URL));
     return practitioner;
@@ -798,7 +801,7 @@ public class FhirConverter implements FhirConverterIfc {
     ipac.setDoseNumber(new PositiveIntType(dto.getDoseNumber()));
     if (dto.getTargetDiseases() != null) {
       dto.getTargetDiseases()
-          .forEach(disease -> ipac.addTargetDisease(FhirUtils.toCodeableConcept(disease)));
+        .forEach(disease -> ipac.addTargetDisease(FhirUtils.toCodeableConcept(disease)));
     }
 
     immunization.addProtocolApplied(ipac);

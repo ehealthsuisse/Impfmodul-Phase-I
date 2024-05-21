@@ -12,6 +12,14 @@ export class ConfigService {
   private _defaultLpid: string = 'CHPAM4489';
   private _canActivate: boolean = false;
   private _isLogoutButtonVisible: boolean = true;
+  private _logoutForwardUrl?: string | undefined;
+  
+  public get logoutForwardUrl(): string | undefined {
+    return this._logoutForwardUrl;
+  }
+  public set logoutForwardUrl(value: string | undefined) {
+    this._logoutForwardUrl = value;
+  }
 
   get communityId(): string {
     return this._communityId;
@@ -70,5 +78,6 @@ export class ConfigService {
     this.communityId = config.communityId;
     this.canActivate = config.allowStartWithoutInitialCall;
     this.isLogoutButtonVisible = config.isLogoutButtonVisible;
+    this.logoutForwardUrl = config.logoutForwardUrl;
   }
 }

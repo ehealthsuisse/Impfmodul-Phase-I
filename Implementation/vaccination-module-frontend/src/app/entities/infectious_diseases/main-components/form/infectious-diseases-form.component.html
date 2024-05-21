@@ -36,11 +36,11 @@
               <ngx-mat-select-search
                 [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
                 [placeholderLabel]="'GLOBAL.SEARCH' | translate"
-                [formControl]="searchControl"
+                [formControl]="illnessesFilterControl"
               ></ngx-mat-select-search>
             </mat-option>
             <mat-option
-              *ngFor="let illness of illnessesFilteredList | async | filterPipe : searchControl.value : 'ILLNESSES_CODE.'"
+              *ngFor="let illness of illnessesFilteredList | async | filterPipe : illnessesFilterControl.value : 'ILLNESSES_CODE.'"
               vmTranslate="{{ 'ILLNESSES_CODE.' + illness.code }}"
               [value]="illness"
               [attr.aria-label]="'ILLNESSES_CODE.' + illness.code | translate"

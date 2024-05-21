@@ -22,10 +22,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Observable, ReplaySubject } from 'rxjs';
+import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IInfectiousDiseases } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
+import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
@@ -33,10 +37,6 @@ import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { InfectiousDiseasesConfirmComponent } from '../../helper-components/confirm/infectious-diseases-confirm.component';
 import { InfectiousDiseasesFormGroup, InfectiousDiseasesFormService } from '../../service/infectious-diseases-form.service';
 import { InfectiousDiseasesService } from '../../service/infectious-diseases.service';
-import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
-import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
-import { SessionInfoService } from '../../../../core/security/session-info.service';
 
 @Component({
   standalone: true,
@@ -62,7 +62,6 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
   helpDialogTitle = 'HELP.PAST_ILLNESS.DETAIL.TITLE';
   helpDialogBody = 'HELP.PAST_ILLNESS.DETAIL.BODY';
   sharedDataService: SharedDataService = inject(SharedDataService);
-  searchControl = new FormControl();
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
 
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
@@ -87,9 +86,6 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
       }
     });
 
-    this.illnessesFilterControl.valueChanges.subscribe(() => {
-      filterDropdownList(this.formOptions.get('conditionCode')!, this.illnessesFilteredList, this.illnessesFilterControl);
-    });
     initializeActionData('', this.sharedDataService);
     this.processFormOptions();
   }

@@ -19,12 +19,9 @@
 package ch.admin.bag.vaccination.config;
 
 import ch.admin.bag.vaccination.exception.FilterChainExceptionHandler;
-import ch.admin.bag.vaccination.service.saml.SAMLAuthFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLAuthProvider;
 import ch.admin.bag.vaccination.service.saml.SAMLFilter;
-import ch.admin.bag.vaccination.service.saml.SAMLService;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletResponse;
+import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +35,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -48,13 +43,13 @@ import org.springframework.web.filter.CorsFilter;
  */
 @Configuration
 @Profile("!test & !local & !dev")
-public class SecurityConfiguration {
+public class SecurityConfiguration extends AbsSecurityConfiguration {
 
   @Autowired
   private CorsFilter corsFilter;
 
   @Autowired
-  private SAMLService samlService;
+  private SAMLServiceIfc samlService;
 
   @Autowired
   private ProfileConfig profileConfig;
@@ -70,7 +65,7 @@ public class SecurityConfiguration {
 
   /** Include our saml authentication provider in the list of providers */
   @Bean
-  public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+  AuthenticationManager authManager(HttpSecurity http) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder =
         http.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder.authenticationProvider(samlAuthProvider);
@@ -83,7 +78,7 @@ public class SecurityConfiguration {
     HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     http.addFilter(corsFilter)
         .csrf()
-        .csrfTokenRepository(createCsrfTokenRepository())
+        .csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
         .ignoringAntMatchers("/saml/**", "/signature/validate")
         .and()
         .authorizeRequests()
@@ -103,7 +98,7 @@ public class SecurityConfiguration {
         .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
         .anyRequest().authenticated()
         .and()
-        .addFilterBefore(createSAMLFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(createSAMLFilter(samlService, profileConfig), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(createSAMLAuthFilter(authManager, securityContextRepository), SAMLFilter.class)
         .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -112,45 +107,10 @@ public class SecurityConfiguration {
         .securityContext((securityContext) -> securityContext
             .securityContextRepository(securityContextRepository)
             .requireExplicitSave(true))
-        .logout(logout -> logout.logoutUrl("/logout")
-            .invalidateHttpSession(true)
-            .logoutSuccessHandler((request, response, authentication) -> {
-              response.setStatus(HttpServletResponse.SC_OK);
-            }));
+        .logout(createLogoutConfig(samlService));
 
     return http.build();
   }
 
-  private CsrfTokenRepository createCsrfTokenRepository() {
-    CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-    repository.setCookiePath("/");
-    if (frontendDomain != null && !frontendDomain.isEmpty()) {
-      repository.setCookieDomain(frontendDomain);
-    }
-
-    return repository;
-  }
-
-  /**
-   * Filter handling the samlArt request from the client.
-   */
-  private Filter createSAMLAuthFilter(AuthenticationManager authManager,
-      HttpSessionSecurityContextRepository securityContextRepository) {
-    return new SAMLAuthFilter(authManager, securityContextRepository);
-  }
-
-  /**
-   * Filter handling the main uses cases
-   * <ul>
-   * <li>Allowed endpoint -> do nothing
-   * <li>Protected endpoint and unauthenticated -> forward to idp.
-   * <li>Protected endpoint and samlArtifact request -> let SAMLAuthfilter handle it.
-   * <li>Protected endpoint and authenticated -> check context.
-   *
-   * @return {@link Filter}
-   */
-  private Filter createSAMLFilter() {
-    return new SAMLFilter(samlService, profileConfig);
-  }
 }
 

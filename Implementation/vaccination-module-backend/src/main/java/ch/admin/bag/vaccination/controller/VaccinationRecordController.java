@@ -77,7 +77,8 @@ public class VaccinationRecordController {
   @PostMapping("/exportToPDF")
   @Operation(summary = "Build a PDF out of the records")
   public ResponseEntity<?> exportToPDF(@RequestBody VaccinationRecordDTO record) {
-    log.info("exportToPDF {}", record);
+    log.info("Generating PDF...");
+    log.debug("exportToPDF {}", record);
 
     InputStream inputStream = pdfService.create(record);
     InputStreamResource inputStreamResource = new InputStreamResource(inputStream);

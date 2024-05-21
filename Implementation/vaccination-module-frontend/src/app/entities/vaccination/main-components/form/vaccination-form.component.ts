@@ -25,21 +25,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 import _ from 'lodash';
 import { finalize, map, Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IVaccination } from '../../../../model';
 import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValueDTO, MainWrapperComponent } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
+import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { VaccinePredefinedDiseases } from '../../../../shared/interfaces/vaccination-with-disease.interface';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
+import { VaccinationConfirmComponent } from '../../helper-components/confirm/vaccination-confirm.component';
 import { VaccinationFormGroup, VaccinationFormService } from '../../services/vaccination-form.service';
 import { VaccinationService } from '../../services/vaccination.service';
 import { ChipsHandler } from './chips-handler';
-import { VaccinationConfirmComponent } from '../../helper-components/confirm/vaccination-confirm.component';
-import { SessionInfoService } from '../../../../core/security/session-info.service';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
-import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 
 @Component({
   standalone: true,
@@ -66,7 +66,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   @ViewChild('status', { static: true }) staus!: MatSelect;
   @ViewChild('reason', { static: true }) reason!: MatSelect;
   @ViewChild('diseasesChipsList', { static: true }) diseasesList!: MatSelect;
-  searchControl = new FormControl();
 
   isSaving = false;
   editForm: VaccinationFormGroup = inject(VaccinationFormService).createVaccinationFormGroup();
@@ -80,7 +79,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   sharedDataService: SharedDataService = inject(SharedDataService);
   helpDialogTitle = 'HELP.VACCINATION.DETAIL.TITLE';
   helpDialogBody = 'HELP.VACCINATION.DETAIL.BODY';
-  canValidated!: boolean;
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
 
@@ -109,11 +107,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
         });
       }
     });
-    this.vaccinationFilterControl.valueChanges.subscribe(() => {
-      filterDropdownList(this.formOptions.get('immunizationVaccineCode')!, this.vaccinationFilteredList, this.vaccinationFilterControl);
-    });
 
-    this.canValidated = this.sessionInfoService.canValidate();
     this.processFormOptions();
     this.editForm
       .get('vaccineCode')
@@ -138,6 +132,8 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     setDropDownInitialValue(this.vaccinationFilteredList, this.singleSelect);
     setDropDownInitialValue(this.reasons, this.reason);
     setDropDownInitialValue(this.diseases, this.diseasesList);
+    this.editForm.controls['recorder'].get('firstName')?.markAsTouched();
+    this.editForm.controls['recorder'].get('lastName')?.markAsTouched();
   }
 
   save(): void {
@@ -152,7 +148,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     const vaccination = { ...this.vaccination, ...this.vaccinationFormService.getVaccination(this.editForm) };
     vaccination.status = this.formOptionsService.getOption('immunizationStatusCode', 'completed');
     vaccination.lotNumber = vaccination.lotNumber || '-';
-    vaccination.validated = this.sessionInfoService.canValidate();
 
     /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.matDialog
@@ -214,7 +209,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
         options.map(option => {
           this.formOptions.set(
             option.name,
-            option.entries!.filter(entry => entry.allowDisplay || (entry.code === this.vaccination?.code.code))
+            option.entries!.filter(entry => entry.allowDisplay || entry.code === this.vaccination?.code.code)
           );
           this.vaccinationFilteredList.next(this.formOptions.get('immunizationVaccineCode')!);
           this.reasons.next(this.formOptions.get('immunizationReasonCode')!);
