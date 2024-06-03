@@ -106,6 +106,9 @@ export class AdverseEventFormService {
 
   getAllergy(form: AdverseEventFormGroup): IAdverseEvent {
     const formValue = form.value as IAdverseEvent;
+    if (!formValue.recorder?.firstName && !formValue.recorder?.lastName) {
+      formValue.recorder = undefined;
+    }
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     return { ...formValue, occurrenceDate: dayjs.utc(formValue.occurrenceDate).tz('Europe/Berlin').startOf('date').add(10, 'hours') };
   }

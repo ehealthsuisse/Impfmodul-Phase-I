@@ -51,6 +51,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
@@ -111,6 +112,7 @@ public class PdfService {
       PdfDocument pdfDocument = new PdfDocument(document);
       fillDocumentContent(vaccinationRecordDTO, pdfDocument);
 
+      addPageNumbers(pdfDocument, vaccinationRecordDTO.getPatient().getFullName());
       document.save(out);
 
       out.flush();
@@ -340,6 +342,34 @@ public class PdfService {
     addVaccinationBasedOnTargetDisease(vaccinationRecordDTO, pdfDocument, table, otherTargetDiseases,
         pdfOutputConfig.getOtherVaccination().isKeepEmpty());
     table.draw();
+  }
+
+  private void addPageNumbers(PdfDocument pdfDocument, String patientName) throws IOException {
+    PDPageTree allPages = pdfDocument.getPdDocument().getDocumentCatalog().getPages();
+
+    for (int i = 1; i <= allPages.getCount(); i++) {
+      PDPage page = allPages.get(i - 1);
+      PDRectangle pageSize = page.getMediaBox();
+      try (PDPageContentStream contentStream =
+          new PDPageContentStream(pdfDocument.getPdDocument(), page, PDPageContentStream.AppendMode.APPEND, true,
+              true)) {
+
+        // move to buttonline
+        contentStream.moveTo(0, 30);
+        contentStream.lineTo(pageSize.getWidth(), 30);
+        contentStream.stroke();
+
+        contentStream.beginText();
+        contentStream.newLineAtOffset(pageSize.getWidth() / 2 - MARGIN, 15);
+        PDType0Font font = getFont(DEFAULT_FONT, pdfDocument);
+        contentStream.setFont(font, FONT_SIZE - 2.5f);
+        writeText(patientName, contentStream);
+        contentStream.newLineAtOffset(pageSize.getWidth() / 2 - 12, 0);
+        writeText(i + "/" + allPages.getCount(), contentStream);
+        contentStream.endText();
+        contentStream.close();
+      }
+    }
   }
 
   private void addPastIllnessTable(VaccinationRecordDTO vaccinationRecordDTO, PdfDocument pdfDocument)

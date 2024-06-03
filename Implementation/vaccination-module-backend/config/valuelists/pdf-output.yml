@@ -1,5 +1,5 @@
 pdf-output:
-  legalCommentVisible: true
+  legalCommentVisible: false
   basicVaccination:
     keepEmpty: true
     codes:

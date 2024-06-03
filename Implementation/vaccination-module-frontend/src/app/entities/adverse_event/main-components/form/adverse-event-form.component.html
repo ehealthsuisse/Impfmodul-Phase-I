@@ -37,11 +37,11 @@
               <ngx-mat-select-search
                 [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
                 [placeholderLabel]="'GLOBAL.SEARCH' | translate"
-                [formControl]="searchControl"
+                [formControl]="allergiesControl"
               ></ngx-mat-select-search>
             </mat-option>
             <mat-option
-              *ngFor="let allergy of filteredAllergies | async | filterPipe : searchControl.value : 'ALLERGY_CODE.'"
+              *ngFor="let allergy of filteredAllergies | async | filterPipe : allergiesControl.value : 'ALLERGY_CODE.'"
               vmTranslate="{{ 'ALLERGY_CODE.' + allergy.code }}"
               [value]="allergy"
               [attr.aria-label]="'ALLERGY_CODE.' + allergy.code"

@@ -8,7 +8,7 @@
     "TARGET_DISEASES": "Vaccination protection",
     "DOSE_NUMBER": "Dose",
     "OCCURRENCE_DATE": "Date",
-    "RECORDER": "Performer",
+    "RECORDER": "Administered by",
     "ORGANIZATION": "Organization",
     "VALIDATED": "validated",
     "VACCINATION_REASON": "Reason for vaccination",

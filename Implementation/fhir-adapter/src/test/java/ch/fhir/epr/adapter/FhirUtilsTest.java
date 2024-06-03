@@ -3,6 +3,7 @@ package ch.fhir.epr.adapter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -14,6 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class FhirUtilsTest {
+  @Test
+  void testCreateLegacyTargetDisease() {
+    CodeableConcept codeableConcept = createLegacyTargetDisease();
+
+    CodeableConcept legacyTargetDisease = FhirUtils.replaceLegacyTargetDiseaseCoding(codeableConcept);
+
+    assertEquals(FhirConstants.CURRENT_TARGET_DISEASE_CODE, legacyTargetDisease.getCoding().get(0).getCode());
+    assertEquals(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY, legacyTargetDisease.getCoding().get(0).getDisplay());
+  }
 
   @Test
   void testGetSectionByType() {
@@ -52,5 +62,15 @@ public class FhirUtilsTest {
     codeableConcept.addCoding(coding);
     sectionComponent.setCode(codeableConcept);
     return sectionComponent;
+  }
+
+  private CodeableConcept createLegacyTargetDisease() {
+    CodeableConcept codeableConcept = new CodeableConcept();
+    Coding coding = new Coding();
+    coding.setCode(FhirConstants.LEGACY_TARGET_DISEASE_CODE);
+    coding.setDisplay(FhirConstants.LEGACY_TARGET_DISEASE_DISPLAY);
+
+    codeableConcept.setCoding(List.of(coding));
+    return codeableConcept;
   }
 }

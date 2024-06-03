@@ -21,7 +21,7 @@ import { inject } from '@angular/core';
 import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SessionStorageService } from 'ngx-webstorage';
-import { map, Observable, startWith } from 'rxjs';
+import { Observable, map, startWith } from 'rxjs';
 import { SessionInfoService } from '../../core/security/session-info.service';
 
 export class MissingTranslationHandlerImpl implements MissingTranslationHandler {
@@ -66,4 +66,4 @@ export function changeLang(
 
 export const translationNotFoundMessage = 'translation-not-found';
 
-export const LANGUAGES: string[] = ['de', 'en', 'fr', 'it'];
+export const LANGUAGES: string[] = ['de', 'en', 'fr'];

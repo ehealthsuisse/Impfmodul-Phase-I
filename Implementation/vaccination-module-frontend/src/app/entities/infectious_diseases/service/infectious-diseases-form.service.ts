@@ -110,7 +110,10 @@ export class InfectiousDiseasesFormService {
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     const dateWithTimezone = (date: string | Dayjs): Dayjs => dayjs.utc(date).tz('Europe/Berlin').startOf('date').add(10, 'hours');
     const formValue = form.value as IInfectiousDiseases;
-
+    if (!formValue.recorder?.firstName && !formValue.recorder?.lastName) {
+      formValue.recorder = undefined;
+    }
+    
     return {
       ...formValue,
       recordedDate: dateWithTimezone(formValue.recordedDate),

@@ -116,6 +116,9 @@ export class VaccinationFormService {
   getVaccination(form: VaccinationFormGroup): IVaccination | TNewEntity<IVaccination> {
     const vaccination: IVaccination = form.value as IVaccination;
     vaccination.status = vaccination.status as unknown as IValueDTO;
+    if (!vaccination.recorder?.firstName && !vaccination.recorder?.lastName) {
+      vaccination.recorder = undefined;
+    }
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     vaccination.occurrenceDate = dayjs.utc(vaccination.occurrenceDate).tz('Europe/Berlin').startOf('date').add(10, 'hours');
     return { ...vaccination };

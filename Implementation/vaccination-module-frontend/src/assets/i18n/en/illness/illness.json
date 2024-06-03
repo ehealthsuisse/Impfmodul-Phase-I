@@ -1,11 +1,11 @@
 {
   "ILLNESS": {
     "TITLE": "Infectious Diseases",
-    "FILTER": "Filter",
-    "DETAILS_HEADER": "Disease details",
-    "EDIT_HEADER": "Edit disease",
-    "NEW_HEADER": "Add disease",
-    "ILLNESS_CODE": "Disease",
+    "FILTER": "Search",
+    "DETAILS_HEADER": "Infectious disease details",
+    "EDIT_HEADER": "Edit infectious disease",
+    "NEW_HEADER": "Add infectious disease",
+    "ILLNESS_CODE": "Infectious disease",
     "RECORDER": "Recorded by",
     "RECORDED_DATE": "Date",
     "BEGIN": "Begin",

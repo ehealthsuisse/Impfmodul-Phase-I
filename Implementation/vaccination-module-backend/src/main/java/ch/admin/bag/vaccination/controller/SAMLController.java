@@ -90,11 +90,14 @@ public class SAMLController {
     // For local mode, the SAMLFilter is not active, therefor authentication mechanism is not used and
     // user needs to be manually forwarded to the vaccination record
     if (profileConfig.isLocalMode()) {
-      boolean isLocalhost = "127.0.0.1".equals(request.getRemoteAddr());
+      boolean isLocalhost =
+          "127.0.0.1".equals(request.getRemoteAddr()) || "0:0:0:0:0:0:0:1".equals(request.getRemoteAddr());
+      boolean isEmptyPath = request.getContextPath().isBlank();
       String serverName = request.getServerName().replace("-backend", "");
+      String contextPath = request.getContextPath().replace("-backend", "-frontend");
       return request.getScheme() + "://"
           + serverName
-          + (isLocalhost ? ":9000" : "")
+          + (isLocalhost ? ":" + (isEmptyPath ? "9000" : "8080" + contextPath) : "")
           + "/vaccination-record";
     }
 

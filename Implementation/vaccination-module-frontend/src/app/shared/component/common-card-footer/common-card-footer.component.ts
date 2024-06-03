@@ -16,16 +16,16 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DialogService } from '../../services';
-import { IBaseDTO } from '../../interfaces';
-import { MaterialModule } from '../../material.module';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { TranslateDirective } from '../../language';
-import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { TranslateModule } from '@ngx-translate/core';
 import { SessionInfoService } from '../../../core/security/session-info.service';
+import { IBaseDTO } from '../../interfaces';
+import { TranslateDirective } from '../../language';
+import { MaterialModule } from '../../material.module';
+import { DialogService } from '../../services';
+import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
 
 /**
  * Used to structure all buttons in the details and edit components.
@@ -43,17 +43,13 @@ export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSen
   @Output() delete: EventEmitter<T> = new EventEmitter<T>();
   @Output() help: EventEmitter<Event> = new EventEmitter<Event>();
   @Output() save: EventEmitter<Event> = new EventEmitter<Event>();
-  @Output() validate: EventEmitter<Event> = new EventEmitter<Event>();
   @Output() download: EventEmitter<Event> = new EventEmitter<Event>();
-
-  @Input() validationEnables: boolean = false;
 
   @Input() item: T | null = null;
   @Input() dialogTitle!: string;
   @Input() dialogBody!: string;
   @Input() isDetailsFooter!: boolean;
   @Input() isEditFooter!: boolean;
-  @Input() canValidate!: boolean;
   @Input() disabled!: boolean;
   @Input() IsNewRecord!: boolean;
   @Input() canEdit: boolean = true;
@@ -73,7 +69,6 @@ export class CommonCardFooterComponent<T extends IBaseDTO> extends BreakPointSen
     this.dialog.openDialog(this.dialogTitle, this.dialogBody);
     this.help.emit(event);
   }
-  validateRecord = (event: Event): void => this.validate.emit(event);
 
   downloadRecord = (event: Event): void => this.download.emit(event);
 

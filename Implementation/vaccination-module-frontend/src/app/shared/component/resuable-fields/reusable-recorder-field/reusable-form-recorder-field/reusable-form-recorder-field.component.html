@@ -9,7 +9,7 @@
         matInput
         formControlName="firstName"
         #fName
-        [required]="!org.value"
+        [required]="!org.value || !!lName.value"
         [placeholder]="'USER.FIRSTNAME' | translate"
         [attr.aria-labelledby]="'recorder-label'"
       />
@@ -18,6 +18,7 @@
       <input
         matInput
         formControlName="lastName"
+        #lName
         [required]="!org.value || !!fName.value"
         [placeholder]="'USER.LASTNAME' | translate"
         [attr.aria-labelledby]="'recorder-label'"
@@ -30,7 +31,7 @@
       type="text"
       formControlName="organization"
       #org
-      [required]="!fName.value"
+      [required]="!fName.value || !lName.value"
       [placeholder]="'MEDICAL_PROBLEM.ORGANIZATION' | translate"
       [attr.aria-labelledby]="'recorder-label'"
     />

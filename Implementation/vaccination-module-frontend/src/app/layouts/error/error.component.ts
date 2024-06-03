@@ -18,10 +18,11 @@
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { SharedLibsModule } from '../../shared/shared-libs.module';
 import { SessionStorageService } from 'ngx-webstorage';
+import { Subscription } from 'rxjs';
+import { ConfigService } from 'src/app/core/config/config.service';
+import { SharedLibsModule } from '../../shared/shared-libs.module';
 
 /**
  * Componete is used to display the error content which is forwarded to in case of an invalid web request.
@@ -46,7 +47,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
   constructor(
     private translateService: TranslateService,
     private route: ActivatedRoute,
-    private sessionStorageService: SessionStorageService
+    private sessionStorageService: SessionStorageService,
+    private configService: ConfigService
   ) {
     this.selectLanguage();
   }
@@ -61,6 +63,16 @@ export class ErrorComponent implements OnInit, OnDestroy {
         this.getErrorMessageTranslation();
       }
     });
+
+    if (this.errorKey === 'GLOBAL.LOGOUT' && this.configService.logoutForwardUrl) {
+      this.forwardToUrl(this.configService.logoutForwardUrl);
+    }
+  }
+  
+  forwardToUrl(url: string): void {
+    setTimeout(() => {
+      window.location.href = url;
+    }, 2000);
   }
 
   ngOnDestroy(): void {

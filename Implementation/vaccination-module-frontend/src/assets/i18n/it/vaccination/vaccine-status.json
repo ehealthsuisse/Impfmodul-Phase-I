@@ -1,7 +1,7 @@
 {
   "VACCINE_STATUS": {
-    "completed": "Vaccino Fatta",
-    "not-done": "Vaccino Programmata",
-    "entered-in-error": "Inserito per errore"
+    "completed": "Impfung erfolgt",
+    "not-done": "Impfung geplant",
+    "entered-in-error": "Irrtümlich eingegeben"
   }
 }

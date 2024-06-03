@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,6 +65,7 @@ public class SAMLXmlTestUtils {
     when(assertion.getAuthnStatements()).thenReturn(List.of(authStatement));
     when(assertion.getSchemaType()).thenReturn(Assertion.TYPE_NAME);
     when(assertion.getDOM()).thenReturn(assertionElement);
+    when(assertion.getIssueInstant()).thenReturn(Instant.now());
 
     return assertion;
   }

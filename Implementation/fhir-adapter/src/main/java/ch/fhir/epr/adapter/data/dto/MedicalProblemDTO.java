@@ -18,7 +18,6 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
-import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -52,7 +51,6 @@ public class MedicalProblemDTO extends BaseDTO {
     setRecorder(recorder);
     setOrganization(organization);
     setComments(comments);
-    ValidationUtils.isValid(this);
   }
 
   @Override

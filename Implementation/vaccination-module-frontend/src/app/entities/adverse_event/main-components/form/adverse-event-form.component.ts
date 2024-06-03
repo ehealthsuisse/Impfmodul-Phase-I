@@ -22,21 +22,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Observable, ReplaySubject } from 'rxjs';
+import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IAdverseEvent } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
-import { filterDropdownList, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
+import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
+import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
+import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { AdverseEventConfirmComponent } from '../../helper-components/confirm/adverse-event-confirm.component';
 import { AdverseEventFormGroup, AdverseEventFormService } from '../../services/adverse-event-form.service';
 import { AdverseEventService } from '../../services/adverse-event.service';
-import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
-import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
-import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
-import { SessionInfoService } from '../../../../core/security/session-info.service';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
 
 @Component({
   standalone: true,
@@ -61,7 +61,6 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
   adverseEventService: AdverseEventService = inject(AdverseEventService);
   helpDialogTitle = 'HELP.ALLERGY.DETAIL.TITLE';
   helpDialogBody = 'HELP.ALLERGY.DETAIL.BODY';
-  searchControl = new FormControl();
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
 
@@ -86,9 +85,6 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
       }
     });
 
-    this.allergiesControl.valueChanges.subscribe(() => {
-      filterDropdownList(this.formOptions.get('allergyCode')!, this.filteredAllergies, this.allergiesControl);
-    });
     this.processFormOptions();
   }
 

@@ -142,7 +142,7 @@ public class SAMLService implements SAMLServiceIfc {
     SecurityContext securityContext = SecurityContextHolder.getContext();
     securityContext.setAuthentication(auth);
 
-    HttpSession session = request.getSession(true);
+    HttpSession session = request.getSession();
     HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.IDP, idp);
     HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE, true);
     HttpSessionUtils.setParameterInSession(request, HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
@@ -188,11 +188,11 @@ public class SAMLService implements SAMLServiceIfc {
 
   @Override
   public String logout(String name) {
-    log.info("Logout NameId {}", name);
+    log.debug("Logout NameId {}", name);
 
     String sessionId = nameToSessionId.get(name);
     if (sessionId != null) {
-      return remove(sessionId);
+      return removeSession(sessionId);
     }
 
     SecurityContextHolder.clearContext();
@@ -253,35 +253,53 @@ public class SAMLService implements SAMLServiceIfc {
       SecurityContext context = entry.getValue();
       SAMLAuthentication samlAuthentication = (SAMLAuthentication) context.getAuthentication();
       Assertion assertion = samlAuthentication.getAssertion();
-      Instant instant = assertion.getConditions().getNotOnOrAfter();
 
-      long millisUntilExpiry = instant.toEpochMilli() - Instant.now().toEpochMilli();
-      long oneMinutesInMillis = 1 * 60 * 1000;
-
-      if (millisUntilExpiry <= 0) {
-        log.warn("Removing invalid session.");
-        toRemove.add(entry.getKey());
-        SecurityContextHolder.clearContext();
-      } else if (millisUntilExpiry < oneMinutesInMillis) {
+      if (assertion != null) {
         String idp = samlAuthentication.getIdp();
-        log.debug("Refreshing token for {} and IDP {}", samlAuthentication.getName(), idp);
-        IdentityProviderConfig idpConfig = idpProviders.getProviderConfig(idp);
-        String stsURL = idpConfig.getSecurityTokenServiceURL();
-        if (stsURL != null) {
-          try {
-            Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL);
-            samlAuthentication.setAssertion(renewedAssertion);
-            log.debug("Renewal successful.");
-          } catch (Exception ex) {
-            log.error("Refresh failed for {} and IDP {}.", samlAuthentication.getName(), idp);
+        Instant instant = assertion.getConditions().getNotOnOrAfter();
+
+        long millisUntilExpiry = instant.toEpochMilli() - Instant.now().toEpochMilli();
+        long oneMinutesInMillis = 1 * 60 * 1000;
+
+        if (millisUntilExpiry <= 0) {
+          log.warn("Removing expired session for {} and IDP {}.", samlAuthentication.getName(), idp);
+          toRemove.add(entry.getKey());
+          SecurityContextHolder.clearContext();
+        } else if (millisUntilExpiry < oneMinutesInMillis) {
+          log.debug("Refreshing token for {} and IDP {}", samlAuthentication.getName(), idp);
+          IdentityProviderConfig idpConfig = idpProviders.getProviderConfig(idp);
+          String stsURL = idpConfig.getSecurityTokenServiceURL();
+          if (stsURL != null) {
+            try {
+              Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL);
+              samlAuthentication.setAssertion(renewedAssertion);
+              log.debug("Renewal successful.");
+            } catch (Exception ex) {
+              log.error("Refresh failed for {} and IDP {}.", samlAuthentication.getName(), idp);
+            }
+          } else {
+            log.warn("Security token service URL not set for IDP {}.", idp);
           }
-        } else {
-          log.warn("Security token service URL not set for IDP {}.", idp);
         }
+      } else {
+        // remove any incomplete sessions without assertion
+        toRemove.add(entry.getKey());
       }
     }
 
-    toRemove.forEach(this::remove);
+    toRemove.forEach(this::removeSession);
+  }
+
+  @Override
+  public String removeSession(String sessionId) {
+    log.debug("remove {}", sessionId);
+    SecurityContext securityContext = sessionIdToSecurityContext.remove(sessionId);
+    if (securityContext != null) {
+      log.debug("remove {} {}", sessionId, securityContext.getAuthentication().getName());
+      nameToSessionId.remove(securityContext.getAuthentication().getName());
+    }
+
+    return securityContext != null ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp() : null;
   }
 
   @Override
@@ -326,20 +344,9 @@ public class SAMLService implements SAMLServiceIfc {
     return signatureService.getSamlSPCredential();
   }
 
-  private String remove(String sessionId) {
-    log.debug("remove {}", sessionId);
-    SecurityContext securityContext = sessionIdToSecurityContext.remove(sessionId);
-    if (securityContext != null) {
-      log.debug("remove {} {}", sessionId, securityContext.getAuthentication().getName());
-      nameToSessionId.remove(securityContext.getAuthentication().getName());
-    }
-
-    return securityContext != null ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp() : null;
-  }
-
   private void removeSecurityContextFromSession(HttpSession httpSession) {
     SecurityContextHolder.clearContext();
-    remove(httpSession.getId());
+    removeSession(httpSession.getId());
   }
 
   private void signRequest(SignableSAMLObject request) {

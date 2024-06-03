@@ -1,16 +1,16 @@
 {
   "ILLNESS": {
-    "TITLE": "Malattie infettive",
-    "FILTER": "Cercando",
-    "DETAILS_HEADER": "Dettagli della malattia infettive",
-    "EDIT_HEADER": "Modifica malattia infettive",
-    "NEW_HEADER": "Nuova malattia infettive",
-    "ILLNESS_CODE": "Malattia infettive",
-    "RECORDER": "Registrato da",
-    "RECORDED_DATE": "Data",
-    "BEGIN": "Data di inizio",
-    "END": "Data di fine",
-    "ORGANIZATION": "Organizzazione",
-    "DATE": "Data di diagnosi"
+    "TITLE": "Infektionskrankheiten",
+    "EDIT_HEADER": "Infektionskrankheit bearbeiten",
+    "NEW_HEADER": "Infektionskrankheit hinzufügen",
+    "DETAILS_HEADER": "Details zur Infektionskrankheit",
+    "FILTER": "Suchen",
+    "ILLNESS_CODE": "Infektionskrankheit",
+    "RECORDER": "Erfasst von",
+    "RECORDED_DATE": "Datum",
+    "BEGIN": "Beginn",
+    "END": "Ende",
+    "ORGANIZATION": "Organisation",
+    "DATE": "Datum der Diagnose"
   }
 }

@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.AllergyIntolerance;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
@@ -47,6 +48,18 @@ import org.hl7.fhir.r4.model.Resource;
 @Slf4j
 @NoArgsConstructor
 public final class FhirUtils {
+
+  public static CodeableConcept replaceLegacyTargetDiseaseCoding(CodeableConcept codeableConcept) {
+    Coding coding = codeableConcept.getCoding().get(0);
+    String code = coding.getCode();
+    String display = coding.getDisplay();
+    if (FhirConstants.LEGACY_TARGET_DISEASE_CODE.equals(code)
+        && FhirConstants.LEGACY_TARGET_DISEASE_DISPLAY.equals(display)) {
+      coding.setCode(FhirConstants.CURRENT_TARGET_DISEASE_CODE);
+      coding.setDisplay(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY);
+    }
+    return codeableConcept;
+  }
 
   public static SectionComponent getSectionByType(Composition composition, SectionType type) {
     for (SectionComponent sectionComponent : composition.getSection()) {

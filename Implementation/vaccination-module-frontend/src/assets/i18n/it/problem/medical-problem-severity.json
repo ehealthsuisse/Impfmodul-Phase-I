@@ -1,7 +1,7 @@
 {
   "MEDICAL_PROBLEM_SEVERITY": {
-    "24484000": "Grave",
-    "6736007": "Moderato",
-    "255604002": "Mite"
+    "24484000": "Schwer",
+    "6736007": "Moderat",
+    "255604002": "Mild"
   }
 }

@@ -61,15 +61,21 @@ public final class FhirConstants {
   public static final String CONFIDENTIALITY_CODE_EXTENSION_URL =
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-confidentialitycode";
 
-
   /** Constants around confidentiality code */
   public static final String CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED = "2.16.840.1.113883.6.96";
   public static final String CONFIDENTIALITY_CODE_SYSTEM_SECRET = "2.16.756.5.30.1.127.3.4";
   public static final ValueDTO DEFAULT_CONFIDENTIALITY_CODE =
       new ValueDTO("17621005", "Normal", CONFIDENTIALITY_CODE_SYSTEM_NORMAL_RESTRICTED);
-
   public static final String SNOMED_SYSTEM_URL = "http://snomed.info/sct";
 
   /** Status constants */
   public static final String ENTERED_IN_ERROR = "entered-in-error";
+
+  /** Legacy Target Disease codes */
+  public static final String LEGACY_TARGET_DISEASE_CODE = "16901001";
+  public static final String LEGACY_TARGET_DISEASE_DISPLAY = "Central European encephalitis";
+
+  /** Current Target Disease codes */
+  public static final String CURRENT_TARGET_DISEASE_CODE = "712986001";
+  public static final String CURRENT_TARGET_DISEASE_DISPLAY = "Tickborne encephalitis";
 }

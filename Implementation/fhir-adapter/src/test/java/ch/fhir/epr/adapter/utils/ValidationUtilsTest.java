@@ -34,6 +34,118 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class ValidationUtilsTest {
+  private static final boolean IS_READ = true;
+
+  @Test
+  void testAllergyDTOValidity_invalidCases_ShouldThrowException() {
+    ValueDTO allergy = new ValueDTO("213020009", "Allergy to egg protein", "http://snomed.info/sct");
+
+    // Test with missing occurrenceDate
+    AllergyDTO missingOccurrenceDate = new AllergyDTO();
+    missingOccurrenceDate.setCode(allergy);
+    missingOccurrenceDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingOccurrenceDate));
+
+    // Test with a future occurrence date
+    AllergyDTO futureOccurrenceDate = new AllergyDTO();
+    futureOccurrenceDate.setOccurrenceDate(LocalDate.now().plusDays(1));
+    futureOccurrenceDate.setCode(allergy);
+    futureOccurrenceDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureOccurrenceDate));
+
+    // Test with empty allergy name
+    AllergyDTO emptyAllergyName = new AllergyDTO();
+    emptyAllergyName.setOccurrenceDate(LocalDate.now());
+    emptyAllergyName.setCode(new ValueDTO("213020009", "", "http://snomed.info/sct"));
+    emptyAllergyName.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(emptyAllergyName));
+
+    // Test with missing allergy code
+    AllergyDTO missingAllergyCode = new AllergyDTO();
+    missingAllergyCode.setOccurrenceDate(LocalDate.now());
+    missingAllergyCode.setCode(new ValueDTO(null, "Allergy to egg protein", "http://snomed.info/sct"));
+    missingAllergyCode.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingAllergyCode));
+
+    // Test with missing recorder last name
+    AllergyDTO missingRecFirstName = new AllergyDTO();
+    HumanNameDTO humanNameDTO = new HumanNameDTO();
+    humanNameDTO.setLastName("John");
+    missingRecFirstName.setRecorder(humanNameDTO);
+    missingRecFirstName.setOccurrenceDate(LocalDate.now());
+    missingRecFirstName.setCode(allergy);
+    missingRecFirstName.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecFirstName));
+  }
+
+  @Test
+  void testMedicalProblemDTOValidity_invalidCases_ShouldThrowException() {
+    ValueDTO medicalProblem = new ValueDTO("51244008", "Disorder of spleen (disorder)", "http://snomed.info/sct");
+
+    // Test with missing recordedDate
+    MedicalProblemDTO missingRecordedDate = new MedicalProblemDTO();
+    missingRecordedDate.setCode(medicalProblem);
+    missingRecordedDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecordedDate));
+
+    // Test with a future recordedDate
+    MedicalProblemDTO futureRecordedDate = new MedicalProblemDTO();
+    futureRecordedDate.setRecordedDate(LocalDate.now().plusDays(2));
+    futureRecordedDate.setBegin(LocalDate.now());
+    futureRecordedDate.setCode(medicalProblem);
+    futureRecordedDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureRecordedDate));
+
+    // Test with a missing recorder last name
+    MedicalProblemDTO missingRecFirstName = new MedicalProblemDTO();
+    HumanNameDTO humanNameDTO = new HumanNameDTO();
+    humanNameDTO.setFirstName("John");
+    missingRecFirstName.setRecordedDate(LocalDate.now());
+    missingRecFirstName.setRecorder(humanNameDTO);
+    missingRecFirstName.setBegin(LocalDate.now());
+    missingRecFirstName.setCode(medicalProblem);
+    missingRecFirstName.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecFirstName));
+  }
+
+  @Test
+  void testPastIllnessDTOValidity_invalidCases_ShouldThrowException() {
+    ValueDTO pastIllness = new ValueDTO("52947006", "Japanese encephalitis", "http://snomed.info/sct");
+
+    // Test with missing recordedDate
+    PastIllnessDTO missingRecordedDate = new PastIllnessDTO();
+    missingRecordedDate.setCode(pastIllness);
+    missingRecordedDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecordedDate));
+
+    // Test with begin date after recordedDate (in the future)
+    PastIllnessDTO futureBeginDate = new PastIllnessDTO();
+    futureBeginDate.setRecordedDate(LocalDate.now());
+    futureBeginDate.setBegin(LocalDate.now().plusDays(3));
+    futureBeginDate.setCode(pastIllness);
+    futureBeginDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureBeginDate));
+
+    // Test with a future recordedDate
+    PastIllnessDTO futureRecordedDate = new PastIllnessDTO();
+    futureRecordedDate.setRecordedDate(LocalDate.now().plusDays(3));
+    futureRecordedDate.setBegin(LocalDate.now());
+    futureRecordedDate.setCode(pastIllness);
+    futureRecordedDate.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureRecordedDate));
+
+    // Test with missing organization
+    PastIllnessDTO missingOrganization = new PastIllnessDTO();
+    HumanNameDTO humanNameDTO = new HumanNameDTO();
+    humanNameDTO.setFirstName("John");
+    humanNameDTO.setLastName("Doe");
+    missingOrganization.setRecorder(humanNameDTO);
+    missingOrganization.setRecordedDate(LocalDate.now());
+    missingOrganization.setBegin(LocalDate.now());
+    missingOrganization.setCode(pastIllness);
+    assertDoesNotThrow(() -> ValidationUtils.isValid(missingOrganization));
+  }
+
   @Test
   void testVaccinationDTOValidity_invalidCases_ShouldThrowException() {
     ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
@@ -80,113 +192,42 @@ public class ValidationUtilsTest {
     assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingOrganization));
   }
 
+  // Test holds for all entities
   @Test
-  void testAllergyDTOValidity_invalidCases_ShouldThrowException() {
-    ValueDTO allergy = new ValueDTO("213020009", "Allergy to egg protein", "http://snomed.info/sct");
-
-    // Test with missing occurrenceDate
-    AllergyDTO missingOccurrenceDate = new AllergyDTO();
-    missingOccurrenceDate.setCode(allergy);
-    missingOccurrenceDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingOccurrenceDate));
-
-    // Test with a future occurrence date
-    AllergyDTO futureOccurrenceDate = new AllergyDTO();
-    futureOccurrenceDate.setOccurrenceDate(LocalDate.now().plusDays(1));
-    futureOccurrenceDate.setCode(allergy);
-    futureOccurrenceDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureOccurrenceDate));
-
-    // Test with empty allergy name
-    AllergyDTO emptyAllergyName = new AllergyDTO();
-    emptyAllergyName.setOccurrenceDate(LocalDate.now());
-    emptyAllergyName.setCode(new ValueDTO("213020009", "", "http://snomed.info/sct"));
-    emptyAllergyName.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(emptyAllergyName));
-
-    // Test with missing allergy code
-    AllergyDTO missingAllergyCode = new AllergyDTO();
-    missingAllergyCode.setOccurrenceDate(LocalDate.now());
-    missingAllergyCode.setCode(new ValueDTO(null, "Allergy to egg protein", "http://snomed.info/sct"));
-    missingAllergyCode.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingAllergyCode));
-
-    // Test with missing recorder last name
-    AllergyDTO missingRecFirstName = new AllergyDTO();
-    HumanNameDTO humanNameDTO = new HumanNameDTO();
-    humanNameDTO.setLastName("John");
-    missingRecFirstName.setRecorder(humanNameDTO);
-    missingRecFirstName.setOccurrenceDate(LocalDate.now());
-    missingRecFirstName.setCode(allergy);
-    missingRecFirstName.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecFirstName));
+  void testValidity_read_missingFirstAndLastName_throwException() {
+    MedicalProblemDTO missingAllName = createMedicalProblem();
+    missingAllName.getRecorder().setFirstName(null);
+    missingAllName.getRecorder().setLastName(null);
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingAllName));
   }
 
+  // Test holds for all entities
   @Test
-  void testPastIllnessDTOValidity_invalidCases_ShouldThrowException() {
-    ValueDTO pastIllness = new ValueDTO("52947006", "Japanese encephalitis", "http://snomed.info/sct");
+  void testValidity_validCaseRead_missingFirstOrLastName_allValid() {
+    MedicalProblemDTO missingRecFirstName = createMedicalProblem();
+    missingRecFirstName.getRecorder().setFirstName(null);
+    assertDoesNotThrow(() -> ValidationUtils.isValid(missingRecFirstName, IS_READ));
 
-    // Test with missing recordedDate
-    PastIllnessDTO missingRecordedDate = new PastIllnessDTO();
-    missingRecordedDate.setCode(pastIllness);
-    missingRecordedDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecordedDate));
+    MedicalProblemDTO missingRecLastNameOnly = missingRecFirstName;
+    missingRecFirstName.getRecorder().setFirstName("John");
+    missingRecFirstName.getRecorder().setLastName(null);
+    assertDoesNotThrow(() -> ValidationUtils.isValid(missingRecLastNameOnly, IS_READ));
+  }
 
-    // Test with begin date after recordedDate (in the future)
-    PastIllnessDTO futureBeginDate = new PastIllnessDTO();
-    futureBeginDate.setRecordedDate(LocalDate.now());
-    futureBeginDate.setBegin(LocalDate.now().plusDays(3));
-    futureBeginDate.setCode(pastIllness);
-    futureBeginDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureBeginDate));
-
-    // Test with a future recordedDate
-    PastIllnessDTO futureRecordedDate = new PastIllnessDTO();
-    futureRecordedDate.setRecordedDate(LocalDate.now().plusDays(3));
-    futureRecordedDate.setBegin(LocalDate.now());
-    futureRecordedDate.setCode(pastIllness);
-    futureRecordedDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureRecordedDate));
-
-    // Test with missing organization
-    PastIllnessDTO missingOrganization = new PastIllnessDTO();
+  // Test holds for all entities
+  private MedicalProblemDTO createMedicalProblem() {
+    ValueDTO medicalProblemCode = new ValueDTO("51244008", "Disorder of spleen (disorder)", "http://snomed.info/sct");
     HumanNameDTO humanNameDTO = new HumanNameDTO();
     humanNameDTO.setFirstName("John");
     humanNameDTO.setLastName("Doe");
-    missingOrganization.setRecorder(humanNameDTO);
-    missingOrganization.setRecordedDate(LocalDate.now());
-    missingOrganization.setBegin(LocalDate.now());
-    missingOrganization.setCode(pastIllness);
-    assertDoesNotThrow(() -> ValidationUtils.isValid(missingOrganization));
-  }
 
-  @Test
-  void testMedicalProblemDTOValidity_invalidCases_ShouldThrowException() {
-    ValueDTO medicalProblem = new ValueDTO("51244008", "Disorder of spleen (disorder)", "http://snomed.info/sct");
+    MedicalProblemDTO valideMedicalProblem = new MedicalProblemDTO();
+    valideMedicalProblem.setRecordedDate(LocalDate.now());
+    valideMedicalProblem.setBegin(LocalDate.now());
+    valideMedicalProblem.setCode(medicalProblemCode);
+    valideMedicalProblem.setOrganization("Gruppenpraxis CH");
+    valideMedicalProblem.setRecorder(humanNameDTO);
 
-    // Test with missing recordedDate
-    MedicalProblemDTO missingRecordedDate = new MedicalProblemDTO();
-    missingRecordedDate.setCode(medicalProblem);
-    missingRecordedDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingRecordedDate));
-
-    // Test with a future recordedDate
-    MedicalProblemDTO futureRecordedDate = new MedicalProblemDTO();
-    futureRecordedDate.setRecordedDate(LocalDate.now().plusDays(2));
-    futureRecordedDate.setBegin(LocalDate.now());
-    futureRecordedDate.setCode(medicalProblem);
-    futureRecordedDate.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureRecordedDate));
-
-    // Test with a missing recorder first name
-    MedicalProblemDTO missingRecFirstName = new MedicalProblemDTO();
-    HumanNameDTO humanNameDTO = new HumanNameDTO();
-    humanNameDTO.setFirstName("John");
-    missingRecFirstName.setRecordedDate(LocalDate.now().plusDays(2));
-    missingRecFirstName.setRecorder(humanNameDTO);
-    missingRecFirstName.setBegin(LocalDate.now());
-    missingRecFirstName.setCode(medicalProblem);
-    missingRecFirstName.setOrganization("Gruppenpraxis CH");
-    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureRecordedDate));
+    return valideMedicalProblem;
   }
 }

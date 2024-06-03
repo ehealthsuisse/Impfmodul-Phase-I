@@ -15,23 +15,10 @@
     <button
       mat-raised-button
       class="mat-button left"
-      color="warn"
-      [mat-dialog-close]="false"
-      [attr.aria-labelledby]="'close-btn' | translate"
-      id="close-btn"
-    >
-      <ng-container class="button-content">
-        <span class="button-text" [vmTranslate]="'buttons.CLOSE'"></span>
-      </ng-container>
-    </button>
-
-    <button
-      mat-raised-button
-      class="mat-button left"
       color="accent"
       (click)="delete()"
       [mat-dialog-close]="false"
-      [attr.aria-labelledby]="'close-btn' | translate"
+      [attr.aria-labelledby]="'buttons.DELETE' | translate"
       id="'submit-' + data.button.delete"
       *ngIf="isDetailPage"
     >
@@ -46,27 +33,54 @@
       color="accent"
       (click)="save()"
       *ngIf="!data.value.id || !data.button.delete"
-      [attr.aria-labelledby]="data.button"
+      [attr.aria-labelledby]="'buttons.SAVE' | translate"
       id="'submit-' + data.button.save"
     >
       <ng-container class="button-content">
         <span class="button-text" [vmTranslate]="data.button.save"></span>
       </ng-container>
     </button>
+
+    <button
+      mat-raised-button
+      class="mat-button"
+      color="accent"
+      [ngClass]="isMobile ? 'mobile-save-and-stay' : 'save-and-stay'"
+      (click)="onSaveAndStay()"
+      [mat-dialog-close]="true"
+      *ngIf="!isMobile && !data.value.id"
+      [attr.aria-labelledby]="'buttons.SAVE_AND_STAY' | translate"
+      id="'submit-' +data.button.saveAndStay">
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="data.button.saveAndStay"></span>
+      </ng-container>
+    </button>
+
+    <button
+      mat-raised-button
+      class="mat-button left"
+      color="warn"
+      [mat-dialog-close]="false"
+      [attr.aria-labelledby]="'buttons.CANCEL' | translate"
+      id="close-btn"
+    >
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="'buttons.CANCEL'"></span>
+      </ng-container>
+    </button>
   </div>
   <button
-    mat-raised-button
-    class="mat-button"
-    color="accent"
-    [ngClass]="isMobile ? 'mobile-save-and-stay' : 'save-and-stay'"
-    (click)="onSaveAndStay()"
-    [mat-dialog-close]="true"
-    *ngIf="!data.value.id"
-    [attr.aria-labelledby]="'save-stay-btn' | translate"
-    id="'submit-' +data.button.saveAndStay"
-  >
-    <ng-container class="button-content">
-      <span class="button-text" [vmTranslate]="data.button.saveAndStay"></span>
-    </ng-container>
-  </button>
+      mat-raised-button
+      class="mat-button"
+      color="accent"
+      [ngClass]="isMobile ? 'mobile-save-and-stay' : 'save-and-stay'"
+      (click)="onSaveAndStay()"
+      [mat-dialog-close]="true"
+      *ngIf="isMobile && !data.value.id"
+      [attr.aria-labelledby]="'buttons.SAVE_AND_STAY' | translate"
+      id="'submit-' +data.button.saveAndStay">
+      <ng-container class="button-content">
+        <span class="button-text" [vmTranslate]="data.button.saveAndStay"></span>
+      </ng-container>
+    </button>
 </mat-dialog-actions>

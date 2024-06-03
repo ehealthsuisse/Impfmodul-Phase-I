@@ -18,7 +18,7 @@
  */
 package ch.admin.bag.vaccination.config;
 
-import javax.servlet.http.HttpServletResponse;
+import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +27,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -41,7 +39,7 @@ import org.springframework.web.filter.CorsFilter;
  */
 @Configuration
 @Profile("local | dev")
-public class LocalSecurityConfiguration {
+public class LocalSecurityConfiguration extends AbsSecurityConfiguration {
 
   @Autowired
   private CorsFilter corsFilter;
@@ -49,11 +47,14 @@ public class LocalSecurityConfiguration {
   @Value("${application.frontendDomain}")
   private String frontendDomain;
 
+  @Autowired
+  private SAMLServiceIfc samlService;
+
   @Bean
   SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
     http.addFilter(corsFilter)
         .csrf()
-        .csrfTokenRepository(createCsrfTokenRepository())
+        .csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
         .ignoringAntMatchers("/saml/**", "/signature/validate")
         .and()
         .authorizeRequests()
@@ -62,21 +63,8 @@ public class LocalSecurityConfiguration {
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .logout(logout -> logout.logoutUrl("/logout")
-            .invalidateHttpSession(true)
-            .logoutSuccessHandler((request, response, authentication) -> {
-              response.setStatus(HttpServletResponse.SC_OK);
-            }));
-
+        .logout(createLogoutConfig(samlService));
     return http.build();
   }
 
-  private CsrfTokenRepository createCsrfTokenRepository() {
-    CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-    repository.setCookiePath("/");
-    if (frontendDomain != null && !frontendDomain.isBlank()) {
-      repository.setCookieDomain(frontendDomain);
-    }
-    return repository;
-  }
 }

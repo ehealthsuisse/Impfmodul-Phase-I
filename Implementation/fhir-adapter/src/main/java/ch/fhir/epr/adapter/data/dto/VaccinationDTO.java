@@ -18,7 +18,6 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
-import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
@@ -55,7 +54,6 @@ public class VaccinationDTO extends BaseDTO {
     setRecorder(performer);
     setOrganization(organization);
     setComments(comments);
-    ValidationUtils.isValid(this);
   }
 
   @Override

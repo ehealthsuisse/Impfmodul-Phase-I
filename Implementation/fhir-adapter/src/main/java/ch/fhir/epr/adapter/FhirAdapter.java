@@ -139,6 +139,7 @@ public class FhirAdapter implements FhirAdapterIfc {
       for (DomainResource resource : getSectionResources(bundle, sectionType)) {
         try {
           T dto = parseFhirResource(clazz, bundle, resource);
+          dto.validate(true);
           if (dto != null) {
             dtos.add(dto);
           }

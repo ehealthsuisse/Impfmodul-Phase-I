@@ -1,7 +1,7 @@
 {
   "MEDICAL_PROBLEM": {
     "TITLE": "Risk factors",
-    "FILTER": "Filter",
+    "FILTER": "Search",
     "DETAILS_HEADER": "Risk factor details",
     "EDIT_HEADER": "Edit risk factor",
     "NEW_HEADER": "Add risk factor",
