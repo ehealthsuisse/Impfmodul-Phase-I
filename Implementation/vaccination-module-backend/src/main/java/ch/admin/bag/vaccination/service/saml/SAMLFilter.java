@@ -55,7 +55,7 @@ public class SAMLFilter extends GenericFilterBean {
       throws IOException, ServletException {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-    log.info("Request url: {}", httpServletRequest.getRequestURL());
+    log.debug("Request url: {}", httpServletRequest.getRequestURL());
 
     checkSAMLAuthenticationState(httpServletRequest);
 

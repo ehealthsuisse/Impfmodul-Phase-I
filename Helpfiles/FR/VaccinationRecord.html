@@ -1,52 +1,44 @@
 <body>
   <h2>Carnet de vaccination</h2>
-  <p>Présentation globale des données de vaccination du DEP d'un patient. Pour afficher le carnet de vaccination
-  tous les documents de vaccination du DEP du patient sont interrogés auprès du DEP et sont consolidés
-  conformément à la réglementation.
-  </p>
-  <p>Le carnet de vaccination sert de point d'entrée pour le traitement des données de vaccination des patients du DPE et soutient les actions suivantes:
-  <ul>
-    <li>Passez à la vue détaillée des vaccinations, des effets secondaires, maladies infectieuses et des facteurs de risque en cliquant sur une entrée</li>
-    <li>Exportez le carnet de vaccination au format PDF </li>
-    <li>Enregistrez la carnet de vaccination en tant qu'instantané actuel au format d'échange VACD.</li>
-   </ul>
+  <p>
+  Le carnet de vaccination électronique présente sous forme de tableau les données actuelles de vaccination, ainsi que les effets indésirables, les maladies infectieuses et les facteurs de risques.
+  Les informations doivent obligatoirement être validées par un professionnel de la santé connecté au DEP. 
+  Les données de vaccination peuvent être téléchargées au format PDF pour ensuite être imprimées. Il est aussi possible d’exporter les données de vaccination de façon structurée, afin de les réutiliser dans un autre système. 
   </p>
   <hr>
-  <p>Les données de vaccination suivantes sont affichées dans le carnet de vaccination: </p>
-  <h3>Vaccins</h3>
-  <p>Liste de toutes les vaccinations documentées, ordonnées par date de vaccination avec les champs:
+  <h3>Vaccinations</h3>
+  <p>Liste de toutes les vaccinations documentées, classées par date de vaccination :
     <ul>
-      <li>Date: Date de la vaccination</li>
-      <li>Protection vaccinale: Une ou plusieurs maladies infectieuses contre lesquelles le vaccin est efficace</li>
-      <li>Vaccin: Vaccin administré</li>
-      <li>Dose: Numéro de dose du vaccin administré</li>
-      <li>Vacciné par: Nom du professionnel de la santé qui a administré le vaccin ou, s'il n'est pas connu, nom de l'organisation auprès de laquelle le vaccin a été effectué</li>
+      <li>Date : Date de la vaccination</li>
+      <li>Vaccin : Vaccin administré</li>
+      <li>Protection vaccinale : Une ou plusieurs maladies infectieuses contre laquelle/lesquelles le vaccin est efficace</li>
+      <li>Dose : Numéro de la dose du vaccin administré</li>
+      <li>Administré par : Nom du professionnel de la santé qui a administré le vaccin ou, s'il n'est pas connu, nom de l'organisation auprès de laquelle le vaccin a été effectué.</li>
      </ul>
   </p>
-  <h3>Effets secondaires</h3>
-  <p>Liste de tous les effets secondaires ou effets indésirables documentés de la vaccination, triés par
-  la date d'apparition avec les champs:
+  <h3>Effets indésirables (EIV)</h3>
+  <p>Liste de tous les effets indésirables de la vaccination (EIV) documentés, classés par date d'apparition :
     <ul>
-      <li>Date: Heure d'apparition du symptôme vaccinal indésirable</li>
-      <li>Maladie: la désignation du phénomène de vaccination indésirable</li>
-      <li>Enregistré par: Nom de la personne qui a constaté l'effet secondaires</li>
+      <li>Date : Date d'apparition de l’effet indésirable de la vaccination</li>
+      <li>Effet indésirable : Description de l’effet indésirable de la vaccination</li>
+      <li>Enregistré par : Nom de la personne qui a constaté l'effet indésirable</li>
      </ul>
   </p>
-  <h3>Maladie infectieuse</h3>
-  <p>Liste de toutes les maladies évitables par la vaccination que le patient a subies, classés selon la date du diagnostic avec les champs:
+  <h3>Maladies infectieuses</h3>
+  <p>Liste de toutes les maladies infectieuses contractées pour lesquelles un vaccin existe, classées par date de diagnostic :
     <ul>
-      <li>Date: Moment du diagnostic de la maladie infectieuse</li>
-      <li>Maladie: Nom de la maladie infectieuse</li>
-      <li>Enregistré par: Nom de la personne qui a établi le diagnostic de la maladie infectieuse</li>
+      <li>Date : Date du diagnostic de la maladie infectieuse</li>
+      <li>Maladie infectieuse : Nom de la maladie infectieuse</li>
+      <li>Enregistré par : Nom de la personne qui a établi le diagnostic de la maladie infectieuse</li>
      </ul>
   </p>
-  <h3>Facteur de risque</h3>
-  <p>Liste de toutes les facteurs de risque que le patient a subies, classés selon la date du diagnostic avec les champs:
+  <h3>Facteurs de risque</h3>
+  <p>Liste de tous les facteurs de risque classés par date de diagnostic :
     <ul>
-      <li>Date: Date du diagnostic du facteur de risque</li>
-      <li>Maladie: Nom du facteur de risque</li>
-      <li>État clinique: L'état clinique, par exemple actif ou inactif</li>
-      <li>Enregistré par: Nom de la personne qui a établi le diagnostic du facteur de risque</li>
+      <li>Date : Date de diagnostic du facteur de risque</li>
+      <li>Facteur de risque : Nom du facteur de risque</li>
+      <li>État clinique : Le facteur de risque est-il actuellement applicable (actif) ou ne l'est-il plus (inactif) ?</li>
+      <li>Enregistré par : Nom de la personne qui a établi le diagnostic du facteur de risque</li>
      </ul>
   </p>
 </body>

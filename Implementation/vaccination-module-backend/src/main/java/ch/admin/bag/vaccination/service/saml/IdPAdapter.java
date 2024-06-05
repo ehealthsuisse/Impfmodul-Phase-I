@@ -101,7 +101,7 @@ public class IdPAdapter {
       soapClient.send(tokenRenewalURL, context);
       return processResponse(context.getInboundMessageContext().getMessage());
     } catch (Exception e) {
-      log.error(e.getMessage());
+      log.error("Received IDP's error message: " + (e.getMessage() != null ? e.getMessage() : "no message available"));
       if (log.isDebugEnabled()) {
         getInformation(e);
       }
@@ -168,7 +168,7 @@ public class IdPAdapter {
 
   private void getInformation(Exception e) {
     Throwable detail = e;
-    log.debug("Get all error messages during refresh.");
+    log.debug("Get all error messages during IDP refresh:");
     int i = 1;
     // log maximal 5 inner exceptions
     while (detail.getCause() != null && !detail.equals(detail.getCause()) && i <= 5) {

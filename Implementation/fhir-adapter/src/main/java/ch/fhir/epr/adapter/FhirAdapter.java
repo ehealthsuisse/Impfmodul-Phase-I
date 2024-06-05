@@ -144,8 +144,8 @@ public class FhirAdapter implements FhirAdapterIfc {
             dtos.add(dto);
           }
         } catch (ValidationException ex) {
-          log.error("Resource parsing failed for " + clazz.getName() + " on bundle " + bundle.getId() +
-              " with the following error message: {}", ex.getMessage());
+          log.warn("Parsing failed for " + clazz.getSimpleName() + " on bundle " + FhirUtils.getUuidFromBundle(bundle)
+              + " with the following error message: {}", ex.getMessage());
         }
       }
     } catch (Exception e) {

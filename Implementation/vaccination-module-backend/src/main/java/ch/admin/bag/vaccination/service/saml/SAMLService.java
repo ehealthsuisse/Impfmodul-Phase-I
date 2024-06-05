@@ -190,7 +190,7 @@ public class SAMLService implements SAMLServiceIfc {
   public String logout(String name) {
     log.debug("Logout NameId {}", name);
 
-    String sessionId = nameToSessionId.get(name);
+    String sessionId = nameToSessionId.remove(name);
     if (sessionId != null) {
       return removeSession(sessionId);
     }
@@ -288,6 +288,7 @@ public class SAMLService implements SAMLServiceIfc {
     }
 
     toRemove.forEach(this::removeSession);
+    synchronizeSessionMaps();
   }
 
   @Override
@@ -295,11 +296,15 @@ public class SAMLService implements SAMLServiceIfc {
     log.debug("remove {}", sessionId);
     SecurityContext securityContext = sessionIdToSecurityContext.remove(sessionId);
     if (securityContext != null) {
-      log.debug("remove {} {}", sessionId, securityContext.getAuthentication().getName());
-      nameToSessionId.remove(securityContext.getAuthentication().getName());
+      log.debug("Remove sessionId {}", sessionId);
+      if (securityContext.getAuthentication() != null && securityContext.getAuthentication().getName() != null) {
+        nameToSessionId.remove(securityContext.getAuthentication().getName());
+      }
     }
 
-    return securityContext != null ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp() : null;
+    return securityContext != null && securityContext.getAuthentication() instanceof SAMLAuthentication
+        ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp()
+        : null;
   }
 
   @Override
@@ -375,6 +380,24 @@ public class SAMLService implements SAMLServiceIfc {
     } catch (Exception ex) {
       log.error("Error occurred while retrieving encoded cert", ex);
       log.error("failed to sign a SAML object", ex);
+    }
+  }
+
+  // local logouts can lead to orphan entries in the nameToSessionId-map
+  private void synchronizeSessionMaps() {
+    if (nameToSessionId.size() != sessionIdToSecurityContext.size()) {
+      Map<String, String> map = new ConcurrentHashMap<>(sessionIdToSecurityContext.size());
+      sessionIdToSecurityContext.entrySet().forEach(entry -> {
+        String sessionId = entry.getKey();
+        if (entry.getValue() != null && entry.getValue().getAuthentication() != null) {
+          String name = entry.getValue().getAuthentication().getName();
+          if (name != null) {
+            map.put(name, sessionId);
+          }
+        }
+      });
+      nameToSessionId.clear();
+      nameToSessionId.putAll(map);
     }
   }
 }

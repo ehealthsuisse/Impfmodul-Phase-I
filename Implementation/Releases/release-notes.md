@@ -1,3 +1,11 @@
+# June 2024 - Hotfix 1.6.1
+During testing, few issues have been identified in the backend module which were fixed in this version.  
+
+Additionally, following points changed:
+* To improve maintainability for the providers, some ERROR loglevels have been reduced to warn as those cases could occure during regular operations 
+* Fixed an issue linked to the local logout
+* Fixed a potential memory leak linked to the session management
+
 # June 2024 - Release 1.6.0
 This release wraps up all the RC-feedback for the next stable release.
 
@@ -5,6 +13,7 @@ Additionally, following points changed:
 * Added footer to PDF output to show patient name and page number
 * Added the possibility to configure a logout forward URL which will forward the user 2 seconds after logout
 * Added the possibility to run the vaccination module without IDP authentication against the EPR playground
+* Improved validation of EPD data such that only valid data will be displayed
 * Fixed the issue that search in dropdown valuesets was only working for lower-case input
 * Fixed an issue where logged out IDP sessions tried to be prolonged 
 * Fixed an issue that CSRF header is no longer sent when value is empty (only during initial call)

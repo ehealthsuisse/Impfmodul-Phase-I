@@ -1,54 +1,44 @@
 <body>
   <h2>Impfausweis</h2>
   <p>
-  Gesamtdarstellung der Impfdaten aus dem EPD einer Patientin oder eines Patienten. Zur Darstellung des Impfausweises
-  werden alle Impfdokumente aus dem EPD der Patientin oder des Patienten aus dem EPD abgefragt und gem&auml;ss dem Regelwerk
-  f&uuml;r EPD Impfdaten zusammengef&uuml;hrt.
-  </p>
-  <p>
-  Der Impfausweis dient als Startpunkt f&uuml;r die Berarbeitung der Impfdaten von Patientinnen und Patienten im EPD und unterst&uuml;tzt
-  die Interaktionen:
-  <ul>
-    <li>Wechsel zur Detailansicht von Impfungen, Nebenwirkungen, Infektions- und Risikofaktoren per Klick auf einen Eintrag</li>
-    <li>Export des Impfausweises als PDF Dokument.</li>
-    <li>Speichern des Impfausweises als Snapshot zum gegenw&auml;rtigen Zeitpunkt im VACD Austauschformat.</li>
-  </ul>
+  Der elektronische Impfausweis stellt die aktuellen Impfdaten in tabellarischer Form dar und informiert &uuml;ber Nebenwirkungen, Infektionskrankheiten und Risikofaktoren.
+  Die Informationen m&uuml;ssen von einer Gesundheitsfachperson validiert werden, die ans EPD angebunden ist.
+  Die Impfdaten k&ouml;nnen im PDF-Format heruntergeladen und anschliessend ausgedruckt werden. Es ist auch m&ouml;glich, die Impfdaten in strukturierter Form zu exportieren, um sie in ein anderes System zu &uuml;bertragen.
   </p>
   <hr>
-  <p> Im Impfausweis werden die folgenden Impfdaten angezeigt: </p>
   <h3>Impfungen</h3>
-  <p>Liste aller dokumentierten Impfungen geordnet nach dem Datum der Impfung mit den Feldern:
+  <p>Liste aller dokumentierten Impfungen geordnet nach Datum der Impfung:
     <ul>
       <li>Datum: Zeitpunkt der Impfung</li>
-      <li>Impfschutz: Ein oder mehrere Infektionskrankheiten gegen den der Impfstoff wirkt</li>
-      <li>Impfstoff: Der verabreichte Impfstoff</li>
+      <li>Impfstoff: verabreichter Impfstoff</li>
+      <li>Impfschutz: Eine oder mehrere Infektionskrankheiten, gegen die der Impfstoff wirksam ist.</li>
       <li>Dosis: Nummer der verabreichten Impfdosis</li>
-      <li>Geimpft Von: Name der Gesundheitsfachperson, welche die Impfung verabreicht hat resp. falls nicht bekannt, Name der Organisation, bei der die Impfung durchgeführt wurde. </li>
+      <li>Geimpft von: Name der Gesundheitsfachperson, welche die Impfung verabreicht hat, respektiv falls nicht bekannt, Name der Organisation, bei der die Impfung durchgef&uuml;hrt wurde.</li>
     </ul>
   </p>
-  <h3>Nebenwirkungen</h3>
-  <p>Liste aller dokumentierten unerw&uuml;nschten Impferscheinungen, geordnet nach  dem Datum des Auftretens mit den Feldern:
+  <h3>Nebenwirkungen (UIE)</h3>
+  <p>Liste aller dokumentierten unerw&uuml;nschten Impferscheinungen (UIE), geordnet nach Datum des Auftretens:
     <ul>
       <li>Datum: Zeitpunkt des Auftretens der unerw&uuml;nschten Impferscheinung</li>
-      <li>Unerw&uuml;nschte Wirkung bei: Die Bezeichnung der unerw&uuml;nschten Impferscheinung</li>
-      <li>Erfasst von: Name der Person, welche die Nebenwirkung festgestellt hat.</li>
+      <li>Unerw&uuml;nschte Wirkung: Bezeichnung der unerw&uuml;nschten Impferscheinung</li>
+      <li>Erfasst von: Name der Person, welche die Nebenwirkung festgestellt hat</li>
     </ul>
   </p>
   <h3>Infektionskrankheiten</h3>
-  <p>Liste aller durchmachten impfverh&uuml;tbaren Krankheiten der Patientin oder des Patienten, geordnet nach dem Diagnosedatum mit den Feldern:
+  <p>Liste aller durchgemachten, Infektionskrankheiten, f&uuml;r welche eine Impfung verf&uuml;gbar ist, geordnet nach Diagnosedatum:
   <ul>
-      <li>Datum: Zeitpunkt der Diagnose der durchmachten impfverh&uuml;tbaren Krankheit</li>
-      <li>Infektionskrankheit: Name der jeweiligen impfverh&uuml;tbaren Krankheit</li>
-      <li>Erfasst Von: Name der Person, welche die Diagnose zur Infektionskrankheit erstellt hat</li>
+      <li>Datum: Zeitpunkt der Diagnose der durchgemachten Infektion</li>
+      <li>Infektionskrankheit: Name der durchgemachten Infektion</li>
+      <li>Erfasst von: Name der Person, welche die Diagnose zur Infektionskrankheit erstellt hat</li>
     </ul>
   </p>
   <h3>Risikofaktoren</h3>
-  <p>Liste von Risikofaktoren der Patientin oder des Patienten, geordnet nach dem Datum des Auftretens mit den Feldern:
+  <p>Liste von Risikofaktoren geordnet nach Datum des Auftretens:
   <ul>
       <li>Datum: Zeitpunkt des Auftretens des Risikofaktors</li>
       <li>Risikofaktor: Name des jeweiligen Risikofaktors</li>
-      <li>Klinischer Status: Der klinische Zustand, bei welchem zwischen aktiv oder inaktiv unterschieden wird.</li>
-      <li>Erfasst Von: Name der Person, welche den Risikofaktor festgestellt hat.</li>
+      <li>Klinischer Status: Ist der Risikofaktor aktuell zutreffend (aktiv) oder nicht mehr zutreffend (inaktiv)?</li>
+      <li>Erfasst von: Name der Person, welche den Risikofaktor festgestellt hat</li>
     </ul>
   </p>
 </body>

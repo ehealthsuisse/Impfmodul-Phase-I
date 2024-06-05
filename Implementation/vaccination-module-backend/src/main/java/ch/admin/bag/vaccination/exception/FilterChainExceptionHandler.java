@@ -48,7 +48,12 @@ public class FilterChainExceptionHandler extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
     } catch (Exception ex) {
-      log.error("Spring Security Filter Chain Exception: {}", ex.getMessage());
+      if (!"GLOBAL.DISCONNECT".equals(ex.getMessage())) {
+        log.error("Spring Security Filter Chain Exception: {}", ex.getMessage());
+      } else {
+        log.debug("Spring Security Filter Chain Exception: {}", ex.getMessage());
+      }
+
       resolver.resolveException(request, response, null, ex);
     }
   }
