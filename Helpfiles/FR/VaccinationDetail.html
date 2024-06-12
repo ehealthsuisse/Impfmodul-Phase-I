@@ -1,29 +1,28 @@
 <body>
-  <h2>Vaccins</h2>
-  <p>Vue détaillée d'une vaccination selectionnée du DEP d'un(e) patient(e).
-  </p>
+  <h2>Vaccination</h2>
+  <p>Aperçu détaillé de la vaccination sélectionnée dans le DEP.</p>
   <p>
-    Les données techniques d'une vaccination sélectionnée sont affichées dans la vue détaillée.
-    La vue détaillée est le point de départ pour l'édition ou le commentaire, l'annulation ou le téléchargement
-    d'une vaccination selectionnée et permet les actions suivantes:
+   L’aperçu détaillé sert de point de départ pour éditer et commenter la vaccination sélectionnée et prend en charge les fonctions suivantes :
   <ul>
-    <li>Afficher la page de dialogue pour modifier les données de la vaccination sélectionnée</li>
-    <li>Affichage de la page de dialogue pour annuler des vaccinations erronées</li>
-    <li>Téléchargement du jeu de données selon le format d'échange EPD en JSON.</li>
+    <li>Corriger une entrée</li>
+    <li>Annuler des vaccinations saisies par erreur</li>
+    <li>Valider une vaccination (uniquement pour les professionnels de la santé)</li>
+    <li>Téléchargement de l'entrée sous forme structurée afin de la transférer vers un autre système</li>
   </ul>
   </p>
   <hr>
-  <p>La vue détaillée affiche les informations techniques suivantes: </p>
+  <p>L’aperçu détaillé contient les informations suivantes :</p>
   <p>
     <ul>
-      <li>Date: Date de la vaccination</li>
-      <li>Vaccin: Le vaccin administré</li>
-      <li>Protection vaccinale: Une ou plusieurs maladies infectieuses contre lesquelles le vaccin est efficace</li>
-      <li>Numéro de lot: Le numéro de lot du vaccin</li>
-      <li>Dose: Numéro de la dose de vaccin administrée</li>
-      <li>Numéro de lot: Le numéro de lot du vaccin<li>
-      <li>Vacciné par: Nom et titre du professionnel de santé qui a administré le vaccin</li>
-      <li>Organisation: Nom de l'organisation où la vaccination a été effectuée.</li>
+      <li>Date : Date de la vaccination</li>
+      <li>Vaccin : Vaccin administré</li>
+      <li>Protection vaccinale : Une ou plusieurs maladies infectieuses contre laquelle/lesquelles le vaccin est efficace</li>
+      <li>Dose : Numéro de la dose du vaccin administré</li>
+      <li>Numéro de lot : le numéro de lot du vaccin.</li>
+      <li>Raison de la vaccination : raison pour laquelle la vaccination a été effectuée<li>
+      <li>Administré par : Nom du professionnel de la santé qui a administré le vaccin </li>
+      <li>Organisation : Nom de l'organisation où le vaccin a été administré.</li>
+      <li>Commentaires : Tous les commentaires sur l'entrée sélectionnée. Pour chaque entrée, le nom de l’auteur ainsi que la date et le contenu sont affichés.</li>
     </ul>
   </p>
 </body>

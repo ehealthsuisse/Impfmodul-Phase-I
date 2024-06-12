@@ -1,51 +1,44 @@
 <body>
-  <h2>Vaccination record</h2>
-  <p>Total representation of immunization data from a patient's EPD. To display the immunization record.
-  all vaccination documents from the patient's EPD are retrieved from the EPD and displayed according to the rule set
-  for EPD immunization data are summarized.
-  </p>
-  <p>The immunization record serves as the starting point for processing patient immunization data in EPD and supports interactions:
-  <ul>
-    <li>Switch to detailed view of vaccinations, adverse events, infectious diseases and risk factors by clicking on an entry</li>
-    <li>Export the immunization record as a PDF document</li>
-    <li>Save the vaccination card as a snapshot at the present time in VACD exchange format.</li>
-  </ul>
+  <h2>Vaccination certificate</h2>
+  <p>
+  The vaccination certificate presents current vaccination data in table form, as well as adverse reactions, infectious diseases and risk factors.
+  The information must be validated by a healthcare professional, who is connected to the EPR.
+  Vaccination data can be downloaded in PDF format and then printed out. Vaccination data can also be exported in a structured format for re-use in other systems.
   </p>
   <hr>
-  <p>The immunization card will display the following immunization data:</p>
   <h3>Vaccinations</h3>
-  <p>List of all documented vaccinations sorted by date of vaccination with fields:
+  <p>List of all documented vaccinations sorted by date of vaccination:
   <ul>
       <li>Date: Date of vaccination</li>
-      <li>Vaccination protection: One or more infectious diseases against which the vaccine is effective</li>
-      <li>Vaccine: The vaccine administered</li>
-      <li>Dose: Number of the vaccine dose administered</li>
-      <li>Vaccinated By: Name of the health professional who administered the vaccination or if not known, name of the organization where the vaccination was administered. </li>
+      <li>Vaccine: Administered vaccine</li>
+      <li>Vaccine protection: One or more infectious diseases against which the vaccine is effective</li>
+      <li>Dose: Number of the administered vaccine dose</li>
+      <li>Administered by: Name of the healthcare professional who administered the vaccine, or if unknown, name of the organization where the vaccine was administered.</li>
     </ul>
   </p>
-  <h3>Adverse effects</h3>
-  <p>List of all documented adverse effect symptoms, ordered by date of occurrence with the fields:
+  <h3>Adverse events</h3>
+  <p>List of all documented adverse events sorted by date of occurrence:
     <ul>
-      <li>Date: Date of occurrence of the adverse effect certificate</li>
-      <li>Adverse effect: The name of the adverse effect</li>
-      <li>Recoreded by: Name of the person who noted the adverse reaction</li>
+      <li>Date: Date of occurrence of the adverse effect </li>
+      <li>Adverse effect: Description of the adverse effect</li>
+      <li>Recorded by: Name of the person who noted the adverse effect</li>
     </ul>
   </p>
   <h3>Infectious diseases</h3>
-  <p>List of all vaccine-preventable diseases the patient has been through, sorted by diagnosis date with the fields:
+  <p>List of all contracted infectious diseases, for which a vaccine exists, sorted by diagnosis date:
     <ul>
-      <li>Date: Date of diagnosis of the vaccine-preventable disease passed</li>
-      <li>Infectious disease: Name of the respective vaccine-preventable disease</li>
-      <li>Recorded by: Name of the person who made the infectious disease diagnosis</li>
+      <li>Date: Date of diagnosis of the infectious disease</li>
+      <li>Infectious disease: Name of the infectious disease</li>
+      <li>Recorded by: Name of the person who diagnosed the infectious disease </li>
     </ul>
   </p>
   <h3>Risk factors</h3>
-  <p>List of risk factors of the patient, ordered by diagnosis date with the fields:
+  <p>List of all risk factors, sorted by diagnosis date:
     <ul>
-      <li>Date: Date of diagnosis of risk factor</li>
-      <li>Basic disease: Name of the respective risk factor</li>
-      <li>Clinical status: The clinical condition, distinguishing between active or inactive</li>
-      <li>Recorded by: Name of the person who made the diagnosis for the risk factor</li>
+      <li>Date: Date of diagnosis of the risk factor</li>
+      <li>Risk factor: Name of the risk factor</li>
+      <li>Clinical status: Is the risk factor currently applicable (active) or no longer applicable (inactive)?</li>
+      <li>Recorded by: Name of the person who diagnosed the risk factor</li>
     </ul>
   </p>
  </body>

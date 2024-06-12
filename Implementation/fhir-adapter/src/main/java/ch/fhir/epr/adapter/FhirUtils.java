@@ -49,18 +49,6 @@ import org.hl7.fhir.r4.model.Resource;
 @NoArgsConstructor
 public final class FhirUtils {
 
-  public static CodeableConcept replaceLegacyTargetDiseaseCoding(CodeableConcept codeableConcept) {
-    Coding coding = codeableConcept.getCoding().get(0);
-    String code = coding.getCode();
-    String display = coding.getDisplay();
-    if (FhirConstants.LEGACY_TARGET_DISEASE_CODE.equals(code)
-        && FhirConstants.LEGACY_TARGET_DISEASE_DISPLAY.equals(display)) {
-      coding.setCode(FhirConstants.CURRENT_TARGET_DISEASE_CODE);
-      coding.setDisplay(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY);
-    }
-    return codeableConcept;
-  }
-
   public static SectionComponent getSectionByType(Composition composition, SectionType type) {
     for (SectionComponent sectionComponent : composition.getSection()) {
       boolean isSameId = type.getId().equals(sectionComponent.getId());
@@ -74,7 +62,19 @@ public final class FhirUtils {
   }
 
   public static String getUuidFromBundle(Bundle bundle) {
-    return bundle.getIdentifier().getValue();
+    return bundle != null && bundle.getIdentifier() != null ? bundle.getIdentifier().getValue() : null;
+  }
+
+  public static CodeableConcept replaceLegacyTargetDiseaseCoding(CodeableConcept codeableConcept) {
+    Coding coding = codeableConcept.getCoding().get(0);
+    String code = coding.getCode();
+    String display = coding.getDisplay();
+    if (FhirConstants.LEGACY_TARGET_DISEASE_CODE.equals(code)
+        && FhirConstants.LEGACY_TARGET_DISEASE_DISPLAY.equals(display)) {
+      coding.setCode(FhirConstants.CURRENT_TARGET_DISEASE_CODE);
+      coding.setDisplay(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY);
+    }
+    return codeableConcept;
   }
 
   static AuthorDTO getAuthor(Bundle bundle) {
