@@ -1,13 +1,13 @@
 {
   "ALLERGY": {
-    "TITLE": "Nebenwirkungen (UIE)",
-    "NEW_HEADER": "Nebenwirkung hinzufügen",
-    "EDIT_HEADER": "Nebenwirkung bearbeiten",
-    "DETAILS_HEADER": "Details zur Nebenwirkung",
-    "CODE": "Unerwünschte Wirkung",
-    "OCCURRENCE_DATE": "Datum",
-    "RECORDER": "Erfasst von",
-    "ORGANIZATION": "Organisation",
-    "DATE": "Datum der Feststellung"
+    "TITLE": "Effetti avversi (EIV)",
+    "DETAILS_HEADER": "Dettagli sull'effetti collaterali",
+    "NEW_HEADER": "Aggiungere effetti collaterali",
+    "EDIT_HEADER": "Modifica effetti collaterali",
+    "CODE": "Effetto avverso",
+    "RECORDER": "Registrato da",
+    "ORGANIZATION": "Organizzazione",
+    "OCCURRENCE_DATE": "Data",
+    "DATE": "Data di determinazione"
   }
 }

@@ -1,7 +1,7 @@
 {
   "ICONS": {
-    "RECORD_VALIDATED": "Überprüft",
-    "RECORD_DELETED": "Gelöscht",
-    "RECORD_UPDATED": "Aktualisiert"
+    "RECORD_VALIDATED": "Verificato",
+    "RECORD_DELETED": "Eliminato",
+    "RECORD_UPDATED": "Aggiornato"
   }
 }

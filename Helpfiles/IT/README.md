@@ -1,1 +1,0 @@
-### Currently under review, IT language support was temporary removed.
