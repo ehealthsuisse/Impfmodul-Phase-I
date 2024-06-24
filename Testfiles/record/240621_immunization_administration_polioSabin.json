@@ -1,0 +1,242 @@
+{
+  "resourceType": "Bundle",
+  "id": "Bundle-0001",
+  "meta": {
+    "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+    "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration" ]
+  },
+  "identifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:uuid:15272889-830d-4fc6-ae2e-ae362c113d0e"
+  },
+  "type": "document",
+  "timestamp": "2024-06-21T14:00:37.496+00:00",
+  "entry": [ {
+    "fullUrl": "https://www.e-health-suisse.ch/Composition/Composition-0001",
+    "resource": {
+      "resourceType": "Composition",
+      "id": "Composition-0001",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration" ]
+      },
+      "language": "en-US",
+      "identifier": {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:09317c13-31ba-491c-b40d-6d6d29a4d36a"
+      },
+      "status": "final",
+      "type": {
+        "coding": [ {
+          "system": "http://snomed.info/sct",
+          "code": "41000179103",
+          "display": "Immunization record"
+        } ]
+      },
+      "subject": {
+        "reference": "Patient/Patient-0001"
+      },
+      "date": "2024-06-21T14:00:37+00:00",
+      "author": [ {
+        "reference": "Practitioner/Practitioner-author"
+      } ],
+      "title": "Immunization Administration",
+      "confidentiality": "N",
+      "_confidentiality": {
+        "extension": [ {
+          "url": "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-confidentialitycode",
+          "valueCodeableConcept": {
+            "coding": [ {
+              "system": "http://snomed.info/sct",
+              "code": "17621005",
+              "display": "Normal"
+            } ]
+          }
+        } ]
+      },
+      "relatesTo": [ {
+        "code": "replaces",
+        "targetReference": {
+          "reference": "urn:uuid:b1587ed1-892a-4fea-87a1-579320b4b33d"
+        }
+      } ],
+      "section": [ {
+        "id": "administration",
+        "title": "Immunization Administration",
+        "code": {
+          "coding": [ {
+            "system": "http://loinc.org",
+            "code": "11369-6",
+            "display": "Hx of Immunization"
+          } ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry": [ {
+          "reference": "Immunization/Immunization-0001"
+        } ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-author",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-author",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr" ]
+      },
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-author"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-author",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-author",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr" ]
+      },
+      "identifier": [ {
+        "system": "urn:oid:2.51.1.3",
+        "value": "GLN"
+      } ],
+      "name": [ {
+        "family": "HCP",
+        "given": [ "Arzt" ],
+        "prefix": [ " Dr." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Patient/Patient-0001",
+    "resource": {
+      "resourceType": "Patient",
+      "id": "Patient-0001",
+      "identifier": [ {
+        "system": "urn:oid:1.2.3.4",
+        "value": "spid extension"
+      } ],
+      "active": true,
+      "name": [ {
+        "family": "Mustermann",
+        "given": [ "Max" ]
+      } ],
+      "gender": "male",
+      "birthDate": "1900-01-01"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0001",
+    "resource": {
+      "resourceType": "PractitionerRole",
+      "id": "PractitionerRole-0001",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr" ]
+      },
+      "practitioner": {
+        "reference": "Practitioner/Practitioner-0001"
+      },
+      "organization": {
+        "reference": "Organization/Organization-0001"
+      }
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0001",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0001",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr" ]
+      },
+      "identifier": [ {
+        "system": "urn:oid:2.51.1.3",
+        "value": "7600000000000"
+      } ],
+      "name": [ {
+        "family": "HCP",
+        "given": [ "Arzt" ],
+        "prefix": [ " Dr." ]
+      } ]
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0001",
+    "resource": {
+      "resourceType": "Organization",
+      "id": "Organization-0001",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "https://fhir.ch/ig/ch-core/StructureDefinition-ch-core-organization-epr" ]
+      },
+      "name": "Gruppenpraxis CH"
+    }
+  }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Immunization/Immunization-0001",
+    "resource": {
+      "resourceType": "Immunization",
+      "id": "Immunization-0001",
+      "meta": {
+        "lastUpdated": "2024-06-21T14:00:37.496+00:00",
+        "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization" ]
+      },
+      "extension": [ {
+        "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-recorder-reference",
+        "valueReference": {
+          "reference": "Practitioner/Practitioner-author"
+        }
+      }, {
+        "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference",
+        "extension": [ {
+          "url": "entry",
+          "valueReference": {
+            "reference": "urn:uuid:9542b915-8d9b-4ae8-948a-ec91d3e6f5ff"
+          }
+        }, {
+          "url": "document",
+          "valueReference": {
+            "reference": "urn:uuid:b1587ed1-892a-4fea-87a1-579320b4b33d"
+          }
+        }, {
+          "url": "relationcode",
+          "valueCode": "replaces"
+        } ]
+      } ],
+      "identifier": [ {
+        "system": "urn:ietf:rfc:3986",
+        "value": "urn:uuid:21ed1b89-8802-43cc-af21-de9066f555e3"
+      } ],
+      "status": "completed",
+      "vaccineCode": {
+        "coding": [ {
+          "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs",
+          "code": "102",
+          "display": "Polio Sabin"
+        } ]
+      },
+      "patient": {
+        "reference": "Patient/Patient-0001"
+      },
+      "occurrenceDateTime": "1992-08-19T00:00:00+00:00",
+      "lotNumber": "-",
+      "performer": [ {
+        "actor": {
+          "reference": "PractitionerRole/PractitionerRole-0001"
+        }
+      } ],
+      "protocolApplied": [ {
+        "targetDisease": [ {
+          "coding": [ {
+            "system": "http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm",
+            "code": "398102009",
+            "display": "Acute poliomyelitis (disorder)"
+          } ]
+        } ],
+        "doseNumberPositiveInt": 3
+      } ]
+    }
+  } ]
+}
