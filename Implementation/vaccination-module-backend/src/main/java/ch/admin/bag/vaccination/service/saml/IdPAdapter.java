@@ -20,12 +20,20 @@ package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
+
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import java.util.List;
+
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
 import net.shibboleth.utilities.java.support.httpclient.TLSSocketFactory;
 import org.apache.http.client.HttpClient;
+import org.apache.tomcat.util.compat.TLS;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.messaging.context.InOutOperationContext;
@@ -135,9 +143,36 @@ public class IdPAdapter {
   }
 
   private HttpClient createHttpClient() throws Exception {
+    log.debug("Load the keystore");
+    KeyStore keyStore = KeyStore.getInstance(System.getProperty("java.net.ssl.keyStoreType", "PKC12"));
+    try (FileInputStream keyStoreStream = new FileInputStream(System.getProperty("java.net.ssl.keyStore"))) {
+      keyStore.load(keyStoreStream, System.getProperty("java.net.ssl.keyStorePassword").toCharArray());
+    }
+
+    log.debug("Initialize the KeyManagerFactory");
+    KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    keyManagerFactory.init(keyStore, System.getProperty("java.net.ssl.keyStorePassword").toCharArray());
+
+    log.debug("Load the truststore");
+    KeyStore trustStore = KeyStore.getInstance(System.getProperty("java.net.ssl.trustStoreType", "JKS"));
+    try (FileInputStream trustStoreStream = new FileInputStream(System.getProperty("java.net.ssl.trustStore"))) {
+      trustStore.load(trustStoreStream, System.getProperty("java.net.ssl.trustStorePassword").toCharArray());
+    }
+
+    log.debug("Initialize the TrustManagerFactory");
+    TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    trustManagerFactory.init(trustStore);
+
+    log.debug("Initialize the SSLContext");
+    SSLContext sslContext = SSLContext.getInstance("TLS");
+    sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+
+    log.debug("Configure the HttpClientBuilder with the SSLContext");
     HttpClientBuilder clientBuilder = new HttpClientBuilder();
-    clientBuilder.setTLSSocketFactory(new TLSSocketFactory(SSLContext.getDefault()));
-    clientBuilder.setUseSystemProperties(true);
+    clientBuilder.setTLSSocketFactory(new TLSSocketFactory(sslContext));
+    // clientBuilder.setUseSystemProperties(true);
+
+    log.debug("Build the HttpClient");
     return clientBuilder.buildClient();
   }
 
