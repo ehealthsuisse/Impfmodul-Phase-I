@@ -72,9 +72,10 @@ public interface SAMLServiceIfc {
    *
    * @param idp idp information needed to retrieve logout url
    * @param logoutRequest {@link LogoutRequest}
+   * @param request {@link HttpServletRequest}
    * @return {@link LogoutResponse}
    */
-  LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest);
+  LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest, HttpServletRequest request);
 
   /**
    * Gets the IDP config based on the identifiers specific in the idp-config.yml

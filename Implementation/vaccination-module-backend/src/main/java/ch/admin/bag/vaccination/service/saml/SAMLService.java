@@ -160,9 +160,14 @@ public class SAMLService implements SAMLServiceIfc {
   }
 
   @Override
-  public LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest) {
+  public LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest, HttpServletRequest request) {
     IdentityProviderConfig idpConfig = getIdpConfig(idp);
-    String logoutURL = idpConfig != null ? idpConfig.getLogoutURL() : logoutRequest.getDestination();
+    String logoutURL = idpConfig != null ? idpConfig.getLogoutURL() : null;
+    if (logoutURL == null) {
+      log.debug("IDP for Session to logout could not be determined. Returning vaccination URL as default destination. "
+          + "Please check IDP config to set logoutURLs.");
+      logoutURL = request.getRequestURI();
+    }
     String entityId = getEntityId(idpConfig);
     LogoutResponse response = SAMLUtils.createUnsignedLogoutResponse(logoutRequest, entityId, logoutURL);
     signRequest(response);

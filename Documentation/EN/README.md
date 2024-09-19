@@ -24,6 +24,9 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+### Juli 2024 - Hotfix 1.6.2 
+This hotfix contains an important security fix. It is strongly recommended to upgrade your version.
+
 ### June 2024 - Hotfix 1.6.1 
 Hotfix for 1.6.0, fixing few issues spotted on provider's infrastructure.
 

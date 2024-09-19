@@ -252,14 +252,8 @@ public class SAMLUtils {
 
   public static LogoutResponse createUnsignedLogoutResponse(LogoutRequest logoutRequest, String spEntityId,
       String logoutURL) {
-    String issuer = logoutRequest.getIssuer().getValue();
     LogoutResponse response = buildSAMLObject(LogoutResponse.class);
     response.setDestination(logoutURL);
-    if (logoutURL == null) {
-      log.warn("Logout URL is null (due to missing IDP information), "
-          + "so guessing logout URL from issuer {}. If this is no URL, this will lead to a exception.", issuer);
-      response.setDestination(issuer);
-    }
     response.setInResponseTo(logoutRequest.getID());
     response.setIssueInstant(Instant.now());
     response.setIssuer(buildIssuer(spEntityId));
@@ -337,6 +331,11 @@ public class SAMLUtils {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
       dbf.setIgnoringComments(true);
       dbf.setNamespaceAware(true);
+      dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document doc = db.parse(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
 

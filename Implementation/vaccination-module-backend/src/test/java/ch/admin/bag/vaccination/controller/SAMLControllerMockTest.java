@@ -130,7 +130,7 @@ public class SAMLControllerMockTest {
     String logoutResponseString = SAMLXmlTestUtils.xml("saml/samlLogoutResponse.xml");
     XMLObject logoutResponse = SAMLUtils.unmarshall(logoutResponseString);
 
-    when(samlService.createLogoutResponse(any(), any())).thenReturn((LogoutResponse) logoutResponse);
+    when(samlService.createLogoutResponse(any(), any(), any())).thenReturn((LogoutResponse) logoutResponse);
   }
 
 }
