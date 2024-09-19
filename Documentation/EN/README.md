@@ -24,6 +24,9 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+### September 2024 - Hotfix 1.6.3 
+This hotfix contains a small extension to the XUA request made to the EPR-backend.
+
 ### Juli 2024 - Hotfix 1.6.2 
 This hotfix contains an important security fix. It is strongly recommended to upgrade your version.
 
