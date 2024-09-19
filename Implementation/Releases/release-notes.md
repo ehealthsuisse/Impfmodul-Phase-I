@@ -1,3 +1,10 @@
+# July 2024 - Hotfix 1.6.2
+This hotfix only contains a small but relevant security fix. It is strongly recommended to upgrade to this version.  
+
+In this context, following adaption have been made to the logout request:
+* The received logoutRequestMessage is not allowed to contain any DOCTYPE annotations which caused above-mentioned misbehavior. If such an annotation is detected, the request is denied.
+* Field LogoutReponseMessage.destination is now filled by the vaccination logout URL if a logout request was sent for an unknown sessionId. 
+
 # June 2024 - Hotfix Frontend 1.6.1
 During customer validation, following issues have been identified and fixed. 
 

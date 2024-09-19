@@ -2,27 +2,28 @@
   "resourceType": "Bundle",
   "id": "Bundle-0001",
   "meta": {
-    "lastUpdated": "2022-10-27T09:38:55.996+02:00",
+    "lastUpdated": "2024-06-24T08:51:35.218+02:00",
     "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration" ]
   },
   "identifier": {
     "system": "urn:ietf:rfc:3986",
-    "value": "urn:uuid:6214bb05-3858-480c-aa63-2450dde50e25"
+    "value": "urn:uuid:85e80967-29be-499e-9b8b-78644d9f425a"
   },
   "type": "document",
-  "timestamp": "2022-10-27T09:38:55.996+02:00",
+  "timestamp": "2024-06-24T08:51:35.218+02:00",
   "entry": [ {
     "fullUrl": "https://www.e-health-suisse.ch/Composition/Composition-0001",
     "resource": {
       "resourceType": "Composition",
       "id": "Composition-0001",
       "meta": {
+        "lastUpdated": "2024-06-24T08:51:35.218+02:00",
         "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration" ]
       },
       "language": "en-US",
       "identifier": {
         "system": "urn:ietf:rfc:3986",
-        "value": "urn:uuid:e1141328-d12a-46bf-8034-a301fbfb8734"
+        "value": "urn:uuid:a7f84304-2e3f-4a5d-90d9-757a19cb8bb2"
       },
       "status": "final",
       "type": {
@@ -35,9 +36,9 @@
       "subject": {
         "reference": "Patient/Patient-0001"
       },
-      "date": "2022-10-27T09:38:55+02:00",
+      "date": "2024-06-24T08:51:35+02:00",
       "author": [ {
-        "reference": "Practitioner/Practitioner-0001"
+        "reference": "Patient/Patient-0001"
       } ],
       "title": "Immunization Administration",
       "confidentiality": "N",
@@ -48,7 +49,7 @@
             "coding": [ {
               "system": "http://snomed.info/sct",
               "code": "17621005",
-              "display": "Normal (qualifier value)"
+              "display": "Normal"
             } ]
           }
         } ]
@@ -70,34 +71,6 @@
         "entry": [ {
           "reference": "Immunization/Immunization-0001"
         } ]
-      }, {
-        "id": "pastIllnesses",
-        "title": "Undergone illnesses for immunization",
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "11348-0",
-            "display": "Hx of Past illness"
-          } ]
-        },
-        "text": {
-          "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
-        }
-      }, {
-        "id": "allergies",
-        "title": "Allergies",
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "48765-2",
-            "display": "Allergies and adverse reactions Document"
-          } ]
-        },
-        "text": {
-          "status": "generated",
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
-        }
       } ]
     }
   }, {
@@ -106,38 +79,26 @@
       "resourceType": "Patient",
       "id": "Patient-0001",
       "identifier": [ {
-        "system": "urn:ietf:rfc:3986",
-        "value": "urn:uuid:836d4e48-73c4-4bcf-a692-9582e662353e"
+        "system": "urn:oid:2.16.756.5.30.1.127.3.10.3",
+        "value": "761337612360366392"
       } ],
       "active": true,
       "name": [ {
-        "family": "Test Lastname",
-        "given": [ "Test Firstname" ],
-        "prefix": [ "Test Prefix" ]
+        "family": "URBANKOVA",
+        "given": [ "Jago George" ]
       } ],
       "gender": "male",
-      "birthDate": "2022-10-27"
-    }
-  }, {
-    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0001",
-    "resource": {
-      "resourceType": "Practitioner",
-      "id": "Practitioner-0001",
-      "identifier": [ {
-        "system": "urn:ietf:rfc:3986",
-        "value": "urn:uuid:24bdbdaf-6681-428a-8cb5-530a9dc96c6d"
-      } ],
-      "name": [ {
-        "family": "c",
-        "given": [ "b" ],
-        "prefix": [ "a" ]
-      } ]
+      "birthDate": "1995-05-23"
     }
   }, {
     "fullUrl": "https://www.e-health-suisse.ch/PractitionerRole/PractitionerRole-0001",
     "resource": {
       "resourceType": "PractitionerRole",
       "id": "PractitionerRole-0001",
+      "meta": {
+        "lastUpdated": "2024-06-24T08:51:35.218+02:00",
+        "profile": [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr" ]
+      },
       "practitioner": {
         "reference": "Practitioner/Practitioner-0001"
       },
@@ -146,32 +107,61 @@
       }
     }
   }, {
+    "fullUrl": "https://www.e-health-suisse.ch/Practitioner/Practitioner-0001",
+    "resource": {
+      "resourceType": "Practitioner",
+      "id": "Practitioner-0001",
+      "meta": {
+        "lastUpdated": "2024-06-24T08:51:35.218+02:00",
+        "profile": [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr" ]
+      },
+      "identifier": [ {
+        "system": "urn:oid:2.51.1.3",
+        "value": "7600000000000"
+      } ],
+      "name": [ {
+        "family": "Mustermann",
+        "given": [ "Max" ],
+        "prefix": [ "Dr. med" ]
+      } ]
+    }
+  }, {
     "fullUrl": "https://www.e-health-suisse.ch/Organization/Organization-0001",
     "resource": {
       "resourceType": "Organization",
       "id": "Organization-0001",
-      "name": "d"
+      "meta": {
+        "lastUpdated": "2024-06-24T08:51:35.218+02:00",
+        "profile": [ "https://fhir.ch/ig/ch-core/StructureDefinition-ch-core-organization-epr" ]
+      },
+      "name": "-"
     }
   }, {
     "fullUrl": "https://www.e-health-suisse.ch/Immunization/Immunization-0001",
     "resource": {
       "resourceType": "Immunization",
       "id": "Immunization-0001",
+      "meta": {
+        "lastUpdated": "2024-06-24T08:51:35.218+02:00",
+        "profile": [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization" ]
+      },
       "identifier": [ {
         "system": "urn:ietf:rfc:3986",
-        "value": "urn:uuid:1d1a586c-7526-4101-bb8e-174610e7babc"
+        "value": "urn:uuid:13e0d8fd-91c3-426b-bc8e-1bb590a87c53"
       } ],
       "status": "completed",
       "vaccineCode": {
         "coding": [ {
-          "code": "683"
+          "system": "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs",
+          "code": "637",
+          "display": "Boostrix"
         } ]
       },
       "patient": {
         "reference": "Patient/Patient-0001"
       },
-      "occurrenceDateTime": "2022-10-26T00:00:00+02:00",
-      "lotNumber": "12345",
+      "occurrenceDateTime": "2024-06-24T00:00:00+02:00",
+      "lotNumber": "-",
       "performer": [ {
         "actor": {
           "reference": "PractitionerRole/PractitionerRole-0001"
@@ -180,12 +170,24 @@
       "protocolApplied": [ {
         "targetDisease": [ {
           "coding": [ {
-            "system": "http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs",
-            "code": "38907003",
-            "display": "Varicella"
+            "system": "http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm",
+            "code": "76902006",
+            "display": "Tetanus (disorder)"
+          } ]
+        }, {
+          "coding": [ {
+            "system": "http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm",
+            "code": "27836007",
+            "display": "Pertussis (disorder)"
+          } ]
+        }, {
+          "coding": [ {
+            "system": "http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm",
+            "code": "397430003",
+            "display": "Diphtheria caused by Corynebacterium diphtheriae (disorder)"
           } ]
         } ],
-        "doseNumberPositiveInt": 10
+        "doseNumberPositiveInt": 1
       } ]
     }
   } ]
