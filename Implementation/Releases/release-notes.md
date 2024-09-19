@@ -1,3 +1,7 @@
+# September 2024 - Hotfix 1.6.3 
+This hotfix contains a small extension to the XUA request made to the EPR-backend.
+* The XUA request field 'purpose of use' has been extended to set the codeSystemName to "EprPurposeOfUse".
+
 # July 2024 - Hotfix 1.6.2
 This hotfix only contains a small but relevant security fix. It is strongly recommended to upgrade to this version.  
 

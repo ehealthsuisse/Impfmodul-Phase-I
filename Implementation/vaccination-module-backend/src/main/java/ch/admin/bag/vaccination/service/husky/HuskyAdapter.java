@@ -112,6 +112,7 @@ import org.springframework.util.ReflectionUtils;
 public class HuskyAdapter implements HuskyAdapterIfc {
 
   private static final String GAZELLE = "GAZELLE";
+  private static final String EPR_PURPOSE_USE = "EprPurposeOfUse";
 
   @Autowired
   private Cache cache;
@@ -230,6 +231,9 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       // define the attributes for the X-User Assertion request
       CE role = HuskyUtils.getCodedRole(author.getRole());
       CE purposeOfUse = HuskyUtils.getCodedPurposeOfUse(author.getPurpose());
+      if (purposeOfUse != null) {
+        purposeOfUse.setCodeSystemName(EPR_PURPOSE_USE);
+      }
 
       String spidEprNamespace =
           communityConfig.getSpidEprNamespace() != null ? communityConfig.getSpidEprNamespace() : "";
