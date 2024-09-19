@@ -27,10 +27,10 @@ All detailed release notes can be found [here](https://github.com/ehealthsuisse/
 ### Juli 2024 - Hotfix 1.6.2 
 This hotfix contains an important security fix. It is strongly recommended to upgrade your version.
 
-### June 2024 - Hotfix 1.6.1 
+### June 2024 - Hotfixes 1.6.1 for frontend and backend
 Hotfix for 1.6.0, fixing few issues spotted on provider's infrastructure.
 
-Additionally added help-files into the documentation.
+Additionally added updated help-files into the documentation.
 
 #### April-June 2024 - Release 1.6.0 and 1.6.0-RCs
 Improving the vaccination module based on user, provider and audit feedback.

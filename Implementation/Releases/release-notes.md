@@ -5,7 +5,13 @@ In this context, following adaption have been made to the logout request:
 * The received logoutRequestMessage is not allowed to contain any DOCTYPE annotations which caused above-mentioned misbehavior. If such an annotation is detected, the request is denied.
 * Field LogoutReponseMessage.destination is now filled by the vaccination logout URL if a logout request was sent for an unknown sessionId. 
 
-# June 2024 - Hotfix 1.6.1
+# June 2024 - Hotfix Frontend 1.6.1
+During customer validation, following issues have been identified and fixed. 
+
+* Upon customer request, the Italian language was reintegrated. There will be another update in the future to finalize the texts.
+* Fixed an issue linked to the entry validation. 
+
+# June 2024 - Hotfix Backend 1.6.1
 During testing, few issues have been identified in the backend module which were fixed in this version.  
 
 Additionally, following points changed:
