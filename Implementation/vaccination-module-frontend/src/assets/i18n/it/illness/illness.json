@@ -5,12 +5,11 @@
     "DETAILS_HEADER": "Dettagli della malattia infettive",
     "EDIT_HEADER": "Modifica malattia infettive",
     "NEW_HEADER": "Nuova malattia infettive",
-    "ILLNESS_CODE": "Malattia infettive",
-    "RECORDER": "Registrato da",
+    "ILLNESS_CODE": "Malattia infettiva",
+    "RECORDER": "Registrazione effettuata da",
     "RECORDED_DATE": "Data",
     "BEGIN": "Data di inizio",
     "END": "Data di fine",
-    "ORGANIZATION": "Organizzazione",
     "DATE": "Data di diagnosi"
   }
 }

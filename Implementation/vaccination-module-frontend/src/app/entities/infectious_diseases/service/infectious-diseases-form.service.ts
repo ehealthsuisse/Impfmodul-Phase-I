@@ -22,7 +22,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { SessionInfoService } from '../../../core/security/session-info.service';
-import { dateValidator, notFutureDateValidator } from '../../../core/validators/date-order-validator';
+import { dateValidator, notFutureDateValidator, validateDatesNotBefore } from '../../../core/validators/date-order-validator';
 import { IInfectiousDiseases } from '../../../model';
 import { IComment } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
@@ -90,9 +90,13 @@ export class InfectiousDiseasesFormService {
         }
       ),
 
-      recordedDate: new FormControl(new Date(), [Validators.required, notFutureDateValidator('recordedDate')]),
+      recordedDate: new FormControl(new Date(), [
+        Validators.required,
+        notFutureDateValidator('recordedDate'),
+        validateDatesNotBefore('recordedDate', 'begin'),
+      ]),
       begin: new FormControl(new Date(), [Validators.required, notFutureDateValidator('begin')]),
-      end: new FormControl(null, [dateValidator()]),
+      end: new FormControl(null, [dateValidator('begin', 'end')]),
       code: new FormControl(null, Validators.required),
       recorder: new FormGroup({
         firstName: new FormControl(firstName),
@@ -113,7 +117,7 @@ export class InfectiousDiseasesFormService {
     if (!formValue.recorder?.firstName && !formValue.recorder?.lastName) {
       formValue.recorder = undefined;
     }
-    
+
     return {
       ...formValue,
       recordedDate: dateWithTimezone(formValue.recordedDate),

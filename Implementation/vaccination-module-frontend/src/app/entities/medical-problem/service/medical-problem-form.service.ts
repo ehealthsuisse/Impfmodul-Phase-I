@@ -93,7 +93,7 @@ export class MedicalProblemFormService {
 
       recordedDate: new FormControl(new Date(), [Validators.required, notFutureDateValidator('recordedDate')]),
       begin: new FormControl(new Date(), [Validators.required]),
-      end: new FormControl(null, [dateValidator()]),
+      end: new FormControl(null, [dateValidator('begin', 'end')]),
       code: new FormControl(null, Validators.required),
       verificationStatus: new FormControl(),
       clinicalStatus: new FormControl(null, Validators.required),
@@ -116,7 +116,7 @@ export class MedicalProblemFormService {
     if (!formValue.recorder?.firstName && !formValue.recorder?.lastName) {
       formValue.recorder = undefined;
     }
-    
+
     return {
       ...formValue,
       recordedDate: dateWithTimezone(formValue.recordedDate),

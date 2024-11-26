@@ -22,13 +22,14 @@ import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.exception.AccessDeniedException;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -61,7 +62,8 @@ public class SAMLFilter extends GenericFilterBean {
 
     HttpSession httpSession = httpServletRequest.getSession(false);
     boolean isToBeAuthenticated = isToBeAuthenticated(httpServletRequest);
-    boolean isLoginCall = httpServletRequest.getRequestURL().toString().contains("/saml/login");
+    boolean isLoginCall = httpServletRequest.getRequestURL().toString().contains("/saml/login")
+        && DispatcherType.REQUEST.equals(httpServletRequest.getDispatcherType());
     boolean isUserAuthenticated = HttpSessionUtils.getIsAuthenticatedFromSession();
 
     if (!isLoginCall && isToBeAuthenticated && isUserAuthenticated) {

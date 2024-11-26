@@ -49,6 +49,7 @@ export class InfectiousDiseasesDetailedInformationComponent implements OnInit, A
   @Input() infectiousDiseases: IInfectiousDiseases | null = null;
   @Input() infectiousDiseasesForm: InfectiousDiseasesFormGroup = inject(InfectiousDiseasesFormService).createInfectiousDiseasesFormGroup();
   @Input() isEditable: boolean = false;
+  @Input() showTitle: boolean = false;
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
   infectiousDiseasesFilteredList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   formOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();

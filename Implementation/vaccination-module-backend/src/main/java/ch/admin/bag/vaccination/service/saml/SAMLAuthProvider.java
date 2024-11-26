@@ -19,7 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;

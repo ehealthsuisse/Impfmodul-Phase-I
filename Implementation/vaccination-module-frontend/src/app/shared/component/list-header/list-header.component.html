@@ -2,15 +2,28 @@
   <mat-card-header>
     <mat-card-title class="mat-card-title" [vmTranslate]="title"></mat-card-title>
     <mat-card-actions align="start">
-      <button mat-icon-button (click)="add.emit()" type="button" [attr.aria-label]="'buttons.ADD' | translate" [disabled]="isEmergencyMode">
-        <mat-icon [attr.aria-label]="'buttons.ADD' | translate" matTooltip="{{ 'buttons.ADD' | translate }}">add </mat-icon>
+      <button
+        mat-icon-button
+        (click)="add.emit()"
+        type="button"
+        [attr.aria-label]="'buttons.ADD' | translate"
+        [disabled]="isEmergencyMode"
+        [matTooltip]="'buttons.ADD' | translate"
+      >
+        <mat-icon>add </mat-icon>
       </button>
-      <button mat-flat-button (click)="openHelpDialog($event)" type="button" [attr.aria-label]="'buttons.HELP' | translate">
-        <mat-icon [attr.aria-label]="'buttons.HELP' | translate" matTooltip="{{ 'buttons.HELP' | translate }}">help </mat-icon>
+      <button
+        mat-flat-button
+        (click)="openHelpDialog($event)"
+        type="button"
+        [attr.aria-label]="'buttons.HELP' | translate"
+        [matTooltip]="'buttons.HELP' | translate"
+      >
+        <mat-icon>help </mat-icon>
       </button>
     </mat-card-actions>
   </mat-card-header>
-  <mat-card-content mat-card-content>
+  <mat-card-content>
     <mat-form-field class="search-input-wrapper">
       <mat-label vmTranslate="GLOBAL.SEARCH"></mat-label>
       <input matInput #input (keyup)="filterValue($event)" />
@@ -44,16 +57,15 @@
           [vmTranslate]="'buttons.ADD'"
         ></span>
       </button>
-      <button mat-flat-button (click)="openHelpDialog($event)" type="button" [attr.aria-label]="'buttons.HELP' | translate">
-        <mat-icon [attr.aria-label]="'buttons.HELP' | translate" matTooltip="{{ 'buttons.HELP' | translate }}">help </mat-icon>
+      <button
+        mat-flat-button
+        (click)="openHelpDialog($event)"
+        type="button"
+        [attr.aria-label]="'buttons.HELP' | translate"
+        [matTooltip]="'buttons.HELP' | translate"
+      >
+        <mat-icon>help </mat-icon>
       </button>
     </mat-card-actions>
   </mat-card-content>
 </mat-card>
-
-<mat-card-header class="mat-elevation-z0 vm-list-header" fxLayout="column" *ngIf="toggle">
-  <mat-card-subtitle class="h3-header"> </mat-card-subtitle>
-  <mat-card class="mat-elevation-z0 card-header" *ngIf="subtitleVisibility">
-    <mat-card-actions class="mat-card-actions"> </mat-card-actions>
-  </mat-card>
-</mat-card-header>

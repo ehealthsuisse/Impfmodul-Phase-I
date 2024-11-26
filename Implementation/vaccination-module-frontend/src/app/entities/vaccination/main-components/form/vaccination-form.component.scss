@@ -1,0 +1,21 @@
+@import 'src/app/entities/common/styles/common.edit.component';
+
+// Reason for vaccination default value border
+.mat-mdc-focus-indicator::before {
+  border: none;
+}
+
+.mat-mdc-form-field {
+  // Vaccination protection label
+  input.mat-mdc-chip-input {
+    margin-left: 0;
+  }
+}
+
+// Vaccination chip values styling
+.mat-mdc-standard-chip .mdc-evolution-chip__text-label {
+  --mdc-chip-label-text-line-height: 1.125;
+  --mdc-chip-label-text-size: 14px;
+  --mdc-chip-label-text-weight: 500;
+  letter-spacing: normal;
+}

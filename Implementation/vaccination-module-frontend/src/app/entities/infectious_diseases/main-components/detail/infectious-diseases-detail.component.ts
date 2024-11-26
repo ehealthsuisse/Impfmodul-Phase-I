@@ -49,14 +49,12 @@ export class InfectiousDiseasesDetailComponent extends BreakPointSensorComponent
       if (illness) {
         this.infectiousDiseases = illness;
         this.sharedDataService.storedData['detailedItem'] = this.infectiousDiseases;
-        this.sharedDataService.canEdit = this.infectiousDiseases.deleted! || this.infectiousDiseases.updated!;
         this.sharedDataService.setSessionStorage();
       } else {
         this.illnessService.query().subscribe({
           next: list => {
             this.infectiousDiseases = list.find(filteredIllness => filteredIllness.id === id)!;
             this.sharedDataService.storedData['detailedItem'] = this.infectiousDiseases;
-            this.sharedDataService.canEdit = this.infectiousDiseases.deleted! || this.infectiousDiseases.updated!;
             this.sharedDataService.setSessionStorage();
           },
         });

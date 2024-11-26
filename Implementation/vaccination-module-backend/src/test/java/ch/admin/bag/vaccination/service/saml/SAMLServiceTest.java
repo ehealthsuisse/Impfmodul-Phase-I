@@ -27,12 +27,11 @@ import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
-import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
 import org.opensaml.saml.saml2.core.Artifact;
@@ -43,7 +42,6 @@ import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -51,6 +49,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @SpringBootTest
 public class SAMLServiceTest {
@@ -67,9 +67,6 @@ public class SAMLServiceTest {
   @SuppressWarnings("unused")
   @Autowired
   private XMLObjectProviderRegistry registry;
-
-  @MockBean
-  private SignatureService signatureService;
 
   @Test
   void buildArtifactResolve_explicitProviderEntityIdSet_returnExplicitId() {
@@ -207,6 +204,7 @@ public class SAMLServiceTest {
     when(request.getSession(true)).thenReturn(session);
     when(request.getSession(false)).thenReturn(session);
 
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     return request;
   }
 

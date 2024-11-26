@@ -18,7 +18,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { SamlService } from '../security/saml.service';
 import { map, Observable, switchMap, take } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -26,7 +26,7 @@ import { filter } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard {
   constructor(private samlService: SamlService, private router: Router) {}
 
   canActivate(): Observable<boolean> {

@@ -2,14 +2,17 @@ package ch.fhir.epr.adapter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
+import java.util.UUID;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Immunization;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -49,6 +52,31 @@ public class FhirUtilsTest {
     String uuid = FhirUtils.getUuidFromBundle(bundle);
     assertNotNull(uuid);
     assertEquals(bundleUUID, uuid);
+  }
+
+  @Test
+  void testGetResourceTypeFromImmunization() {
+    String resourceType = FhirUtils.getResourceType(createImmunization());
+
+    assertNotNull(resourceType);
+    assertEquals("Immunization", resourceType);
+  }
+
+  @Test
+  void testGetResourceTypeNull() {
+    String resourceType = FhirUtils.getResourceType(null);
+
+    assertNull(resourceType);
+  }
+
+  private Immunization createImmunization() {
+    Identifier identifier = new Identifier();
+    identifier.setValue(FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID());
+    identifier.setSystem(FhirConstants.DEFAULT_URN_SYSTEM_IDENTIFIER);
+
+    Immunization immunization = new Immunization();
+    immunization.setIdentifier(List.of(identifier));
+    return immunization;
   }
 
   private SectionComponent createSection() {

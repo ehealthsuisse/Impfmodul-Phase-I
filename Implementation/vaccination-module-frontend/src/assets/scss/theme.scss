@@ -1,11 +1,33 @@
-@import '@angular/material/theming';
-@import '_palette';
+@use '@angular/material' as mat;
+@import './global';
 
-@include mat-core();
-@include angular-material-typography($typography-config);
-@include strong-focus-indicators() @include structural-styling() $my-primary: mat-palette($primary-green, 500);
-$my-accent: mat-palette($primary-green, 900);
+@include mat.core();
 
-$my-theme: mat-light-theme($my-primary, $my-accent);
+@include mat.strong-focus-indicators();
 
-@include angular-material-theme($my-theme);
+$typography-config: mat.define-typography-config(
+  $font-family: $font-family-base,
+  $headline-1: mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $headline-2: mat.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $headline-3: mat.define-typography-level(45px, 48px, 500, $letter-spacing: -0.005em),
+  $subtitle-1: mat.define-typography-level(16px, 28px, 400),
+  $body-1: mat.define-typography-level(12pt, 24px, 700),
+  $body-2: mat.define-typography-level(12pt, 24px, 500),
+  $button: mat.define-typography-level(14px, 14px, 500),
+);
+
+$my-primary: mat.define-palette(mat.$green-palette, 500);
+$my-accent: mat.define-palette(mat.$green-palette, 900);
+
+$my-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $my-primary,
+      accent: $my-accent,
+    ),
+    typography: $typography-config,
+  )
+);
+
+@include mat.all-component-themes($my-theme);
+@include mat.typography-hierarchy($my-theme);

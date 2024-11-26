@@ -20,8 +20,8 @@ package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.service.saml.SAMLAuthentication;
 import java.lang.reflect.Field;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -28,7 +28,8 @@ import org.springframework.context.annotation.ComponentScan;
  * Main of the project
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {"ch.admin.bag.vaccination", "org.projecthusky.communication", "ch.fhir.epr.adapter"})
+@ComponentScan(basePackages = {"ch.admin.bag.vaccination", "org.projecthusky.communication", "ch.fhir.epr.adapter",
+    "org.openehealth.ipf.boot", "org.apache.camel.spring.boot"})
 public class VaccinationApp extends SpringBootServletInitializer {
 
   public static void main(String[] args) {

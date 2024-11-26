@@ -42,7 +42,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -63,9 +62,7 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
-import org.hl7.fhir.r4.model.Composition.CompositionRelatesToComponent;
 import org.hl7.fhir.r4.model.Composition.DocumentConfidentiality;
-import org.hl7.fhir.r4.model.Composition.DocumentRelationshipType;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -160,7 +157,7 @@ public class FhirConverter implements FhirConverterIfc {
       return createVaccinationRecord(bundle, (VaccinationRecordDTO) dto);
     }
 
-    DomainResource updatedResource = null;
+    DomainResource updatedResource;
     if (dto instanceof VaccinationDTO vaccination) {
       bundle = createVaccination(bundle, vaccination);
       updatedResource = (DomainResource) getReference(bundle, Immunization.class);
@@ -340,14 +337,6 @@ public class FhirConverter implements FhirConverterIfc {
   public Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       Composition composition, DomainResource resource) {
     Bundle bundle = createBundle(ctx, patientIdentifier, dto);
-
-    CompositionRelatesToComponent crc = new CompositionRelatesToComponent();
-    crc.setCode(DocumentRelationshipType.REPLACES);
-    Reference targetReference = new Reference();
-    targetReference.setReference(FhirUtils.getIdentifierValue(composition));
-    crc.setTarget(targetReference);
-    ((Composition) bundle.getEntryFirstRep().getResource()).setRelatesTo(Arrays.asList(crc));
-
     DomainResource updatedResource = (DomainResource) getReference(bundle, resource.getClass());
     if (dto.isDeleted()) {
       markResourceDeleted(updatedResource);
@@ -453,7 +442,7 @@ public class FhirConverter implements FhirConverterIfc {
 
   private Bundle createAllergy(Bundle bundle, AllergyDTO dto, int entryNumber) {
     String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), null, entryNumberString);
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
     createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
 
     AllergyIntolerance allergyIntolerance = new AllergyIntolerance();
@@ -532,6 +521,7 @@ public class FhirConverter implements FhirConverterIfc {
         createVaccinationRecord ? FhirConstants.META_VACD_COMPOSITION_VAC_REC_URL
             : FhirConstants.META_VACD_COMPOSITION_IMMUN_URL));
     composition.setLanguage("en-US");
+    composition.setCategory(createVaccinationRecord ? FhirConstants.COMPOSITION_RECORD_CATEGORY : FhirConstants.COMPOSITION_IMMUNIZATON_CATEGORY);
 
     CodeableConcept compositionType =
         createCodeableConcept("41000179103", "Immunization record", FhirConstants.SNOMED_SYSTEM_URL);
@@ -575,23 +565,29 @@ public class FhirConverter implements FhirConverterIfc {
     return composition;
   }
 
-  private void createCrossReference(Composition compostion, DomainResource resource,
+  private void createCrossReference(Composition composition, DomainResource resource,
       DomainResource updatedResource) {
     Extension extension = updatedResource.addExtension();
     extension.setUrl(
-        "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-recorder-reference");
-    extension.setValue(compostion.getAuthorFirstRep());
+        "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-author");
+    extension.setValue(composition.getAuthorFirstRep());
 
     extension = updatedResource.addExtension();
-    extension.setUrl("http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference");
-    extension.addExtension("entry", new Reference(FhirUtils.getIdentifierValue(resource)));
-    extension.addExtension("document", new Reference(FhirUtils.getIdentifierValue(compostion)));
+    extension.setUrl("http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references");
+    extension.addExtension("entry", createReference(FhirUtils.getResourceType(resource),
+        FhirUtils.getIdentifierValue(resource)));
+    extension.addExtension("container", createReference(FhirUtils.getResourceType(composition),
+        FhirUtils.getIdentifierValue(composition)));
     extension.addExtension("relationcode", new CodeType("replaces"));
   }
 
   private Identifier createIdentifier() {
+    return createIdentifier(FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID());
+  }
+
+  private Identifier createIdentifier(String identifierValue) {
     Identifier identifier = new Identifier();
-    identifier.setValue(FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID());
+    identifier.setValue(identifierValue);
     identifier.setSystem(FhirConstants.DEFAULT_URN_SYSTEM_IDENTIFIER);
     return identifier;
   }
@@ -602,7 +598,7 @@ public class FhirConverter implements FhirConverterIfc {
 
   private Bundle createMedicalProblem(Bundle bundle, MedicalProblemDTO dto, int entryNumber) {
     String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), null, entryNumberString);
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
     createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
 
     Condition condition = new Condition();
@@ -642,7 +638,7 @@ public class FhirConverter implements FhirConverterIfc {
     return meta;
   }
 
-  private Organization createOrganization(Bundle bundle, String organizationName, PractitionerRole practitionerRole,
+  private void createOrganization(Bundle bundle, String organizationName, PractitionerRole practitionerRole,
       String entryNumber) {
     Organization organization = new Organization();
     organization.setMeta(createMeta(FhirConstants.META_ORGANIZATION_URL));
@@ -652,7 +648,6 @@ public class FhirConverter implements FhirConverterIfc {
     practitionerRole.setOrganization(new Reference("Organization/Organization-" + entryNumber));
 
     addEntry(bundle, "Organization/", organization);
-    return organization;
   }
 
   private Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto) {
@@ -661,7 +656,7 @@ public class FhirConverter implements FhirConverterIfc {
 
   private Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto, int entryNumber) {
     String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), null, entryNumberString);
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
     createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
 
     Condition condition = new Condition();
@@ -699,6 +694,7 @@ public class FhirConverter implements FhirConverterIfc {
     Patient patient = new Patient();
     patient.setId(patientId);
     patient.setIdentifier(List.of(identifier));
+    patient.setMeta(createMeta(FhirConstants.META_CORE_PATIENT_URL));
 
     HumanNameDTO patientInfo = patientIdentifier.getPatientInfo();
     if (patientInfo != null) {
@@ -734,7 +730,7 @@ public class FhirConverter implements FhirConverterIfc {
     return practitioner;
   }
 
-  private PractitionerRole createPractitionerRole(Bundle bundle, HumanNameDTO practitionerName, String gln,
+  private PractitionerRole createPractitionerRole(Bundle bundle, HumanNameDTO practitionerName, AuthorDTO authorDTO,
       String entryNumberString) {
     PractitionerRole practitionerRole = new PractitionerRole();
     practitionerRole.setId("PractitionerRole-" + entryNumberString);
@@ -743,12 +739,22 @@ public class FhirConverter implements FhirConverterIfc {
 
     if (practitionerName != null && !practitionerName.getFirstName().isBlank()
         && !practitionerName.getLastName().isBlank()) {
+      boolean isAuthorPractitioner = practitionerName.getFullName().equals(authorDTO.getUser().getFullName());
+      String gln = isAuthorPractitioner ? authorDTO.getGln() : FhirConstants.DEFAULT_PRACTITIONER_CODE;
+
       Practitioner practitioner = createPractitioner(practitionerName, gln, entryNumberString);
       practitionerRole.setPractitioner(new Reference("Practitioner/Practitioner-" + entryNumberString));
       addEntry(bundle, "Practitioner/", practitioner);
     }
 
     return practitionerRole;
+  }
+
+  private Reference createReference(String referenceType, String resourceValue) {
+    Reference reference = new Reference();
+    reference.setType(referenceType);
+    reference.setIdentifier(createIdentifier(resourceValue));
+    return reference;
   }
 
   private void createSectionIfNecessary(Composition composition, SectionType sectionType, Resource resource) {
@@ -780,7 +786,7 @@ public class FhirConverter implements FhirConverterIfc {
   private Bundle createVaccination(Bundle bundle, VaccinationDTO dto, int entryNumber) {
     String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
 
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), null, entryNumberString);
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
     createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
 
     Immunization immunization = new Immunization();
@@ -854,19 +860,21 @@ public class FhirConverter implements FhirConverterIfc {
   }
 
   private void fillAuthor(Bundle bundle, BaseDTO dto) {
-    HumanNameDTO author = dto.getAuthor().getUser();
-    String gln = dto.getAuthor().getGln();
+    AuthorDTO authorDTO = dto.getAuthor();
     if ("ASS".equals(dto.getAuthor().getRole())) {
       // use information of the principal instead of the ASS.
       String principal = dto.getAuthor().getPrincipalName();
       int lastIndexOfSpace = principal.lastIndexOf(" ");
       String given = principal.substring(0, lastIndexOfSpace);
       String family = principal.substring(lastIndexOfSpace + 1);
-      author = new HumanNameDTO(given, family, null, null, null);
-      gln = dto.getAuthor().getPrincipalId();
+      HumanNameDTO author = new HumanNameDTO(given, family, null, null, null);
+
+      authorDTO = new AuthorDTO();
+      authorDTO.setGln(dto.getAuthor().getPrincipalId());
+      authorDTO.setUser(author);
     }
 
-    createPractitionerRole(bundle, author, gln, "author");
+    createPractitionerRole(bundle, authorDTO.getUser(), authorDTO, "author");
   }
 
   private HumanNameDTO getAuthor(Bundle bundle, Annotation note) {
@@ -889,12 +897,21 @@ public class FhirConverter implements FhirConverterIfc {
   }
 
   private String getCrossReference(DomainResource domainResource) {
+    // ensure backwards compatibility with old cross reference extension - EHSIMAW-666
+    Extension legacyCrossRefExtension = domainResource.getExtensionByUrl(
+      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference");
+    if (legacyCrossRefExtension != null) {
+      Extension extension = legacyCrossRefExtension.getExtensionByUrl("entry");
+      Reference reference = (Reference) extension.getValue();
+      return reference.getReference().replace(FhirConstants.DEFAULT_ID_PREFIX, "");
+    }
+
     Extension crossRefExtension = domainResource.getExtensionByUrl(
-        "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference");
+        "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references");
     if (crossRefExtension != null) {
       Extension extension = crossRefExtension.getExtensionByUrl("entry");
       Reference reference = (Reference) extension.getValue();
-      return reference.getReference().replace(FhirConstants.DEFAULT_ID_PREFIX, "");
+      return reference.getIdentifier().getValue().replace(FhirConstants.DEFAULT_ID_PREFIX, "");
     }
 
     return null;

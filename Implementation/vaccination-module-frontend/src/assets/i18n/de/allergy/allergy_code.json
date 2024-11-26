@@ -30,9 +30,12 @@
     "1162644007": "Unerwünschte Wirkung eines Covid-19-rekombinanten Spike-Protein-Antigen-Impfstoffs",
     "1217476001": "Anaphylaktische Reaktion auf einen Impfstoff",
     "293120003": "Unerwünschte Wirkung eines Pocken-Impfstoffs",
-    "allergyvaccinevarizella": "Unerwünschte Wirkung eines Varizellen-Impfstoffs",
-    "allergyvaccinehpv": "Unerwünschte Wirkung eines Humanen-Papillomaviren-Impfstoffs",
-    "allergyvaccineherpeszoster": "Unerwünschte Wirkung eines Herpes-Zoster-Impfstoffs",
-    "allergyvaccinefsme": "Unerwünschte Wirkung eines FSME-Impfstoffs"
+    "1303851004": "Unerwünschte Wirkung eines Humanen-Papillomaviren-Impfstoffs",
+    "1303852006": "Unerwünschte Wirkung eines Varizellen-Impfstoffs",
+    "1303850003": "Unerwünschte Wirkung eines FSME-Impfstoffs",
+    "294657002": "Allergie gegen Pockenimpfstoff",
+    "294641002": "Allergie gegen Anthrax-Impfstoff",
+    "700468006": "Allergie gegen Impfstoff gegen Rotavirus",
+    "39579001": "Anaphylaktische Reaktion"
   }
 }

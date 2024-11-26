@@ -32,6 +32,7 @@ import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 })
 export class VaccinationDetailedInformationComponent {
   @Input() vaccination: IVaccination | null = null;
+  @Input() showTitle: boolean = false;
   commentsOpened: boolean = false;
   constructor(private translateService: TranslateService) {}
 

@@ -56,14 +56,12 @@ export class AdverseEventDetailComponent extends BreakPointSensorComponent imple
       if (adverseEvent) {
         this.adverseEvent = adverseEvent;
         this.sharedDataService.storedData['detailedItem'] = this.adverseEvent;
-        this.sharedDataService.canEdit = this.adverseEvent.updated! || this.adverseEvent.deleted!;
         this.sharedDataService.setSessionStorage();
       } else {
         this.adverseEventService.query().subscribe({
           next: (list: IAdverseEvent[]) => {
             this.adverseEvent = list.find((filteredAllergy: IAdverseEvent) => filteredAllergy.id === id)!;
             this.sharedDataService.storedData['detailedItem'] = this.adverseEvent;
-            this.sharedDataService.canEdit = this.adverseEvent.updated! || this.adverseEvent.deleted!;
             this.sharedDataService.setSessionStorage();
           },
         });

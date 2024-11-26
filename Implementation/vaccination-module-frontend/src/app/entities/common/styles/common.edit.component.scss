@@ -1,0 +1,37 @@
+@import 'src/assets/scss/global';
+
+// Affects drop-downs and chips values styling for (vaccines, infectious diseases and adverse events)
+.mdc-list-item {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 0 16px !important;
+}
+
+// Edit view title alignment
+.detail-wrapper__card-title {
+  transform: none;
+}
+
+.mat-mdc-card {
+  // Edit view Performer
+  .form-wrapper__form-recorder {
+    box-shadow: none !important;
+  }
+
+  // Styling for the displayed selected value
+  --mat-select-trigger-text-line-height: 1.125em;
+  --mat-select-trigger-text-size: 14px;
+  --mat-select-trigger-text-weight: 500;
+}
+
+// Drop-down label selected text color
+.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-multiple) {
+  color: #673ab7 !important;
+}
+
+// Mobile - edit view mat card (infectious diseases and risk factors)
+@include media-breakpoint(xs) {
+  .mdc-card {
+    flex-direction: column !important;
+  }
+}

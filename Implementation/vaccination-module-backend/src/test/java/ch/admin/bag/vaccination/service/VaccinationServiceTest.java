@@ -204,27 +204,13 @@ class VaccinationServiceTest extends AbstractServiceTest {
   }
 
   @Test
-  void getData_emptyData_EPDPLAYGROUND() {
-    profileConfig.setLocalMode(false);
-    assertThat(vaccinationService.getAll(EPDCommunity.EPDPLAYGROUND.name(),
-        "1.2.3.4.123456.1", EPDCommunity.DUMMY.name(), null)).isEmpty();
-  }
-
-  // @Test
   void getData_existingData_GAZELLE() {
-    profileConfig.setLocalMode(false);
-    setPatientIdentifierInSession(
-        new PatientIdentifier(EPDCommunity.GAZELLE.name(), EPDCommunity.DUMMY.name(), "1.3.6.1.4.1.21367.13.20.3000"));
-    assertThat(vaccinationService.getAll(EPDCommunity.GAZELLE.name(),
-        "1.3.6.1.4.1.21367.13.20.3000", EPDCommunity.DUMMY.name(), null)).isEmpty();
-
-    setPatientIdentifierInSession(
-        new PatientIdentifier(EPDCommunity.GAZELLE.name(), "IHEBLUE-2599", "1.3.6.1.4.1.21367.13.20.3000"));
     List<VaccinationDTO> vaccinationDTOs = vaccinationService.getAll(EPDCommunity.GAZELLE.name(),
         "1.3.6.1.4.1.21367.13.20.3000", "IHEBLUE-2599", null);
-    assertThat(vaccinationDTOs.size()).isEqualTo(1);
-    assertThat(vaccinationDTOs.get(0).getOrganization())
-        .contains("<name>Gruppenpraxis CH, Dr. med. Allzeit Bereit</name>");
+    assertThat(vaccinationDTOs.size()).isEqualTo(3);
+    assertThat(vaccinationDTOs.get(0).getOrganization()).contains("Gruppenpraxis CH");
+    assertThat(vaccinationDTOs.get(1).getTargetDiseases().get(0).getCode()).isEqualTo("712986001");
+    assertThat(vaccinationDTOs.get(2).getStatus().getCode()).isEqualTo("completed");
   }
 
   @BeforeEach

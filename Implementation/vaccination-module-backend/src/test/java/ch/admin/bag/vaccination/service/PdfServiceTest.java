@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.admin.bag.vaccination.data.request.TranslationsRequest;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
@@ -71,6 +72,7 @@ public class PdfServiceTest {
   private final List<VaccinationDTO> vaccinationDTOs = new ArrayList<>();
   private final List<MedicalProblemDTO> medicalProblemDTOs = new ArrayList<>();
   private HumanNameDTO patient;
+  private TranslationsRequest translationsRequest;
 
   @BeforeAll
   void setUp() {
@@ -81,6 +83,11 @@ public class PdfServiceTest {
       pastIllnessDTOs.addAll(fhirAdapter.getDTOs(PastIllnessDTO.class, bundle));
       vaccinationDTOs.addAll(fhirAdapter.getDTOs(VaccinationDTO.class, bundle));
       medicalProblemDTOs.addAll(fhirAdapter.getDTOs(MedicalProblemDTO.class, bundle));
+      translationsRequest = new TranslationsRequest();
+      translationsRequest.setAllergyCodes(allergyDTOs.stream().map(AllergyDTO::getCode).toList());
+      translationsRequest.setVaccineCodes(vaccinationDTOs.stream().map(VaccinationDTO::getCode).toList());
+      translationsRequest.setIllnessCodes(pastIllnessDTOs.stream().map(PastIllnessDTO::getCode).toList());
+      translationsRequest.setMedicalProblemCodes(medicalProblemDTOs.stream().map(MedicalProblemDTO::getCode).toList());
     }
     patient = new HumanNameDTO("Hans", "Müller", "Herr", LocalDate.now(), "MALE");
   }
@@ -117,7 +124,7 @@ public class PdfServiceTest {
             Arrays.asList(
                 new ValueDTO("397430003", "Diphtherie", null),
                 new ValueDTO("40468003", "Virale Hepatitis, Typ A", null),
-                new ValueDTO("777", "myDisease_de", null))));
+                new ValueDTO("777", "myDisease_de", null))), translationsRequest);
     generatePDF("vaccinationRecord_de.pdf", stream);
 
     stream =
@@ -126,7 +133,7 @@ public class PdfServiceTest {
                 Arrays.asList(
                     new ValueDTO("397430003", "Diphtheria", null),
                     new ValueDTO("40468003", "Viral hepatitis, type A", null),
-                    new ValueDTO("777", "myDisease_en", null))));
+                    new ValueDTO("777", "myDisease_en", null))), translationsRequest);
     generatePDF("vaccinationRecord_en.pdf", stream);
 
     stream = pdfService.create(
@@ -134,7 +141,7 @@ public class PdfServiceTest {
             Arrays.asList(
                 new ValueDTO("397430003", "diphtérie", null),
                 new ValueDTO("40468003", "hépatite virale de type A", null),
-                new ValueDTO("777", "myDisease_fr", null))));
+                new ValueDTO("777", "myDisease_fr", null))), translationsRequest);
     generatePDF("vaccinationRecord_fr.pdf", stream);
 
     stream = pdfService.create(
@@ -142,7 +149,7 @@ public class PdfServiceTest {
             Arrays.asList(
                 new ValueDTO("397430003", "difterite", null),
                 new ValueDTO("40468003", "epatite virale tipo A", null),
-                new ValueDTO("777", "myDisease_it", null))));
+                new ValueDTO("777", "myDisease_it", null))), translationsRequest);
     generatePDF("vaccinationRecord_it.pdf", stream);
   }
 
@@ -163,7 +170,7 @@ public class PdfServiceTest {
             Arrays.asList(
                 new ValueDTO("397430003", "Diphtheria", null),
                 new ValueDTO("40468003", "Viral hepatitis, type A", null),
-                new ValueDTO("777", "myDisease_en", null))));
+                new ValueDTO("777", "myDisease_en", null))), translationsRequest);
 
     PDDocument doc = PDDocument.load(stream);
     // check that generated PDF is encrypted

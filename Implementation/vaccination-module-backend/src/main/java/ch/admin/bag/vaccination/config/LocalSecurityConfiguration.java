@@ -53,18 +53,13 @@ public class LocalSecurityConfiguration extends AbsSecurityConfiguration {
   @Bean
   SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
     http.addFilter(corsFilter)
-        .csrf()
-        .csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
-        .ignoringAntMatchers("/saml/**", "/signature/validate")
-        .and()
-        .authorizeRequests()
-        .anyRequest().anonymous()
-        .and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
+        .csrf(csrf -> csrf.csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
+            .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+            .ignoringRequestMatchers("/saml/**", "/signature/validate"))
+        .authorizeHttpRequests((auth) -> auth
+            .anyRequest().anonymous())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .logout(createLogoutConfig(samlService));
     return http.build();
   }
-
 }

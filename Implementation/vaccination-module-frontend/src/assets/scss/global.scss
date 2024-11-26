@@ -20,6 +20,10 @@ html {
 
 /* =============== variables  ================= */
 
+/* =============== font family  ================= */
+
+$font-family-base: Roboto, 'Helvetica Neue', sans-serif;
+
 /* =============== fonts sizes  ================= */
 
 /* =============== fonts colors ================= */
@@ -111,6 +115,7 @@ a:focus {
       column-gap: 30px;
       max-width: 100%;
       padding-right: 25px;
+      width: 100% !important;
       @include media-breakpoint(tm) {
         display: flex;
         flex-direction: column;
@@ -122,7 +127,7 @@ a:focus {
 }
 .mobile-detail-wrapper {
   width: 100vw;
-  padding: 5vw;
+  padding: 0;
   & .details__action {
     display: none;
   }
@@ -134,7 +139,7 @@ a:focus {
       display: grid;
       grid-template-columns: 1fr;
       grid-template-rows: repeat(3, 1fr);
-      row-gap: -50px !important;
+      width: 100% !important;
     }
   }
 }
@@ -166,6 +171,9 @@ a:focus {
           mat-label {
             font-size: calc(var(--font-size-base)) !important;
             line-height: calc(var(--font-size-base) * 0.9 * 1.5) !important;
+          }
+          .mat-mdc-form-field {
+            width: 180px !important;
           }
         }
 
@@ -265,28 +273,28 @@ a {
   font-weight: bold;
 }
 
-.vm-progress-spinner {
-  position: fixed !important;
-  width: 100% !important;
-  height: 100% !important;
-  background: #ffffffc9;
-  z-index: 1;
+.spinner-overlay {
+  position: fixed;
   top: 0;
   left: 0;
-  display: flex !important;
+  width: 100%;
+  height: 100%;
+  background: #ffffffc9;
+  z-index: 9999;
+  display: flex;
   justify-content: center;
   align-items: center;
-
-  svg {
-    position: relative;
-    circle {
-      stroke: var(--accent-color);
-    }
-  }
 }
 
-.mat-progress-spinner svg {
-  position: relative !important;
+.vm-progress-spinner {
+  width: 100px !important;
+  height: 100px !important;
+}
+
+.mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle,
+.mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle {
+  stroke-width: 10%;
+  stroke: var(--accent-color);
 }
 
 @include media-breakpoint(xs) {
@@ -295,7 +303,7 @@ a {
     &card {
       grid-template-columns: auto !important;
       flex-direction: column !important;
-
+      max-height: 100% !important;
       &-subtitle {
         flex-direction: column !important;
       }
@@ -358,6 +366,7 @@ a {
     display: none;
     @include media-breakpoint(tm) {
       padding: 0;
+      box-shadow: none !important;
       .comment-header {
         display: flex;
         justify-content: space-between;
@@ -391,4 +400,139 @@ a {
   vm-comment {
     display: none !important;
   }
+}
+
+// Material library changes
+.mat-mdc-card {
+  box-shadow: none;
+  font-family: $font-family-base;
+
+  .mat-mdc-card-title {
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    width: 100%;
+    position: absolute;
+    // aligns error message so that the date can be selected when it is present
+    .mat-mdc-form-field-error-wrapper {
+      width: 87% !important;
+    }
+  }
+
+  .mdc-text-field {
+    padding: 0;
+    --mdc-filled-text-field-container-color: #ffffffc9;
+    --mdc-filled-text-field-label-text-weight: 500;
+  }
+
+  .mat-mdc-form-field {
+    width: 100%;
+    margin-top: 6px;
+    // Removes field border when hovering
+    .mat-mdc-form-field-focus-overlay {
+      position: unset !important;
+    }
+  }
+
+  .mat-mdc-card-content {
+    --mat-form-field-container-text-size: 14px;
+    --mat-form-field-container-text-line-height: 1.125;
+    --mat-form-field-container-text-weight: 400;
+    // Details view form field background color
+    --mdc-filled-text-field-disabled-container-color: #ffffffc9;
+    --mdc-filled-text-field-disabled-input-text-color: black;
+    // Date picker calendar colors when no date and calendar icon are selected
+    --mat-datepicker-toggle-active-state-icon-color: #673ab7;
+    --mdc-filled-text-field-focus-active-indicator-color: #673ab7;
+    // Drop-down arrow color when clicked
+    --mat-select-focused-arrow-color: #673ab7;
+    --mdc-filled-text-field-focus-label-text-color: #673ab7;
+  }
+
+  // Details view buttons
+  .mat-mdc-card-actions {
+    .mdc-button--raised {
+      margin-right: -2px;
+      margin-left: 8px;
+    }
+  }
+
+  // Date picker align
+  .mat-mdc-icon-button svg {
+    width: 14px;
+    margin-left: 23px;
+    margin-bottom: -9px;
+  }
+}
+
+// Common option label styling
+.mat-mdc-option {
+  --mat-option-label-text-size: 14px;
+  --mat-option-label-text-weight: 500;
+  --mat-option-selected-state-label-text-color: #673ab7;
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color: #673ab7;
+
+  white-space: nowrap !important;
+  // Nowrap for drop-down rows
+  .mdc-list-item__primary-text {
+    white-space: inherit !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+// Removes border for calendar date
+.mat-focus-indicator::before {
+  border: none !important;
+}
+
+// Removes buttons border when clicked
+.mat-mdc-focus-indicator::before {
+  border: none !important;
+}
+
+// Common color for the buttons
+.mat-mdc-raised-button.mat-accent {
+  --mdc-protected-button-container-color: rgba(2, 101, 96, 1);
+}
+
+// Details view mat-mdc-card
+.mat-elevation-z10 {
+  box-shadow: 0 6px 6px -3px #0003, 0 10px 14px 1px #00000024, 0 4px 18px 3px #0000001f !important;
+}
+
+// Mobile view specific - Dotted line between rows on details view
+.mdc-line-ripple::before,
+.mdc-line-ripple::after {
+  bottom: 7px !important;
+  height: 1px;
+}
+
+// Remove buttons and tooltips border when hovering
+.mat-mdc-button-persistent-ripple::before {
+  content: none !important;
+}
+
+// Selected calendar date styling
+.mat-calendar-body-selected {
+  --mat-datepicker-calendar-date-selected-state-background-color: #673ab7;
+  --mat-datepicker-calendar-date-selected-state-text-color: white;
+}
+
+// Date picker fields when hovering
+@media (hover: hover) {
+  .mat-calendar-body-cell {
+    --mat-datepicker-calendar-date-hover-state-background-color: #673ab74d;
+    --mat-datepicker-calendar-date-focus-state-background-color: #673ab74d;
+  }
+}
+
+// General error validation messages alignment
+.mat-mdc-form-field-error {
+  margin-top: 23px !important;
+  margin-left: -15px !important;
+  margin-right: -15px !important;
+  height: 0 !important;
+  padding-top: 1px;
 }

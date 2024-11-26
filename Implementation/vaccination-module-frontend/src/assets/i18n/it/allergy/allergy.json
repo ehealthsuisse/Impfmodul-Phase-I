@@ -1,11 +1,11 @@
 {
   "ALLERGY": {
-    "TITLE": "Effetti avversi (EIV)",
+    "TITLE": "Effetti indesiderati (EIV)",
     "DETAILS_HEADER": "Dettagli sull'effetti collaterali",
     "NEW_HEADER": "Aggiungere effetti collaterali",
     "EDIT_HEADER": "Modifica effetti collaterali",
-    "CODE": "Effetto avverso",
-    "RECORDER": "Registrato da",
+    "ALLERGY_CODE": "Effetto avverso",
+    "RECORDER": "Registrazione effettuata da",
     "ORGANIZATION": "Organizzazione",
     "OCCURRENCE_DATE": "Data",
     "DATE": "Data di determinazione"

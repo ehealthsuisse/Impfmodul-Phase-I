@@ -32,8 +32,8 @@ export class MapperService {
     let clone = cloneDeep(records);
     clone.sort(this.sortByOccurrenceDate());
     clone.forEach(i => {
-      i.occurrenceDate = dayjs(i.occurrenceDate).format(DATE_FORMAT);
-      i.code = this.translateService.instant(`ALLERGY_CODE.${i.code.code}`);
+      i.occurrenceDate = dayjs(i.occurrenceDate).format(DATE_FORMAT.display.dateInput);
+      i.allergyCode = this.translateService.instant(`ALLERGY_CODE.${i.code.code}`);
       i.clinicalStatus = this.translateService.instant(`ALLERGY_CLINICAL_STATUS.${i.clinicalStatus.code}`);
       i.verificationStatus = this.translateService.instant(`ALLERGY_VERIFICATION_STATUS.${i.verificationStatus.code}`);
       i.recorder = humanToString(i.recorder!);
@@ -45,9 +45,8 @@ export class MapperService {
     let clone = cloneDeep(records);
     clone.sort(this.sortByRecordedDate());
     clone.forEach(i => {
-      i.recordedDate = dayjs(i.recordedDate).format(DATE_FORMAT);
-
-      i.illnessCode = this.translateService.instant(`ILLNESSES_CODE.${i.illnessCode.code}`);
+      i.recordedDate = dayjs(i.recordedDate).format(DATE_FORMAT.display.dateInput);
+      i.illnessCode = this.translateService.instant(`ILLNESS_CODE.${i.illnessCode.code}`);
       i.clinicalStatus = this.translateService.instant(`ILLNESS_CLINICAL_STATUS.${i.clinicalStatus.code}`);
       i.verificationStatus = this.translateService.instant(`ILLNESS_VERIFICATION_STATUS.${i.verificationStatus.code}`);
       i.recorder = humanToString(i.recorder!);
@@ -59,7 +58,7 @@ export class MapperService {
     let clone = cloneDeep(records);
     clone.sort(this.sortByRecordedDate());
     clone.forEach(i => {
-      i.recordedDate = dayjs(i.recordedDate).format(DATE_FORMAT);
+      i.recordedDate = dayjs(i.recordedDate).format(DATE_FORMAT.display.dateInput);
       i.medicalProblemCode = this.translateService.instant(`MEDICAL_PROBLEM_CODE.${i.code?.code}`);
       i.clinicalStatus = this.translateService.instant(`MEDICAL_PROBLEM_CLINICAL_STATUS.${i.clinicalStatus?.code}`);
       i.verificationStatus = this.translateService.instant(`MEDICAL_PROBLEM_VERIFICATION_STATUS.${i.verificationStatus?.code}`);
@@ -72,8 +71,8 @@ export class MapperService {
     let clone = cloneDeep(records);
     clone.sort(this.sortByOccurrenceDate());
     clone.forEach(i => {
-      i.occurrenceDate = dayjs(i.occurrenceDate).format(DATE_FORMAT);
-      i.vaccineCode = this.translateService.instant(`vaccination-names.` + i.vaccineCode.code);
+      i.occurrenceDate = dayjs(i.occurrenceDate).format(DATE_FORMAT.display.dateInput);
+      i.vaccineCode = this.translateService.instant(`VACCINE_CODE.${i.vaccineCode?.code}`);
       i.recorder = humanToString(i.recorder!);
       i.doseNumber = i.doseNumber + '.';
       i.targetDiseases = i.targetDiseases?.map(disease => this.translateService.instant('vaccination-targetdiseases.' + disease.code));
@@ -96,14 +95,21 @@ export class MapperService {
     return (a, b) => this.sort(a.recordedDate, b.recordedDate, a.code?.name, b.code?.name, a.createdAt, b.createdAt);
   }
 
-  private sort(dateA: string | dayjs.Dayjs, dateB: string | dayjs.Dayjs, codeA: string, codeB: string, createdAtA: dayjs.Dayjs | undefined, createdAtB: dayjs.Dayjs | undefined): number {
+  private sort(
+    dateA: string | dayjs.Dayjs,
+    dateB: string | dayjs.Dayjs,
+    codeA: string,
+    codeB: string,
+    createdAtA: dayjs.Dayjs | undefined,
+    createdAtB: dayjs.Dayjs | undefined
+  ): number {
     let sort = this.sortByDate(dateA, dateB);
 
     // fallback to createdAt if occurrenceDate is the same
     if (sort === 0 && createdAtA && createdAtB) {
       if (codeA === codeB) {
         return this.sortByDate(createdAtA, createdAtB);
-      } else {  
+      } else {
         return codeA < codeB ? 1 : -1;
       }
     }
@@ -125,7 +131,7 @@ export class MapperService {
 
     if (aDay.isSame(bDay)) {
       return 0;
-    } 
+    }
 
     return aDay.isBefore(bDay) ? 1 : -1;
   }

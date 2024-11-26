@@ -13,7 +13,7 @@
     "RECORDER": "Recorder",
     "CLINICAL_STATUS": "Status",
     "VERIFICATION_STATUS": "Verified",
-    "VACCINATION_CARD": "Vaccination Record",
+    "VACCINATION_CARD": "Vaccination certificate",
     "COMMENTS": "Comments",
     "SEARCH": "Search",
     "NO_ENTRIES_FOUND": "No matching records found",
@@ -26,6 +26,7 @@
     "SNEAKBAR_CONFIRM": "Entity saved successfully",
     "END_DATE_BEFORE_START_DATE": "The end must be after the beginning.",
     "NOT_FUTURE_DATE": "Date must not be in the future.",
+    "START_DATE_BEFORE_END_DATE": "Date of diagnosis must not be before the begin.",
     "LOGO_VACCINATION_MODULE": "Logo of the Vaccination Module, go to the vaccination record",
     "COMMUNITY_LOGO": "Logo of the community (of reference)",
     "DATE_FORMAT": "Please enter the date. Use the format Day, Day, Dot, Month, Month, Dot, Year, Year, Year, Year. For example, 01.01.2023",
@@ -34,6 +35,8 @@
     "LOGOUT": "You have been successfully logged out, you can close this tab and return to the EPR-portal.",
     "DISCONNECT": "The EPR connection has been interrupted. Please close the vaccination module and log in to your EPR again. You can then restart the vaccination module in your document view.",
     "VALIDATION_TITLE": "Validation failed",
-    "VALIDATION_TEXT": "Please edit the entry to validate it."
+    "VALIDATION_TEXT": "Please edit the entry to validate it.",
+    "ORGANIZATION": "Organization",
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Checking input"
   }
 }

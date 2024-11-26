@@ -34,6 +34,7 @@ import { ReusableSelectFieldComponent } from '../../../../shared/component/resua
 })
 export class AdverseEventDetailedInformationComponent {
   @Input() adverseEvent: IAdverseEvent | null = null;
+  @Input() showTitle: boolean = false;
   commentsOpened: boolean = false;
 
   @Input() adverseEventForm: AdverseEventFormGroup = inject(AdverseEventFormService).createAllergyFormGroup();

@@ -4,9 +4,8 @@
     "NEW_HEADER": "Add adverse event",
     "EDIT_HEADER": "Edit adverse event",
     "DETAILS_HEADER": "Adverse event details",
-    "CODE": "Adverse effect",
+    "ALLERGY_CODE": "Adverse effect",
     "RECORDER": "Recorded by",
-    "ORGANIZATION": "Organization",
     "OCCURRENCE_DATE": "Date",
     "DATE": "Date of determination"
   }

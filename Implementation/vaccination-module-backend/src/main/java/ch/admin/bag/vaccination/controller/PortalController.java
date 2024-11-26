@@ -33,7 +33,7 @@ import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -127,10 +127,10 @@ public class PortalController {
     boolean validateCall = validateParameters(paramsList);
     if (validateCall) {
       clearCacheForPatient(request, paramsList);
-      HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.INITIAL_CALL_VALID, validateCall);
-      HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.AUTHOR, getAuthorFromParameters(paramsList));
-      HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.IDP, paramsList.get(IDP));
-      HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.PURPOSE, paramsList.get(PURPOSE));
+      HttpSessionUtils.setParameterInSession(HttpSessionUtils.INITIAL_CALL_VALID, validateCall);
+      HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHOR, getAuthorFromParameters(paramsList));
+      HttpSessionUtils.setParameterInSession(HttpSessionUtils.IDP, paramsList.get(IDP));
+      HttpSessionUtils.setParameterInSession(HttpSessionUtils.PURPOSE, paramsList.get(PURPOSE));
 
       if (profileConfig.isLocalMode()) {
         samlService.createDummyAuthentication(request);

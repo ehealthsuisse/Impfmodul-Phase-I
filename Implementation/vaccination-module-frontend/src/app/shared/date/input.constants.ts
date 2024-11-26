@@ -16,5 +16,16 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-export const DATE_FORMAT = 'DD.MM.YYYY';
-export const DATE_TIME_FORMAT = `${DATE_FORMAT} HH:mm`;
+export const DATE_FORMAT = {
+  parse: {
+    dateInput: 'DD.MM.YYYY', // this is how the date will be parsed from Input
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY', // this is how the date will get displayed on the Input
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
+export const DATE_TIME_FORMAT = `${DATE_FORMAT.display.dateInput} HH:mm`;

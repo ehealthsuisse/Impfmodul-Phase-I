@@ -1,6 +1,6 @@
 {
   "GLOBAL": {
-    "ALLERGIES": "Effetti collaterali (EIV)",
+    "ALLERGIES": "Effetti indesiderati della vaccinazione (EIV)",
     "PAST_ILLNESSES": "Malattie infettive",
     "PROBLEM": "Fattori di rischio",
     "VACCINATIONS": "Vaccinazioni",
@@ -26,14 +26,17 @@
     "UNEXPECTED_ERROR": "Si è verificato un errore imprevisto. L'azione richiesta non può essere eseguita.",
     "END_DATE_BEFORE_START_DATE": "La fine deve essere dopo l'inizio.",
     "NOT_FUTURE_DATE": "La data non deve essere nel futuro.",
+    "START_DATE_BEFORE_END_DATE": "Data della diagnosi non può precedere l'inizio.",
     "LOGO_VACCINATION_MODULE": "Logo del modulo vaccinazioni, andare al record di vaccinazione",
-    "COMMUNITY_LOGO": "Logo della comunità",
+    "COMMUNITY_LOGO": "Logo della comunità (di riferimento)",
     "DATE_FORMAT": "Inserisci la data. Usa il formato Giorno, Giorno, Punto, Mese, Mese, Punto, Anno, Anno, Anno, Anno. Ad esempio, 01.01.2023.",
     "LANGUAGE_HELP_TEXT": "Seleziona la lingua in cui vuoi utilizzare il modulo di vaccinazione.",
     "NONE_OPTION": "",
     "LOGOUT": "Il logout è stato effettuato con successo, è possibile chiudere questa scheda e tornare a portale CIP.",
     "DISCONNECT": "La connessione alla CIP è stata interrotta. Chiudere il modulo di immunizzazione e accedere nuovamente alla propria CIP. Successivamente sarà possibile riavviare il modulo di immunizzazione nella visualizzazione dei documenti.",
-    "VALIDATION_TITLE": "Convalida fallita",
-    "VALIDATION_TEXT": "Modificare la voce per convalidarla."
+    "VALIDATION_TITLE": "La convalida non è riuscita",
+    "VALIDATION_TEXT": "Correggere i dati inseriti per convalidarli.",
+    "ORGANIZATION": "Organizzazione",
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Controllo di ingresso"
   }
 }

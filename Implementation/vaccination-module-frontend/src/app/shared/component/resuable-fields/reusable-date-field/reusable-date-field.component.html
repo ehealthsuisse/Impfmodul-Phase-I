@@ -13,13 +13,16 @@
     role="combobox"
     aria-haspopup="dialog"
   />
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker-toggle matSuffix [disableRipple]="true" [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
   <mat-error *ngIf="formControl.hasError('endDateBeforeStartDate')">
     <div>{{ 'GLOBAL.END_DATE_BEFORE_START_DATE' | translate }}</div>
   </mat-error>
   <mat-error *ngIf="formControl.hasError('futureDate')">
     <div>{{ 'GLOBAL.NOT_FUTURE_DATE' | translate }}</div>
+  </mat-error>
+  <mat-error *ngIf="formControl.hasError('startDateBeforeEndDate')">
+    <div>{{ 'GLOBAL.START_DATE_BEFORE_END_DATE' | translate }}</div>
   </mat-error>
 </mat-form-field>
 

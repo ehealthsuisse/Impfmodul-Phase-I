@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  *
- * Test the clustering ability of Hazelcast based on mutlicast discovery.
+ * Test the clustering ability of Hazelcast based on multicast discovery.
  *
  */
 public class DistributedCacheTest {

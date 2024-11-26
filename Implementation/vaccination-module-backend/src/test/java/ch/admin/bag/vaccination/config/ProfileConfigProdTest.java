@@ -19,13 +19,16 @@
 package ch.admin.bag.vaccination.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(properties = {"SPRING_CLOUDPROFILES_ACTIVE=prod", "LOCALMODE=false", "HUSKYLOCALMODE=false"})
+@EnableAutoConfiguration
 public class ProfileConfigProdTest {
   @Autowired
   private ProfileConfig profileConfig;
@@ -34,9 +37,9 @@ public class ProfileConfigProdTest {
   public void testLocalMode() {
     boolean initialValue = profileConfig.isLocalMode();
     profileConfig.setLocalMode(true);
-    assertTrue(initialValue == profileConfig.isLocalMode());
+    assertEquals(initialValue, profileConfig.isLocalMode());
     profileConfig.setLocalMode(false);
-    assertTrue(initialValue == profileConfig.isLocalMode());
+    assertEquals(initialValue, profileConfig.isLocalMode());
   }
 
   @Test

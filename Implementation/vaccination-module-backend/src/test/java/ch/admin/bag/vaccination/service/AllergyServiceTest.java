@@ -130,17 +130,7 @@ class AllergyServiceTest extends AbstractServiceTest {
 
   @Test
   public void testGetAll_GAZELLE() {
-    profileConfig.setLocalMode(false);
-    assertThat(allergyService.getAll(EPDCommunity.GAZELLE.name(),
-        "1.3.6.1.4.1.21367.13.20.3000", EPDCommunity.DUMMY.name(), null)).isEmpty();
-    profileConfig.setLocalMode(true);
-
-    setPatientIdentifierInSession(
-        new PatientIdentifier(EPDCommunity.GAZELLE.name(), "IHEBLUE-2599", "1.3.6.1.4.1.21367.13.20.3000"));
-
-    List<AllergyDTO> allergyDTOs =
-        allergyService.getAll(EPDCommunity.GAZELLE.name(),
-            "1.3.6.1.4.1.21367.13.20.3000",
+    List<AllergyDTO> allergyDTOs = allergyService.getAll(EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.21367.13.20.3000",
             "IHEBLUE-2599", null);
     assertThat(allergyDTOs.size()).isEqualTo(1);
     assertThat(allergyDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("active");

@@ -16,12 +16,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, Observable, ReplaySubject } from 'rxjs';
+import { finalize, Observable, ReplaySubject, Subject } from 'rxjs';
 import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IInfectiousDiseases } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
@@ -29,6 +28,7 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
 import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
@@ -37,19 +37,25 @@ import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { InfectiousDiseasesConfirmComponent } from '../../helper-components/confirm/infectious-diseases-confirm.component';
 import { InfectiousDiseasesFormGroup, InfectiousDiseasesFormService } from '../../service/infectious-diseases-form.service';
 import { InfectiousDiseasesService } from '../../service/infectious-diseases.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   standalone: true,
   selector: 'vm-infectious-diseases-update',
   templateUrl: './infectious-diseases-form.component.html',
   styleUrls: ['./infectious-diseases-form.component.scss'],
-  imports: [SharedLibsModule, SharedComponentModule, FilterPipePipe, ReusableDateFieldComponent, ReusableRecorderFieldComponent],
+  imports: [
+    SharedLibsModule,
+    SharedComponentModule,
+    FilterPipePipe,
+    ReusableDateFieldComponent,
+    ReusableRecorderFieldComponent,
+    ReusableSelectFieldWithSearchComponent,
+  ],
 })
-export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit {
+export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   illnessesFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
-  illnessesFilterControl: FormControl = new FormControl();
-
   isSaving = false;
   illnesses: IInfectiousDiseases | null = null;
   editForm: InfectiousDiseasesFormGroup = inject(InfectiousDiseasesFormService).createInfectiousDiseasesFormGroup();
@@ -68,6 +74,7 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
 
   private illnessesFormService: InfectiousDiseasesFormService = inject(InfectiousDiseasesFormService);
   private matDialog: MatDialog = inject(MatDialog);
+  private destroy$: Subject<void> = new Subject<void>();
 
   ngOnInit(): void {
     this.displayMenu(false, false);
@@ -92,6 +99,19 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
 
   ngAfterViewInit(): void {
     setDropDownInitialValue(this.illnessesFilteredList, this.singleSelect);
+    // When the begin date changes, re-validate the 'end' field
+    this.editForm
+      .get('begin')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.editForm.get('end')?.updateValueAndValidity();
+        this.editForm.get('recordedDate')?.updateValueAndValidity();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   save(): void {

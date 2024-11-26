@@ -4,10 +4,9 @@
     "NEW_HEADER": "Nebenwirkung hinzufügen",
     "EDIT_HEADER": "Nebenwirkung bearbeiten",
     "DETAILS_HEADER": "Details zur Nebenwirkung",
-    "CODE": "Unerwünschte Wirkung",
+    "ALLERGY_CODE": "Unerwünschte Wirkung",
     "OCCURRENCE_DATE": "Datum",
     "RECORDER": "Erfasst von",
-    "ORGANIZATION": "Organisation",
     "DATE": "Datum der Feststellung"
   }
 }

@@ -12,7 +12,6 @@
     "BEGIN": "Beginn",
     "END": "Ende",
     "SEVERITY": "Schweregrad",
-    "ORGANIZATION": "Organisation",
     "DATE": "Datum der Feststellung"
   }
 }

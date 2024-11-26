@@ -72,7 +72,8 @@ public class ValueListServiceTest {
         foundResult = true;
         list.getEntries().forEach(entry -> {
           boolean shouldBeVisible = ValueListService.SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem())
-              || ValueListService.MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem());
+              || ValueListService.MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem())
+              || ValueListService.UNKNOWN_VACCINE_CODE.equals(entry.getCode());
           assertThat(entry.isAllowDisplay()).isEqualTo(shouldBeVisible);
         });
       }

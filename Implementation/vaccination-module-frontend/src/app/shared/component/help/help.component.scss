@@ -5,9 +5,28 @@
   overflow-y: auto;
   .mat-card-header {
     padding: 0;
-    margin: 0;
+    margin: 8px;
     .h3-header {
-      margin-left: -10px;
+      margin-left: 16px;
     }
+  }
+  .mat-mdc-card-title {
+    margin-left: -8px;
+  }
+
+  // Help text sizing
+  --mdc-dialog-supporting-text-color: black !important;
+  --mdc-dialog-supporting-text-size: 14px !important;
+  --mdc-dialog-supporting-text-weight: 400 !important;
+  // Removes box-shadow on mobile view
+  --mdc-elevated-card-container-elevation: none !important;
+
+  .mdc-card__actions {
+    margin-left: 6px;
+  }
+  // Unexpected error button styling
+  .mat-mdc-button:not(:disabled) {
+    background: var(--alert-color);
+    color: #fff;
   }
 }

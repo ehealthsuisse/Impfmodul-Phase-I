@@ -97,7 +97,7 @@ public class UtilityControllerTest {
     assertThat(response.getBody()[0].getCode()).isEqualTo("56717001");
     assertThat(response.getBody()[0].getName()).isEqualTo("Tuberculosis (disorder)");
     assertThat(response.getBody()[0].getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
+        .isEqualTo("http://snomed.info/sct");
   }
 
   @Test
@@ -120,7 +120,7 @@ public class UtilityControllerTest {
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getName())
         .isEqualTo("Rubella");
     assertThat(response.getBody()[0].getTargetDiseases().get(0).getSystem())
-        .isEqualTo("http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm");
+        .isEqualTo("http://snomed.info/sct");
   }
 
   @Test

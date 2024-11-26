@@ -2,6 +2,7 @@
 .recorder {
   padding: 0;
   display: grid;
+  top: 8px;
   .recorder--fields {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

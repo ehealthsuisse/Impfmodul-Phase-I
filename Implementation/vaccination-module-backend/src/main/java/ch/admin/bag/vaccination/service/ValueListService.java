@@ -46,6 +46,7 @@ public class ValueListService {
   public static final String MYVACCINES_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs";
   public static final String IMMUNIZATION_VACCINE_CODE_VALUELIST = "immunizationVaccineCode";
   public static final String CONDITION_CLINICAL_STATUS = "conditionClinicalStatus";
+  public static final String UNKNOWN_VACCINE_CODE = "787859002";
 
   @Autowired
   private VaccinesToTargetDiseasesConfig vaccinesToTargetDiseasesConfig;
@@ -143,7 +144,8 @@ public class ValueListService {
           .filter(entry -> {
             boolean isSuisseMedicVaccination = SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem());
             boolean isMyVaccinesVaccination = MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem());
-            return !(isSuisseMedicVaccination || isMyVaccinesVaccination);
+            boolean isUnknownVaccine = UNKNOWN_VACCINE_CODE.equals(entry.getCode());
+            return !(isSuisseMedicVaccination || isMyVaccinesVaccination ||isUnknownVaccine);
           })
           .forEach(entry -> entry.setAllowDisplay(false));
     } else if (CONDITION_CLINICAL_STATUS.equals(createdValueList.getName())) {

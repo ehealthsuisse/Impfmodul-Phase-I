@@ -48,5 +48,6 @@ export class PatientComponent extends BreakPointSensorComponent implements After
         },
       });
     }
+    this.cdr.detectChanges();
   }
 }

@@ -1,3 +1,6 @@
+<mat-card-header>
+  <mat-card-title *ngIf="showTitle" class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+</mat-card-header>
 <mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between">
   <!--  occurrenceDate  -->
   <vm-reusable-date-field
@@ -10,8 +13,8 @@
   <vm-reusable-select-field
     [formControl]="adverseEventForm.controls.code!"
     [isEditable]="false"
-    [translationKey]="'ALLERGY.CODE'"
-    [labelTranslationKey]="'ALLERGY.CODE'"
+    [translationKey]="'ALLERGY.ALLERGY_CODE'"
+    [labelTranslationKey]="'ALLERGY.ALLERGY_CODE'"
     [mainValueKey]="'ALLERGY_CODE.' + adverseEvent?.code?.code! | translate"
   ></vm-reusable-select-field>
 
@@ -20,8 +23,7 @@
     [recorder]="adverseEvent?.recorder!"
     [organization]="adverseEvent?.organization!"
     [isEditable]="false"
-  >
-  </vm-reusable-recorder-field>
+  ></vm-reusable-recorder-field>
 
   <mat-form-field class="detailed-card-content__form-field" *ngIf="adverseEvent?.commentMessage">
     <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>

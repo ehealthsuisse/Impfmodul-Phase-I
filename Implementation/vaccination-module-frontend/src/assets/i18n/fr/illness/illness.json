@@ -4,13 +4,12 @@
     "FILTER": "Rechercher",
     "DETAILS_HEADER": "Détails des maladies infectieuses",
     "EDIT_HEADER": "Modifier les détails de la maladie infectieuses",
-    "NEW_HEADER": "Ajouter une maladies infectieuses",
+    "NEW_HEADER": "Ajouter une maladie infectieuse",
     "ILLNESS_CODE": "Maladie infectieuse",
     "RECORDER": "Enregistré par",
     "RECORDED_DATE": "Date",
     "BEGIN": "Début",
     "END": "Fin",
-    "ORGANIZATION": "Organisation",
     "DATE": "Date du diagnostic"
   }
 }

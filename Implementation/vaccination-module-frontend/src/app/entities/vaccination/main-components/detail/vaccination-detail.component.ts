@@ -52,13 +52,11 @@ export class VaccinationDetailComponent extends BreakPointSensorComponent implem
       if (vaccine) {
         this.vaccination = vaccine;
         this.sharedDataService.storedData['detailedItem'] = this.vaccination;
-        this.sharedDataService.canEdit = this.vaccination.updated! || this.vaccination.deleted!;
       } else {
         this.vaccinationService.query().subscribe({
           next: list => {
             this.vaccination = list.find(filteredVaccine => filteredVaccine.id === id)!;
             this.sharedDataService.storedData['detailedItem'] = this.vaccination;
-            this.sharedDataService.canEdit = this.vaccination.updated! || this.vaccination.deleted!;
             this.sharedDataService.setSessionStorage();
           },
         });

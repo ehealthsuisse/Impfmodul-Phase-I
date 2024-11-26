@@ -7,11 +7,10 @@
     "NEW_HEADER": "Nuovo fattore di rischio",
     "MEDICAL_PROBLEM_CODE": "Fattore di rischio",
     "CLINICAL_STATUS": "Stato clinico",
-    "RECORDER": "Registrato da",
+    "RECORDER": "Registrazione effettuata da",
     "RECORDED_DATE": "Data",
     "BEGIN": "Data di inizio",
     "END": "Data di fine",
-    "ORGANIZATION": "Organizzazione",
     "DATE": "Data di determinazione"
   }
 }

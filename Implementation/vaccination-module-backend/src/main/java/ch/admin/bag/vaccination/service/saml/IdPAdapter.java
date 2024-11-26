@@ -23,9 +23,10 @@ import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import java.util.List;
 import javax.net.ssl.SSLContext;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
-import net.shibboleth.utilities.java.support.httpclient.TLSSocketFactory;
-import org.apache.http.client.HttpClient;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.httpclient.HttpClientBuilder;
+import net.shibboleth.shared.httpclient.TLSSocketFactory;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.messaging.context.InOutOperationContext;
@@ -152,11 +153,12 @@ public class IdPAdapter {
       protected HttpClientMessagePipeline newPipeline() throws SOAPException {
         HttpClientRequestSOAP11Encoder encoder = new HttpClientRequestSOAP11Encoder();
         HttpClientResponseSOAP11Decoder decoder = new HttpClientResponseSOAP11Decoder();
+        SAMLOutboundProtocolMessageSigningHandler signingHandler = new SAMLOutboundProtocolMessageSigningHandler();
 
-        BasicHttpClientMessagePipeline pipeline =
-            new BasicHttpClientMessagePipeline(encoder, decoder);
+        BasicHttpClientMessagePipeline pipeline = new BasicHttpClientMessagePipeline(encoder, decoder);
 
-        pipeline.setOutboundPayloadHandler(new SAMLOutboundProtocolMessageSigningHandler());
+        initialiseSOAPComponents(decoder, signingHandler);
+        pipeline.setOutboundPayloadHandler(signingHandler);
         return pipeline;
       }
     };
@@ -164,6 +166,21 @@ public class IdPAdapter {
     HttpClient httpClient = createHttpClient();
     soapClient.setHttpClient(httpClient);
     return soapClient;
+  }
+
+  private void initialiseSOAPComponents(HttpClientResponseSOAP11Decoder decoder,
+      SAMLOutboundProtocolMessageSigningHandler signingHandler) {
+    try {
+      decoder.getBodyHandler().initialize();
+    } catch (ComponentInitializationException e) {
+      throw new IllegalStateException("MessageHandler is not initialized.");
+    }
+
+    try {
+      signingHandler.initialize();
+    } catch (ComponentInitializationException e) {
+      throw new IllegalStateException("SAMLOutboundProtocolMessageSigningHandler is not initialized.");
+    }
   }
 
   private void getInformation(Exception e) {

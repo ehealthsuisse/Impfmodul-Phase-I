@@ -2,9 +2,9 @@
 # https://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs
 
 vaccines-to-targetdiseases:
-  vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs
+  vaccineSystem: http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs
   vaccineSystemBelowCode200: http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs
-  targetDiseaseSystem: http://fhir.ch/ig/ch-vacd/ConceptMap-ch-vacd-vaccines-targetdiseases-cm
+  targetDiseaseSystem: http://snomed.info/sct
   vaccines:
   # myvaccines code
     - code: 14
@@ -141,6 +141,8 @@ vaccines-to-targetdiseases:
       target:
         - code: 76902006
           name: Tetanus (disorder)
+        - code: 397430003
+          name: Diphtheria caused by Corynebacterium diphtheriae (disorder)
     - code: 81
       name: Anatoxal DiTe N Erwachsene
       target:
@@ -338,7 +340,9 @@ vaccines-to-targetdiseases:
       name: Trimovax
       target:
         - code: 36653000
-          name: Rubella
+          name: Rubella (disorder)
+        - code: 14189004
+          name: Measles (disorder)
         - code: 36989005
           name: Mumps (disorder)
     - code: 126
@@ -1032,7 +1036,7 @@ vaccines-to-targetdiseases:
         - code: 719865001
           name: Influenza caused by pandemic influenza virus (disorder)
     - code: 68473
-      name: Nuvaxovid 5 ml, Injektionsdispersion
+      name: Nuvaxovid 0.5 ml
       target:
         - code: 840539006
           name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
@@ -1185,7 +1189,37 @@ vaccines-to-targetdiseases:
         - code: 840539006
           name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
     - code: 69488
-      name: Comirnaty Omicron XBB.1.5 (30 Mikrogramm)/Dosis, Injektionsdispersion
+      name: Comirnaty Omicron XBB.1.5 (30 Mikrogramm)/Dosis
       target:
         - code: 840539006
           name: Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder)
+    - code: 69310
+      name: AREXVY
+      target:
+        - code: 55735004
+          name: Respiratory syncytial virus infection (disorder)
+    - code: 69173
+      name: Jynneos
+      target:
+        - code: 359814004
+          name: Monkeypox (disorder)
+    - code: 69222
+      name: Prevenar 20
+      target:
+        - code: 16814004
+          name: Pneumococcal infectious disease (disorder)
+    - code: 69815
+      name: Comirnaty Omicron XBB.1.5, 0.042 mg
+      target:
+        - code: 840539006
+          name: COVID-19 (Disease caused by Severe acute respiratory syndrome coronavirus 2 (disorder))
+    - code: 69403
+      name: Qdenga 0.5 ml
+      target:
+        - code: 38362002
+          name: Dengue (disorder)
+    - code: 95
+      name: Vaccin méningococcique A+C Mérieux
+      target:
+        - code: 23511006
+          name: Meningococcal infectious disease (disorder)

@@ -205,6 +205,24 @@ class FhirAdapterTest {
   }
 
   @Test
+  void test_A_D1_legacyCrossReferenceIsRecognized() {
+    Bundle bundle = createBundle("testfiles/Bundle-A-D1-P-C1-legacyCrossreference.json");
+    List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
+    assertThat(vaccinations.size()).isEqualTo(1);
+    VaccinationDTO vaccinationDTO = vaccinations.get(0);
+    assertEquals("232b5ecd-9028-4f50-9961-cf2bf47a2475", vaccinationDTO.getRelatedId());
+  }
+
+  @Test
+  void test_A_D1_currentCrossReferenceIsRecognized() {
+    Bundle bundle = createBundle("testfiles/Bundle-A-D1-P-C1-currentCrossreference.json");
+    List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
+    assertThat(vaccinations.size()).isEqualTo(1);
+    VaccinationDTO vaccinationDTO = vaccinations.get(0);
+    assertEquals("0faaf429-4f04-4324-b703-2dff77a53a90", vaccinationDTO.getRelatedId());
+  }
+
+  @Test
   void test_A_D1_xNotes() {
     Bundle bundle = createBundle("testfiles/Bundle-A-D1-P-C1-xNotes.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
@@ -579,26 +597,24 @@ class FhirAdapterTest {
         vaccinationDTO.getId());
     Immunization immunization = FhirUtils.getResource(Immunization.class, deletedBundle);
     assertThat(immunization).isNotNull();
-    isEqualTo(immunization.getExtensionByUrl(
-        "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-recorder-reference"),
-        "Patient/TC-patient");
+    assertThat(((Reference)immunization.getExtensionByUrl(
+        "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-author").getValue())
+        .getReference()).isEqualTo("Patient/TC-patient");
     isEqualTo(immunization
         .getExtensionByUrl(
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference")
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references")
         .getExtensionByUrl("entry"), "acc1f090-5e0c-45ae-b283-521d57c3aa2f");
     isEqualTo(immunization
         .getExtensionByUrl(
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference")
-        .getExtensionByUrl("document"), "urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753");
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references")
+        .getExtensionByUrl("container"), "urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753");
     assertThat(((CodeType) immunization
         .getExtensionByUrl(
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference")
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references")
         .getExtensionByUrl("relationcode").getValue()).getCode()).isEqualTo("replaces");
 
     Composition composition = FhirUtils.getResource(Composition.class, deletedBundle);
     assertThat(composition).isNotNull();
-    assertThat(composition.getRelatesToFirstRep().getTargetReference().getReference())
-        .isEqualTo("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753");
 
     VaccinationDTO deletedVaccinationDTO = getFirstDTO(VaccinationDTO.class, deletedBundle);
     assertThat(deletedVaccinationDTO.isDeleted()).isTrue();
@@ -629,14 +645,14 @@ class FhirAdapterTest {
 
     assertThat(resources.size()).isEqualTo(1);
     assertThat(resources.get(0)).isInstanceOf(Condition.class);
-    assertThat(((Condition) resources.get(0)).getIdPart()).isEqualTo("TCB02-UNDILL1");
+    assertThat(resources.get(0).getIdPart()).isEqualTo("TCB02-UNDILL1");
 
 
     resources = fhirAdapter.getSectionResources(bundle, SectionType.MEDICAL_PROBLEM);
 
     assertThat(resources.size()).isEqualTo(1);
     assertThat(resources.get(0)).isInstanceOf(Condition.class);
-    assertThat(((Condition) resources.get(0)).getIdPart()).isEqualTo("TCB03-EXPRISK1");
+    assertThat(resources.get(0).getIdPart()).isEqualTo("TCB03-EXPRISK1");
   }
 
   @Test
@@ -742,26 +758,24 @@ class FhirAdapterTest {
     assertThat(vaccinationDTO.getComments().get(0).getText())
         .isEqualTo("Der Patient hat diese Impfung ohne jedwelcher nebenwirkungen gut vertragen.");
     assertThat(FhirUtils.getAuthor(updatedBundle).getUser().getLastName()).isEqualTo("Wegmueller");
-    isEqualTo(immunization.getExtensionByUrl(
-        "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-immunization-recorder-reference"),
-        "Patient/TC-patient");
+    assertThat(((Reference)immunization.getExtensionByUrl(
+        "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-author").getValue())
+        .getReference()).isEqualTo("Patient/TC-patient");
     isEqualTo(immunization
         .getExtensionByUrl(
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference")
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references")
         .getExtensionByUrl("entry"), "acc1f090-5e0c-45ae-b283-521d57c3aa2f");
     isEqualTo(immunization
         .getExtensionByUrl(
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference")
-        .getExtensionByUrl("document"), "urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753");
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references")
+        .getExtensionByUrl("container"), "urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753");
     assertThat(((CodeType) immunization
         .getExtensionByUrl(
-            "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-cross-reference")
+            "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references")
         .getExtensionByUrl("relationcode").getValue()).getCode()).isEqualTo("replaces");
 
     Composition composition = FhirUtils.getResource(Composition.class, updatedBundle);
     assertThat(composition).isNotNull();
-    assertThat(composition.getRelatesToFirstRep().getTargetReference().getReference())
-        .isEqualTo("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753");
 
     vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, updatedBundle);
     VaccinationDTO updatedVaccinationDTO = vaccinations.get(0);
@@ -833,7 +847,7 @@ class FhirAdapterTest {
 
   private void isEqualTo(Extension extension, String value) {
     Reference reference = (Reference) extension.getValue();
-    assertThat(reference.getReference()).isEqualTo(value);
+    assertThat(reference.getIdentifier().getValue()).isEqualTo(value);
   }
 }
 

@@ -31,7 +31,7 @@ import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
@@ -189,9 +189,14 @@ public class SignatureService {
           fullQueryString.substring(0, fullQueryString.indexOf(SIGNATURE_URL_PARAMETER));
       String signatureString = fullQueryString.substring(signatureIndex + 5);
 
-      return signatureString.equals(calculateHMac(portalPresharedKey, queryString));
+      boolean result = signatureString.equals(calculateHMac(portalPresharedKey, queryString));
+      if (!result) {
+        log.debug("Signature is not valid! Please check the portal-config.yml settings.");
+      }
+      return result;
     }
-
+    log.debug("Signature could not be determined, please check that signature parameter 'sig' is provided "
+        + "correctly at the end of the querystring.");
     return false;
   }
 
@@ -214,10 +219,17 @@ public class SignatureService {
         long derivation = Math.abs(currentTimestamp - timestampLong) * (isPortalTimestampInSeconds ? 1000 : 1);
         log.debug("Timestamp derivation check: {} ms derivation, allowed: {}", derivation,
             portalTimestampDerivation);
-        return derivation <= portalTimestampDerivation;
+
+        boolean result = derivation <= portalTimestampDerivation;
+        if (!result) {
+          log.debug(
+              "Provided timestamp is out of bounds and therefore failed! Please check the portal-config.yml settings.");
+        }
+        return result;
       }
     }
-
+    log.debug("Timestamp could not be determined, please check that timestamp parameter 'timestamp' is "
+        + "provided in the querystring.");
     return false;
   }
 
