@@ -28,6 +28,7 @@ import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { PatientService } from '../../../shared/component/patient/patient.service';
+import { ITranslationRequest } from '../../../model/translation-request.interface';
 
 @Component({
   selector: 'vm-patient-action',
@@ -106,7 +107,8 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
   // translate vaccination
   private translateVaccination(vaccinations: IVaccination[]): void {
     vaccinations.map(vaccination => {
-      vaccination.code.name = this.translationService.instant(`VACCINATION_CODE.${vaccination.code.code}`);
+      vaccination.code.name = this.translationService.instant(`VACCINE_CODE.${vaccination.code.code}`);
+      vaccination.vaccineCode.name = this.translationService.instant(`VACCINE_CODE.${vaccination.code.code}`);
       vaccination.status.name = this.translationService.instant(`VACCINATION_CLINICAL_STATUS.${vaccination.status.code}`);
     });
   }
@@ -114,7 +116,7 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
   // Translate the names of past infectious_diseases
   private translateIllnesses(illnesses: IInfectiousDiseases[]): void {
     illnesses.map(illness => {
-      illness.illnessCode.name = this.translationService.instant(`ILLNESSES_CODE.${illness.code.code}`);
+      illness.illnessCode.name = this.translationService.instant(`ILLNESS_CODE.${illness.code.code}`);
       illness.clinicalStatus.name = this.translationService.instant(`ILLNESS_CLINICAL_STATUS.${illness.clinicalStatus.code}`);
     });
   }
@@ -136,22 +138,43 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
     this.vaccinationRecordService
       .fetchTargetDisease()
       .pipe(
-        map((res: IValueDTO[]) =>
-          res.map(targetDisease => ({
-            code: targetDisease.code,
-            name: this.translationService.instant(`vaccination-targetdiseases.${targetDisease.code}`),
-          }))
-        ),
-        tap((i18nTargetDiseases: IValueDTO[]) => {
-          record.i18nTargetDiseases = i18nTargetDiseases;
-        }),
-        switchMap(() => this.vaccinationRecordService.exportPdf(record))
+        map(res => this.mapTargetDiseases(res)),
+        switchMap(targetDiseases => this.createTranslationRequest(targetDiseases, record))
       )
-      .subscribe(response => {
-        const blob = new Blob([response], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const pdfExtension = '.pdf';
-        downloadRecordValue(record, this.patientService, url, pdfExtension);
-      });
+      .subscribe(response => this.handlePdfResponse(response, record));
+  }
+
+  private mapTargetDiseases(res: IValueDTO[]): IValueDTO[] {
+    return res.map(targetDisease => ({
+      code: targetDisease.code,
+      name: this.translationService.instant(`vaccination-targetdiseases.${targetDisease.code}`),
+      system: targetDisease.system,
+    }));
+  }
+
+  private createTranslationRequest(targetDiseases: IValueDTO[], record: IVaccinationRecord): Observable<Blob> {
+    const payload: ITranslationRequest = {
+      targetDiseases,
+      allergyCodes: record.allergies.map(item => item.code),
+      illnessCodes: record.pastIllnesses.map(item => item.illnessCode),
+      vaccineCodes: record.vaccinations.map(item => item.code),
+      medicalProblemCodes: record.medicalProblems.map(item => item.code),
+    };
+    return this.vaccinationRecordService.exportPdf(payload, record.lang);
+  }
+
+  private buildIValueDTO(item: IValueDTO): IValueDTO {
+    return {
+      code: item.code,
+      name: item.name,
+      system: item.system,
+    };
+  }
+
+  private handlePdfResponse(response: Blob, record: IVaccinationRecord): void {
+    const blob = new Blob([response], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const pdfExtension = '.pdf';
+    downloadRecordValue(record, this.patientService, url, pdfExtension);
   }
 }

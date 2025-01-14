@@ -1,8 +1,8 @@
 {
   "MEDICAL_PROBLEM_VERIFICATION_STATUS": {
     "unconfirmed": "Non-confirmé",
-    "differential": "différentiel",
-    "provisional": "provisoire",
+    "differential": "Différentiel",
+    "provisional": "Provisoire",
     "confirmed": "Confirmé",
     "refuted": "Refusé",
     "entered-in-error": "Saisi par erreur"

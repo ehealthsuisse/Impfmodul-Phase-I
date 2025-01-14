@@ -17,7 +17,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
@@ -31,6 +30,7 @@ import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValue
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { VaccinePredefinedDiseases } from '../../../../shared/interfaces/vaccination-with-disease.interface';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
@@ -54,13 +54,13 @@ import { ChipsHandler } from './chips-handler';
     CommentComponent,
     FilterPipePipe,
     ReusableDateFieldComponent,
+    ReusableSelectFieldWithSearchComponent,
   ],
 })
 export class VaccinationFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   vaccinationFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   reasons: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   diseases: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
-  vaccinationFilterControl: FormControl = new FormControl();
 
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
   @ViewChild('status', { static: true }) staus!: MatSelect;

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <version>1.6.3</version>
+  <version>1.7.0-RC1</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.18</version>
+    <version>3.3.4</version>
     <relativePath />
   </parent>
 
@@ -25,20 +25,15 @@
     <maven.compiler.target>17</maven.compiler.target>
     <junit.version>5.10.0</junit.version>
     <springdoc.version>1.6.15</springdoc.version>
-    <husky.version>2.2.0</husky.version>
-    <fhir.version>6.10.2</fhir.version>
+    <husky.version>3.0.1-20241112</husky.version>
+    <hapi.fhir.version>7.4.0</hapi.fhir.version>
+    <org.hl7.fhir.version>6.3.23</org.hl7.fhir.version>
     <!-- custom lib Sopra Steria -->
-    <fhir.adapter.version>1.1.8</fhir.adapter.version>
-    <opensaml.version>4.3.0</opensaml.version>
+    <fhir.adapter.version>1.1.9</fhir.adapter.version>
+    <opensaml.version>5.1.3</opensaml.version>
     <xmlsectool.version>3.0.0</xmlsectool.version>
     <pdfbox.version>2.0.30</pdfbox.version>
-    <hazelcast.version>5.3.0</hazelcast.version>
-    <!-- temporary lib versions -->
-    <tomcat.version>9.0.83</tomcat.version>
-    <jsoup.version>1.15.3</jsoup.version>
-    <snakeyaml.version>2.0</snakeyaml.version>
-    <logback.version>1.2.13</logback.version>
-    <jackson-core.version>2.15.0</jackson-core.version>
+    <hazelcast.version>5.3.5</hazelcast.version>
   </properties>
 
   <repositories>
@@ -92,37 +87,68 @@
         <version>1.18.20.0</version>
         <scope>provided</scope>
       </dependency>
-      <!-- Dependencies added temporarily to fix security vulnerabilities.
-      Migration to Spring Boot 3 will remove the need to provide them -->
+      <!-- JAXB implementation for jakarta.xml.bind library -->
       <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-core</artifactId>
-        <version>${tomcat.version}</version>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>4.0.5</version>
+      </dependency>
+      <!-- Misconfiguration Ipf framework put JUnit to latest version 4 -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version>
+      </dependency>
+      <!-- Hapi Fhir -->
+      <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-base</artifactId>
+        <version>${hapi.fhir.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>${jsoup.version}</version>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-caching-api</artifactId>
+        <version>${hapi.fhir.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>${snakeyaml.version}</version>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-structures-r4</artifactId>
+        <version>${hapi.fhir.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>hapi-fhir-validation-resources-r4</artifactId>
+        <version>${hapi.fhir.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>org.hl7.fhir.convertors</artifactId>
+        <version>${org.hl7.fhir.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson-core.version}</version>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>org.hl7.fhir.utilities</artifactId>
+        <version>${org.hl7.fhir.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>org.hl7.fhir.validation</artifactId>
+        <version>${org.hl7.fhir.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>org.hl7.fhir.r5</artifactId>
+        <version>${org.hl7.fhir.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>org.hl7.fhir.r4</artifactId>
+        <version>${org.hl7.fhir.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.uhn.hapi.fhir</groupId>
+        <artifactId>org.hl7.fhir.r4b</artifactId>
+        <version>${org.hl7.fhir.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -153,6 +179,13 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-saml2-service-provider</artifactId>
+      <exclusions>
+        <!-- excluded because the library doesn't exist anymore on version 5.1.3 -->
+        <exclusion>
+          <groupId>org.opensaml</groupId>
+          <artifactId>opensaml-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Husky -->
@@ -165,11 +198,34 @@
       		<groupId>xml-apis</groupId>
       		<artifactId>xml-apis</artifactId>
       	</exclusion>
+        <exclusion>
+          <groupId>org.opensaml</groupId>
+          <artifactId>opensaml-xacml-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.opensaml</groupId>
+          <artifactId>opensaml-xacml-saml-impl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.projecthusky.communication</groupId>
       <artifactId>husky-communication-ch</artifactId>
+      <version>${husky.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.opensaml</groupId>
+          <artifactId>opensaml-xacml-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.opensaml</groupId>
+          <artifactId>opensaml-xacml-saml-impl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.projecthusky.communication</groupId>
+      <artifactId>husky-service</artifactId>
       <version>${husky.version}</version>
     </dependency>
     <dependency>
@@ -195,7 +251,7 @@
     <!-- SAML -->
     <dependency>
       <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-core</artifactId>
+      <artifactId>opensaml-core-api</artifactId>
       <version>${opensaml.version}</version>
     </dependency>
     <dependency>
@@ -301,8 +357,8 @@
     <!-- PDF A1 Validator -->
     <dependency>
       <groupId>org.verapdf</groupId>
-      <artifactId>validation-model</artifactId>
-      <version>1.24.1</version>
+      <artifactId>validation-model-jakarta</artifactId>
+      <version>1.26.1</version>
     </dependency>
   </dependencies>
 
@@ -445,7 +501,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
-            <version>3.3.2</version>
+            <version>3.4.0</version>
           </plugin>
         </plugins>
       </build>

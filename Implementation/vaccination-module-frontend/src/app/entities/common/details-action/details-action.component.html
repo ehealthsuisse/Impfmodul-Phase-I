@@ -25,7 +25,7 @@
       color="accent"
       *ngIf="canValidate"
       (click)="validateRecord()"
-      [disabled]="!canValidate || isDisabled"
+      [disabled]="!canValidate || isValidateDisabled"
       [attr.aria-label]="'buttons.VALIDATE | translate'"
     >
       <ng-container class="button-content">
@@ -40,7 +40,7 @@
       color="accent"
       (click)="editRecord()"
       [attr.aria-label]="'buttons.EDIT' | translate"
-      [disabled]="canEdit || isEmergencyMode"
+      [disabled]="isEditOrDeleteDisabled"
     >
       <ng-container class="button-content">
         <span class="button-text" [vmTranslate]="'buttons.EDIT'"></span>
@@ -51,10 +51,10 @@
       mat-raised-button
       [ngClass]="isMobile ? 'mobile-mat-button' : 'mat-button'"
       type="button"
-      color="warn"
+      [color]="isEditOrDeleteDisabled ? 'accent' : 'warn'"
       (click)="deleteRecord()"
       [attr.aria-label]="'buttons.DELETE' | translate"
-      [disabled]="canEdit || isEmergencyMode"
+      [disabled]="isEditOrDeleteDisabled"
     >
       <ng-container class="button-content">
         <span class="button-text" [vmTranslate]="'buttons.DELETE'"></span>

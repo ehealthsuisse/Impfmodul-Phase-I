@@ -24,9 +24,9 @@ import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.xml.BasicParserPool;
-import net.shibboleth.utilities.java.support.xml.ParserPool;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.xml.ParserPool;
+import net.shibboleth.shared.xml.impl.BasicParserPool;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
@@ -85,7 +85,7 @@ public class SAMLConfig {
     features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
 
     parserPool.setBuilderFeatures(features);
-    parserPool.setBuilderAttributes(new HashMap<String, Object>());
+    parserPool.setBuilderAttributes(new HashMap<>());
 
     try {
       parserPool.initialize();

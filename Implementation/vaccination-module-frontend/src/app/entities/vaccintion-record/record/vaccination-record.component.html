@@ -29,6 +29,7 @@
           (keydown.enter)="addVaccination()"
           [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
           [disabled]="isEmergencyMode"
+          [matTooltip]="'buttons.ADD_VACCINATION' | translate"
         >
           <mat-icon [attr.aria-label]="'buttons.ADD_VACCINATION' | translate" matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
             >add
@@ -55,10 +56,9 @@
           (keydown.enter)="addAllergy()"
           [attr.aria-label]="'buttons.ADD_ALLERGY' | translate"
           [disabled]="isEmergencyMode"
+          [matTooltip]="'buttons.ADD_ALLERGY' | translate"
         >
-          <mat-icon [attr.aria-label]="'buttons.ADD_ALLERGY' | translate" matTooltip="{{ 'buttons.ADD_ALLERGY' | translate }}"
-            >add
-          </mat-icon>
+          <mat-icon role="presentation">add</mat-icon>
         </button>
       </div>
       <vm-table-wrapper
@@ -80,13 +80,9 @@
           (keydown.enter)="addIllness()"
           [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
           [disabled]="isEmergencyMode"
+          [matTooltip]="'buttons.ADD_PAST_ILLNESS' | translate"
         >
-          <mat-icon
-            [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
-            matTooltip="{{ 'buttons.ADD_PAST_ILLNESS' | translate }}"
-            role="presentation"
-            >add
-          </mat-icon>
+          <mat-icon role="presentation">add</mat-icon>
         </button>
       </div>
       <vm-table-wrapper
@@ -109,13 +105,9 @@
           (keydown.enter)="addMedicalProblem()"
           [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
           [disabled]="isEmergencyMode"
+          [matTooltip]="'buttons.ADD_PROBLEM' | translate"
         >
-          <mat-icon
-            [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
-            matTooltip="{{ 'buttons.ADD_PROBLEM' | translate }}"
-            role="presentation"
-            >add
-          </mat-icon>
+          <mat-icon role="presentation">add</mat-icon>
         </button>
       </div>
 

@@ -19,7 +19,6 @@
 package ch.admin.bag.vaccination.service;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 /**
  *
@@ -27,7 +26,8 @@ import java.util.Locale;
  *
  */
 public enum I18nKey {
-  VACCINATION_RECORD("Vaccination Record", "Impfausweis", "Carnet de vaccination", "Libretto delle vaccinazioni"), //
+  VACCINATION_RECORD("Vaccination certificate", "Impfausweis", "Carnet de vaccination",
+      "Libretto delle vaccinazioni"), //
   BASIC_VACCINATION("Basic vaccinations", "Basisimpfungen", "Vaccinations de base", "Vaccinazioni di base"), //
   OTHER_VACCINATION("Other vaccinations", "Andere Impfungen", "Autres vaccinations", "Altere vaccinazioni"), //
   ADVERSE_EVENTS("Adverse Events", "Nebenwirkungen (UIE)", "Effets secondaires (EIV)",
@@ -54,16 +54,18 @@ public enum I18nKey {
   DOSE("Dose", "Dosis", "Dose", "Dose"), //
   TREATING("Performer", "Geimpft Von", "Vacciné Par", "Vaccinato da"), //
   VALIDATED("Validated", "Validiert", "Validé", "Validato"), //
-  PRINTED1("EPR Vaccination record", "EPD Impfausweis", "DEP carnet de vaccination",
+  PRINTED1("EPR Vaccination certificate", "EPD Impfausweis", "DEP carnet de vaccination",
       "CIP Libretto delle vaccinazioni"), //
   PRINTED2("Printed on: ", "Gedruckt am: ", "Imprimé sur: ", "Stampato su: "), //
   LEGAL_REMARK("The vaccination card is not an official document.", "Der Impfausweis ist kein amtliches Dokument.",
       "Le carnet de vaccination n'est pas un document officiel.",
       "Il libretto di vaccinazione non è un documento ufficiale."), //
-  LOGO_FILE_NAME("/Logo_EN_EPR.jpg", "/Logo_DE_EPD.jpg", "/Logo_FR_DEP.jpg", "/Logo_IT_CIP.jpg");
+  LOGO_FILE_NAME("/Logo_EN_EPR.jpg", "/Logo_DE_EPD.jpg", "/Logo_FR_DEP.jpg", "/Logo_IT_CIP.jpg"),
+  ACTIVE("Active", "Aktiv", "Actif", "Attivo"),
+  INACTIVE("Inactive", "Inaktiv", "Inactif", "Inattivo");
 
   public static boolean exists(String gender) {
-    return Arrays.asList(values()).stream().filter(value -> value.name().equals(gender)).findAny().isPresent();
+    return Arrays.stream(values()).anyMatch(value -> value.name().equals(gender));
   }
 
   private final String en;
@@ -76,18 +78,6 @@ public enum I18nKey {
     this.de = de;
     this.fr = fr;
     this.it = it;
-  }
-
-  public Locale getLocale(String lang) {
-    if (lang == null) {
-      return Locale.ENGLISH;
-    }
-    return switch (lang) {
-      case "de" -> Locale.GERMAN;
-      case "fr" -> Locale.FRENCH;
-      case "it" -> Locale.ITALIAN;
-      default -> Locale.ENGLISH;
-    };
   }
 
   public String getTranslation(String lang) {

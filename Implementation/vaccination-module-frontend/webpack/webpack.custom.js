@@ -7,7 +7,7 @@ const { hashElement } = require('folder-hash');
 
 const ESLintPlugin = require('eslint-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const BrowserSyncPlugin = require('browser-sync-v3-webpack-plugin');
 const path = require('path');
 module.exports = async (config, options, targetOptions) => {
   const languagesHash = await hashElement(path.resolve(__dirname, '../src/assets/i18n'), {

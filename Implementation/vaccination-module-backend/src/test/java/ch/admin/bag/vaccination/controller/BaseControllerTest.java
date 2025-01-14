@@ -23,16 +23,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.VaccinationService;
+import ch.admin.bag.vaccination.utils.MockSessionHelper;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.projecthusky.xua.saml2.impl.AssertionImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -42,24 +48,30 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class BaseControllerTest {
+@TestInstance(Lifecycle.PER_CLASS)
+class BaseControllerTest extends MockSessionHelper {
   @LocalServerPort
   private int port;
-  @Autowired
-  private TestRestTemplate restTemplate;
   @MockBean
   private VaccinationService vaccinationService;
+  @MockBean
+  private SignatureService signatureService;
+  @Autowired
+  private TestRestTemplate restTemplate;
+
+  @BeforeAll
+  public void setUp() {
+    restTemplate = new TestRestTemplate(HttpClientOption.ENABLE_COOKIES);
+    enhanceSessionWithMockedData(restTemplate, signatureService, port, false);
+  }
 
   @Test
   public void testCreate() {
     HttpEntity<VaccinationDTO> request = new HttpEntity<>(new VaccinationDTO());
-
     ResponseEntity<VaccinationDTO> response = restTemplate.postForEntity(
-        "http://localhost:" + port
-            + "/vaccination/communityIdentifier/GAZELLE/oid/1.3.6.1.4.1.21367.13.20.3000/localId/CHPAM4489",
-        request, VaccinationDTO.class);
+        "http://localhost:" + port + "/vaccination/communityIdentifier/GAZELLE", request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(vaccinationService).create(eq("GAZELLE"), eq("1.3.6.1.4.1.21367.13.20.3000"), eq("CHPAM4489"),
+    verify(vaccinationService).create(eq("GAZELLE"), eq("1.3.6.1.4.1.12559.11.20.1"), eq("CHPAM204"),
         any(VaccinationDTO.class), any(AssertionImpl.class));
   }
 
@@ -68,10 +80,10 @@ class BaseControllerTest {
     ValueDTO confidentiality = new ValueDTO("1141000195107", "Secret", "url");
     HttpEntity<ValueDTO> request = new HttpEntity<>(confidentiality);
     ResponseEntity<VaccinationDTO> response = restTemplate.exchange("http://localhost:" + port
-        + "/vaccination/communityIdentifier/EPDPLAYGROUND/oid/1.2.3.4.123456.1/localId/waldspital-Id-1234/uuid/acc1f090-5e0c-45ae-b283-521d57c3aa2f",
+        + "/vaccination/communityIdentifier/EPDPLAYGROUND/uuid/acc1f090-5e0c-45ae-b283-521d57c3aa2f",
         HttpMethod.DELETE, request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(vaccinationService).delete(eq("EPDPLAYGROUND"), eq("1.2.3.4.123456.1"), eq("waldspital-Id-1234"),
+    verify(vaccinationService).delete(eq("EPDPLAYGROUND"), eq("1.3.6.1.4.1.12559.11.20.1"), eq("CHPAM204"),
         eq("acc1f090-5e0c-45ae-b283-521d57c3aa2f"), eq(confidentiality), any(AssertionImpl.class));
   }
 
@@ -79,10 +91,10 @@ class BaseControllerTest {
   public void testGetAll() {
     ResponseEntity<Object> response = restTemplate.getForEntity(
         "http://localhost:" + port
-            + "/vaccination/communityIdentifier/GAZELLE/oid/1.3.6.1.4.1.21367.13.20.3000/localId/CHPAM4489",
+            + "/vaccination/communityIdentifier/GAZELLE",
         Object.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(vaccinationService).getAll(eq("GAZELLE"), eq("1.3.6.1.4.1.21367.13.20.3000"), eq("CHPAM4489"),
+    verify(vaccinationService).getAll(eq("GAZELLE"), eq("1.3.6.1.4.1.12559.11.20.1"), eq("CHPAM204"),
         any(AssertionImpl.class),
         eq(false));
   }
@@ -91,13 +103,11 @@ class BaseControllerTest {
   public void testUpdate() {
     HttpEntity<VaccinationDTO> request = new HttpEntity<>(new VaccinationDTO());
 
-    ResponseEntity<VaccinationDTO> response = restTemplate.postForEntity(
-        "http://localhost:" + port
-            + "/vaccination/communityIdentifier/EPDPLAYGROUND/oid/1.2.3.4.123456.1/localId/waldspital-Id-1234",
+    ResponseEntity<VaccinationDTO> response =
+        restTemplate.postForEntity("http://localhost:" + port + "/vaccination/communityIdentifier/EPDPLAYGROUND",
         request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(vaccinationService).create(eq("EPDPLAYGROUND"), eq("1.2.3.4.123456.1"), eq("waldspital-Id-1234"),
+    verify(vaccinationService).create(eq("EPDPLAYGROUND"), eq("1.3.6.1.4.1.12559.11.20.1"), eq("CHPAM204"),
         any(VaccinationDTO.class), any(AssertionImpl.class));
   }
-
 }

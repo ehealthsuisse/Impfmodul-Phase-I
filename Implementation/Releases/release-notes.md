@@ -1,3 +1,33 @@
+# November 2024 - Release 1.7.0-RC1
+This release candidat contains major changes for all artifacts (frontend, backend, FHIR library).
+<br>Starting with 1.7.0, it is necessary to deploy the application on a new tomcat version. Installation guide has been updated.
+
+### Changes Fhir Library
+* Refactored FHIR bundle structure based on the new ballot
+* Cross References have been reworked, they are no longer linked via compositions but via URL Extensions only. The library will process old and new way of cross referencing alike, i.e. it is backwards compatible.
+* Fixed an issue where the wrong GLN was added if an HCP user/author was creating an entry for another HCP who performed the vaccination or did the diagnoses.
+
+
+### Changes Vaccination Module Backend 
+* Updated various libraries, most important were Spring Boot to 3.x and Spring 6.x
+* Updated Husky Library to 3.x to use new Convenience API simplifying the Husky requests. Dependency was manually added due to a release problem on husky side. Next husky release will be taken via maven dependency again.
+* Refactored Backend API URLs to remove patientIdentifier and localAssigningAuthorityOID as those parameters are retrieved from the session
+* Modified the generation of the PDF export, data is now reloaded by the Backend to avoid modifications
+* Corrections regarding translations 
+* Updated the value lists
+
+### Changes Vaccination Module Frontend  
+* Updated Angular to Version 17 
+* Updated several other libraries, especially Material to correspond to new Angular version
+* Styling adjustments to correspond to the new UI
+* Adjusted header for the confirmation dialog
+* Fixed the risk factor selection search 
+* Fixed a scrolling issue when many entries were present on the list views.
+* Added some more date validators for infectious diseases and risk factors
+* Value lists are now sorted alphabetically for each language
+* Change language to use German when Portal sends RM (Retoromanisch)
+* Improved translations
+
 # September 2024 - Hotfix 1.6.3 
 This hotfix contains a small extension to the XUA request made to the EPR-backend.
 * The XUA request field 'purpose of use' has been extended to set the codeSystemName to "EprPurposeOfUse".
@@ -62,7 +92,7 @@ Included feedbacks provided by the providers
 * Added more validations on the FHIR Adapter to ensure data integrity. 
 * Allow log pattern to be set using LOG_DATEFORMAT_PATTERN environment variable. See documentation for more information
 
-### Changes Vaccination Modul Backend 
+### Changes Vaccination Module Backend 
 * Added possibility to hand over the user organization (attribute organization) from the portal in the initial web call.<br>
   <b>Important:</b> From next feature release onwards, the field will be mandatory for roles HCP/ASS.
 * Added new configuration for samlMessageLifetime (see idp-config-local.yml) which was hard-coded before to 2000 ms
@@ -77,7 +107,7 @@ Included feedbacks provided by the providers
 * Improved security by protecting against ID guessing. On the next release, it will also be planned to remove identifier from rest URLs completely.
 * Fixed an issue with the SAML Logout handling
 
-### Changes Vaccination Modul Frontend  
+### Changes Vaccination Module Frontend  
 * Removed several header values send to the backend. Instead, new X-XSRF-TOKEN header will be send to the backend to ensure the CSRF protection.
 * Allow possibility to show/hide the logout button in the configuration
 * Added input validation for the provided dates. 
@@ -93,7 +123,7 @@ Included feedbacks provided by the providers
 ### Changes Fhir Library
 * Adapted patient creation for the FHIR documents, using now the correct prefix urn:oid for the system url. 
 
-### Changes Vaccination Modul Backend 
+### Changes Vaccination Module Backend 
 * Redesigned adverse events on the PDF report, thereby also fixed an issue where the text was not correctly linewrapped.
 * Support the sorting of the valuelists based on priorities (highest first). Priorities can be added as last csv value on each line.
 Values with same priorities are sorted alphabetically (based on english translation), Values without priority receive priority 0.
@@ -101,7 +131,7 @@ Values with same priorities are sorted alphabetically (based on english translat
 * Added few validations on input values to avoid errors in fhir bundles. 
 * Minor adaption to the vaccination code valuelist. 
 
-### Changes Vaccination Modul Frontend  
+### Changes Vaccination Module Frontend  
 * Fixed some translation issues
 
 # February 2024 - Hotfix Release 1.4.2
@@ -112,7 +142,7 @@ It is important to fix those topics before going live.
 * Adapted bundle creation to correctly retrieve organizations and practitioners, even if practitionerRole is not present.
 * Added few input validation
 
-### Changes Vaccination Modul Backend 
+### Changes Vaccination Module Backend 
 * Allow logging of the SAML logout request before it is processed, see logging.properties file. 
 * Fixed a performance issue when loading the vaccination record
 * Fixed the issue which allowed a document to be deleted multiple times
@@ -122,7 +152,7 @@ It is important to fix those topics before going live.
 * Fixed the issue which lead to the wrong system URL being used for the confidentiality code
 * Fixed the issue that documents could not be uploaded if EPD setting was put to only allow restricted or secrets documents
 
-### Changes Vaccination Modul Frontend  
+### Changes Vaccination Module Frontend  
 * Add an organization parameter to the initial call to prefill it in the UI. This feature will be refined in the spring release. 
 * Fixed the issue that the wrong confidentiality code was used in a delete call
 * Adapted few translations

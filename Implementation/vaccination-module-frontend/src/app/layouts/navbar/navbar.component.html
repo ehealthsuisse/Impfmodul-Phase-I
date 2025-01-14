@@ -61,13 +61,14 @@
       <vm-navigation></vm-navigation>
       <vm-language></vm-language>
       <div class="logout-button" *ngIf="isVisible">
-        <button mat-icon-button role="button" (click)="samlService.logout()">
-          <img
-            alt="{{ 'buttons.LOGOUT' | translate }}"
-            matTooltip="{{ 'buttons.LOGOUT' | translate }}"
-            class="logout-icon"
-            src="./assets/images/logout.png"
-          />
+        <button
+          mat-icon-button
+          role="button"
+          [attr.aria-label]="'buttons.LOGOUT' | translate"
+          (click)="samlService.logout()"
+          [matTooltip]="'buttons.LOGOUT' | translate"
+        >
+          <img class="logout-icon" src="./assets/images/logout.png" alt="Logout button" />
         </button>
       </div>
       <div fxLayout="column" fxLayoutAlign="flex-start" class="navbar__community">
@@ -107,7 +108,9 @@
       </div>
     </mat-toolbar>
     <main>
-      <mat-progress-spinner *ngIf="spinnerService.IsWait" class="vm-progress-spinner" mode="indeterminate"></mat-progress-spinner>
+      <div class="spinner-overlay" *ngIf="spinnerService.IsWait">
+        <mat-progress-spinner class="vm-progress-spinner" mode="indeterminate"></mat-progress-spinner>
+      </div>
       <router-outlet></router-outlet>
     </main>
   </mat-sidenav-content>

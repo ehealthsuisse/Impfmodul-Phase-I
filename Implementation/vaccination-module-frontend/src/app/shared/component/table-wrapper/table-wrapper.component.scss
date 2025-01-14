@@ -59,7 +59,7 @@ mat-table {
   }
 }
 
-.mat-row {
+.mat-mdc-row {
   cursor: pointer;
 }
 
@@ -86,4 +86,13 @@ mat-table {
     overflow-x: auto;
     white-space: pre;
   }
+  // Unwrap table rows
+  .mat-mdc-table {
+    white-space: unset;
+  }
+}
+
+.mat-mdc-header-row {
+  font-size: 12pt;
+  font-weight: 700;
 }

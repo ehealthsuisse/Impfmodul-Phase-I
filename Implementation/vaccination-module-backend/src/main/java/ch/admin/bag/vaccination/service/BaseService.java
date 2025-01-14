@@ -203,11 +203,6 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   }
 
   public PatientIdentifier getPatientIdentifier(String communityIdentifier, String oid, String localId) {
-    PatientIdentifier patientIdentifier = new PatientIdentifier(communityIdentifier, localId, oid);
-    if (!profileConfig.isLocalMode() && !HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier)) {
-      return null;
-    }
-
     return huskyAdapter.getPatientIdentifier(communityIdentifier, oid, localId);
   }
 
@@ -316,17 +311,15 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
           numberOfFilteredEntries);
     }
 
-    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(
-        patientIdentifier, filteredDocumentEntries, author, assertion,
-        useInternal);
+    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier,
+        filteredDocumentEntries, author, assertion, useInternal);
 
     return processAndValidateDocuments(documentEntries, retrievedDocuments);
   }
 
   private List<EPRDocument> getData(PatientIdentifier patientIdentifier, Assertion assertion) {
     boolean patientIdentifierCouldNotBeResolved = patientIdentifier == null;
-    if (patientIdentifierCouldNotBeResolved
-        || (!profileConfig.isLocalMode() && !HttpSessionUtils.isValidAccessToPatientInformation(patientIdentifier))) {
+    if (patientIdentifierCouldNotBeResolved) {
       return Collections.emptyList();
     }
 

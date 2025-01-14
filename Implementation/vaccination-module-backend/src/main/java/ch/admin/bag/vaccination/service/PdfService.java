@@ -24,6 +24,7 @@ import be.quodlibet.boxable.HorizontalAlignment;
 import be.quodlibet.boxable.Row;
 import be.quodlibet.boxable.line.LineStyle;
 import ch.admin.bag.vaccination.data.PdfDocument;
+import ch.admin.bag.vaccination.data.request.TranslationsRequest;
 import ch.admin.bag.vaccination.exception.BusinessException;
 import ch.admin.bag.vaccination.utils.DateComparator;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
@@ -45,7 +46,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -88,9 +91,9 @@ public class PdfService {
   private static final Color COLOR_DARKBLUE = Color.decode("#014C8A");
   private static final Color COLOR_LIGHTBLUE = Color.decode("#C8E8F6");
   private static final Color COLOR_WHITE = Color.decode("#FFFFFF");
-  private static final float[] VACCIN_TABLE_WITHS = {30, 10, 15, 20, 25};
-  private static final float[] MEDICAL_PROBLEMS_TABLE_WITHS = {10, 15, 15, 15, 30, 15};
-  private static final float[] PASTILNESS_TABLE_WITHS = {10, 15, 15, 15, 45};
+  private static final float[] VACCINE_TABLE_WIDTHS = {30, 10, 15, 20, 25};
+  private static final float[] MEDICAL_PROBLEMS_TABLE_WIDTHS = {10, 15, 15, 15, 30, 15};
+  private static final float[] PASTILLNESS_TABLE_WIDTHS = {10, 15, 15, 15, 45};
   private static final float[] ADVERSE_EVENTS_TABLE_WIDTHS = {100};
   private static final float MARGIN = 50;
   private static final float CELL_HEIGHT = 15;
@@ -102,11 +105,13 @@ public class PdfService {
   private static final String EMPTY_USER_PASSWORD = "";
   private static final String EMPTY_CONTENT = "";
   private static final String DEFAULT_FONT = "";
+  private final ThreadLocal<TranslationsRequest> translationsRequest = new ThreadLocal<>();
 
   @Autowired
   private PdfOutputConfig pdfOutputConfig;
 
-  public InputStream create(VaccinationRecordDTO vaccinationRecordDTO) {
+  public InputStream create(VaccinationRecordDTO vaccinationRecordDTO, TranslationsRequest translationsRequest) {
+    this.translationsRequest.set(translationsRequest);
     try (PDDocument document = createDocumentAndItsMeta();
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       PdfDocument pdfDocument = new PdfDocument(document);
@@ -158,7 +163,7 @@ public class PdfService {
 
   private Cell<PDPage> addAllergyCell(AllergyDTO dto, PdfDocument pdfDocument, Row<PDPage> row) throws IOException {
     log.debug("addRow {}", dto.getCode().getName());
-    String value = (dto.isValidated() ? "(+) " : "") + dto.getCode().getName() + ", " +
+    String value = (dto.isValidated() ? "(+) " : "") + getTranslation(translationsRequest.get().getAllergyCodeToName(), dto.getCode()) + ", " +
         getFormattedDate(dto.getOccurrenceDate()) + ", " + dto.getAuthor().getUser().getFullName();
     Cell<PDPage> allergyCell = addCell(BOLD, value, ADVERSE_EVENTS_TABLE_WIDTHS[0], row, pdfDocument);
     allergyCell.setFontSize(FONT_SIZE);
@@ -282,7 +287,7 @@ public class PdfService {
     List<MedicalProblemDTO> medicalProblems = DateComparator.sortByDateDesc(vaccinationRecordDTO.getMedicalProblems(),
         Comparator.comparing(MedicalProblemDTO::getRecordedDate));
     for (MedicalProblemDTO medicalProblem : medicalProblems) {
-      addRow(table, medicalProblem, pdfDocument);
+      addRow(table, medicalProblem, pdfDocument, vaccinationRecordDTO.getLang());
     }
     table.draw();
 
@@ -295,7 +300,7 @@ public class PdfService {
         I18nKey.BEGIN.getTranslation(lang), I18nKey.END.getTranslation(lang),
         I18nKey.RISK_FACTOR.getTranslation(lang), I18nKey.CLINICAL_STATUS.getTranslation(lang));
 
-    addTableHeader(table, height, headers, MEDICAL_PROBLEMS_TABLE_WITHS, pdfDocument);
+    addTableHeader(table, height, headers, MEDICAL_PROBLEMS_TABLE_WIDTHS, pdfDocument);
   }
 
   private void addNotLegalDocument(String lang, PdfDocument pdfDocument) throws IOException {
@@ -406,7 +411,7 @@ public class PdfService {
       throws IOException {
     List<String> headers = List.of(I18nKey.VALIDATED.getTranslation(lang), I18nKey.DATE.getTranslation(lang),
         I18nKey.BEGIN.getTranslation(lang), I18nKey.END.getTranslation(lang), I18nKey.PASTILLNESS.getTranslation(lang));
-    addTableHeader(table, height, headers, PASTILNESS_TABLE_WITHS, pdfDocument);
+    addTableHeader(table, height, headers, PASTILLNESS_TABLE_WIDTHS, pdfDocument);
   }
 
   private void addPatient(HumanNameDTO patient, String lang, PdfDocument pdfDocument) throws IOException {
@@ -443,7 +448,7 @@ public class PdfService {
     writeText(info, contentStream);
   }
 
-  private void addRow(BaseTable table, MedicalProblemDTO dto, PdfDocument pdfDocument) throws IOException {
+  private void addRow(BaseTable table, MedicalProblemDTO dto, PdfDocument pdfDocument, String lang) throws IOException {
     if (dto == null) {
       log.warn("addRow MedicalProblemDTO null");
       return;
@@ -451,17 +456,19 @@ public class PdfService {
 
     log.debug("addRow {}", dto.getCode().getName());
     Row<PDPage> row = table.createRow(15);
-    Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", MEDICAL_PROBLEMS_TABLE_WITHS[0], row,
+    Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", MEDICAL_PROBLEMS_TABLE_WIDTHS[0], row,
         pdfDocument);
     cell.setAlign(HorizontalAlignment.CENTER);
-    addCell(getFormattedDate(dto.getRecordedDate()), MEDICAL_PROBLEMS_TABLE_WITHS[1], row, pdfDocument);
-    addCell(getFormattedDate(dto.getBegin()), MEDICAL_PROBLEMS_TABLE_WITHS[2], row, pdfDocument);
-    addCell(getFormattedDate(dto.getEnd()), MEDICAL_PROBLEMS_TABLE_WITHS[3], row, pdfDocument);
+    addCell(getFormattedDate(dto.getRecordedDate()), MEDICAL_PROBLEMS_TABLE_WIDTHS[1], row, pdfDocument);
+    addCell(getFormattedDate(dto.getBegin()), MEDICAL_PROBLEMS_TABLE_WIDTHS[2], row, pdfDocument);
+    addCell(getFormattedDate(dto.getEnd()), MEDICAL_PROBLEMS_TABLE_WIDTHS[3], row, pdfDocument);
     if (dto.getCode() != null) {
-      addCell(dto.getCode().getName(), MEDICAL_PROBLEMS_TABLE_WITHS[4], row, pdfDocument);
+      addCell(getTranslation(translationsRequest.get().getMedicalProblemCodeToName(), dto.getCode()), MEDICAL_PROBLEMS_TABLE_WIDTHS[4], row, pdfDocument);
     }
     if (dto.getClinicalStatus() != null) {
-      addCell(dto.getClinicalStatus().getName(), MEDICAL_PROBLEMS_TABLE_WITHS[5], row, pdfDocument);
+      String value = I18nKey.ACTIVE.name().equals(dto.getClinicalStatus().getName().toUpperCase()) ?
+          I18nKey.ACTIVE.getTranslation(lang) : I18nKey.INACTIVE.getTranslation(lang);
+      addCell(value, MEDICAL_PROBLEMS_TABLE_WIDTHS[5], row, pdfDocument);
     }
     setRowColor(row, pdfDocument.getRowBackgoundColor());
     swapColor(pdfDocument);
@@ -476,14 +483,14 @@ public class PdfService {
 
     log.debug("addRow {}", dto.getCode().getName());
     Row<PDPage> row = table.createRow(15);
-    Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", PASTILNESS_TABLE_WITHS[0], row,
+    Cell<PDPage> cell = addCell(dto.isValidated() ? "+" : "", PASTILLNESS_TABLE_WIDTHS[0], row,
         pdfDocument);
     cell.setAlign(HorizontalAlignment.CENTER);
-    addCell(getFormattedDate(dto.getRecordedDate()), PASTILNESS_TABLE_WITHS[1], row, pdfDocument);
-    addCell(getFormattedDate(dto.getBegin()), PASTILNESS_TABLE_WITHS[2], row, pdfDocument);
-    addCell(getFormattedDate(dto.getEnd()), PASTILNESS_TABLE_WITHS[3], row, pdfDocument);
+    addCell(getFormattedDate(dto.getRecordedDate()), PASTILLNESS_TABLE_WIDTHS[1], row, pdfDocument);
+    addCell(getFormattedDate(dto.getBegin()), PASTILLNESS_TABLE_WIDTHS[2], row, pdfDocument);
+    addCell(getFormattedDate(dto.getEnd()), PASTILLNESS_TABLE_WIDTHS[3], row, pdfDocument);
     if (dto.getCode() != null) {
-      addCell(dto.getCode().getName(), PASTILNESS_TABLE_WITHS[4], row, pdfDocument);
+      addCell(getTranslation(translationsRequest.get().getIllnessCodeToName(), dto.getCode()), PASTILLNESS_TABLE_WIDTHS[4], row, pdfDocument);
     }
     updateYposition(row.getHeight(), pdfDocument);
     setRowColor(row, pdfDocument.getRowBackgoundColor());
@@ -551,7 +558,7 @@ public class PdfService {
         I18nKey.VALIDATED.getTranslation(lang), I18nKey.DATE.getTranslation(lang), I18nKey.VACCINE.getTranslation(lang),
         I18nKey.TREATING.getTranslation(lang));
 
-    addTableHeader(table, height, headers, VACCIN_TABLE_WITHS, pdfDocument);
+    addTableHeader(table, height, headers, VACCINE_TABLE_WIDTHS, pdfDocument);
   }
 
   private void addVaccinRows(BaseTable table, String targetDisease, List<VaccinationDTO> dtos, boolean keepEmpty,
@@ -562,8 +569,8 @@ public class PdfService {
     }
 
     Row<PDPage> row = table.createRow(CELL_HEIGHT);
-    var spanncell = addCell(targetDisease, VACCIN_TABLE_WITHS[0], row, pdfDocument);
-    if (dtos != null && !dtos.isEmpty()) {
+    var spanncell = addCell(targetDisease, VACCINE_TABLE_WIDTHS[0], row, pdfDocument);
+    if (!dtos.isEmpty()) {
       boolean hasMultipleEntries = dtos.size() > 1;
       if (hasMultipleEntries) {
         // keep 1st row without lines
@@ -574,15 +581,15 @@ public class PdfService {
       for (int i = 0; i < dtos.size(); i++) {
         VaccinationDTO dto = dtos.get(i);
 
-        Cell<PDPage> validatedCell = addCell(dto.isValidated() ? "+" : "", VACCIN_TABLE_WITHS[1], row, pdfDocument);
+        Cell<PDPage> validatedCell = addCell(dto.isValidated() ? "+" : "", VACCINE_TABLE_WIDTHS[1], row, pdfDocument);
         validatedCell.setAlign(HorizontalAlignment.CENTER);
 
-        addCell(getFormattedDate(dto.getOccurrenceDate()), VACCIN_TABLE_WITHS[2], row, pdfDocument);
-        addCell(dto.getCode().getName(), VACCIN_TABLE_WITHS[3], row, pdfDocument);
+        addCell(getFormattedDate(dto.getOccurrenceDate()), VACCINE_TABLE_WIDTHS[2], row, pdfDocument);
+        addCell(getTranslation(translationsRequest.get().getVaccineCodeToName(), dto.getCode()), VACCINE_TABLE_WIDTHS[3], row, pdfDocument);
 
         String recorderOrOrganization = dto.getRecorder() != null &&
             !dto.getRecorder().getFullName().isBlank() ? dto.getRecorder().getFullName() : dto.getOrganization();
-        addCell(recorderOrOrganization, VACCIN_TABLE_WITHS[4], row, pdfDocument);
+        addCell(recorderOrOrganization, VACCINE_TABLE_WIDTHS[4], row, pdfDocument);
         setRowColor(row, pdfDocument.getRowBackgoundColor());
 
         boolean nonLastItems = i < dtos.size() - 1;
@@ -596,17 +603,17 @@ public class PdfService {
           spanncell.setTopBorderStyle(LineStyle.produceDashed(pdfDocument.getRowBackgoundColor(), 0));
           updateYposition(CELL_HEIGHT, pdfDocument);
           row = table.createRow(CELL_HEIGHT);
-          spanncell = addCell(EMPTY_CONTENT, VACCIN_TABLE_WITHS[0], row, pdfDocument);
+          spanncell = addCell(EMPTY_CONTENT, VACCINE_TABLE_WIDTHS[0], row, pdfDocument);
           if (i < dtos.size() - 2) {
             spanncell.setBottomBorderStyle(LineStyle.produceDashed(pdfDocument.getRowBackgoundColor(), 0));
           }
         }
       }
     } else {
-      addCell(EMPTY_CONTENT, VACCIN_TABLE_WITHS[1], row, pdfDocument);
-      addCell(EMPTY_CONTENT, VACCIN_TABLE_WITHS[2], row, pdfDocument);
-      addCell(EMPTY_CONTENT, VACCIN_TABLE_WITHS[3], row, pdfDocument);
-      addCell(EMPTY_CONTENT, VACCIN_TABLE_WITHS[4], row, pdfDocument);
+      addCell(EMPTY_CONTENT, VACCINE_TABLE_WIDTHS[1], row, pdfDocument);
+      addCell(EMPTY_CONTENT, VACCINE_TABLE_WIDTHS[2], row, pdfDocument);
+      addCell(EMPTY_CONTENT, VACCINE_TABLE_WIDTHS[3], row, pdfDocument);
+      addCell(EMPTY_CONTENT, VACCINE_TABLE_WIDTHS[4], row, pdfDocument);
       setRowColor(row, pdfDocument.getRowBackgoundColor());
     }
     updateYposition(CELL_HEIGHT, pdfDocument);
@@ -758,6 +765,10 @@ public class PdfService {
     spp.setEncryptionKeyLength(keyLength);
     spp.setPermissions(ap);
     return spp;
+  }
+
+  private String getTranslation(Map<String, String> valuesCodeToName, ValueDTO valueDTO) {
+    return valuesCodeToName.getOrDefault(valueDTO.getCode(), valueDTO.getName());
   }
 
   private InputStream setReadOnlyPermissions(byte[] pdfFile) throws IOException {

@@ -20,36 +20,18 @@
           [labelTranslationKey]="'ALLERGY.DATE'"
           [isEditable]="true"
           formControlName="occurrenceDate"
-        >
-        </vm-reusable-date-field>
+        ></vm-reusable-date-field>
 
-        <mat-form-field class="detailed-card-content__form-field">
-          <mat-select
-            [attr.aria-label]="'ALLERGY.CODE' | translate"
-            [placeholder]="'ALLERGY.CODE' | translate"
-            #singleSelect
-            formControlName="code"
-            required="true"
-            [formControl]="allergiesControl"
-            ngDefaultControl
-          >
-            <mat-option>
-              <ngx-mat-select-search
-                [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
-                [placeholderLabel]="'GLOBAL.SEARCH' | translate"
-                [formControl]="allergiesControl"
-              ></ngx-mat-select-search>
-            </mat-option>
-            <mat-option
-              *ngFor="let allergy of filteredAllergies | async | filterPipe : allergiesControl.value : 'ALLERGY_CODE.'"
-              vmTranslate="{{ 'ALLERGY_CODE.' + allergy.code }}"
-              [value]="allergy"
-              [attr.aria-label]="'ALLERGY_CODE.' + allergy.code"
-            >
-              {{ 'ALLERGY_CODE.' + allergy.code }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        <vm-reusable-select-field-with-search
+          #singleSelect
+          [options$]="filteredAllergies"
+          [item]="adverseEvent?.code!"
+          [isEditable]="true"
+          [translationKey]="'ALLERGY'"
+          [labelKey]="'ALLERGY_CODE'"
+          [formControl]="editForm.controls.code"
+          formControlName="code"
+        ></vm-reusable-select-field-with-search>
 
         <vm-reusable-recorder-field
           [parentForm]="editForm"

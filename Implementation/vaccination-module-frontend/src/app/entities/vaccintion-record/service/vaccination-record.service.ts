@@ -25,6 +25,7 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
 import { IVaccinationRecord } from '../../../model';
 import { IValueDTO } from '../../../shared';
 import { SpinnerService } from '../../../shared/services/spinner.service';
+import { ITranslationRequest } from '../../../model/translation-request.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -41,8 +42,7 @@ export class VaccinationRecordService {
     private sessionInfoService: SessionInfoService,
     private spinnerService: SpinnerService
   ) {
-    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}/oid/${this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
-      }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
+    this.resource = `${this.prefix}/communityIdentifier/${this.configService.communityId}`;
   }
 
   queryOneRecord(): Observable<IVaccinationRecord> {
@@ -60,10 +60,10 @@ export class VaccinationRecordService {
     );
   }
 
-  exportPdf(body: IVaccinationRecord): Observable<Blob> {
+  exportPdf(body: ITranslationRequest, lang: string): Observable<Blob> {
     this.spinnerService.show();
     return this.http
-      .post<Blob>(`${this.configService.endpointPrefix}/vaccinationRecord/exportToPDF`, body, {
+      .post<Blob>(`${this.configService.endpointPrefix}/vaccinationRecord/exportToPDF/${lang}`, body, {
         responseType: 'blob' as 'json',
       })
       .pipe(tap(() => this.spinnerService.hide()));
@@ -88,11 +88,12 @@ export class VaccinationRecordService {
       return this.backendVersion;
     }
 
-    this.backendVersion = await firstValueFrom(this.http.get(`${this.configService.endpointPrefix}/utility/backendVersion`, { responseType: 'text' }))
-      .catch((error: any) => {
-        console.error('Error fetching backend version:', error);
-        this.backendVersion = '-';
-      }) as string;
+    this.backendVersion = (await firstValueFrom(
+      this.http.get(`${this.configService.endpointPrefix}/utility/backendVersion`, { responseType: 'text' })
+    ).catch((error: any) => {
+      console.error('Error fetching backend version:', error);
+      this.backendVersion = '-';
+    })) as string;
 
     return this.backendVersion;
   }

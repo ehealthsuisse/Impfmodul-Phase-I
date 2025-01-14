@@ -23,6 +23,7 @@ import { IValueDTO } from '../shared/interfaces/valueDTO.interface';
 
 export interface IAdverseEvent extends IBaseDTO {
   occurrenceDate: Dayjs | string;
+  allergyCode: IValueDTO;
   clinicalStatus: IValueDTO;
   criticality: IValueDTO;
   verificationStatus: IValueDTO;

@@ -5,7 +5,7 @@
   }"
   aria-label="Language Selection"
 >
-  <div class="dropdown" (click)="onLanguageClick()" *ngIf="isDesktop">
+  <div class="dropdown" #dropdown (click)="onLanguageClick()" *ngIf="isDesktop">
     <button class="dropbtn" aria-haspopup="true" [attr.aria-expanded]="dropdownOpen ? 'true' : 'false'">
       {{ currentLanguage }}
       <mat-icon aria-hidden="true">keyboard_arrow_down</mat-icon>
@@ -26,7 +26,7 @@
       </a>
     </div>
   </div>
-  <div class="m" *ngIf="isMobile || isTablet">
+  <div #dropdown class="m" *ngIf="isMobile || isTablet">
     <a
       role="menuitem"
       *ngFor="let lang of languages"

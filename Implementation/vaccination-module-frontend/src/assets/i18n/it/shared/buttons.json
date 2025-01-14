@@ -1,9 +1,9 @@
 {
   "buttons": {
     "ADD": "Aggiungi",
-    "EDIT": "Modifica",
+    "EDIT": "Correggi",
     "SAVE": "Salvare",
-    "CANCEL": "Annulare",
+    "CANCEL": "Annulla",
     "DELETE": "Cancellare",
     "OK": "OK",
     "YES": "Sì",
@@ -15,7 +15,7 @@
     "EXPORT": "Esporta/Stampa",
     "PRINT": "Stampa",
     "VALIDATE": "Convalidare",
-    "ADD_ALLERGY": "Aggiungi un evento avverso",
+    "ADD_ALLERGY": "Aggiungi un effetto indesiderato",
     "ADD_VACCINATION": "Aggiungi una vaccinazione",
     "ADD_PAST_ILLNESS": "Aggiungi una malattia infettiva",
     "ADD_PROBLEM": "Aggiungi un fattore di rischio",

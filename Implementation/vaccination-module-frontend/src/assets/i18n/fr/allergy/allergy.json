@@ -4,9 +4,8 @@
     "DETAILS_HEADER": "Détails de l'effet secondaire",
     "NEW_HEADER": "Ajouter un effet secondaire",
     "EDIT_HEADER": "Modifier l'effet secondaire",
-    "CODE": "Effet indésirable",
+    "ALLERGY_CODE": "Effet indésirable",
     "RECORDER": "Enregistré par",
-    "ORGANIZATION": "Organisation",
     "OCCURRENCE_DATE": "Date",
     "DATE": "Date de la constatation"
   }

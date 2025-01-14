@@ -16,10 +16,8 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateService } from '@ngx-translate/core';
 import { SessionStorageService } from 'ngx-webstorage';
 import { map, Observable, startWith } from 'rxjs';
 import { SessionInfoService } from '../../core/security/session-info.service';
@@ -29,11 +27,6 @@ export class MissingTranslationHandlerImpl implements MissingTranslationHandler 
     const key = params.key;
     return `${translationNotFoundMessage}[${key}]`;
   }
-}
-
-export function translatePartialLoader(http: HttpClient): TranslateLoader {
-  const I18N_HASH: string = '';
-  return new TranslateHttpLoader(http, 'i18n/', `.json?_generated_hash=${I18N_HASH}`);
 }
 
 export function missingTranslationHandler(): MissingTranslationHandler {

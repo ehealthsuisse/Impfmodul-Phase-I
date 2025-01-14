@@ -18,6 +18,11 @@
  */
 package ch.fhir.epr.adapter;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.hl7.fhir.r4.model.CodeableConcept;
+
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +47,8 @@ public final class FhirConstants {
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-vaccination-record";
   public static final String META_VACCINATION_TYPE_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration";
+  public static final String META_CORE_PATIENT_URL =
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient-epr";
   public static final String META_CORE_PRACTITIONER_URL =
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr";
   public static final String META_PRACTITIONER_ROLE_URL =
@@ -49,7 +56,7 @@ public final class FhirConstants {
   public static final String META_VACD_IMMUNIZATION_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization";
   public static final String META_ORGANIZATION_URL =
-      "https://fhir.ch/ig/ch-core/StructureDefinition-ch-core-organization-epr";
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr";
   public static final String META_VACD_MEDICAL_PROBLEMS_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medical-problems";
   public static final String META_VACD_COMPOSITION_VAC_REC_URL =
@@ -78,4 +85,14 @@ public final class FhirConstants {
   /** Current Target Disease codes */
   public static final String CURRENT_TARGET_DISEASE_CODE = "712986001";
   public static final String CURRENT_TARGET_DISEASE_DISPLAY = "Tickborne encephalitis";
+
+  /** Composition Category */
+  public static final List<CodeableConcept> COMPOSITION_IMMUNIZATON_CATEGORY = List.of(Objects.requireNonNull(
+    FhirUtils.toCodeableConcept(new ValueDTO("urn:che:epr:ch-vacd:immunization-administration:2022",
+      "CH VACD Immunization Administration",
+      "urn:oid:2.16.756.5.30.1.127.3.10.10"))));
+  public static final List<CodeableConcept> COMPOSITION_RECORD_CATEGORY = List.of(Objects.requireNonNull(
+    FhirUtils.toCodeableConcept(new ValueDTO("urn:che:epr:ch-vacd:vaccination-record:2022",
+      "CH VACD Vaccination Record",
+      "urn:oid:2.16.756.5.30.1.127.3.10.10"))));
 }

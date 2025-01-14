@@ -21,7 +21,6 @@ import { IHumanDTO } from '../../interfaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../../core/config/config.service';
-import { SessionInfoService } from '../../../core/security/session-info.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,10 +28,8 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
 export class PatientService {
   resource: string = '';
   patient: BehaviorSubject<IHumanDTO> = new BehaviorSubject<IHumanDTO>({} as IHumanDTO);
-  constructor(private httpclient: HttpClient, private configService: ConfigService, private sessionInfoService: SessionInfoService) {
-    this.resource = `communityIdentifier/${this.configService.communityId}/oid/${
-      this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
-    }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
+  constructor(private httpclient: HttpClient, private configService: ConfigService) {
+    this.resource = `communityIdentifier/${this.configService.communityId}`;
   }
 
   fetchPatientName(): Observable<string> {

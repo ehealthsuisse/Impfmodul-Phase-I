@@ -28,8 +28,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -86,7 +86,7 @@ public class SAMLController {
     // For development purpose only!
     // If no session was initiated on local mode, use dummy session
     if (profileConfig.isLocalMode() && !HttpSessionUtils.getIsInitialCallValidFromSession()) {
-      HttpSessionUtils.initializeValidDummySession(request);
+      HttpSessionUtils.initializeValidDummySession();
     }
 
     // For local mode, the SAMLFilter is not active, therefor authentication mechanism is not used and
@@ -98,9 +98,9 @@ public class SAMLController {
       String serverName = request.getServerName().replace("-backend", "");
       String contextPath = request.getContextPath().replace("-backend", "-frontend");
       return request.getScheme() + "://"
-          + serverName + (isLocalhost ? ":" 
-          + (isEmptyPath ? "9000" : "8080" + contextPath) : "")
-          + "/vaccination-record";
+      + serverName
+      + (isLocalhost ? ":" + (isEmptyPath ? "9000" : "8080" + contextPath) : "")
+      + "/vaccination-record";
     }
 
     return null;

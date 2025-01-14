@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -80,35 +81,27 @@ public class TestSecurityConfiguration extends AbsSecurityConfiguration {
   SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
     HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     http.addFilter(corsFilter)
-        .csrf().disable()
-        .authorizeRequests()
-        // allow SAML authentication and back channel logout
-        .antMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
-
-        // allow access to actuators
-        .antMatchers("/actuator/health", "/actuator/health/**").permitAll()
-
-        // allow access to signature service
-        .antMatchers("/signature/**").permitAll()
-
-        // allow access to utility controller
-        .antMatchers("/utility/**").permitAll()
-
-        // forbid swagger
-        .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
-        .anyRequest().authenticated()
-        .and()
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests((auth) -> auth
+            // allow SAML authentication and logout
+            .requestMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
+            // allow access to actuators
+            .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+            // allow access to signature service
+            .requestMatchers("/signature/**").permitAll()
+            // allow access to utility controller
+            .requestMatchers("/utility/**").permitAll()
+            // forbid swagger
+            .requestMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
+            .anyRequest().authenticated())
         .addFilterBefore(createSAMLFilter(samlService, profileConfig), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(createSAMLAuthFilter(authManager, securityContextRepository), SAMLFilter.class)
         .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationManager(authManager)
-        .securityContext((securityContext) -> securityContext
-            .securityContextRepository(securityContextRepository)
+        .securityContext((securityContext) -> securityContext.securityContextRepository(securityContextRepository)
             .requireExplicitSave(true))
         .logout(createLogoutConfig(null));
-
 
     return http.build();
   }

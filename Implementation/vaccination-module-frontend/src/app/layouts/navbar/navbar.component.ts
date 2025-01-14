@@ -64,7 +64,6 @@ export class NavbarComponent extends BreakPointSensorComponent implements OnInit
   canVisit$!: Observable<boolean>;
   user: IHumanDTO = {} as IHumanDTO;
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
-  canEdit: boolean = false;
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild('sidenavAction') sidenavAction!: MatSidenav;
   samlService: SamlService = inject(SamlService);

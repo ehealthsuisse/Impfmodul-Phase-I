@@ -19,7 +19,7 @@ The vaccination module is provided as the following artifacts:
 
 The vaccination module can be deployed on a Unix or Windows platform.
 
-This installation guide documents the installation on a Windows system and a Apache Tomcat Application Server (Version 9.x.x). The adaptation for other platforms should be self explaining.
+This installation guide documents the installation on a Windows system and a Apache Tomcat Application Server (Version 11.x.x). The adaptation for other platforms should be self explaining.
 
 
 #### Build Manually
@@ -103,7 +103,7 @@ Vaccination Module for the EPR
 profile: local
 config: ${vaccination_config}
 
-Powered by Spring Boot 2.7.17
+Powered by Spring Boot 3.3.4
 ```
 
 The following environment variables must be set appropriately:

@@ -1,3 +1,6 @@
+<mat-card-header>
+  <mat-card-title *ngIf="showTitle" class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+</mat-card-header>
 <mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" *ngIf="infectiousDiseases">
   <vm-reusable-date-field
     [formControl]="infectiousDiseasesForm.controls.recordedDate"
@@ -10,7 +13,7 @@
     [options$]="infectiousDiseasesFilteredList"
     [item]="infectiousDiseases.code!"
     [isEditable]="false"
-    [translationKey]="'ILLNESSES_CODE.'"
+    [translationKey]="'ILLNESS_CODE.'"
     [labelKey]="'ILLNESS.ILLNESS_CODE'"
     [formControl]="infectiousDiseasesForm.controls.code"
     #singleSelect

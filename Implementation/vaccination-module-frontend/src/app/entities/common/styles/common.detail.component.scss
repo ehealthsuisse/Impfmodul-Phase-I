@@ -1,0 +1,20 @@
+.mobile-detail-wrapper {
+  width: 100vw;
+  padding: 1%;
+
+  .mat-mdc-card {
+    box-shadow: none !important;
+  }
+}
+
+// Detail view, main form
+.mat-mdc-card {
+  .mat-mdc-card-header {
+    margin-bottom: -8px;
+    margin-left: 20px;
+  }
+  // Title alignment
+  .mat-mdc-card-content {
+    padding: 0 4px !important;
+  }
+}

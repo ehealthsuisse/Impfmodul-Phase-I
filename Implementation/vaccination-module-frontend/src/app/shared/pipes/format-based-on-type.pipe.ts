@@ -28,7 +28,7 @@ import '../date/dayjs';
 export class FormatBasedOnTypePipe implements PipeTransform {
   transform(value: dayjs.Dayjs): any {
     if (dayjs.isDayjs(value)) {
-      return value.format(DATE_FORMAT);
+      return value.format(DATE_FORMAT.parse.dateInput);
     }
     return value;
   }

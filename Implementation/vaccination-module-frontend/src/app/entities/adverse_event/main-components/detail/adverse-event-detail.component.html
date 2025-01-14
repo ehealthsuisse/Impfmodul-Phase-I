@@ -6,11 +6,7 @@
     <mat-card-content class="detail-wrapper__card-content mat-card-content">
       <vm-adverse-event-detailed-information [adverseEvent]="adverseEvent"></vm-adverse-event-detailed-information>
     </mat-card-content>
-    <vm-details-action
-      *ngIf="!isMobile"
-      [canEdit]="adverseEvent.updated! || adverseEvent.deleted!"
-      class="details__action"
-    ></vm-details-action>
+    <vm-details-action *ngIf="!isMobile" class="details__action"></vm-details-action>
   </mat-card>
   <vm-comment class="detail-wrapper__comment" [comments]="adverseEvent.comments!"></vm-comment>
 </section>

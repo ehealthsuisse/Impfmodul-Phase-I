@@ -27,6 +27,6 @@ import { DATE_FORMAT } from './input.constants';
 })
 export class FormatDatePipe implements PipeTransform {
   transform(day: dayjs.Dayjs | null | undefined | string): string {
-    return day ? dayjs(day).format(DATE_FORMAT) : '-';
+    return day ? dayjs(day).format(DATE_FORMAT.parse.dateInput) : '-';
   }
 }

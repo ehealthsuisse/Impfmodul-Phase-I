@@ -18,6 +18,8 @@
  */
 package ch.admin.bag.vaccination.controller;
 
+import ch.admin.bag.vaccination.data.request.TranslationsRequest;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.PdfService;
 import ch.admin.bag.vaccination.service.VaccinationRecordService;
 import ch.admin.bag.vaccination.service.VaccinationService;
@@ -26,8 +28,9 @@ import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.InputStream;
-import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import org.projecthusky.xua.saml2.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +43,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 /**
  *
@@ -62,25 +64,31 @@ public class VaccinationRecordController {
   @Autowired
   private PdfService pdfService;
 
-  @PostMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}")
+  @PostMapping("/communityIdentifier/{communityIdentifier}")
   @Operation(summary = "Create a vaccination record")
   public void create(
       HttpServletRequest request,
       @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier,
-      @Schema(example = "1.2.3.4.123456.1") @PathVariable String oid,
-      @Schema(example = "waldspital-Id-1234") @PathVariable String localId,
       @RequestBody VaccinationRecordDTO record) {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-    vaccinationRecordService.create(communityIdentifier, oid, localId, record, assertion);
+    PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
+    vaccinationRecordService.create(communityIdentifier, patientIdentifierFromSession.getLocalAssigningAuthority(),
+        patientIdentifierFromSession.getLocalExtenstion(), record, assertion);
   }
 
-  @PostMapping("/exportToPDF")
+  @PostMapping("/exportToPDF/{lang}")
   @Operation(summary = "Build a PDF out of the records")
-  public ResponseEntity<?> exportToPDF(@RequestBody VaccinationRecordDTO record) {
+  public ResponseEntity<?> exportToPDF(@RequestBody TranslationsRequest translationsRequest, @PathVariable String lang) {
     log.info("Generating PDF...");
-    log.debug("exportToPDF {}", record);
 
-    InputStream inputStream = pdfService.create(record);
+    Assertion assertion = AssertionUtils.getAssertionFromSession();
+    PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
+    VaccinationRecordDTO vaccinationRecord = vaccinationRecordService.create(patientIdentifier, assertion);
+    vaccinationRecord.setI18nTargetDiseases(translationsRequest.getTargetDiseases());
+    vaccinationRecord.setLang(lang);
+    log.debug("exportToPDF {}", vaccinationRecord);
+
+    InputStream inputStream = pdfService.create(vaccinationRecord, translationsRequest);
     InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
 
     return ResponseEntity.ok()
@@ -88,29 +96,27 @@ public class VaccinationRecordController {
         .body(inputStreamResource);
   }
 
-  @GetMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}")
+  @GetMapping("/communityIdentifier/{communityIdentifier}")
   @Operation(summary = "Get the data of the vaccination record")
   public VaccinationRecordDTO getAll(
       HttpServletRequest request,
-      @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier,
-      @Schema(example = "1.2.3.4.123456.1") @PathVariable String oid,
-      @Schema(example = "waldspital-Id-1234") @PathVariable String localId) throws InterruptedException {
+      @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier) throws InterruptedException {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-    PatientIdentifier patientIdentifier =
-        vaccinationService.getPatientIdentifier(communityIdentifier, oid, localId);
+    PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
+    PatientIdentifier patientIdentifierFromEPD = vaccinationService.getPatientIdentifier(communityIdentifier,
+        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtenstion());
 
-    return vaccinationRecordService.create(patientIdentifier, assertion);
+    return vaccinationRecordService.create(patientIdentifierFromEPD, assertion);
   }
 
-  @GetMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/name")
+  @GetMapping("/communityIdentifier/{communityIdentifier}/name")
   @Operation(summary = "Get full name of a patient")
   public String getPatientName(
-      @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier,
-      @Schema(example = "1.2.3.4.123456.1") @PathVariable String oid,
-      @Schema(example = "waldspital-Id-1234") @PathVariable String localId) {
-    PatientIdentifier patientIdentifier = vaccinationService.getPatientIdentifier(communityIdentifier, oid, localId);
+      @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier) {
+    PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
+    PatientIdentifier patientIdentifierFromEPD = vaccinationService.getPatientIdentifier(communityIdentifier,
+        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtenstion());
 
-    return patientIdentifier.getPatientInfo().getFullName();
+    return patientIdentifierFromEPD.getPatientInfo().getFullName();
   }
-
 }

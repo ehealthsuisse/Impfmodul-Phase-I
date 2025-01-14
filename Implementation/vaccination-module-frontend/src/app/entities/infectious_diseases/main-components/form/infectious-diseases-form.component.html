@@ -22,32 +22,16 @@
           formControlName="recordedDate"
         ></vm-reusable-date-field>
 
-        <mat-form-field class="detailed-card-content__form-field">
-          <mat-select
-            [placeholder]="'ILLNESS.ILLNESS_CODE' | translate"
-            #singleSelect
-            formControlName="code"
-            required="true"
-            [formControl]="illnessesFilterControl"
-            ngDefaultControl
-            [attr.aria-label]="'ILLNESS.ILLNESS_CODE' | translate"
-          >
-            <mat-option>
-              <ngx-mat-select-search
-                [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
-                [placeholderLabel]="'GLOBAL.SEARCH' | translate"
-                [formControl]="illnessesFilterControl"
-              ></ngx-mat-select-search>
-            </mat-option>
-            <mat-option
-              *ngFor="let illness of illnessesFilteredList | async | filterPipe : illnessesFilterControl.value : 'ILLNESSES_CODE.'"
-              vmTranslate="{{ 'ILLNESSES_CODE.' + illness.code }}"
-              [value]="illness"
-              [attr.aria-label]="'ILLNESSES_CODE.' + illness.code | translate"
-            >
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        <vm-reusable-select-field-with-search
+          #singleSelect
+          [options$]="illnessesFilteredList"
+          [item]="illness?.code!"
+          [isEditable]="true"
+          [translationKey]="'ILLNESS'"
+          [labelKey]="'ILLNESS_CODE'"
+          [formControl]="editForm.controls.code"
+          formControlName="code"
+        ></vm-reusable-select-field-with-search>
 
         <mat-card class="mat-elevation-z0 form-wrapper__form-date-range" fxLayout="row" fxLayoutAlign="space-between">
           <vm-reusable-date-field
