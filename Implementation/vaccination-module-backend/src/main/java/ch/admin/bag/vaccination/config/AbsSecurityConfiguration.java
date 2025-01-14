@@ -34,7 +34,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -48,13 +47,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class AbsSecurityConfiguration {
   protected CsrfTokenRepository createCsrfTokenRepository(String frontendDomain) {
-    CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-    repository.setCookiePath("/");
-    if (frontendDomain != null && !frontendDomain.isEmpty()) {
-      repository.setCookieDomain(frontendDomain);
-    }
-
-    return repository;
+    // use customized CookieTokenRepository due to error in Spring Security class
+    return new CookieTokenRepository(frontendDomain);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild} from '@angular/core';
 import { FormControl, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { SharedLibsModule } from '../../../shared-libs.module';
@@ -30,7 +30,7 @@ import { takeUntil } from 'rxjs/operators';
     { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT },
   ],
 })
-export class ReusableDateFieldComponent extends BreakPointSensorComponent implements OnDestroy, AfterViewInit {
+export class ReusableDateFieldComponent extends BreakPointSensorComponent implements OnDestroy, AfterViewInit, OnChanges {
   @Input() formControl!: FormControl;
   @Input() isEditable!: boolean;
   @ViewChild('picker') picker!: MatDatepicker<Date>;
@@ -42,6 +42,7 @@ export class ReusableDateFieldComponent extends BreakPointSensorComponent implem
   @Input() mainValueKey!: string;
   @Input() notEditableValue: string = '';
 
+  visibleError: string | null = null;
   private destroy$: Subject<void> = new Subject<void>();
 
   ngAfterViewInit(): void {
@@ -53,6 +54,12 @@ export class ReusableDateFieldComponent extends BreakPointSensorComponent implem
           this.formGroup.get('end')?.updateValueAndValidity();
           this.formGroup.get('recordedDate')?.updateValueAndValidity();
         });
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['formControl']) {
+      this.formControl?.statusChanges.subscribe(() => this.updateVisibleError());
     }
   }
 
@@ -72,5 +79,14 @@ export class ReusableDateFieldComponent extends BreakPointSensorComponent implem
   }
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
+  }
+
+  // Updates the `visibleError` property to display the first validation error from the form control.
+  // Handles cases where multiple errors occur simultaneously, such as when the begin date is in the future
+  // and the date of diagnosis is both in the future and before the begin date.
+  private updateVisibleError(): void {
+    this.visibleError = this.formControl?.invalid
+      ? ['endDateBeforeStartDate', 'futureDate', 'startDateBeforeEndDate'].find(error => this.formControl.hasError(error)) || null
+      : null;
   }
 }

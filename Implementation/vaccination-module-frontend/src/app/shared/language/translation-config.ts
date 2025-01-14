@@ -48,10 +48,10 @@ export function changeLang(
   currentLanguage: string
 ): string {
   if (languageKey !== currentLanguage) {
-    sessionInfoService.queryParams.lang = languageKey.toLowerCase();
     sessionStorageService.store('locale'.slice(0, 2).toLocaleLowerCase(), languageKey);
     translateService.use(languageKey.slice(0, 2).toLocaleLowerCase());
     currentLanguage = languageKey.slice(0, 2);
+    sessionInfoService.changeLanguage(currentLanguage);
   }
 
   return currentLanguage;

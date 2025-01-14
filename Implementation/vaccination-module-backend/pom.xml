@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <version>1.7.0-RC1</version>
+  <version>1.7.0-RC2</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.4</version>
+    <version>3.4.0</version>
     <relativePath />
   </parent>
 
@@ -25,9 +25,9 @@
     <maven.compiler.target>17</maven.compiler.target>
     <junit.version>5.10.0</junit.version>
     <springdoc.version>1.6.15</springdoc.version>
-    <husky.version>3.0.1-20241112</husky.version>
+    <husky.version>3.0.2</husky.version>
     <hapi.fhir.version>7.4.0</hapi.fhir.version>
-    <org.hl7.fhir.version>6.3.23</org.hl7.fhir.version>
+    <org.hl7.fhir.version>6.4.0</org.hl7.fhir.version>
     <!-- custom lib Sopra Steria -->
     <fhir.adapter.version>1.1.9</fhir.adapter.version>
     <opensaml.version>5.1.3</opensaml.version>
@@ -86,6 +86,11 @@
         <artifactId>lombok-maven-plugin</artifactId>
         <version>1.18.20.0</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.0.24</version>
       </dependency>
       <!-- JAXB implementation for jakarta.xml.bind library -->
       <dependency>
@@ -150,6 +155,44 @@
         <artifactId>org.hl7.fhir.r4b</artifactId>
         <version>${org.hl7.fhir.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-annotations-api</artifactId>
+        <version>11.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>11.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-websocket</artifactId>
+        <version>11.0.2</version>
+      </dependency>
+      <!-- Temporary dependencies needed until project is updated to the new Spring Boot version -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.5.13</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.5.13</version>
+      </dependency>
+      <!-- Temporary dependencies needed until a new version pf the Boxable library will be available -->
+      <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.18.3</version>
+      </dependency>
+      <!-- Temporary dependencies needed until Hapi Fhir library will be updated to the new version -->
+      <dependency>
+        <groupId>org.fhir</groupId>
+        <artifactId>ucum</artifactId>
+        <version>1.0.9</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -175,6 +218,7 @@
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>
     </dependency>
+
     <!-- necessary to support velocity engine for HTTP post -->
     <dependency>
       <groupId>org.springframework.security</groupId>
@@ -358,7 +402,7 @@
     <dependency>
       <groupId>org.verapdf</groupId>
       <artifactId>validation-model-jakarta</artifactId>
-      <version>1.26.1</version>
+      <version>1.26.2</version>
     </dependency>
   </dependencies>
 
@@ -369,23 +413,23 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.4.2</version>
         </plugin>
         <plugin>
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.9.1.2184</version>
+          <version>5.0.0.4389</version>
         </plugin>
         <plugin>
           <!-- used by sonar scanner -->
           <groupId>org.jooq</groupId>
           <artifactId>jooq-codegen-maven</artifactId>
-          <version>3.14.16</version>
+          <version>3.19.16</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.8</version>
+          <version>0.8.12</version>
         </plugin>
       </plugins>
     </pluginManagement>

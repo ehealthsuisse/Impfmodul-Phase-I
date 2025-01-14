@@ -532,7 +532,16 @@ a {
 .mat-mdc-form-field-error {
   margin-top: 23px !important;
   margin-left: -15px !important;
-  margin-right: -15px !important;
+  margin-right: -22px !important;
   height: 0 !important;
   padding-top: 1px;
+}
+
+// Adjusts the date input field's position to ensure it remains clickable when an error message is displayed,
+// addressing compatibility issues in Chrome and Edge browsers.
+.mat-mdc-form-field-error-wrapper {
+  position: absolute;
+  top: 100%;
+  z-index: 1;
+  pointer-events: none;
 }
