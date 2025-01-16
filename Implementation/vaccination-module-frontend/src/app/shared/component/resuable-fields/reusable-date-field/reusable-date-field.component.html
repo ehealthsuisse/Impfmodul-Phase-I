@@ -15,13 +15,13 @@
   />
   <mat-datepicker-toggle matSuffix [disableRipple]="true" [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
-  <mat-error *ngIf="formControl.hasError('endDateBeforeStartDate')">
+  <mat-error *ngIf="visibleError === 'endDateBeforeStartDate'">
     <div>{{ 'GLOBAL.END_DATE_BEFORE_START_DATE' | translate }}</div>
   </mat-error>
-  <mat-error *ngIf="formControl.hasError('futureDate')">
+  <mat-error *ngIf="visibleError === 'futureDate'">
     <div>{{ 'GLOBAL.NOT_FUTURE_DATE' | translate }}</div>
   </mat-error>
-  <mat-error *ngIf="formControl.hasError('startDateBeforeEndDate')">
+  <mat-error *ngIf="visibleError === 'startDateBeforeEndDate'">
     <div>{{ 'GLOBAL.START_DATE_BEFORE_END_DATE' | translate }}</div>
   </mat-error>
 </mat-form-field>

@@ -9,8 +9,6 @@ export class CryptoJsService {
   encryptedData: string = '';
   storedData: IPortalParameter = {} as IPortalParameter;
 
-  data: IPortalParameter = {} as IPortalParameter;
-
   portalSecretKey: string = 'vaccinations-portal-data-encrypt';
   portalKey: string = 'vaccinations-portal-data';
   validationSecretKey: string = 'validation-status-encrypt';
@@ -30,7 +28,10 @@ export class CryptoJsService {
       this.encryptedData = CryptoJS.AES.decrypt(JSON.parse(localStorage.getItem(this.portalKey)!), this.portalSecretKey).toString(
         CryptoJS.enc.Utf8
       );
-      this.storedData = JSON.parse(this.encryptedData);
+      this.encryptedData.split('&').forEach(pair => {
+        const [key, value] = pair.split('=');
+        (this.storedData as any)[key] = value;
+      });
     } else {
       localStorage.setItem(this.portalKey, '');
       this.encryptedData = '';

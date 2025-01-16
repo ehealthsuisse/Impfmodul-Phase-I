@@ -1,3 +1,12 @@
+# November 2025 - Release 1.7.0-RC2
+This release candidat provides some fixes, especially regarding tomcat compatibility.
+* Tomcat 11 compatibility has been fixed, there had been an issue with the CSRF token not being correctly configured.
+* Upgraded to the offical husky release 3.0.2
+* Upgraded few other dependencies on the backend module
+* Fixed some testing annotation which had been marked as deprecated.
+* Fixed an issue that changing the language of the UI was not persisted after a refresh. 
+* Fixed a layouting issue with the validation texts for the date fields
+
 # November 2024 - Release 1.7.0-RC1
 This release candidat contains major changes for all artifacts (frontend, backend, FHIR library).
 <br>Starting with 1.7.0, it is necessary to deploy the application on a new tomcat version. Installation guide has been updated.
