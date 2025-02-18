@@ -15,7 +15,6 @@ import { SpinnerService } from '../../shared/services/spinner.service';
 })
 export class WelcomeComponent {
   constructor(private samlService: SamlService, private router: Router, private spinnerService: SpinnerService) {
-    this.cleanUpCookies();
     this.cleanUpSessionStorage();
     this.cleanUpLocalStorage();
     this.samlService.authStateSubject.subscribe({
@@ -37,8 +36,6 @@ export class WelcomeComponent {
       },
     });
   }
-
-  cleanUpCookies = (): string => (document.cookie = 'JSESSIONID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;');
 
   cleanUpSessionStorage = (): void => sessionStorage.removeItem('vaccination-portal-data');
 
