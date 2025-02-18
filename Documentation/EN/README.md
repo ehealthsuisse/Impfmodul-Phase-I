@@ -24,6 +24,9 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+### February 2025 - Release 1.7.0
+This release wraps up all the RC-feedback for the next stable release, along with few frontend bugfixes for Safari.
+
 ### January 2025 - Release 1.7.0-RC2
 The 2nd release candidate contains a fix for Tomcat 11 compatibility as well as few dependency upgrades and bugfixes.
 
