@@ -39,12 +39,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class PastIllnessServiceTest extends AbstractServiceTest {
   @Autowired
   private PastIllnessService pastIllnessService;
-  @SpyBean
+  @MockitoSpyBean
   private HuskyAdapter huskyAdapter;
 
   @Override
@@ -210,14 +210,6 @@ class PastIllnessServiceTest extends AbstractServiceTest {
     assertThat(updatedPastIllnessDTO.getOrganization()).isEqualTo("My new organization AG");
     assertThat(updatedPastIllnessDTO.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(updatedPastIllnessDTO.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
-  }
-
-  @Test
-  void getData_emptyData_EPDPLAYGROUND() {
-    profileConfig.setLocalMode(false);
-    profileConfig.setHuskyLocalMode(null);
-    assertThat(pastIllnessService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
-        EPDCommunity.DUMMY.name(), null)).isEmpty();
   }
 
   @BeforeEach

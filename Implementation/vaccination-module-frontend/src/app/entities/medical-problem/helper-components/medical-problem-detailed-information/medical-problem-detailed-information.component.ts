@@ -49,6 +49,7 @@ export class MedicalProblemDetailedInformationComponent implements OnInit, After
   @Input() problem: IMedicalProblem | null = null;
   @Input() problemForm: ProblemFormGroup = inject(MedicalProblemFormService).createProblemFormGroup();
   @Input() isEditable: boolean = false;
+  @Input() showTitle: boolean = false;
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
   formOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();
   problemFilteredList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);

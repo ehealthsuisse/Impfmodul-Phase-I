@@ -16,7 +16,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { changeLang, LANGUAGES } from '../../../shared';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
@@ -37,7 +37,9 @@ export class LanguageComponent extends BreakPointSensorComponent implements OnIn
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   sessionStorageService: SessionStorageService = inject(SessionStorageService);
 
+  @ViewChild('dropdown') dropdownElement!: ElementRef;
   private _dropdownOpen = false;
+
   changeLanguage = (languageKey: string, event?: MouseEvent): void => {
     changeLang(languageKey, this.sessionInfoService, this.translateService, this.sessionStorageService, this.currentLanguage);
     this.currentLanguage = languageKey;
@@ -53,6 +55,8 @@ export class LanguageComponent extends BreakPointSensorComponent implements OnIn
       const lang = this.sessionInfoService.queryParams.lang?.toLocaleLowerCase().slice(0, 2)!;
       if (this.languages.includes(lang)) {
         language = lang;
+      } else if (lang === 'rm') {
+        language = 'de';
       } else {
         this.dialogService.openDialog(
           this.translateService.instant('GLOBAL.ERROR'),
@@ -68,12 +72,18 @@ export class LanguageComponent extends BreakPointSensorComponent implements OnIn
     this.dropdownOpen = !this.dropdownOpen;
   }
 
+  @HostListener('document:click', ['$event'])
+  closeDropdown(event: Event): void {
+    if (!this.dropdownElement.nativeElement.contains(event.target)) {
+      this.dropdownOpen = false;
+    }
+  }
+
   get dropdownOpen(): boolean {
     return this._dropdownOpen;
   }
 
   set dropdownOpen(value: boolean) {
-    console.error(' dropdownOpen', value);
     this._dropdownOpen = value;
   }
 }

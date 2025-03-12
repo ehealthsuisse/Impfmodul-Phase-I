@@ -32,14 +32,17 @@ import javax.xml.namespace.QName;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.xml.QNameSupport;
-import net.shibboleth.utilities.java.support.xml.SerializeSupport;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.xml.QNameSupport;
+import net.shibboleth.shared.xml.SerializeSupport;
 import org.apache.commons.lang3.Validate;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicHttpResponse;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -183,17 +186,17 @@ public final class AssertionRenewalUtils {
 
       private void getResponseInformation(MessageDecodingException ex) {
         if (log.isDebugEnabled()) {
-          HttpResponse response = this.getHttpResponse();
+          BasicClassicHttpResponse response = (BasicClassicHttpResponse)this.getHttpResponse();
           log.debug("Exception occured during response decoding.");
-          if (response.getStatusLine() != null) {
-            log.debug("Http response code: {}", response.getStatusLine().getStatusCode());
-          }
-          log.debug("Http response reason: {}", response.getStatusLine().getReasonPhrase());
-          HttpEntity entity = response.getEntity();
-          if (entity != null) {
-            log.debug("Content-Type: {}, Content-Length: {}", entity.getContentType(), entity.getContentLength());
-            log.debug(
-                "To debug message content, activate log level TRACE on org.opensaml.core.xml.util.XMLObjectSupport");
+          if (response != null) {
+            log.debug("Http response code: {}", response.getCode());
+            log.debug("Http response reason: {}", response.getReasonPhrase());
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+              log.debug("Content-Type: {}, Content-Length: {}", entity.getContentType(), entity.getContentLength());
+              log.debug(
+                  "To debug message content, activate log level TRACE on org.opensaml.core.xml.util.XMLObjectSupport");
+            }
           }
         }
       }
@@ -280,10 +283,13 @@ public final class AssertionRenewalUtils {
   private static HttpClientMessagePipeline createRenewalPipeline(Envelope request) {
     HttpClientRequestSOAP11Encoder encoder = createEncoder(request);
     HttpClientResponseSOAP11Decoder decoder = createDecoder();
+    try {
+      decoder.getBodyHandler().initialize();
+    } catch (ComponentInitializationException e) {
+      throw new RuntimeException(e);
+    }
 
-    BasicHttpClientMessagePipeline pipeline =
-        new BasicHttpClientMessagePipeline(encoder, decoder);
-    return pipeline;
+    return new BasicHttpClientMessagePipeline(encoder, decoder);
   }
 
   private static RequestSecurityToken createRequestSecurityToken(Assertion assertion) {

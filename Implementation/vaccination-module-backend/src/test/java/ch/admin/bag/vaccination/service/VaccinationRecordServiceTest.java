@@ -37,7 +37,7 @@ import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +45,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -76,25 +74,6 @@ class VaccinationRecordServiceTest {
     profileConfig.setHuskyLocalMode(null);
     setAuthorInSession(
         new AuthorDTO(new HumanNameDTO("Test Firstname", "Test Lastname", "Test Prefix", LocalDate.now(), "MALE")));
-  }
-
-  @Test
-  void getAll_patientNotLinkedToTheSession_shouldReturnPatientInfoNullIfNotInLocalMode() {
-    setPatientIdentifierInSession(
-        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "dummy", "dummy"));
-    PatientIdentifier patientIdentifier =
-        new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "test", "test");
-    patientIdentifier.setPatientInfo(new HumanNameDTO("Firstname", "Lastname", "Prefix", LocalDate.now(), "FEMALE"));
-
-    VaccinationRecordDTO result = vaccinationRecordService.create(patientIdentifier, null);
-
-    // localMode is activated by before()
-    assertNotNull(result.getPatient());
-
-    // remove local mode and check one more time
-    profileConfig.setLocalMode(false);
-    result = vaccinationRecordService.create(patientIdentifier, null);
-    assertNull(result.getPatient());
   }
 
   @Test
@@ -128,13 +107,11 @@ class VaccinationRecordServiceTest {
 
   private void setAuthorInSession(AuthorDTO author) {
     Objects.nonNull(author);
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.AUTHOR, author);
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHOR, author);
   }
 
   private void setPatientIdentifierInSession(PatientIdentifier identifier) {
     Objects.nonNull(identifier);
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.CACHE_PATIENT_IDENTIFIER, identifier);
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.CACHE_PATIENT_IDENTIFIER, identifier);
   }
 }

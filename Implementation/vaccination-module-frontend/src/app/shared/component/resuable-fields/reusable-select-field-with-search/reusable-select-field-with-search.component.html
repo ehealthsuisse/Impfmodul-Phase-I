@@ -1,12 +1,15 @@
 <mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
+  <mat-label [vmTranslate]="translationKey + '.' + labelKey"></mat-label>
   <mat-select
     required="true"
     ngDefaultControl
     [compareWith]="compareFn"
-    [placeholder]="labelKey | translate"
     [formControl]="formControl"
     [attr.aria-label]="labelKey | translate"
   >
+    <mat-select-trigger *ngIf="searchControl.value">
+      {{ searchControl.value.code | translate }}
+    </mat-select-trigger>
     <mat-option>
       <ngx-mat-select-search
         [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
@@ -15,11 +18,11 @@
       ></ngx-mat-select-search>
     </mat-option>
     <mat-option
-      *ngFor="let option of options$ | async | filterPipe : searchControl.value : translationKey"
+      *ngFor="let option of sortedOptions$ | async | filterPipe : searchControl.value : labelKey + '.'"
       [value]="option"
       [attr.aria-label]="option.code | translate"
     >
-      {{ translationKey + option.code | translate }}
+      {{ labelKey + '.' + option.code | translate }}
     </mat-option>
   </mat-select>
 </mat-form-field>

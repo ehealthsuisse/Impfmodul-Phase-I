@@ -17,7 +17,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,6 +28,7 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
 import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
@@ -43,12 +43,18 @@ import { AdverseEventService } from '../../services/adverse-event.service';
   selector: 'vm-allergy-form',
   templateUrl: './adverse-event-form.component.html',
   styleUrls: ['./adverse-event-form.component.scss'],
-  imports: [SharedLibsModule, SharedComponentModule, FilterPipePipe, ReusableDateFieldComponent, ReusableRecorderFieldComponent],
+  imports: [
+    SharedLibsModule,
+    SharedComponentModule,
+    FilterPipePipe,
+    ReusableDateFieldComponent,
+    ReusableRecorderFieldComponent,
+    ReusableSelectFieldWithSearchComponent,
+  ],
 })
 export class AdverseEventFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit {
   filteredAllergies: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   sharedDataService: SharedDataService = inject(SharedDataService);
-  allergiesControl: FormControl = new FormControl();
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
 
   isSaving = false;

@@ -21,17 +21,19 @@ package ch.admin.bag.vaccination.service;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -71,51 +73,20 @@ public final class HttpSessionUtils {
             entry -> decode(entry.substring(entry.indexOf("=") + 1))));
   }
 
-  public static void initializeValidDummySession(HttpServletRequest request) {
-    setParameterInSession(request, HttpSessionUtils.INITIAL_CALL_VALID, true);
-    setParameterInSession(request, HttpSessionUtils.AUTHOR, new AuthorDTO(
+  public static void initializeValidDummySession() {
+    setParameterInSession(HttpSessionUtils.INITIAL_CALL_VALID, true);
+    setParameterInSession(HttpSessionUtils.AUTHOR, new AuthorDTO(
         new HumanNameDTO("Peter", "Müller", null, null, null), "HCP", "7600000000000"));
-    setParameterInSession(request, HttpSessionUtils.IDP, "Dummy");
-    setParameterInSession(request, HttpSessionUtils.PURPOSE, "NORM");
+    setParameterInSession(HttpSessionUtils.IDP, "Dummy");
+    setParameterInSession(HttpSessionUtils.PURPOSE, "NORM");
   }
 
-  /**
-   * Checks whether the requested patient identifier is the same for which the session was
-   * established.
-   *
-   * @param requestedPatientIdentifier {@link PatientIdentifier}
-   * @return false if a mismatch was detected.
-   */
-  public static boolean isValidAccessToPatientInformation(PatientIdentifier requestedPatientIdentifier) {
-    String requestedLocalExtension = requestedPatientIdentifier.getLocalExtenstion();
-    String requestedLocalAssigningAuthority = requestedPatientIdentifier.getLocalAssigningAuthority();
-
-    PatientIdentifier identifier = getPatientIdentifierFromSession();
-    if (identifier == null) {
-      log.debug("No patient identifier found in session.");
-      return false;
+  public static void setParameterInSession(String paramName, Object value) {
+    RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+    if (requestAttributes instanceof ServletRequestAttributes) {
+      HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+      request.getSession().setAttribute(paramName, value);
     }
-
-    AuthorDTO author = getAuthorFromSession();
-    String linkedLocalExtension = identifier.getLocalExtenstion();
-    String linkedLocalAssigningAuthority = identifier.getLocalAssigningAuthority();
-
-    boolean isAccessInvalid = !linkedLocalExtension.equalsIgnoreCase(requestedLocalExtension)
-        || !linkedLocalAssigningAuthority.equalsIgnoreCase(requestedLocalAssigningAuthority);
-
-    if (isAccessInvalid) {
-      log.warn(
-          "Invalid EPD access detected. User: {} - linked Session: {} - requested access to: {}",
-          author != null ? author.getFullName() : "Unknown",
-          Map.of("LocalId", linkedLocalExtension, "LocalAssigningAuthorityOid", linkedLocalAssigningAuthority),
-          Map.of("LocalId", requestedLocalExtension, "LocalAssigningAuthorityOid", requestedLocalAssigningAuthority));
-    }
-
-    return !isAccessInvalid;
-  }
-
-  public static void setParameterInSession(HttpServletRequest request, String paramName, Object value) {
-    request.getSession().setAttribute(paramName, value);
   }
 
   private static String decode(String value) {
@@ -134,6 +105,10 @@ public final class HttpSessionUtils {
     if (session == null) {
       log.debug("Could not request {} from session because session is null.", param);
       return null;
+    }
+
+    if ("patientIdentifier".equals(param) && session.getAttribute(param) == null) {
+      throw new TechnicalException("Session is not initialised.");
     }
 
     return (T) session.getAttribute(param);

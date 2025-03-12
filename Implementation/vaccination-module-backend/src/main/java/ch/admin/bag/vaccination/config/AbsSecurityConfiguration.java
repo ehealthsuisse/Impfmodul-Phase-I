@@ -22,28 +22,33 @@ import ch.admin.bag.vaccination.service.saml.SAMLAuthFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLFilter;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
 import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.function.Supplier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
+import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Abstract class to provide common security functionality.
  */
 public class AbsSecurityConfiguration {
   protected CsrfTokenRepository createCsrfTokenRepository(String frontendDomain) {
-    CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-    repository.setCookiePath("/");
-    if (frontendDomain != null && !frontendDomain.isEmpty()) {
-      repository.setCookieDomain(frontendDomain);
-    }
-
-    return repository;
+    // use customized CookieTokenRepository due to error in Spring Security class
+    return new CookieTokenRepository(frontendDomain);
   }
 
   /**
@@ -72,5 +77,43 @@ public class AbsSecurityConfiguration {
 
   protected Filter createSAMLFilter(SAMLServiceIfc samlService, ProfileConfig profileConfig) {
     return new SAMLFilter(samlService, profileConfig);
+  }
+
+  /**
+   * Customized single-page application request handler used for resolving the plain csrf token value sent
+   * by the FE in a request header
+   */
+  static final class SpaCsrfTokenRequestHandler extends CsrfTokenRequestAttributeHandler {
+    private final CsrfTokenRequestHandler delegate = new XorCsrfTokenRequestAttributeHandler();
+
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, Supplier<CsrfToken> csrfToken) {
+      this.delegate.handle(request, response, csrfToken);
+    }
+
+    @Override
+    public String resolveCsrfTokenValue(HttpServletRequest request, CsrfToken csrfToken) {
+      // If the request contains a request header, use CsrfTokenRequestAttributeHandler to resolve the CsrfToken.
+      if (StringUtils.hasText(request.getHeader(csrfToken.getHeaderName()))) {
+        return super.resolveCsrfTokenValue(request, csrfToken);
+      }
+      /*
+       * In all other cases (e.g. if the request contains a request parameter),
+       * use XorCsrfTokenRequestAttributeHandler to resolve the CsrfToken.
+       */
+      return this.delegate.resolveCsrfTokenValue(request, csrfToken);
+    }
+  }
+
+  static final class CsrfCookieFilter extends OncePerRequestFilter {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
+      CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
+      // Render the token value to a cookie by causing the deferred token to be loaded
+      csrfToken.getToken();
+
+      filterChain.doFilter(request, response);
+    }
   }
 }

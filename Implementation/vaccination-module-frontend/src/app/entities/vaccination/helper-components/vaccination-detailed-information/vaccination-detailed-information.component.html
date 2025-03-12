@@ -1,3 +1,6 @@
+<mat-card-header>
+  <mat-card-title *ngIf="showTitle" class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+</mat-card-header>
 <mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" role="group">
   <mat-form-field class="detailed-card-content__form-field">
     <mat-label vmTranslate="VACCINATION.DATE" [attr.aria-label]="'VACCINATION.DATE' | translate"></mat-label>
@@ -13,8 +16,8 @@
     <mat-label vmTranslate="VACCINATION.VACCINE_CODE" [attr.aria-label]="'VACCINATION.VACCINE_CODE' | translate"></mat-label>
     <input
       matInput
-      [attr.aria-label]="'vaccination-names.' + vaccination?.vaccineCode?.code | translate"
-      value="{{ 'vaccination-names.' + vaccination?.vaccineCode?.code | translate }}"
+      [attr.aria-label]="'VACCINE_CODE.' + vaccination?.vaccineCode?.code | translate"
+      value="{{ 'VACCINE_CODE.' + vaccination?.vaccineCode?.code | translate }}"
       disabled
     />
   </mat-form-field>
@@ -49,11 +52,21 @@
     />
   </mat-form-field>
 
-  <mat-card class="mat-elevation-z0 recorder" fxLayout="column" fxLayoutAlign="center">
+  <mat-card
+    class="mat-elevation-z0 recorder"
+    fxLayout="column"
+    fxLayoutAlign="center"
+    *ngIf="vaccination?.recorder?.firstName && vaccination?.recorder?.lastName"
+  >
     <mat-label vmTranslate="VACCINATION.RECORDER"></mat-label>
     <div class="recorder--fields">
       <mat-form-field class="recorder-form-field">
-        <input matInput disabled value="{{ vaccination?.recorder?.prefix }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
+        <input
+          matInput
+          disabled
+          value="{{ vaccination?.recorder?.prefix || '-' }}"
+          [attr.aria-label]="'VACCINATION.RECORDER' | translate"
+        />
       </mat-form-field>
       <mat-form-field class="recorder-form-field">
         <input matInput disabled value="{{ vaccination?.recorder?.firstName }}" [attr.aria-label]="'VACCINATION.RECORDER' | translate" />
@@ -63,8 +76,8 @@
       </mat-form-field>
     </div>
   </mat-card>
-  <mat-form-field class="detailed-card-content__form-field">
-    <mat-label vmTranslate="VACCINATION.ORGANIZATION" [attr.aria-label]="'VACCINATION.ORGANIZATION' | translate"></mat-label>
+  <mat-form-field class="detailed-card-content__form-field" *ngIf="vaccination?.organization">
+    <mat-label vmTranslate="GLOBAL.ORGANIZATION" [attr.aria-label]="'GLOBAL.ORGANIZATION' | translate"></mat-label>
     <input matInput [attr.aria-label]="vaccination?.organization" value="{{ vaccination?.organization }}" disabled />
   </mat-form-field>
 

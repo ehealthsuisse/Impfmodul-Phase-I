@@ -18,15 +18,16 @@
  */
 package ch.admin.bag.vaccination.service;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import ch.fhir.epr.adapter.exception.TechnicalException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,21 +43,22 @@ public class HttpSessionUtilsTest {
   private HttpServletRequest mockRequest;
 
   @Test
-  void isValidAccessToPatientInformation_returnTrueOrFalseBasedOnValidIdentifier_trueForValidIdentifier() {
-    // Create a mock PatientIdentifier
-    PatientIdentifier validIdentifier = new PatientIdentifier(EPDCommunity.GAZELLE.name(), "localId", "oid");
-    PatientIdentifier invalidIdentifier =
+  void testValidPatientIdentifier_shouldReturnPatientIdentifierFromSession() {
+    PatientIdentifier validIdentifier =
         new PatientIdentifier(EPDCommunity.GAZELLE.name(), "otherLocalId", "otherOid");
-
     mockHttpServletRequest(validIdentifier);
 
-    // Test with valid access
-    boolean resultValidAccess = HttpSessionUtils.isValidAccessToPatientInformation(validIdentifier);
-    assertTrue(resultValidAccess);
+    PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
 
-    // Test with invalid access
-    boolean resultInvalidAccess = HttpSessionUtils.isValidAccessToPatientInformation(invalidIdentifier);
-    assertFalse(resultInvalidAccess);
+    assertEquals(EPDCommunity.GAZELLE.name(), patientIdentifierFromSession.getCommunityIdentifier());
+    assertEquals("otherLocalId", patientIdentifierFromSession.getLocalExtenstion());
+    assertEquals("otherOid", patientIdentifierFromSession.getLocalAssigningAuthority());
+  }
+
+  @Test
+  void testGetNullPatientIdentifierFromSession_shouldThrowTechnicalException() {
+    mockHttpServletRequest(null);
+    assertThrows(TechnicalException.class, HttpSessionUtils::getPatientIdentifierFromSession);
   }
 
   private void mockHttpServletRequest(PatientIdentifier validIdentifier) {

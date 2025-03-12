@@ -19,9 +19,9 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
@@ -72,9 +72,10 @@ public interface SAMLServiceIfc {
    *
    * @param idp idp information needed to retrieve logout url
    * @param logoutRequest {@link LogoutRequest}
+   * @param request {@link HttpServletRequest}
    * @return {@link LogoutResponse}
    */
-  LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest);
+  LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest, HttpServletRequest request);
 
   /**
    * Gets the IDP config based on the identifiers specific in the idp-config.yml

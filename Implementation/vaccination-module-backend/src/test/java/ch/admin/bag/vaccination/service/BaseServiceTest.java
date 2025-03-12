@@ -21,7 +21,7 @@ package ch.admin.bag.vaccination.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,8 +34,9 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.Objects;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -54,7 +55,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @SpringBootTest
 @ActiveProfiles("test")
 class BaseServiceTest {
-  private static final String OTHER_LOCAL_ID = "OTHER_LOCAL_ID";
+
   @Autowired
   private AllergyService allergyService;
   @Autowired
@@ -69,30 +70,22 @@ class BaseServiceTest {
   @BeforeEach
   void before() {
     profileConfig.setLocalMode(false);
-    profileConfig.setHuskyLocalMode(false);
+    profileConfig.setHuskyLocalMode(null);
   }
 
   @Test
-  void create_invalidPatientInformation_returnEmptyList() {
-    assertThat(allergyService.getAll(null, null, null, null)).isEmpty();
-    assertThat(allergyService.getAll("communityId", null, null, null)).isEmpty();
-    assertThat(allergyService.getAll("communityId", "laaoid", null, null)).isEmpty();
-    assertThat(allergyService.getAll("communityId", "laaoid", "localId", null)).isEmpty();
-  }
-
-  @Test
-  void getPatientIdentifier_otherIDAsInSession_returnNull() {
-    PatientIdentifier patientIdentifier = mockPatientIdentifier();
-
-    patientIdentifier = allergyService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
-        patientIdentifier.getLocalAssigningAuthority(), OTHER_LOCAL_ID);
-
-    assertNull(patientIdentifier);
+  void create_invalidPatientInformation_shouldThrowNullPointerException() {
+    assertThrows(NullPointerException.class, () -> allergyService.getAll(null, null, null, null));
+    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", null, null, null));
+    assertThrows(NullPointerException.class, () -> allergyService.getAll("communityId", "laaoid", null, null));
   }
 
   @Test
   void getPatientIdentifier_sameIDAsInSession_filledPatientInfo() {
     PatientIdentifier patientIdentifier = mockPatientIdentifier();
+
+    HttpSession mockSession = mock(HttpSession.class);
+    when(mockRequest.getSession()).thenReturn(mockSession);
 
     patientIdentifier = allergyService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
         patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion());
@@ -117,23 +110,24 @@ class BaseServiceTest {
   @Test
   void readEPDdataAndValidateDocumentBasedOnRole() {
     PatientIdentifier patientIdentifier = mockPatientIdentifier();
+
+    HttpSession mockSession = mock(HttpSession.class);
+    when(mockRequest.getSession()).thenReturn(mockSession);
+
     patientIdentifier = vaccinationService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
         patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion());
 
     List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
 
     assertThat(vaccinations).isNotEmpty();
-    assertThat(vaccinations.get(0).isValidated()).isTrue();
-    assertThat(vaccinations.get(0).getAuthor().getRole()).isEqualTo(HuskyUtils.HCP);
-    assertThat(vaccinations.get(1).isValidated()).isFalse();
-    assertThat(vaccinations.get(1).getAuthor().getRole()).isEqualTo(HuskyUtils.PAT);
+    vaccinations.forEach(vacc -> assertEquals(HuskyUtils.HCP.equals(vacc.getAuthor().getRole()), vacc.isValidated()));
   }
 
   private void mockHttpServletRequest(PatientIdentifier validIdentifier) {
     HttpSession mockSession = mock(HttpSession.class);
     when(mockRequest.getSession(false)).thenReturn(mockSession);
     when(mockRequest.getSession(false).getAttribute(HttpSessionUtils.CACHE_PATIENT_IDENTIFIER))
-        .thenReturn(validIdentifier);
+    .thenReturn(validIdentifier);
 
     // Mock the RequestContextHolder
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));

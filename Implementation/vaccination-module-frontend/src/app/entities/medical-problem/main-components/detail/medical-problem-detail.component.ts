@@ -54,7 +54,6 @@ export class MedicalProblemDetailComponent extends BreakPointSensorComponent imp
           next: list => {
             this.problem = list.find(filteredProblem => filteredProblem.id === id)!;
             this.sharedDataService.storedData['detailedItem'] = this.problem;
-            this.sharedDataService.canEdit = this.problem.updated! || this.problem.deleted!;
             this.sharedDataService.setSessionStorage();
           },
         });

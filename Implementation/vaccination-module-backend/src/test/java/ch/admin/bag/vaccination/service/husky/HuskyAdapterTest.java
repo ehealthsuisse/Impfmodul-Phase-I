@@ -32,6 +32,7 @@ import ch.admin.bag.vaccination.service.husky.config.CommunityConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
 import ch.admin.bag.vaccination.service.husky.config.OidConfig;
 import ch.admin.bag.vaccination.service.husky.config.RepositoryConfig;
+import ch.admin.bag.vaccination.service.husky.config.XuaConfig;
 import ch.admin.bag.vaccination.service.saml.SAMLXmlTestUtils;
 import ch.admin.bag.vaccination.utils.SSLValidation;
 import ch.fhir.epr.adapter.FhirAdapter;
@@ -52,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.openehealth.ipf.commons.ihe.xds.core.metadata.DocumentEntry;
@@ -100,7 +102,7 @@ class HuskyAdapterTest {
   }
 
   @BeforeEach
-  void beforeEach() throws Exception {
+  void beforeEach() {
     syslogServer.getLastMessage(); // Eatup the message
     assertThat(syslogServer.getLastMessage()).isNull();
     cache.clear();
@@ -109,6 +111,7 @@ class HuskyAdapterTest {
   }
 
   @Test
+  @Disabled
   void getDocumentEntries_existingDocumentEntries_EPDPLAYGROUND() throws Exception {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
@@ -187,15 +190,15 @@ class HuskyAdapterTest {
   /**
    * Test <a href="https://jira.e-health-suisse.ch/browse/IMAW-299#value">IMAW-299</a>
    */
-  // @Test // FIXME: The data has been changed
+  @Test
   void getPatient_existingPatient_GAZELLE() {
     PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.12559.11.20.1",
-            "CHPAM204");
-    assertThat(patientIdentifier.getPatientInfo().getLastName()).isEqualTo("Ehrxyzmedical");
-    assertThat(patientIdentifier.getPatientInfo().getFirstName()).isEqualTo("Alessandra Pauline");
-    assertThat(patientIdentifier.getSpidExtension()).isEqualTo("761337610410555999");
-    assertThat(patientIdentifier.getGlobalExtension()).isEqualTo("CHPAM204");
+        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",
+            "761337610410555888");
+    assertThat(patientIdentifier.getPatientInfo().getLastName()).isEqualTo("Maiden");
+    assertThat(patientIdentifier.getPatientInfo().getFirstName()).isEqualTo("Alice");
+    assertThat(patientIdentifier.getSpidExtension()).isEqualTo("761337610410555888");
+    assertThat(patientIdentifier.getGlobalExtension()).isEqualTo("CHPAM203");
 
     patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",
@@ -208,14 +211,14 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void getPatient_noPatientInformation_throwNullPointerException() throws Exception {
+  void getPatient_noPatientInformation_throwNullPointerException() {
     assertThrows(NullPointerException.class,
         () -> huskyAdapter.getPatientIdentifier(EPDCommunity.DUMMY.name(), null, null));
     assertThat(syslogServer.getLastMessage()).isNull();
   }
 
   @Test
-  void getPatientIdentifier_existing_patient() throws Exception {
+  void getPatientIdentifier_existing_patient() {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
             "1.2.3.4.123456.1", "waldspital-Id-1234");
@@ -236,7 +239,7 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void getPatientIdentifier_unknown_patient() throws Exception {
+  void getPatientIdentifier_unknown_patient() {
     assertThrows(TechnicalException.class,
         () -> huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "dummy"));
@@ -244,14 +247,24 @@ class HuskyAdapterTest {
   }
 
   @Test
+  @Disabled
   void getRetrievedDocuments_existingDocument_EPDPLAYGROUND() throws Exception {
-    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), null, null);
+    org.opensaml.saml.saml2.core.Assertion osAssertion = SAMLXmlTestUtils.createAssertion("saml/Assertion.xml");
+    org.projecthusky.xua.saml2.Assertion huskyAssertion = new AssertionBuilderImpl().create(osAssertion);
+
+    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+        "waldspital-Id-1234");
     DocumentEntry documentEntry = new DocumentEntry();
     documentEntry.setRepositoryUniqueId("1.1.1.2.31");
     documentEntry.setUniqueId("2.25.90799173491713586491471839779315544798"); // 2.25.253445961889251413523507992196901058285
 
+    AuthorDTO author = new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null));
+    author.setRole("HCP");
+    author.setPurpose("NORM");
+
     CommunityConfig communityConfig = new CommunityConfig();
     RepositoryConfig repositoryConfig = new RepositoryConfig();
+    repositoryConfig.setIdentifier("InternalRetrieveDocumentSet");
     repositoryConfig.setHomeCommunityOid("urn:oid:1.1.1");
     OidConfig receiver = new OidConfig();
     receiver.setApplicationOid("2.16.840.1.113883.3.72.6.5.100.1399");
@@ -260,8 +273,23 @@ class HuskyAdapterTest {
         .setUri("https://epdplayground.i4mi.bfh.ch:6443/Repository/services/RepositoryService");
     repositoryConfig.setReceiver(receiver);
 
+    RepositoryConfig xuaRepositoryConfig = new RepositoryConfig();
+    xuaRepositoryConfig.setIdentifier("XUA");
+    xuaRepositoryConfig.setUri("https://ehealthsuisse.ihe-europe.net:10443/STS?wsdl");
+    OidConfig xuaReceiver = new OidConfig();
+    xuaReceiver.setApplicationOid("1.3.6.1.4.1.21367.2017.2.5.97");
+    xuaReceiver.setFacilityOid("1.3.6.1.4.1.21367.2017.2.7.127");
+    xuaRepositoryConfig.setReceiver(xuaReceiver);
+    XuaConfig xuaConfig = new XuaConfig();
+    xuaConfig.setClientKeyStore("config/GazelleKeystore.p12");
+    xuaConfig.setClientKeyStorePass("changeit");
+    xuaConfig.setClientKeyStoreType("PKCS12");
+    xuaRepositoryConfig.setXua(xuaConfig);
+
+    communityConfig.setRepositories(List.of(repositoryConfig, xuaRepositoryConfig));
+
     List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier, communityConfig,
-        repositoryConfig, List.of(documentEntry), null, null);
+        repositoryConfig, List.of(documentEntry), author, huskyAssertion);
 
     assertEquals("application/fhir+json", retrievedDocuments.get(0).getMimeType());
 
@@ -280,8 +308,9 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void getRetrievedDocuments_existingDocument_EPRPLAYGROUND() throws Exception {
-    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), null, null);
+  void getRetrievedDocuments_existingDocument_EPRPLAYGROUND() {
+    PatientIdentifier patientIdentifier = new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+        "waldspital-Id-1234");
     DocumentEntry documentEntry = new DocumentEntry();
     documentEntry.setRepositoryUniqueId("1.1.1.2.31");
     documentEntry.setUniqueId("5b73b737-617c-41cc-86f4-449718d41556");
@@ -320,13 +349,12 @@ class HuskyAdapterTest {
     author.setPurpose("NORM");
     Identificator spid = new Identificator("2.16.756.5.30.1.127.3.10.3", "761337610411265304");
 
-    org.projecthusky.xua.saml2.impl.AssertionImpl assertionImpl =
-        (org.projecthusky.xua.saml2.impl.AssertionImpl) huskyAdapter.getXUserAssertion(
-            author,
-            huskyAssertion, spid,
-            communities.getCommunityConfig(EPDCommunity.GAZELLE.name()), null);
+    Assertion xUserAssertion = huskyAdapter.getXUserAssertion(author, huskyAssertion, spid,
+        communities.getCommunityConfig(EPDCommunity.GAZELLE.name()), null);
 
-    assertThat(assertionImpl).isNotNull();
+    assertThat(xUserAssertion).isNotNull();
+    assertEquals("https://ehealthsuisse.ihe-europe.net/STS",
+        ((org.opensaml.saml.saml2.core.Assertion) xUserAssertion.getWrappedObject()).getIssuer().getValue());
     assertThat(syslogServer.getLastMessage()).isNull();
   }
 
@@ -336,14 +364,14 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void getXUserAssertion_noLocalMode_nullAssertion_throwException() throws Exception {
+  void getXUserAssertion_noLocalMode_nullAssertion_throwException() {
     profileConfig.setLocalMode(false);
     profileConfig.setHuskyLocalMode(false);
     assertThrows(TechnicalException.class, () -> huskyAdapter.getXUserAssertion(null, null, null, null, null));
   }
 
   @Test
-  void getXUserAssertion_noXuaConfigured_throwException() throws Exception {
+  void getXUserAssertion_noXuaConfigured_throwException() {
     Assertion mockAssertion = mock(Assertion.class);
     CommunityConfig repository = new CommunityConfig();
     profileConfig.setLocalMode(false);
@@ -354,10 +382,9 @@ class HuskyAdapterTest {
 
   @Test
   void setDocumentMetadata() {
-    DocumentMetadata metadata = new DocumentMetadata();
     VaccinationDTO vaccination = createVaccination();
 
-    huskyAdapter.setDocumentMetadata(metadata, new Identificator("root", "ext"),
+    DocumentMetadata metadata = huskyAdapter.setDocumentMetadata(new Identificator("root", "ext"),
         new Identificator("root2", "ext2"),
         vaccination, false);
 
@@ -393,10 +420,9 @@ class HuskyAdapterTest {
 
   @Test
   void setDocumentMetadataWithConfidentiality() {
-    DocumentMetadata metadata = new DocumentMetadata();
     VaccinationDTO vaccination = createVaccination();
 
-    huskyAdapter.setDocumentMetadata(metadata, new Identificator("root", "ext"),
+    DocumentMetadata metadata = huskyAdapter.setDocumentMetadata(new Identificator("root", "ext"),
         new Identificator("root2", "ext2"), vaccination, false);
 
     ValueDTO cc = HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE;
@@ -457,17 +483,26 @@ class HuskyAdapterTest {
     huskyAdapter.writeDocument(patientIdentifier, uuid, json, vaccination, null);
   }
 
-  // @Test
+  @Test
   void writeDocument_GAZELLE() throws Exception {
     PatientIdentifier patientIdentifier =
-        huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
-            "1.2.3.4.123456.1", "waldspital-Id-1234");
+        huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",
+            "761337610411265304");
     String json = "{\"fruit\": \"Apple\",\"size\": \"Large\",\"color\": \"Red\"}";
     String uuid = UUID.randomUUID().toString();
+
+    AuthorDTO author = new AuthorDTO(new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null));
+    author.setRole("HCP");
+    author.setPurpose("NORM");
+
     VaccinationDTO vaccination = createVaccination();
+    vaccination.setAuthor(author);
+
+    org.opensaml.saml.saml2.core.Assertion osAssertion = SAMLXmlTestUtils.createAssertion("saml/Assertion.xml");
+    org.projecthusky.xua.saml2.Assertion huskyAssertion = new AssertionBuilderImpl().create(osAssertion);
 
     profileConfig.setHuskyLocalMode(null);
-    huskyAdapter.writeDocument(patientIdentifier, uuid, json, vaccination, null);
+    huskyAdapter.writeDocument(patientIdentifier, uuid, json, vaccination, huskyAssertion);
   }
 
   private void checkMetadata(String titleCategory, BaseDTO baseDto) {

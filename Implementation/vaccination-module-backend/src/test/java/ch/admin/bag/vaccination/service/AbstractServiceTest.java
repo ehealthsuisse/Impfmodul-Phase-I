@@ -13,12 +13,9 @@ import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Define the test to apply to the Business Services and Controllers
@@ -64,14 +61,12 @@ public abstract class AbstractServiceTest {
 
   protected void setAuthorInSession(AuthorDTO author) {
     Objects.nonNull(author);
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.AUTHOR, author);
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHOR, author);
   }
 
   protected void setPatientIdentifierInSession(PatientIdentifier identifier) {
     Objects.nonNull(identifier);
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.CACHE_PATIENT_IDENTIFIER, identifier);
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.CACHE_PATIENT_IDENTIFIER, identifier);
   }
 
   protected <T extends BaseDTO, S extends BaseService<T>> void validate(T dto, S service, String role,

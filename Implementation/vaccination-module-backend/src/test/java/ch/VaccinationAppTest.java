@@ -34,12 +34,14 @@ import org.junit.jupiter.api.Test;
 import org.projecthusky.communication.ConvenienceCommunication;
 import org.projecthusky.communication.ConvenienceMasterPatientIndexV3;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@EnableAutoConfiguration
 @ActiveProfiles("test")
 class VaccinationAppTest {
 
@@ -66,6 +68,7 @@ class VaccinationAppTest {
 
   @Autowired
   private SAMLServiceIfc samlService;
+
   @Autowired
   private IdPAdapter idpAdapter;
 

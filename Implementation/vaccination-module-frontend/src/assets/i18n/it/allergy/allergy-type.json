@@ -1,6 +1,6 @@
 {
-  "ALLERGY_TYPE": {
-    "allergy": "Allergie",
-    "intolerance": "Intertoleranz"
+  "ALLERGY-TYPE": {
+    "allergy": "Allergia",
+    "intolerance": "Intolleranza"
   }
 }

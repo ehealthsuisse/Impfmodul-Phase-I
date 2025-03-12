@@ -24,10 +24,27 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
-### June 2024 - Hotfix 1.6.1 
+### January 2025 - Release 1.7.0-RC2
+The 2nd release candidate contains a fix for Tomcat 11 compatibility as well as few dependency upgrades and bugfixes.
+
+### November 2024 - Release 1.7.0-RC1
+Improving the vaccination module based on new FHIR regulations and technical evolutions.
+
+1. Upgrade the frontend application to use Angular 17
+2. Upgrade the backend applicatino to use Spring Boot 3.x and Spring 6.x. This major change has an impact on the environment. Starting with 1.7.0, the vaccination module needs to be run with Tomcat 10+. This version was tested to run with Tomcat 11.0.1
+3. Various upgrades of the FHIR bundle structure. These updates mainly concern metaURLs and the crossreferences. Old bundle structures will be backwards compatible.
+4. Various bugfixes
+
+### September 2024 - Hotfix 1.6.3 
+This hotfix contains a small extension to the XUA request made to the EPR-backend.
+
+### Juli 2024 - Hotfix 1.6.2 
+This hotfix contains an important security fix. It is strongly recommended to upgrade your version.
+
+### June 2024 - Hotfixes 1.6.1 for frontend and backend
 Hotfix for 1.6.0, fixing few issues spotted on provider's infrastructure.
 
-Additionally added help-files into the documentation.
+Additionally added updated help-files into the documentation.
 
 #### April-June 2024 - Release 1.6.0 and 1.6.0-RCs
 Improving the vaccination module based on user, provider and audit feedback.

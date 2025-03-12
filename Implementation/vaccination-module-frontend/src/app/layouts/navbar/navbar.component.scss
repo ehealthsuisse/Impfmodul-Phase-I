@@ -65,6 +65,7 @@ main {
     position: fixed;
     z-index: 1;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    letter-spacing: normal;
   }
 
   &__desktop {
@@ -122,10 +123,11 @@ main {
     }
   }
 }
-
+// vertical scroll bar visibility for the main form and also for categories form
 .mat-sidenav-container,
 .mat-sidenav-content {
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .mat-sidenav {
@@ -170,7 +172,7 @@ main {
   }
   &__mobile {
     @include flex-center(space-between, center, row);
-    padding: 0 0px;
+    padding: 0 0;
   }
 }
 .show {

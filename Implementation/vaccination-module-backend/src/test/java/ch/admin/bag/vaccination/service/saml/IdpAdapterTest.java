@@ -20,33 +20,31 @@ package ch.admin.bag.vaccination.service.saml;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.message.BasicStatusLine;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.junit.jupiter.api.Test;
 import org.opensaml.messaging.context.InOutOperationContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.security.SecurityException;
 import org.opensaml.soap.client.http.AbstractPipelineHttpSOAPClient;
-import org.opensaml.soap.common.SOAPException;
 import org.opensaml.soap.soap11.Envelope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,9 +68,9 @@ public class IdpAdapterTest {
     assertNotNull(assertion);
   }
 
-  private HttpResponse mockResponse() throws Exception {
-    HttpResponse httpResponse = mock(HttpResponse.class);
-    StatusLine statusLine = new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, null);
+  private BasicClassicHttpResponse mockResponse() throws Exception {
+    BasicClassicHttpResponse httpResponse = mock(BasicClassicHttpResponse.class);
+    StatusLine statusLine = new StatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, null);
     HttpEntity entity = mock(HttpEntity.class);
 
     ClassLoader classLoader = getClass().getClassLoader();
@@ -80,22 +78,23 @@ public class IdpAdapterTest {
     InputStream is = new FileInputStream(file);
     when(entity.getContentLength()).thenReturn(1000L);
     when(entity.getContent()).thenReturn(is);
-    when(httpResponse.getStatusLine()).thenReturn(statusLine);
+    when(httpResponse.getVersion()).thenReturn(statusLine.getProtocolVersion());
+    when(httpResponse.getCode()).thenReturn(statusLine.getStatusCode());
     when(httpResponse.getEntity()).thenReturn(entity);
     return httpResponse;
   }
 
-  private InOutOperationContext sendSamlEnvelop(String samlEnvelop)
-      throws Exception, IOException, ClientProtocolException, SOAPException, SecurityException {
+  private InOutOperationContext sendSamlEnvelop(String samlEnvelop) throws Exception {
     Envelope envelope = (Envelope) SAMLUtils.unmarshall(samlEnvelop);
-    MessageContext contextout = new MessageContext();
-    contextout.setMessage(envelope);
+    MessageContext contextOut = new MessageContext();
+    contextOut.setMessage(envelope);
     InOutOperationContext context = new ProfileRequestContext();
-    context.setOutboundMessageContext(contextout);
+    context.setOutboundMessageContext(contextOut);
 
     HttpClient httpClient = mock(HttpClient.class);
-    HttpResponse mockResponse = mockResponse();
-    when(httpClient.execute(any(HttpUriRequest.class), any(HttpContext.class))).thenReturn(mockResponse);
+    ClassicHttpResponse mockResponse = mockResponse();
+    when(httpClient.executeOpen(isNull(HttpHost.class), any(ClassicHttpRequest.class), any(HttpContext.class)))
+        .thenReturn(mockResponse);
 
     AbstractPipelineHttpSOAPClient soapClient = AssertionRenewalUtils.createRenewalSoapClient(envelope, httpClient);
     soapClient.send("https://this.is.a.test.url", context);

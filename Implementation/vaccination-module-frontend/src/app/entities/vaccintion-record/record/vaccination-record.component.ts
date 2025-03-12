@@ -41,7 +41,7 @@ import { filterPatientRecordData, VaccinationRecordService } from '../service/va
   standalone: true,
   imports: [SharedLibsModule, TableWrapperComponent, VaccinationListComponent, SharedComponentModule, PatientActionComponent],
   templateUrl: './vaccination-record.component.html',
-  styleUrls: ['./vaccination-record.component.scss']
+  styleUrls: ['./vaccination-record.component.scss'],
 })
 export class VaccinationRecordComponent extends BreakPointSensorComponent implements OnInit, OnDestroy {
   router = inject(Router);
@@ -52,7 +52,7 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   mapper: MapperService = inject(MapperService);
   vaccinationRecordService = inject(VaccinationRecordService);
   record$ = combineLatest([this.vaccinationRecordService.queryOneRecord(), trackLangChange()]);
-  allergyColumns: string[] = ['occurrenceDate', 'code', 'recorder'];
+  allergyColumns: string[] = ['occurrenceDate', 'allergyCode', 'recorder'];
   illnessesColumns: string[] = ['recordedDate', 'illnessCode', 'recorder'];
   vaccinationColumns: string[] = ['occurrenceDate', 'targetDiseases', 'vaccineCode', 'doseNumber', 'recorder'];
   medicalProblemColumns: string[] = ['recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder'];

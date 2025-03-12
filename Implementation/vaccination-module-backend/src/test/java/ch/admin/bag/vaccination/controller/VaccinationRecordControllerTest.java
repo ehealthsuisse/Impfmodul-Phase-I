@@ -21,72 +21,78 @@ package ch.admin.bag.vaccination.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.fhir.epr.adapter.data.dto.AuthorDTO;
-import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
-import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
-import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
+import ch.admin.bag.vaccination.data.request.TranslationsRequest;
+import ch.admin.bag.vaccination.service.SignatureService;
+import ch.admin.bag.vaccination.utils.MockSessionHelper;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class VaccinationRecordControllerTest {
+@TestInstance(Lifecycle.PER_CLASS)
+public class VaccinationRecordControllerTest extends MockSessionHelper {
   @LocalServerPort
   private int port;
+  @MockitoBean
+  private SignatureService signatureService;
   @Autowired
   private TestRestTemplate restTemplate;
-
   @Autowired
   private ProfileConfig profileConfig;
+  private List<String> cookies;
 
-  @BeforeEach
-  void before() {
+  @BeforeAll
+  void setUp() {
     profileConfig.setLocalMode(true);
     profileConfig.setHuskyLocalMode(null);
+    restTemplate = new TestRestTemplate(HttpClientOption.ENABLE_COOKIES);
+    cookies = enhanceSessionWithMockedData(restTemplate, signatureService, port, true);
   }
 
   @Test
-  void createVaccinationRecordPdf_noExceptionOccurs() throws Exception {
-    HumanNameDTO performer = new HumanNameDTO("Victor", "Frankenstein2", "Dr.", null, null);
+  void testCreateVaccinationRecordPdf_noExceptionOccurs() throws Exception {
+    ValueDTO tuberkulose = new ValueDTO("56717001", "Tuberkulose", "testsystem");
+    ValueDTO herpes = new ValueDTO("4740000", "Herpes zoster", "testsystem");
+    ValueDTO masern = new ValueDTO("14189004", "Masern", "testsystem");
 
-    ValueDTO vaccineCode = new ValueDTO("123456789", "123456789", "testsystem");
-    ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
-    VaccinationDTO vaccinationDTO = new VaccinationDTO(null, vaccineCode,
-        Arrays.asList(new ValueDTO("777", "myDisease", "mySystem")), null, 3,
-        LocalDate.now(), performer, null, "lotNumber", null, status);
+    // Call VaccinationRecordController's /name endpoint to enhance the Session with the patient info
+    ResponseEntity<String> entity =
+        restTemplate.getForEntity("http://localhost:" + port + "/vaccinationRecord/communityIdentifier/GAZELLE/name",
+            String.class);
+    assertThat(entity.getBody()).isEqualTo("Max Mustermann");
 
-    List<VaccinationDTO> vaccinationDTOs = Arrays.asList(vaccinationDTO);
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.put(HttpHeaders.COOKIE, cookies);
 
-    VaccinationRecordDTO vaccinationRecordDTO =
-        new VaccinationRecordDTO(new AuthorDTO(performer), performer, Collections.emptyList(), Collections.emptyList(),
-            vaccinationDTOs, Collections.emptyList());
-    vaccinationRecordDTO.setI18nTargetDiseases(Arrays.asList());
-    HttpEntity<VaccinationRecordDTO> request = new HttpEntity<>(vaccinationRecordDTO);
-
-    assertThat(request.getBody().getVaccinations().size()).isEqualTo(1);
+    HttpEntity<TranslationsRequest> httpEntity = new HttpEntity<>(createTranslationsRequest(tuberkulose,
+        herpes, masern), httpHeaders);
+    // Call the /exportToPDF endpoint using the updated Session object from previous requests
     ResponseEntity<Resource> response =
-        restTemplate.postForEntity("http://localhost:" + port + "/vaccinationRecord/exportToPDF",
-            request, Resource.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/vaccinationRecord/exportToPDF/en", httpEntity,
+            Resource.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
 
@@ -101,11 +107,20 @@ public class VaccinationRecordControllerTest {
   }
 
   @Test
-  void getPatientName_noInput_returnPatientName() throws Exception {
-    String response = restTemplate.getForObject("http://localhost:" + port
-        + "/vaccinationRecord/communityIdentifier/GAZELLE/oid/1.3.6.1.4.1.21367.13.20.3000/localId/IHEBLUE-2599/name",
-        String.class);
+  public void testGetAll() {
+    ResponseEntity<Object> response =
+        restTemplate.getForEntity("http://localhost:" + port + "/vaccinationRecord/communityIdentifier/GAZELLE",
+            Object.class);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
 
-    assertThat(response).isEqualTo("Max Mustermann");
+  private TranslationsRequest createTranslationsRequest(ValueDTO tuberkulose, ValueDTO herpes, ValueDTO masern) {
+    TranslationsRequest translationsRequest = new TranslationsRequest();
+    translationsRequest.setTargetDiseases(List.of(tuberkulose, herpes, masern));
+    translationsRequest.setVaccineCodes(Collections.emptyList());
+    translationsRequest.setAllergyCodes(Collections.emptyList());
+    translationsRequest.setMedicalProblemCodes(Collections.emptyList());
+    translationsRequest.setIllnessCodes(Collections.emptyList());
+    return translationsRequest;
   }
 }

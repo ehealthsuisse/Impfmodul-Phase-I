@@ -16,12 +16,10 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateService } from '@ngx-translate/core';
 import { SessionStorageService } from 'ngx-webstorage';
-import { Observable, map, startWith } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 import { SessionInfoService } from '../../core/security/session-info.service';
 
 export class MissingTranslationHandlerImpl implements MissingTranslationHandler {
@@ -29,11 +27,6 @@ export class MissingTranslationHandlerImpl implements MissingTranslationHandler 
     const key = params.key;
     return `${translationNotFoundMessage}[${key}]`;
   }
-}
-
-export function translatePartialLoader(http: HttpClient): TranslateLoader {
-  const I18N_HASH: string = '';
-  return new TranslateHttpLoader(http, 'i18n/', `.json?_generated_hash=${I18N_HASH}`);
 }
 
 export function missingTranslationHandler(): MissingTranslationHandler {
@@ -55,10 +48,10 @@ export function changeLang(
   currentLanguage: string
 ): string {
   if (languageKey !== currentLanguage) {
-    sessionInfoService.queryParams.lang = languageKey.toLowerCase();
     sessionStorageService.store('locale'.slice(0, 2).toLocaleLowerCase(), languageKey);
     translateService.use(languageKey.slice(0, 2).toLocaleLowerCase());
     currentLanguage = languageKey.slice(0, 2);
+    sessionInfoService.changeLanguage(currentLanguage);
   }
 
   return currentLanguage;
@@ -66,4 +59,4 @@ export function changeLang(
 
 export const translationNotFoundMessage = 'translation-not-found';
 
-export const LANGUAGES: string[] = ['de', 'en', 'fr'];
+export const LANGUAGES: string[] = ['de', 'en', 'fr', 'it'];

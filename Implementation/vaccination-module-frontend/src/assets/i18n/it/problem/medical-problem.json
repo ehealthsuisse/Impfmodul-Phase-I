@@ -1,18 +1,16 @@
 {
   "MEDICAL_PROBLEM": {
-    "TITLE": "Risikofaktoren",
-    "EDIT_HEADER": "Risikofaktor bearbeiten",
-    "NEW_HEADER": "Risikofaktor hinzufügen",
-    "DETAILS_HEADER": "Details zum Risikofaktor",
-    "FILTER": "Suchen",
-    "MEDICAL_PROBLEM_CODE": "Risikofaktor",
-    "CLINICAL_STATUS": "Klinischer Status",
-    "RECORDER": "Erfasst von",
-    "RECORDED_DATE": "Datum",
-    "BEGIN": "Beginn",
-    "END": "Ende",
-    "SEVERITY": "Schweregrad",
-    "ORGANIZATION": "Organisation",
-    "DATE": "Datum der Feststellung"
+    "TITLE": "Fattori di rischio",
+    "FILTER": "Cercando",
+    "DETAILS_HEADER": "Dettagli dello fattore di rischio",
+    "EDIT_HEADER": "Modifica fattore di rischio",
+    "NEW_HEADER": "Nuovo fattore di rischio",
+    "MEDICAL_PROBLEM_CODE": "Fattore di rischio",
+    "CLINICAL_STATUS": "Stato clinico",
+    "RECORDER": "Registrazione effettuata da",
+    "RECORDED_DATE": "Data",
+    "BEGIN": "Data di inizio",
+    "END": "Data di fine",
+    "DATE": "Data di determinazione"
   }
 }

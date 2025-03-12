@@ -25,15 +25,13 @@ import org.openehealth.ipf.commons.ihe.ws.cxf.payload.DisablePayloadCollectingDe
 import org.openehealth.ipf.commons.ihe.ws.cxf.payload.InPayloadLoggerInterceptor;
 import org.openehealth.ipf.commons.ihe.ws.cxf.payload.OutPayloadLoggerInterceptor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * xml exchange message interceptor for log
  */
-@Configuration
-@EnableAutoConfiguration
+@AutoConfiguration
 @Slf4j
 public class IpfApplicationConfig {
 

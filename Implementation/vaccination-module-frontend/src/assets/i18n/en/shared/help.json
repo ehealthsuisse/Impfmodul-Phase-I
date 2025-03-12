@@ -25,7 +25,7 @@
       },
       "SAVE_AND_STAY": {
         "TITLE": "<h2>Adverse events</h2>",
-        "BODY": "Adverse reaction has been successfully stored in the system"
+        "BODY": "Adverse event has been successfully stored in the system"
       }
     },
     "PAST_ILLNESS": {
@@ -59,7 +59,7 @@
     "VACCINATION_RECORD": {
       "SAVE": {
         "TITLE": "Save vaccination certificate",
-        "BODY": "The vaccination card has been successfully saved in the system"
+        "BODY": "The vaccination certificate has been successfully saved in the system"
       },
       "HELP": {
         "TITLE": "<h2>Vaccination certificate</h2>",

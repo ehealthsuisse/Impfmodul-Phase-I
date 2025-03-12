@@ -39,10 +39,10 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 public class SAMLAuthProviderTest {
@@ -50,7 +50,7 @@ public class SAMLAuthProviderTest {
   @Autowired
   private SAMLAuthProvider provider;
 
-  @MockBean
+  @MockitoBean
   private SAMLService samlService;
 
   @Test

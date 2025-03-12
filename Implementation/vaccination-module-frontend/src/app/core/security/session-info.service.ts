@@ -71,7 +71,7 @@ export class SessionInfoService {
     this._author = value;
   }
 
-  constructor(private cryptoService: CryptoJsService, private sharedDataService: SharedDataService) { }
+  constructor(private cryptoService: CryptoJsService, private sharedDataService: SharedDataService) {}
 
   canValidate(): boolean {
     return this.queryParams.role === 'HCP' || this.queryParams.role === 'ASS';
@@ -145,5 +145,12 @@ export class SessionInfoService {
   isOptionalParameter(parameter: string): boolean {
     const optionalParameters: string[] = ['ugln', 'principalid', 'utitle', 'principalname', 'organization'];
     return optionalParameters.includes(parameter);
+  }
+
+  changeLanguage(currentLanguage: string): void {
+    this.cryptoService.decryptPortalData();
+    this.cryptoService.storedData.lang = currentLanguage;
+    this.queryParams.lang = currentLanguage;
+    this.cryptoService.encryptPortalData(this.cryptoService.storedData);
   }
 }

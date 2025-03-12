@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.service.husky;
 import static ch.admin.bag.vaccination.service.husky.HuskyUtils.UPLOADER_ROLE_METADATA_KEY;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.VaccinationConfig;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.husky.config.CommunitiesConfig;
@@ -28,7 +29,6 @@ import ch.admin.bag.vaccination.service.husky.config.CommunityConfig;
 import ch.admin.bag.vaccination.service.husky.config.EPDRepository;
 import ch.admin.bag.vaccination.service.husky.config.RepositoryConfig;
 import ch.admin.bag.vaccination.service.husky.config.SenderConfig;
-import ch.admin.bag.vaccination.service.saml.SAMLUtils;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
@@ -42,10 +42,8 @@ import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -59,7 +57,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.openehealth.ipf.commons.core.OidGenerator;
 import org.openehealth.ipf.commons.ihe.xds.core.metadata.AvailabilityStatus;
@@ -70,9 +68,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.responses.RetrievedDocument;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.RetrievedDocumentSet;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.Status;
 import org.opensaml.core.config.InitializationService;
-import org.opensaml.soap.wstrust.Claims;
 import org.projecthusky.common.basetypes.NameBaseType;
-import org.projecthusky.common.communication.AffinityDomain;
 import org.projecthusky.common.communication.AtnaConfig;
 import org.projecthusky.common.communication.Destination;
 import org.projecthusky.common.communication.DocumentMetadata;
@@ -84,28 +80,24 @@ import org.projecthusky.common.model.Author;
 import org.projecthusky.common.model.Code;
 import org.projecthusky.common.model.Identificator;
 import org.projecthusky.common.model.Name;
-import org.projecthusky.common.model.Patient;
-import org.projecthusky.communication.ConvenienceCommunication;
-import org.projecthusky.communication.ConvenienceMasterPatientIndexV3;
 import org.projecthusky.communication.DocumentRequest;
-import org.projecthusky.communication.MasterPatientIndexQuery;
-import org.projecthusky.communication.MasterPatientIndexQueryResponse;
-import org.projecthusky.communication.xd.storedquery.FindDocumentsQuery;
-import org.projecthusky.xua.communication.clients.XuaClient;
-import org.projecthusky.xua.communication.clients.impl.ClientFactory;
-import org.projecthusky.xua.communication.config.XuaClientConfig;
-import org.projecthusky.xua.communication.config.impl.XuaClientConfigBuilderImpl;
+import org.projecthusky.communication.requests.pdq.PdqSearchQuery;
+import org.projecthusky.communication.requests.xds.XdsDocumentSetRequest;
+import org.projecthusky.communication.requests.xds.XdsDocumentWithMetadata;
+import org.projecthusky.communication.requests.xds.XdsProvideAndRetrieveDocumentSetQuery;
+import org.projecthusky.communication.requests.xds.XdsRegistryStoredFindDocumentsQuery;
+import org.projecthusky.communication.requests.xua.XuaRequest;
+import org.projecthusky.communication.responses.pdq.PdqSearchResults;
+import org.projecthusky.communication.responses.xua.XuaResponse;
+import org.projecthusky.communication.services.HuskyService;
+import org.projecthusky.fhir.structures.gen.FhirPatient;
 import org.projecthusky.xua.communication.xua.RequestType;
 import org.projecthusky.xua.communication.xua.TokenType;
-import org.projecthusky.xua.communication.xua.XUserAssertionResponse;
 import org.projecthusky.xua.communication.xua.impl.AppliesToBuilderImpl;
-import org.projecthusky.xua.communication.xua.impl.XUserAssertionRequestBuilderImpl;
-import org.projecthusky.xua.communication.xua.impl.ch.XUserAssertionRequestBuilderChImpl;
 import org.projecthusky.xua.hl7v3.CE;
 import org.projecthusky.xua.saml2.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 @Slf4j
 @Service
@@ -126,16 +118,10 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   private VaccinationConfig vaccinationConfig;
 
   @Autowired
-  private ConvenienceMasterPatientIndexV3 convenienceMasterPatientIndexV3Client;
-
-  @Autowired
-  private ConvenienceCommunication convenienceCommunication;
-
-  @Autowired
   private ProfileConfig profileConfig;
 
-  // init once only
-  private XuaClient xuaClient;
+  @Autowired
+  private HuskyService huskyService;
 
   @Override
   public List<DocumentEntry> getDocumentEntries(PatientIdentifier patientIdentifier, AuthorDTO author,
@@ -157,8 +143,8 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       return Collections.emptyList();
     }
 
-    return getDocumentEntries(communityConfig, repositoryConfig, patientIdentifier,
-        formatCodes, documentType, author, assertion);
+    return getDocumentEntries(communityConfig, repositoryConfig, patientIdentifier, formatCodes, documentType, author,
+        assertion);
   }
 
   @Override
@@ -176,8 +162,8 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       patientIdentifier = createDummyPatientIdentifier(communityIdentifier, oid, localId);
     }
 
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.CACHE_PATIENT_IDENTIFIER, patientIdentifier);
     cache.putPatientIdentifier(patientIdentifier);
-
     return patientIdentifier;
   }
 
@@ -225,33 +211,33 @@ public class HuskyAdapter implements HuskyAdapterIfc {
         throw new TechnicalException("XUA clientKeystore not configured. Check husky.yml configuration.");
       }
 
-      XuaClient client = initXuaClient(repository);
-
       // define the attributes for the X-User Assertion request
       CE role = HuskyUtils.getCodedRole(author.getRole());
       CE purposeOfUse = HuskyUtils.getCodedPurposeOfUse(author.getPurpose());
+      if (purposeOfUse != null) {
+        purposeOfUse.setCodeSystemName("EprPurposeOfUse");
+      }
 
-      String spidEprNamespace =
-          communityConfig.getSpidEprNamespace() != null ? communityConfig.getSpidEprNamespace() : "";
-      String resourceId = spid.getExtension() + "^^^" + spidEprNamespace + "&" + spid.getRoot() + "&ISO";
+      String resourceId = spid.getExtension() + "^^^&" + spid.getRoot() + "&ISO";
 
       // build the X-User Assertion request
-      XUserAssertionRequestBuilderChImpl chImpl = new XUserAssertionRequestBuilderChImpl();
-      chImpl.principal(author.getPrincipalId(), author.getPrincipalName());
-      overwriteDialect(chImpl);
-
-      var assertionRequest = chImpl
+      XuaRequest xuaRequest = huskyService.createXuaRequest()
+          .clientKeyStore(repository.getXua().getClientKeyStore())
+          .clientKeyStorePass(repository.getXua().getClientKeyStorePass())
+          .clientKeyStoreType(repository.getXua().getClientKeyStoreType())
+          .idpAssertion(idpAssertion)
+          .repositoryUri(repository.getUri())
+          .principalId(author.getPrincipalId())
+          .principalName(author.getPrincipalName())
           .requestType(RequestType.WST_ISSUE)
           .tokenType(TokenType.OASIS_WSS_SAML_PROFILE_11_SAMLV20)
           .purposeOfUse(purposeOfUse)
           .appliesTo(new AppliesToBuilderImpl().address(uriToAccess).create())
           .subjectRole(role)
-          .resourceId(resourceId)
-          .create();
+          .resourceId(resourceId).build();
 
-      // query the X-User Assertion
-      List<XUserAssertionResponse> response = client.send(idpAssertion, assertionRequest);
-      return SAMLUtils.getXuaAssertionFromResponse(response);
+      XuaResponse xuaResponse = huskyService.send(xuaRequest);
+      return xuaResponse.getAssertion();
     } catch (Exception ex) {
       log.error("Error retrieving XUA token.\nError message: {}", ex);
       throw ex;
@@ -286,16 +272,11 @@ public class HuskyAdapter implements HuskyAdapterIfc {
               patientIdentifier.getLocalExtenstion());
 
       var repositoryConfig = communityConfig.getRepositoryConfig(EPDRepository.SubmitDocument);
-
-      Destination dest = getDestination(repositoryConfig);
-      AffinityDomain affinityDomain = getAffinityDomain(dest);
-      convenienceCommunication.setAffinityDomain(affinityDomain);
       ensureCorrectConfidentialitySystemUrl(dto);
 
       boolean success = false;
       String returnValue = "TEST";
       while (!success) {
-        convenienceCommunication.clearDocuments();
         returnValue = writeConsideringConfidentiality(uuid, json, dto, assertion,
             isVaccinationRecord, communityConfig, globalId, spid, localIdentifier, repositoryConfig);
         success = Status.SUCCESS.name().equals(returnValue);
@@ -328,10 +309,6 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       AuthorDTO author, Assertion assertion) {
     log.debug("getRetrievedDocuments {} {} {}", communityConfig, repositoryConfig, documentEntries);
 
-    Destination dest = getDestination(repositoryConfig);
-    AffinityDomain affinityDomain = getAffinityDomain(dest);
-    convenienceCommunication.setAffinityDomain(affinityDomain);
-
     Identificator spid = new Identificator(patientIdentifier.getSpidRootAuthority(),
         patientIdentifier.getSpidExtension());
 
@@ -347,22 +324,25 @@ public class HuskyAdapter implements HuskyAdapterIfc {
 
     try {
       Assertion xuaAssertion = getXUserAssertion(author, assertion, spid, communityConfig, repositoryConfig.getUri());
+      XdsDocumentSetRequest documentSetRequest = XdsDocumentSetRequest.builder()
+          .destination(getDestination(repositoryConfig))
+          .xuaToken(xuaAssertion)
+          .documentRequests(documentRequestList)
+          .build();
       log.debug("Retrieve entries for following documents {}", documentRequestList);
-      RetrievedDocumentSet response =
-          convenienceCommunication.retrieveDocuments(documentRequestList.toArray(new DocumentRequest[0]), xuaAssertion,
-              null);
+      RetrievedDocumentSet documentSet = huskyService.send(documentSetRequest);
+      log.debug("Found {} documents.", documentSet.getDocuments().size());
 
-      log.debug("Found {} documents.", response.getDocuments().size());
-      return response.getDocuments();
+      return documentSet.getDocuments();
     } catch (Exception ex) {
       log.warn("Error while retrieving document data: {}", ex.getMessage());
       return Arrays.asList();
     }
   }
 
-  protected void setDocumentMetadata(DocumentMetadata metadata,
-      Identificator localIdentifier, Identificator globalIdentifier, BaseDTO dto,
-      boolean isVaccinationRecord) {
+  protected DocumentMetadata setDocumentMetadata(Identificator localIdentifier, Identificator globalIdentifier,
+      BaseDTO dto, boolean isVaccinationRecord) {
+    DocumentMetadata metadata = new DocumentMetadata();
     addAuthorToMetadata(metadata, dto);
     metadata.setClassCode(HuskyUtils.PATIENT_RECORD_CLASS_CODE);
     Code confidentialityCode = toCode(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE);
@@ -390,6 +370,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     List<String> values = List.of(code);
     extraMetadata.put(UPLOADER_ROLE_METADATA_KEY, values);
     xDoc.setExtraMetadata(extraMetadata);
+    return metadata;
   }
 
   void setSubmissionSetMetadata(SubmissionSetMetadata metadata, Identificator globalIdentifier, AuthorDTO authorDTO) {
@@ -440,8 +421,8 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   }
 
   private void fillPatientIdentifierByResult(PatientIdentifier patientIdentifier,
-      final MasterPatientIndexQueryResponse response) {
-    List<Identificator> resultIdentificators = response.getPatients().get(0).getIds();
+      final PdqSearchResults pdqSearchResults) {
+    List<Identificator> resultIdentificators = pdqSearchResults.getPatients().get(0).getIdentificators();
     log.debug("Found patient with following IDs {}.", resultIdentificators);
     Identificator firstId = resultIdentificators.get(0);
     Identificator secondId = resultIdentificators.get(1);
@@ -463,14 +444,6 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     return flag;
   }
 
-  private AffinityDomain getAffinityDomain(Destination dest) {
-    var affinityDomain = new AffinityDomain();
-    affinityDomain.setRegistryDestination(dest);
-    affinityDomain.setRepositoryDestination(dest);
-
-    return affinityDomain;
-  }
-
   private CommunityConfig getCommunityConfig(String communityIdentifier) {
     var communityConfig = communitiesConfig.getCommunityConfig(communityIdentifier);
     if (communityConfig == null) {
@@ -489,6 +462,12 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     dest.setSenderFacilityOid(senderConfig.getSender().getFacilityOid());
     dest.setReceiverApplicationOid(repositoryConfig.getReceiver().getApplicationOid());
     dest.setReceiverFacilityOid(repositoryConfig.getReceiver().getFacilityOid());
+    dest.setKeyStore(System.getProperty("javax.net.ssl.keyStore"));
+    dest.setKeyStorePassword(System.getProperty("javax.net.ssl.keyStorePassword"));
+    dest.setKeyStoreType(System.getProperty("javax.net.ssl.keyStoreType", "PKCS12"));
+    dest.setTrustStore(System.getProperty("javax.net.ssl.trustStore"));
+    dest.setTrustStorePassword(System.getProperty("javax.net.ssl.trustStorePassword"));
+    dest.setTrustStoreType(System.getProperty("javax.net.ssl.trustStoreType", "JKS"));
 
     return dest;
   }
@@ -496,25 +475,21 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   private List<DocumentEntry> getDocumentEntries(CommunityConfig communityConfig,
       RepositoryConfig repositoryConfig, PatientIdentifier patientIdentifier,
       List<Code> formatCodes, String documentType, AuthorDTO author, Assertion assertion) {
-    Destination dest = getDestination(repositoryConfig);
-    AffinityDomain affinityDomain = getAffinityDomain(dest);
-    convenienceCommunication.setAffinityDomain(affinityDomain);
-
     Identificator globalId = new Identificator(patientIdentifier.getGlobalAuthority(),
         patientIdentifier.getGlobalExtension());
     Identificator spid = new Identificator(patientIdentifier.getSpidRootAuthority(),
         patientIdentifier.getSpidExtension());
 
-    FindDocumentsQuery findDocumentsQuery = new FindDocumentsQuery(globalId, null, null,
-        null, null, null, formatCodes, null,
-        AvailabilityStatus.APPROVED);
-
     try {
       Assertion xUserAssertion = getXUserAssertion(author, assertion, spid, communityConfig, repositoryConfig.getUri());
+      XdsRegistryStoredFindDocumentsQuery xdsRegistryStoredFindDocumentsQuery = XdsRegistryStoredFindDocumentsQuery.builder()
+          .destination(getDestination(repositoryConfig))
+          .xuaToken(xUserAssertion)
+          .patientID(globalId)
+          .formatCodes(formatCodes).availabilityStatus(AvailabilityStatus.APPROVED)
+          .build();
       log.debug("Request approved document entries for identificator {} and format codes {}", globalId, formatCodes);
-      QueryResponse response =
-          convenienceCommunication.queryDocuments(findDocumentsQuery, xUserAssertion, null);
-
+      QueryResponse response = huskyService.send(xdsRegistryStoredFindDocumentsQuery);
       List<DocumentEntry> result = response.getDocumentEntries();
       log.debug("Found metadata for {} documents.", result.size());
       if (!result.isEmpty() && documentType != null) {
@@ -535,23 +510,17 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     }
   }
 
-  private PatientIdentifier getPatientIdentifierFromEPD(String communityIdentifier,
-      String localAssigningAuthorityOid, String localId) {
+  private PatientIdentifier getPatientIdentifierFromEPD(String communityIdentifier, String localAssigningAuthorityOid,
+      String localId) {
     var communityConfig = getCommunityConfig(communityIdentifier);
     var repositoryConfig = communityConfig.getRepositoryConfig(EPDRepository.PDQ);
 
     Destination dest = getDestination(repositoryConfig);
-
-    AffinityDomain affinityDomain = new AffinityDomain();
-    affinityDomain.setPdqDestination(dest);
-
-    final MasterPatientIndexQuery query =
-        new MasterPatientIndexQuery(affinityDomain.getPdqDestination());
-
+    List<String> domainsToReturn = new ArrayList<>();
     if (!localAssigningAuthorityOid.equals(communityConfig.getGlobalAssigningAuthorityOid()) &&
         !localAssigningAuthorityOid.equals(communityConfig.getSpidEprOid())) {
-      query.addDomainToReturn(communityConfig.getGlobalAssigningAuthorityOid());
-      query.addDomainToReturn(communityConfig.getSpidEprOid());
+      domainsToReturn.add(communityConfig.getGlobalAssigningAuthorityOid());
+      domainsToReturn.add(communityConfig.getSpidEprOid());
     }
 
     PatientIdentifier patientIdentifier =
@@ -560,31 +529,37 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     patientIdentifier.setSpidRootAuthority(communityConfig.getSpidEprOid());
 
     final Identificator identificator = new Identificator(localAssigningAuthorityOid, localId);
-    query.addPatientIdentificator(identificator);
 
-    final MasterPatientIndexQueryResponse response = convenienceMasterPatientIndexV3Client
-        .queryPatientDemographics(
-            query,
-            affinityDomain, null, null);
+    PdqSearchQuery pdqSearchQuery = huskyService.createPdqSearchQuery(dest)
+        .identificator(identificator)
+        .domainsToReturn(domainsToReturn)
+        .build();
 
-    log.debug("getPatientIdentifier response:{} {}", response.getSuccess(),
-        response.getPatients() == null ? 0 : response.getPatients().size());
-    if (!response.getSuccess() || (response.getPatients() == null) || (response.getPatients().size() != 1)) {
+    final PdqSearchResults pdqSearchResults;
+    try {
+      pdqSearchResults = huskyService.send(pdqSearchQuery);
+      log.debug("Found: {} patient/s",
+          pdqSearchResults.getPatients() == null ? 0 : pdqSearchResults.getPatients().size());
+    } catch(Exception ex) {
+      throw new TechnicalException("Error while retrieving the patient data." + ex.getMessage());
+    }
+
+    if (pdqSearchResults.getPatients() == null || pdqSearchResults.getPatients().size() != 1) {
       throw new TechnicalException("Patient was not found. Details: " + patientIdentifier);
     }
 
-    Patient patient = response.getPatients().get(0);
+    FhirPatient patient = pdqSearchResults.getPatients().get(0);
     log.debug("Found patient {} communityId: {}, local Assigning Authority {}, local extension: {}",
-        patient.getCompleteName(), communityIdentifier, localAssigningAuthorityOid, localId);
-    fillPatientIdentifierByResult(patientIdentifier, response);
+        patient.getConvenienceName().getFullName(), communityIdentifier, localAssigningAuthorityOid, localId);
+    fillPatientIdentifierByResult(patientIdentifier, pdqSearchResults);
 
     HumanNameDTO patientInfo = new HumanNameDTO(
-        patient.getName().getGiven(),
-        patient.getName().getFamily(),
-        patient.getName().getPrefix(),
-        patient.getBirthday() != null ? LocalDate.ofInstant(
-            patient.getBirthday().toInstant(), ZoneId.systemDefault()) : null,
-        patient.getAdministrativeGenderCode().name());
+        patient.getConvenienceName().getGiven(),
+        patient.getConvenienceName().getFamily(),
+        patient.getConvenienceName().getPrefix(),
+        patient.getBirthDate() != null ? LocalDate.ofInstant(
+            patient.getBirthDate().toInstant(), ZoneId.systemDefault()) : null,
+        patient.getGender() != null ? patient.getGender().name() : null);
     patientIdentifier.setPatientInfo(patientInfo);
 
     return patientIdentifier;
@@ -603,33 +578,6 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     };
 
     dto.setConfidentiality(confidentiality);
-  }
-
-  private synchronized XuaClient initXuaClient(RepositoryConfig repository) {
-    if (xuaClient == null) {
-      // initialize XUA client to query XUA assertion
-      XuaClientConfig xuaClientConfig = new XuaClientConfigBuilderImpl()
-          .clientKeyStore(repository.getXua().getClientKeyStore())
-          .clientKeyStorePassword(repository.getXua().getClientKeyStorePass())
-          .clientKeyStoreType(repository.getXua().getClientKeyStoreType())
-          .url(repository.getUri())
-          .create();
-
-      xuaClient = ClientFactory.getXuaClient(xuaClientConfig);
-    }
-
-    return xuaClient;
-  }
-
-  // Husky Library uses the wrong dialect for the CH reference implementation. As setter is ignoring
-  // the parameter, we have to manually overwrite the dialect.
-  private void overwriteDialect(XUserAssertionRequestBuilderChImpl chImpl) throws Exception {
-    // according to Annex 5, attachment 1
-    String claimDialect = "http://www.bag.admin.ch/epr/2017/annex/5/amendment/2";
-    Field claimsField = XUserAssertionRequestBuilderImpl.class.getDeclaredField("claims");
-    claimsField.setAccessible(true);
-    Claims claims = (Claims) ReflectionUtils.getField(claimsField, chImpl);
-    claims.setDialect(claimDialect);
   }
 
   private void setTitle(DocumentMetadata metadata, BaseDTO dto) {
@@ -678,25 +626,33 @@ public class HuskyAdapter implements HuskyAdapterIfc {
   }
 
   private String writeConsideringConfidentiality(String uuid, String json, BaseDTO dto, Assertion assertion,
-      boolean isVaccinationRecord,
-      CommunityConfig communityConfig, Identificator globalId, Identificator spid, Identificator localIdentifier,
-      RepositoryConfig repositoryConfig) throws Exception, FileNotFoundException {
+      boolean isVaccinationRecord, CommunityConfig communityConfig, Identificator globalId, Identificator spid,
+      Identificator localIdentifier, RepositoryConfig repositoryConfig) throws Exception {
     log.debug("Add document with confidentiality {} to the EPD {}.", dto.getConfidentiality().getName(), json);
-    DocumentMetadata metadata = convenienceCommunication.addDocument(DocumentDescriptor.FHIR_JSON,
-        new ByteArrayInputStream(json.getBytes()));
-
+    DocumentMetadata documentMetadata = setDocumentMetadata(localIdentifier, globalId, dto, isVaccinationRecord);
     SubmissionSetMetadata subSet = new SubmissionSetMetadata();
-    setDocumentMetadata(metadata, localIdentifier, globalId, dto, isVaccinationRecord);
     setSubmissionSetMetadata(subSet, globalId, dto.getAuthor());
+
+    XdsDocumentWithMetadata documentWithMetadata = XdsDocumentWithMetadata.builder()
+        .documentMetadata(documentMetadata)
+        .documentDescriptor(DocumentDescriptor.FHIR_JSON)
+        .dataStream(new ByteArrayInputStream(json.getBytes()))
+        .build();
 
     // submit added documents
     if (Boolean.FALSE.equals(profileConfig.getHuskyLocalMode())) {
       Assertion xUserAssertion =
           getXUserAssertion(dto.getAuthor(), assertion, spid, communityConfig, repositoryConfig.getUri());
 
-      convenienceCommunication.setAtnaConfig(AtnaConfig.AtnaConfigMode.SECURE);
+      huskyService.configAtna(AtnaConfig.AtnaConfigMode.SECURE);
+      XdsProvideAndRetrieveDocumentSetQuery provideAndRetrieveDocumentSetQuery =
+          huskyService.createProvideAndRetrieveDocumentSetQuery()
+              .submissionSetMetadata(subSet)
+              .documentWithMetadata(documentWithMetadata)
+              .destination(getDestination(repositoryConfig))
+              .xuaToken(xUserAssertion).build();
 
-      Response response = convenienceCommunication.submit(subSet, xUserAssertion, null);
+      Response response = huskyService.send(provideAndRetrieveDocumentSetQuery);
       log.debug("writeDocument status {}", response);
       if (Status.FAILURE.equals(response.getStatus()) || Status.PARTIAL_SUCCESS.equals(response.getStatus())) {
         log.error("Error codes occured during writing: {}", response.getErrors());

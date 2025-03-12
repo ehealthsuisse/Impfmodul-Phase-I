@@ -5,6 +5,7 @@
     & button {
       width: 150px !important;
       margin-bottom: 10px;
+      height: 36px !important;
     }
     & > section {
       @include flex-center(center, center, column);
@@ -19,4 +20,9 @@
       margin-right: 10px;
     }
   }
+}
+
+// Material library changes
+.mdc-card__actions {
+  padding: 8px 20px;
 }

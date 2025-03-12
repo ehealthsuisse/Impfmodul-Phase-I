@@ -28,7 +28,6 @@ export class SharedDataService {
   patientActions: boolean = false;
   detailedActions: boolean = false;
   showActionMenu: boolean = false;
-  canEdit: boolean = false;
 
   constructor() {
     this.getSessionStorage();

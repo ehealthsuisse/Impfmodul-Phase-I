@@ -26,6 +26,7 @@
     "SNEAKBAR_CONFIRM": "Entität erfolgreich gespeichert",
     "END_DATE_BEFORE_START_DATE": "Ende muss nach dem Begin liegen.",
     "NOT_FUTURE_DATE": "Datum darf nicht in der Zukunft liegen.",
+    "START_DATE_BEFORE_END_DATE": "Datum der Diagnose darf nicht vor dem Beginn liegen.",
     "LOGO_VACCINATION_MODULE": "Logo Impfmodul, gehe zum Impfausweis",
     "COMMUNITY_LOGO": "Logo der (Stamm-)Gemeinschaft",
     "DATE_FORMAT": "Bitte geben Sie das Datum ein. Verwenden Sie das Format Tag, Tag, Punkt, Monat, Monat, Punkt, Jahr, Jahr, Jahr, Jahr. Zum Beispiel, 01.01.2023",
@@ -34,6 +35,8 @@
     "LOGOUT": "Sie wurden erfolgreich abgemeldet. Sie können diesen Tab schliessen und zum EPD-Portal zurückkehren.",
     "DISCONNECT": "Die EPD-Verbindung wurde unterbrochen. Bitte schliessen Sie das Impfmodul und melden Sie sich erneut an Ihrem EPD an. Anschliessend können Sie das Impfmodul in Ihrer Dokumentenübersicht wieder starten.",
     "VALIDATION_TITLE": "Validierung fehlgeschlagen",
-    "VALIDATION_TEXT": "Bitte korrigieren Sie den Eintrag, um diesen zu validieren."
+    "VALIDATION_TEXT": "Bitte korrigieren Sie den Eintrag, um diesen zu validieren.",
+    "ORGANIZATION": "Organisation",
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Überprüfung der Eingabe"
   }
 }

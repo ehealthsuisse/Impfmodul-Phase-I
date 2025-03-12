@@ -31,17 +31,17 @@ import ch.admin.bag.vaccination.exception.AccessDeniedException;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -55,13 +55,13 @@ public class SAMLFilterTest {
   @Autowired
   private ProfileConfig profileConfig;
 
-  @MockBean
+  @MockitoBean
   private SAMLService samlService;
 
-  @MockBean
+  @MockitoBean
   private FilterChain filterChain;
 
-  @MockBean
+  @MockitoBean
   HttpServletResponse response;
 
   @BeforeEach

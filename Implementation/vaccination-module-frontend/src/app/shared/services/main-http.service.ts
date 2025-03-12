@@ -23,9 +23,7 @@ export abstract class MainHttpService<T extends IBaseDTO> {
     private spinnerService: SpinnerService,
     private confidentialityService: ConfidentialityService = inject(ConfidentialityService)
   ) {
-    this.resource = `communityIdentifier/${this.configService.communityId}/oid/${
-      this.sessionInfoService.queryParams.laaoid || this.configService.defaultLaaoid
-    }/localId/${this.sessionInfoService.queryParams.lpid || this.configService.defaultLpid}`;
+    this.resource = `communityIdentifier/${this.configService.communityId}`;
   }
 
   query(): Observable<T[]> {

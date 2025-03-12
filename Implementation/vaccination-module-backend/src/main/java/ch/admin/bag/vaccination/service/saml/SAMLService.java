@@ -23,17 +23,17 @@ import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.shared.component.ComponentInitializationException;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.xml.security.c14n.Canonicalizer;
@@ -143,9 +143,9 @@ public class SAMLService implements SAMLServiceIfc {
     securityContext.setAuthentication(auth);
 
     HttpSession session = request.getSession();
-    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.IDP, idp);
-    HttpSessionUtils.setParameterInSession(request, HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE, true);
-    HttpSessionUtils.setParameterInSession(request, HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.IDP, idp);
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE, true);
+    HttpSessionUtils.setParameterInSession(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
         securityContext);
 
     log.debug("add {} {}", session.getId(), principal.getName());
@@ -160,9 +160,14 @@ public class SAMLService implements SAMLServiceIfc {
   }
 
   @Override
-  public LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest) {
+  public LogoutResponse createLogoutResponse(String idp, LogoutRequest logoutRequest, HttpServletRequest request) {
     IdentityProviderConfig idpConfig = getIdpConfig(idp);
-    String logoutURL = idpConfig != null ? idpConfig.getLogoutURL() : logoutRequest.getDestination();
+    String logoutURL = idpConfig != null ? idpConfig.getLogoutURL() : null;
+    if (logoutURL == null) {
+      log.debug("IDP for Session to logout could not determined. Returning vaccination URL as default destination. "
+          + "Please check IDP config to set logoutURLs.");
+      logoutURL = request.getRequestURI();
+    }
     String entityId = getEntityId(idpConfig);
     LogoutResponse response = SAMLUtils.createUnsignedLogoutResponse(logoutRequest, entityId, logoutURL);
     signRequest(response);
@@ -208,11 +213,9 @@ public class SAMLService implements SAMLServiceIfc {
     context.setMessage(authnRequest);
     SAMLBindingSupport.setRelayState(context, idpConfig.getIdentifier());
 
-    SAMLPeerEntityContext peerEntityContext =
-        context.getSubcontext(SAMLPeerEntityContext.class, true);
+    SAMLPeerEntityContext peerEntityContext = context.ensureSubcontext(SAMLPeerEntityContext.class);
 
-    SAMLEndpointContext endpointContext =
-        peerEntityContext.getSubcontext(SAMLEndpointContext.class, true);
+    SAMLEndpointContext endpointContext = peerEntityContext.ensureSubcontext(SAMLEndpointContext.class);
     endpointContext.setEndpoint(SAMLUtils.createEndpoint(idpConfig.getAuthnrequestURL()));
     idpAdapter.addSigningParametersToContext(context);
 
@@ -304,7 +307,7 @@ public class SAMLService implements SAMLServiceIfc {
 
     return securityContext != null && securityContext.getAuthentication() instanceof SAMLAuthentication
         ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp()
-        : null;
+            : null;
   }
 
   @Override
@@ -370,7 +373,7 @@ public class SAMLService implements SAMLServiceIfc {
 
       request.setSignature(signature);
       ((SAMLObjectContentReference) signature.getContentReferences().get(0))
-          .setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+      .setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA256);
 
       Marshaller marshaller =
           XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(request);

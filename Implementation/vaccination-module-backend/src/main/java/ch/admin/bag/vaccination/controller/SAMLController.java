@@ -28,8 +28,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -39,6 +39,8 @@ import org.opensaml.soap.soap11.Body;
 import org.opensaml.soap.soap11.Envelope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,7 +86,7 @@ public class SAMLController {
     // For development purpose only!
     // If no session was initiated on local mode, use dummy session
     if (profileConfig.isLocalMode() && !HttpSessionUtils.getIsInitialCallValidFromSession()) {
-      HttpSessionUtils.initializeValidDummySession(request);
+      HttpSessionUtils.initializeValidDummySession();
     }
 
     // For local mode, the SAMLFilter is not active, therefor authentication mechanism is not used and
@@ -96,9 +98,9 @@ public class SAMLController {
       String serverName = request.getServerName().replace("-backend", "");
       String contextPath = request.getContextPath().replace("-backend", "-frontend");
       return request.getScheme() + "://"
-          + serverName
-          + (isLocalhost ? ":" + (isEmptyPath ? "9000" : "8080" + contextPath) : "")
-          + "/vaccination-record";
+      + serverName
+      + (isLocalhost ? ":" + (isEmptyPath ? "9000" : "8080" + contextPath) : "")
+      + "/vaccination-record";
     }
 
     return null;
@@ -111,19 +113,19 @@ public class SAMLController {
    */
   @PostMapping(path = "/saml/logout", produces = "text/xml")
   @Operation(description = "Back channel SAML Logout")
-  public String logout(@RequestBody String xml) {
+  public ResponseEntity<String> logout(HttpServletRequest request, @RequestBody String xml) {
     log.debug("Received samlLogout, to switch to TRACE log level");
     log.trace("Saml logout request: {}", xml);
     try {
       XMLObject samlObject = SAMLUtils.unmarshall(xml);
       if (samlObject == null) {
         log.warn("Received empty logout - ignoring request.");
-        throw new TechnicalException("SamlObject is required");
+        return new ResponseEntity<>("SamlObject was not found or could not be parsed.", HttpStatus.BAD_REQUEST);
       }
 
       SAMLUtils.logSAMLObject(samlObject);
       if (samlObject instanceof LogoutRequest logoutRequest) {
-        return performLogout(logoutRequest);
+        return new ResponseEntity<>(performLogout(logoutRequest, request), HttpStatus.OK);
       }
 
       if (samlObject instanceof Envelope envelope) {
@@ -131,7 +133,7 @@ public class SAMLController {
         List<XMLObject> children = body.getUnknownXMLObjects(LogoutRequest.DEFAULT_ELEMENT_NAME);
         XMLObject child = !children.isEmpty() ? children.get(0) : null;
         if (child instanceof LogoutRequest logoutRequest) {
-          return performLogout(logoutRequest);
+          return new ResponseEntity<>(performLogout(logoutRequest, request), HttpStatus.OK);
         }
       }
 
@@ -164,9 +166,9 @@ public class SAMLController {
     response.sendRedirect(forwardArtifactToClientUrl + "?SAMLart=" + samlArtifact + "&RelayState=" + idpIdentifier);
   }
 
-  private String performLogout(LogoutRequest logoutRequest) throws MarshallingException {
+  private String performLogout(LogoutRequest logoutRequest, HttpServletRequest request) throws MarshallingException {
     String idp = samlService.logout(logoutRequest.getNameID().getValue());
-    LogoutResponse logoutResponse = samlService.createLogoutResponse(idp, logoutRequest);
+    LogoutResponse logoutResponse = samlService.createLogoutResponse(idp, logoutRequest, request);
     return SAMLUtils.addEnvelope(SAMLUtils.convertElementToString(logoutResponse));
   }
 }

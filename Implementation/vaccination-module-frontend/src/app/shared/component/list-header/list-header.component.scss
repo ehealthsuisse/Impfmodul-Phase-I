@@ -5,18 +5,34 @@
   padding: 0;
   margin: 0;
 
-  .mat-card-header,
-  .mat-card-content {
+  .mat-mdc-card {
+    flex-direction: column !important;
+  }
+
+  .mat-mdc-card-header,
+  .mat-mdc-card-content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 0;
   }
 
   .search-input-wrapper {
     width: 100%;
     margin: 0;
     padding: 0;
+  }
+
+  .mdc-button {
+    margin-right: -26px;
+    margin-left: -12px;
+
+    .mat-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
   }
 }
 
@@ -50,19 +66,12 @@
   padding: 0 !important;
 }
 
-::ng-deep {
-  .mat-card-header {
-    display: inline;
-  }
+.mat-mdc-card-header {
+  display: contents;
+}
 
-  .mat-card-header-text {
-    margin: 0 !important;
-  }
-
-  .mat-flat-button {
-    min-width: auto;
-    padding: 0;
-  }
+.mat-mdc-form-field.mdc-text-field {
+  padding: 0;
 }
 
 .mat-card-actions:not(.mat-card-actions-align-end) .mat-button:first-child,
@@ -70,4 +79,44 @@
 .mat-card-actions:not(.mat-card-actions-align-end) .mat-stroked-button:first-child {
   margin-left: 0;
   margin-right: 35px;
+}
+
+.mat-mdc-card-content:last-child {
+  padding: 0;
+}
+
+.mat-mdc-card-content {
+  .mat-mdc-form-filled {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+
+  .mat-mdc-form-field {
+    .mat-mdc-input-element {
+      font-weight: 200;
+    }
+  }
+
+  .mat-mdc-card-actions {
+    .mdc-button--raised {
+      margin-right: 25px;
+    }
+
+    .mdc-button--unelevated {
+      height: 36px !important;
+      width: 24px !important;
+      padding: 0 !important;
+      min-width: auto;
+      margin-right: -10px;
+    }
+
+    .mat-mdc-unelevated-button > .mat-icon {
+      margin-right: 0;
+      margin-left: 0;
+      font-size: 1.5rem;
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+  }
 }

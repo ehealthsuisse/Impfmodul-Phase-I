@@ -16,12 +16,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, Observable, ReplaySubject } from 'rxjs';
+import { finalize, Observable, ReplaySubject, Subject } from 'rxjs';
 import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IMedicalProblem } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
@@ -39,6 +38,7 @@ import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { MedicalProblemConfirmComponent } from '../../helper-components/confirm/medical-problem-confirm.component';
 import { MedicalProblemFormService, ProblemFormGroup } from '../../service/medical-problem-form.service';
 import { MedicalProblemService } from '../../service/medical-problem.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -55,12 +55,11 @@ import { MedicalProblemService } from '../../service/medical-problem.service';
     ReusableSelectFieldWithSearchComponent,
   ],
 })
-export class MedicalProblemFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit {
+export class MedicalProblemFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   problemFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   problemStatus: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
   @ViewChild('clinicalStatus', { static: true }) clinicalStatus!: MatSelect;
-  problemFilterControl: FormControl = new FormControl();
   isSaving = false;
   problems: IMedicalProblem | null = null;
   editForm: ProblemFormGroup = inject(MedicalProblemFormService).createProblemFormGroup();
@@ -77,6 +76,8 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
   private problemFormService: MedicalProblemFormService = inject(MedicalProblemFormService);
   private matDialog: MatDialog = inject(MatDialog);
+  private destroy$: Subject<void> = new Subject<void>();
+
   ngOnInit(): void {
     this.displayMenu(false, false);
     initializeActionData('', this.sharedDataService);
@@ -101,6 +102,18 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   ngAfterViewInit(): void {
     setDropDownInitialValue(this.problemStatus, this.clinicalStatus);
     setDropDownInitialValue(this.problemFilteredList, this.singleSelect);
+    // When the begin date changes, re-validate the 'end' field
+    this.editForm
+      .get('begin')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.editForm.get('end')?.updateValueAndValidity();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   save(): void {
@@ -150,7 +163,7 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
         });
         this.problemFilteredList.next(this.formOptions.get('medicalProblemCode')!);
         this.problemStatus.next(this.formOptions.get('conditionClinicalStatus')!);
-      }
+      },
     });
   }
 

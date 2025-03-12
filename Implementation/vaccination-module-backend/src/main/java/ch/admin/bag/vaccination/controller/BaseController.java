@@ -19,12 +19,14 @@
 package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.service.BaseServiceIfc;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.projecthusky.xua.saml2.Assertion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,70 +48,69 @@ public abstract class BaseController<T extends BaseDTO> {
     this.service = service;
   }
 
-  @PostMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}")
+  @PostMapping("/communityIdentifier/{communityIdentifier}")
   @Operation(description = "Create an entry")
   public ResponseEntity<T> create(
       HttpServletRequest request,
       @Schema(example = "GAZELLE") @PathVariable String communityIdentifier,
-      @Schema(example = "1.3.6.1.4.1.21367.13.20.3000") @PathVariable String oid,
-      @Schema(example = "CHPAM4489") @PathVariable String localId,
       @RequestBody T newDTO) {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-
-    T result = service.create(communityIdentifier, oid, localId, newDTO, assertion);
+    PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
+    T result = service.create(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
+        patientIdentifier.getLocalExtenstion(), newDTO, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @DeleteMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid}")
+  @DeleteMapping("/communityIdentifier/{communityIdentifier}/uuid/{uuid}")
   @Operation(description = "Delete an entry")
   public ResponseEntity<T> delete(
       HttpServletRequest request,
       @Schema(example = "GAZELLE") @PathVariable String communityIdentifier,
-      @Schema(example = "1.3.6.1.4.1.21367.13.20.3000") @PathVariable String oid,
-      @Schema(example = "CHPAM4489") @PathVariable String localId,
       @Schema(example = "uuu-uuu-iii-ddd") @PathVariable String uuid,
       @RequestBody ValueDTO confidentiality) {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-    T result = service.delete(communityIdentifier, oid, localId, uuid, confidentiality, assertion);
+    PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
+    T result = service.delete(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
+        patientIdentifier.getLocalExtenstion(), uuid, confidentiality, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @GetMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}")
+  @GetMapping("/communityIdentifier/{communityIdentifier}")
   @Operation(summary = "Get the data of the entries")
   public ResponseEntity<List<T>> getAll(
       HttpServletRequest request,
-      @Schema(example = "GAZELLE") @PathVariable String communityIdentifier,
-      @Schema(example = "1.3.6.1.4.1.21367.13.20.3000") @PathVariable String oid,
-      @Schema(example = "CHPAM4489") @PathVariable String localId) {
+      @Schema(example = "GAZELLE") @PathVariable String communityIdentifier) {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-    return new ResponseEntity<>(service.getAll(communityIdentifier, oid, localId, assertion, false), HttpStatus.OK);
+    PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
+    return new ResponseEntity<>(service.getAll(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
+        patientIdentifier.getLocalExtenstion(), assertion, false), HttpStatus.OK);
   }
 
-  @PostMapping("/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid}")
+  @PostMapping("/communityIdentifier/{communityIdentifier}/uuid/{uuid}")
   @Operation(description = "Update an entry")
   public ResponseEntity<T> update(
       HttpServletRequest request,
       @Schema(example = "GAZELLE") @PathVariable String communityIdentifier,
-      @Schema(example = "1.3.6.1.4.1.21367.13.20.3000") @PathVariable String oid,
-      @Schema(example = "CHPAM4489") @PathVariable String localId,
       @Schema(example = "uuu-uuu-iii-ddd") @PathVariable String uuid,
       @RequestBody T newDTO) {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-    T result = service.update(communityIdentifier, oid, localId, uuid, newDTO, assertion);
+    PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
+    T result = service.update(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
+        patientIdentifier.getLocalExtenstion(), uuid, newDTO, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @PostMapping("/validate/communityIdentifier/{communityIdentifier}/oid/{oid}/localId/{localId}/uuid/{uuid}")
+  @PostMapping("/validate/communityIdentifier/{communityIdentifier}/uuid/{uuid}")
   @Operation(description = "Validate an entry")
   public ResponseEntity<T> validate(
       HttpServletRequest request,
       @Schema(example = "GAZELLE") @PathVariable String communityIdentifier,
-      @Schema(example = "1.3.6.1.4.1.21367.13.20.3000") @PathVariable String oid,
-      @Schema(example = "CHPAM4489") @PathVariable String localId,
       @Schema(example = "uuu-uuu-iii-ddd") @PathVariable String uuid,
       @RequestBody T newDTO) {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
-    T result = service.validate(communityIdentifier, oid, localId, uuid, newDTO, assertion);
+    PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
+    T result = service.validate(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
+        patientIdentifier.getLocalExtenstion(), uuid, newDTO, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 }

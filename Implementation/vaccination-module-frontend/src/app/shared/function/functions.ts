@@ -79,7 +79,7 @@ export function downloadRecordValue<T extends IBaseDTO>(t: T, patientService: Pa
   const patient = patientService.patient.getValue();
   link.download = `${patient.prefix ? patient.prefix + '_' : ''}${patient.lastName ? patient.lastName + '_' : ''}${
     patient.firstName ? patient.firstName + '_' : ''
-  }${dayjs().format(DATE_FORMAT)}${docExtension}`;
+  }${dayjs().format(DATE_FORMAT.parse.dateInput)}${docExtension}`;
   link.style.display = 'none';
   document.body.appendChild(link);
   link.click();

@@ -24,14 +24,14 @@ import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.xml.SerializeSupport;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.security.impl.RandomIdentifierGenerationStrategy;
+import net.shibboleth.shared.xml.SerializeSupport;
 import org.apache.commons.lang3.Validate;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
@@ -252,14 +252,8 @@ public class SAMLUtils {
 
   public static LogoutResponse createUnsignedLogoutResponse(LogoutRequest logoutRequest, String spEntityId,
       String logoutURL) {
-    String issuer = logoutRequest.getIssuer().getValue();
     LogoutResponse response = buildSAMLObject(LogoutResponse.class);
     response.setDestination(logoutURL);
-    if (logoutURL == null) {
-      log.warn("Logout URL is null (due to missing IDP information), "
-          + "so guessing logout URL from issuer {}. If this is no URL, this will lead to a exception.", issuer);
-      response.setDestination(issuer);
-    }
     response.setInResponseTo(logoutRequest.getID());
     response.setIssueInstant(Instant.now());
     response.setIssuer(buildIssuer(spEntityId));
@@ -337,6 +331,11 @@ public class SAMLUtils {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
       dbf.setIgnoringComments(true);
       dbf.setNamespaceAware(true);
+      dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+      dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document doc = db.parse(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
 
@@ -435,7 +434,7 @@ public class SAMLUtils {
   private static void logAuthenticationMethod(Assertion assertion) {
     log.debug("Authentication method: "
         + assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
-            .getURI());
+        .getURI());
   }
 
   private static void validateMessageLifetime(MessageContext context, long samlMessageLifetime,

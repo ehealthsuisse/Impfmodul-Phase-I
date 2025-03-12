@@ -27,7 +27,7 @@ import {
   TranslateService,
 } from '@ngx-translate/core';
 import { SessionStorageService } from 'ngx-webstorage';
-import { translatePartialLoader } from './translation-config';
+import { CustomTranslateLoader } from './custom-translate-loader';
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams): any {
@@ -43,7 +43,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: translatePartialLoader,
+        useFactory: (http: HttpClient) => new CustomTranslateLoader(http, 'i18n/', '.json'),
         deps: [HttpClient],
       },
       missingTranslationHandler: {

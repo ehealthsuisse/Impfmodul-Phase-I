@@ -23,13 +23,14 @@
         ></vm-reusable-date-field>
 
         <vm-reusable-select-field-with-search
+          #singleSelect
           [options$]="problemFilteredList"
           [item]="problem?.code!"
           [isEditable]="true"
-          [translationKey]="'MEDICAL_PROBLEM_CODE.'"
-          [labelKey]="'MEDICAL_PROBLEM.MEDICAL_PROBLEM_CODE'"
+          [translationKey]="'MEDICAL_PROBLEM'"
+          [labelKey]="'MEDICAL_PROBLEM_CODE'"
           [formControl]="editForm.controls.code"
-          #singleSelect
+          formControlName="code"
         ></vm-reusable-select-field-with-search>
 
         <mat-card class="mat-elevation-z0 form-wrapper__form-date-range" fxLayout="row" fxLayoutAlign="space-between">

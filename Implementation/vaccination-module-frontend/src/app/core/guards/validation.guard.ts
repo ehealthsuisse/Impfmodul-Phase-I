@@ -17,13 +17,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+
 import { ValidationService } from '../security/validation.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ValidationGuard implements CanActivate {
+export class ValidationGuard {
   constructor(private validationService: ValidationService) {}
 
   canActivate(): boolean {

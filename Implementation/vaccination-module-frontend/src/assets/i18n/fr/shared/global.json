@@ -26,6 +26,7 @@
     "SNEAKBAR_CONFIRM": "Entité enregistrée avec succès",
     "END_DATE_BEFORE_START_DATE": "La fin doit se situer après le début.",
     "NOT_FUTURE_DATE": "La date ne doit pas se situer dans le futur.",
+    "START_DATE_BEFORE_END_DATE": "Date du diagnostic ne doit pas être avant le début.",
     "LOGO_VACCINATION_MODULE": "Logo du module de vaccination, aller au carnet de vaccination",
     "COMMUNITY_LOGO": "Logo de la communauté (de référence)",
     "LANGUAGE_HELP_TEXT": "Sélectionnez la langue dans laquelle vous souhaitez utiliser le module de vaccination.",
@@ -34,6 +35,8 @@
     "LOGOUT": "Vous avez été déconnecté avec succès, vous pouvez fermer cet onglet et revenir au portail DEP.",
     "DISCONNECT": "La connexion au DEP a été interrompue. Veuillez fermer le module de vaccination et vous reconnecter à votre DPE. Vous pourrez ensuite redémarrer le module de vaccination dans votre aperçu des documents.",
     "VALIDATION_TITLE": "Échec de la validation",
-    "VALIDATION_TEXT": "Veuillez corriger l'entrée pour la valider."
+    "VALIDATION_TEXT": "Veuillez corriger l'entrée pour la valider.",
+    "ORGANIZATION": "Organisation",
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Vérification de saisie"
   }
 }

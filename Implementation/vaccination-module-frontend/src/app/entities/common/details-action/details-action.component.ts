@@ -78,10 +78,10 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
 
   @Input() helpDialogTitle!: string;
   @Input() helpDialogBody!: string;
-  @Input() canEdit!: boolean;
 
   canValidate: boolean = false;
-  isDisabled: boolean = false;
+  isEditOrDeleteDisabled: boolean = false;
+  isValidateDisabled: boolean = false;
   itemId: string = '';
 
   get patient(): IHumanDTO {
@@ -93,7 +93,8 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
     const role = this.sessionInfoService.author.getValue().role;
     this.canValidate = role === 'HCP' || role === 'ASS';
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
-    this.isDisabled = this.details?.validated || this.details?.updated || this.isEmergencyMode;
+    this.isEditOrDeleteDisabled = this.details?.updated || this.details?.deleted || this.isEmergencyMode;
+    this.isValidateDisabled = this.details?.validated || this.isEditOrDeleteDisabled;
   }
 
   editRecord(): void {
@@ -242,8 +243,8 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   }
 
   private checkEntry(dto: IBaseDTO): boolean {
-    let hasFirstName = dto.recorder?.firstName && dto.recorder?.firstName === '';
-    let hasLastName = dto.recorder?.lastName && dto.recorder?.lastName === '';
+    let hasFirstName = dto.recorder?.firstName && dto.recorder?.firstName !== '';
+    let hasLastName = dto.recorder?.lastName && dto.recorder?.lastName !== '';
     if (dto.recorder && (!hasFirstName || !hasLastName)) {
       this.dialogService.openDialog('GLOBAL.VALIDATION_TITLE', 'GLOBAL.VALIDATION_TEXT');
       return false;

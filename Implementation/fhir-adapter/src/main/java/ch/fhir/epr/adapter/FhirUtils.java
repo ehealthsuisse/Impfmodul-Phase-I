@@ -229,6 +229,24 @@ public final class FhirUtils {
     }
   }
 
+  static String getResourceType(Resource resource) {
+    String result = null;
+    if (resource instanceof Immunization) {
+      result = "Immunization";
+    } else if (resource instanceof Condition) {
+      result = "Condition";
+    } else if (resource instanceof AllergyIntolerance) {
+      result = "AllergyIntolerance";
+    } else if (resource instanceof Patient) {
+      result = "Patient";
+    } else if (resource instanceof Practitioner) {
+      result = "Practitioner";
+    } else if (resource instanceof Composition) {
+      result = "Composition";
+    }
+    return result;
+  }
+
   static boolean isVaccinationRecord(Bundle bundle) {
     if ((bundle == null) || (bundle.getMeta() == null) || bundle.getMeta().getProfile() == null
         || bundle.getMeta().getProfile().isEmpty()) {

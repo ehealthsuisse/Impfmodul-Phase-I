@@ -34,6 +34,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.filter.CorsFilter;
 
@@ -77,40 +78,32 @@ public class SecurityConfiguration extends AbsSecurityConfiguration {
   SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
     HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     http.addFilter(corsFilter)
-        .csrf()
-        .csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
-        .ignoringAntMatchers("/saml/**", "/signature/validate")
-        .and()
-        .authorizeRequests()
-        // allow SAML authentication and back channel logout
-        .antMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
-
-        // allow access to actuators
-        .antMatchers("/actuator/health", "/actuator/health/**").permitAll()
-
-        // allow access to signature service
-        .antMatchers("/signature/**").permitAll()
-
-        // allow access to utility controller
-        .antMatchers("/utility/**").permitAll()
-
-        // forbid swagger
-        .antMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
-        .anyRequest().authenticated()
-        .and()
+        .csrf(csrf -> csrf.csrfTokenRepository(createCsrfTokenRepository(frontendDomain))
+                .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+                .ignoringRequestMatchers("/saml/**", "/signature/validate"))
+        .authorizeHttpRequests((auth) -> auth
+            // allow SAML authentication and logout
+            .requestMatchers("/saml/sso", "/saml/logout", "/saml/isAuthenticated").permitAll()
+            // allow access to actuators
+            .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+            // allow access to signature service
+            .requestMatchers("/signature/**").permitAll()
+            // allow access to utility controller
+            .requestMatchers("/utility/**").permitAll()
+            // forbid swagger
+            .requestMatchers("/swagger", "/swagger-ui/**", "/v3/api-docs/**").denyAll()
+            .anyRequest().authenticated())
         .addFilterBefore(createSAMLFilter(samlService, profileConfig), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(createSAMLAuthFilter(authManager, securityContextRepository), SAMLFilter.class)
         .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
+        .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationManager(authManager)
-        .securityContext((securityContext) -> securityContext
-            .securityContextRepository(securityContextRepository)
+        .securityContext((securityContext) -> securityContext.securityContextRepository(securityContextRepository)
             .requireExplicitSave(true))
         .logout(createLogoutConfig(samlService));
 
     return http.build();
   }
-
 }
 

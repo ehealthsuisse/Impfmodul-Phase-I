@@ -1,3 +1,6 @@
+<mat-card-header>
+  <mat-card-title *ngIf="showTitle" class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+</mat-card-header>
 <mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between">
   <vm-reusable-date-field
     [formControl]="problemForm.controls.recordedDate"

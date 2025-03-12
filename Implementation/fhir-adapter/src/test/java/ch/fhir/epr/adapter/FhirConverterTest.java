@@ -37,6 +37,9 @@ import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -62,6 +65,7 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.PractitionerRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,6 +178,42 @@ class FhirConverterTest {
   }
 
   @Test
+  void createBundle_recorderDifferentThanThePerformer_practitionerShouldHaveTheDefaultPractitionerCode() {
+    HumanNameDTO patientRecorder = new HumanNameDTO("John", "Doe", "prefix", LocalDate.now(), "MALE");
+    HumanNameDTO patient = new HumanNameDTO("First", "Last", "prefix", LocalDate.now(), "FEMALE");
+    PatientIdentifier identifier = mock(PatientIdentifier.class);
+    AuthorDTO authorDTO = createAuthor();
+    when(identifier.getPatientInfo()).thenReturn(patient);
+
+    vaccinationDTO.setRecorder(patientRecorder);
+    vaccinationDTO.setAuthor(authorDTO);
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
+
+    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, "Practitioner-0001");
+
+    assertEquals("7600000000000", practitioner.getIdentifier().get(0).getValue());
+  }
+
+  @Test
+  void createBundle_recorderTheSameAsThePerformer_practitionerShouldHaveTheGlnOfTheAuthor() {
+    HumanNameDTO patientRecorder = new HumanNameDTO("first", "last", "prefix", LocalDate.now(), "MALE");
+    HumanNameDTO patient = new HumanNameDTO("Jane", "Doe", null, LocalDate.now(), "FEMALE");
+    PatientIdentifier identifier = mock(PatientIdentifier.class);
+    AuthorDTO authorDTO = createAuthor();
+    when(identifier.getPatientInfo()).thenReturn(patient);
+
+    vaccinationDTO.setRecorder(patientRecorder);
+    vaccinationDTO.setAuthor(authorDTO);
+
+    Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
+
+    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, "Practitioner-0001");
+
+    assertEquals(authorDTO.getGln(), practitioner.getIdentifier().get(0).getValue());
+  }
+
+  @Test
   void fillAuthor_assistentRole_usePrincipalId() {
     Bundle bundle = new Bundle();
     BaseDTO dto = mock(VaccinationDTO.class);
@@ -212,8 +252,7 @@ class FhirConverterTest {
         .addReasonCode(new CodeableConcept(new Coding(SYSTEM, CODE, DISPLAY)))
         .setStatus(STATUS);
 
-    String organization = ORGANIZATION;
-    vaccinationDTO = fhirConverter.toVaccinationDTO(immunization, practitioner, organization);
+    vaccinationDTO = fhirConverter.toVaccinationDTO(immunization, practitioner, ORGANIZATION);
     vaccinationDTO.setComments(fhirConverter.createComments(null, immunization.getNote()));
     vaccinationDTO.setAuthor(createAuthor());
 
