@@ -35,7 +35,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  *
- * Test {@Cache}
+ * Test {@link Cache}
  *
  */
 @SpringBootTest
@@ -45,7 +45,7 @@ class CacheTest {
   private Cache cache;
 
   @Test
-  void clear_anyData_mapIsCleared() throws Exception {
+  void clear_anyData_mapIsCleared() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(patientIdentifier, null);
@@ -81,11 +81,11 @@ class CacheTest {
   @Test
   void test_CacheIdentifierKey() {
     CacheIdentifierKey key1 =
-        new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
+      new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
     assertThat(key1.getOid()).isEqualTo("oid");
     assertThat(key1.getLocalId()).isEqualTo("localId");
     CacheIdentifierKey key2 =
-        new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
+      new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
     assertThat(key1.equals(key2)).isTrue();
     assertThat(key1.hashCode()).isEqualTo(key2.hashCode());
 
@@ -103,8 +103,8 @@ class CacheTest {
 
     // community does NOT effect key
     CacheIdentifierKey key3 =
-        new CacheIdentifierKey(new PatientIdentifier("UNKNOWNCOMM", "localId", "oid"),
-            new AuthorDTO(null, null, "123"));
+      new CacheIdentifierKey(new PatientIdentifier("UNKNOWNCOMM", "localId", "oid"),
+        new AuthorDTO(null, null, "123"));
     assertThat(key1.equals(key3)).isTrue();
     assertThat(key1.hashCode()).isEqualTo(key3.hashCode());
   }
@@ -121,7 +121,7 @@ class CacheTest {
   }
 
   @Test
-  void test_getBeforeTTL() throws Exception {
+  void test_getBeforeTTL() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);
@@ -133,7 +133,7 @@ class CacheTest {
   @Test
   void test_getJsonsAfterTTL() throws Exception {
     CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
-        new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
+      new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
     cache.putData(cacheIdentifier, new EPRDocument(false, "json3", null));
     Thread.sleep(2100); // > 2s TTL
     assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(0);
@@ -141,9 +141,9 @@ class CacheTest {
   }
 
   @Test
-  void test_getJsonsBeforeTTL() throws Exception {
+  void test_getJsonsBeforeTTL() {
     CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
-        new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
+      new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
     assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(0);
     assertThat(cache.dataCacheMiss(cacheIdentifier)).isTrue();
     cache.putData(cacheIdentifier, new EPRDocument(false, "json1", null));
@@ -183,7 +183,7 @@ class CacheTest {
   }
 
   @Test
-  void test_replace() throws Exception {
+  void test_replace() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);

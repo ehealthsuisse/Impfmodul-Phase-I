@@ -20,9 +20,11 @@ package ch.admin.bag.vaccination.service.saml.config;
 
 import ch.fhir.epr.adapter.exception.ValidationException;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,15 +36,55 @@ public class IdpProvider {
 
   public static final String GAZELLE_IDP_IDENTIFIER = "GAZELLE";
 
+  @Value("${sp.samlKeystore.keystore-type}")
+  private String samlKeystoreType;
+
+  @Value("${sp.samlKeystore.keystore-path}")
+  private String samlKeystorePath;
+
+  @Value("${sp.samlKeystore.keystore-password}")
+  private String samlKeystorePassword;
+
+  @Value("${sp.samlKeystore.sp-alias}")
+  private String samlSpAlias;
+
+  @Value("${sp.tlsKeystore.keystore-type}")
+  private String tlsKeystoreType;
+
+  @Value("${sp.tlsKeystore.keystore-path}")
+  private String tlsKeystorePath;
+
+  @Value("${sp.tlsKeystore.keystore-password}")
+  private String tlsKeystorePassword;
+
   /** entityId which is registered at the IDP */
   private String knownEntityId;
   private List<IdentityProviderConfig> supportedProvider;
 
+  @PostConstruct
+  public void init() {
+    if (supportedProvider != null) {
+      supportedProvider.forEach(this::applyKeystoreDefaults);
+    }
+  }
+
   public IdentityProviderConfig getProviderConfig(String providerIdentifier) {
     return supportedProvider.stream()
-        .filter(config -> config.getIdentifier().equalsIgnoreCase(providerIdentifier))
-        .findFirst()
-        .orElseThrow(() -> new ValidationException("Configuration for provider with identifier: "
-            + providerIdentifier + " not found."));
+             .filter(config -> config.getIdentifier().equalsIgnoreCase(providerIdentifier))
+             .findFirst()
+             .orElseThrow(() -> new ValidationException("Configuration for provider with identifier: "
+                                                          + providerIdentifier + " not found."));
+  }
+
+  private void applyKeystoreDefaults(IdentityProviderConfig config) {
+    config.setSamlKeystore(config.getSamlKeystore() != null ? config.getSamlKeystore() :
+                             createDefaultKeystore(samlKeystoreType, samlKeystorePath, samlKeystorePassword, samlSpAlias));
+    config.setTlsKeystore(config.getTlsKeystore() != null ? config.getTlsKeystore() :
+                            createDefaultKeystore(tlsKeystoreType, tlsKeystorePath, tlsKeystorePassword, null));
+  }
+
+  private KeystoreProperties createDefaultKeystore(String keystoreType, String keystorePath, String keystorePassword,
+                                                   String spAlias) {
+    return new KeystoreProperties(keystoreType, keystorePath, keystorePassword, spAlias);
   }
 }

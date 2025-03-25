@@ -20,7 +20,6 @@ package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
-import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +54,6 @@ import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.LogoutResponse;
 import org.opensaml.saml.saml2.core.impl.AssertionBuilder;
-import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.opensaml.xmlsec.keyinfo.impl.X509KeyInfoGeneratorFactory;
 import org.opensaml.xmlsec.signature.KeyInfo;
@@ -78,8 +76,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SAMLService implements SAMLServiceIfc {
-  @Autowired
-  private SignatureService signatureService;
 
   @Autowired
   private IdpProvider idpProviders;
@@ -102,8 +98,8 @@ public class SAMLService implements SAMLServiceIfc {
   @Override
   public ArtifactResolve buildArtifactResolve(IdentityProviderConfig idpConfig, Artifact artifact) {
     ArtifactResolve artifactResolve = SAMLUtils.createUnsignedArtifactResolveRequest(getEntityId(idpConfig),
-        idpConfig.getArtifactResolutionServiceURL(), artifact);
-    signRequest(artifactResolve);
+      idpConfig.getArtifactResolutionServiceURL(), artifact);
+    signRequest(artifactResolve, idpConfig);
 
     return artifactResolve;
   }
@@ -113,7 +109,7 @@ public class SAMLService implements SAMLServiceIfc {
     String currentSessionId = httpSession.getId();
 
     SecurityContext currentSecurityContext =
-        (SecurityContext) httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+      (SecurityContext) httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
     SAMLAuthentication authentication = (SAMLAuthentication) currentSecurityContext.getAuthentication();
     String subjectName = authentication.getName();
     String oldSessionId = nameToSessionId.remove(subjectName);
@@ -130,13 +126,8 @@ public class SAMLService implements SAMLServiceIfc {
 
   @Override
   public void createAuthenticatedSession(String idp, HttpServletRequest request, Assertion assertion) {
-    AuthenticatedPrincipal principal = new AuthenticatedPrincipal() {
-
-      @Override
-      public String getName() {
-        return assertion.getSubject() != null ? assertion.getSubject().getNameID().getValue() : idp;
-      }
-    };
+    AuthenticatedPrincipal principal =
+      () -> assertion.getSubject() != null ? assertion.getSubject().getNameID().getValue() : idp;
 
     Authentication auth = new SAMLAuthentication(principal, idp, assertion);
     SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -146,7 +137,7 @@ public class SAMLService implements SAMLServiceIfc {
     HttpSessionUtils.setParameterInSession(HttpSessionUtils.IDP, idp);
     HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHENTICATED_SESSION_ATTRIBUTE, true);
     HttpSessionUtils.setParameterInSession(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-        securityContext);
+      securityContext);
 
     log.debug("add {} {}", session.getId(), principal.getName());
     addAuthenticatedSessionId(session.getId(), securityContext);
@@ -165,7 +156,7 @@ public class SAMLService implements SAMLServiceIfc {
     String logoutURL = idpConfig != null ? idpConfig.getLogoutURL() : null;
     if (logoutURL == null) {
       log.debug("IDP for Session to logout could not determined. Returning vaccination URL as default destination. "
-          + "Please check IDP config to set logoutURLs.");
+                  + "Please check IDP config to set logoutURLs.");
       logoutURL = request.getRequestURI();
     }
     String entityId = getEntityId(idpConfig);
@@ -217,7 +208,7 @@ public class SAMLService implements SAMLServiceIfc {
 
     SAMLEndpointContext endpointContext = peerEntityContext.ensureSubcontext(SAMLEndpointContext.class);
     endpointContext.setEndpoint(SAMLUtils.createEndpoint(idpConfig.getAuthnrequestURL()));
-    idpAdapter.addSigningParametersToContext(context);
+    idpAdapter.addSigningParametersToContext(context, idpConfig);
 
     HTTPPostEncoder encoder = new HTTPPostEncoder();
     VelocityEngine vEngine = createEngine();
@@ -274,7 +265,7 @@ public class SAMLService implements SAMLServiceIfc {
           String stsURL = idpConfig.getSecurityTokenServiceURL();
           if (stsURL != null) {
             try {
-              Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL);
+              Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL, idpConfig);
               samlAuthentication.setAssertion(renewedAssertion);
               log.debug("Renewal successful.");
             } catch (Exception ex) {
@@ -306,13 +297,13 @@ public class SAMLService implements SAMLServiceIfc {
     }
 
     return securityContext != null && securityContext.getAuthentication() instanceof SAMLAuthentication
-        ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp()
-            : null;
+             ? ((SAMLAuthentication) securityContext.getAuthentication()).getIdp()
+             : null;
   }
 
   @Override
   public ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig,
-      ArtifactResolve artifactResolve) {
+                                                        ArtifactResolve artifactResolve) {
     return idpAdapter.sendAndReceiveArtifactResolve(idpConfig, artifactResolve);
   }
 
@@ -324,8 +315,8 @@ public class SAMLService implements SAMLServiceIfc {
 
   private AuthnRequest createAuthnRequest(IdentityProviderConfig idpConfig) {
     AuthnRequest authnRequest = SAMLUtils.createUnsignedAuthnRequest(getEntityId(idpConfig),
-        idpConfig.getAuthnrequestURL(), assertionConsumerServiceUrl);
-    signRequest(authnRequest);
+      idpConfig.getAuthnrequestURL(), assertionConsumerServiceUrl);
+    signRequest(authnRequest, idpConfig);
 
     return authnRequest;
   }
@@ -335,8 +326,8 @@ public class SAMLService implements SAMLServiceIfc {
       VelocityEngine velocityEngine = new VelocityEngine();
       velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
       velocityEngine.setProperty(
-          "classpath.resource.loader.class",
-          "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        "classpath.resource.loader.class",
+        "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
       velocityEngine.init();
       return velocityEngine;
     } catch (Exception e) {
@@ -348,35 +339,31 @@ public class SAMLService implements SAMLServiceIfc {
     return idpConfig != null && idpConfig.getEntityId() != null ? idpConfig.getEntityId() : spEntityId;
   }
 
-  private Credential getServiceProviderSignatureCredential() {
-    return signatureService.getSamlSPCredential();
-  }
-
   private void removeSecurityContextFromSession(HttpSession httpSession) {
     SecurityContextHolder.clearContext();
     removeSession(httpSession.getId());
   }
 
-  private void signRequest(SignableSAMLObject request) {
+  private void signRequest(SignableSAMLObject request, IdentityProviderConfig idpConfig) {
     try {
       SignatureBuilder signFactory = new SignatureBuilder();
       Signature signature = signFactory.buildObject(Signature.DEFAULT_ELEMENT_NAME);
       signature.setCanonicalizationAlgorithm(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
       signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
-      signature.setSigningCredential(getServiceProviderSignatureCredential());
+      signature.setSigningCredential(idpConfig.getSamlCredential(true));
 
       X509KeyInfoGeneratorFactory x509Factory = new X509KeyInfoGeneratorFactory();
       x509Factory.setEmitEntityCertificate(true);
       KeyInfoGenerator generator = x509Factory.newInstance();
-      KeyInfo keyInfo = generator.generate(getServiceProviderSignatureCredential());
+      KeyInfo keyInfo = generator.generate(idpConfig.getSamlCredential(true));
       signature.setKeyInfo(keyInfo);
 
       request.setSignature(signature);
       ((SAMLObjectContentReference) signature.getContentReferences().get(0))
-      .setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+        .setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA256);
 
       Marshaller marshaller =
-          XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(request);
+        XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(request);
       marshaller.marshall(request);
 
       Signer.signObject(signature);
@@ -390,10 +377,9 @@ public class SAMLService implements SAMLServiceIfc {
   private void synchronizeSessionMaps() {
     if (nameToSessionId.size() != sessionIdToSecurityContext.size()) {
       Map<String, String> map = new ConcurrentHashMap<>(sessionIdToSecurityContext.size());
-      sessionIdToSecurityContext.entrySet().forEach(entry -> {
-        String sessionId = entry.getKey();
-        if (entry.getValue() != null && entry.getValue().getAuthentication() != null) {
-          String name = entry.getValue().getAuthentication().getName();
+      sessionIdToSecurityContext.forEach((sessionId, value) -> {
+        if (value != null && value.getAuthentication() != null) {
+          String name = value.getAuthentication().getName();
           if (name != null) {
             map.put(name, sessionId);
           }
