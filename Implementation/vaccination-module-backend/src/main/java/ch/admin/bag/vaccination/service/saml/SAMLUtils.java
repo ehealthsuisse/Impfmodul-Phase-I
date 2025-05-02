@@ -25,6 +25,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -110,10 +112,10 @@ public class SAMLUtils {
   public static String addEnvelope(String request) {
     request = request.replaceFirst("^<\\?xml version=\"1\\.0\" encoding=\"UTF-8\"\\?>\\s*", "");
     String open = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-        + "   <soapenv:Header/>\n"
-        + "   <soapenv:Body>";
+                    + "   <soapenv:Header/>\n"
+                    + "   <soapenv:Body>";
     String close = "</soapenv:Body>\n"
-        + "</soapenv:Envelope>";
+                     + "</soapenv:Envelope>";
     return open + request + close;
   }
 
@@ -138,17 +140,19 @@ public class SAMLUtils {
     return (T) builderFactory.getBuilder(elementName).buildObject(elementName);
   }
 
-  public static String convertElementToString(XMLObject logoutResponse)
-      throws MarshallingException {
+  public static String convertElementToString(XMLObject xmlObject)
+    throws MarshallingException {
     Marshaller marshaller = org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport
-        .getMarshallerFactory().getMarshaller(logoutResponse);
-    Element element = marshaller.marshall(logoutResponse);
+                              .getMarshallerFactory().getMarshaller(xmlObject);
 
-    return SerializeSupport.prettyPrintXML(element);
+    Element element = marshaller.marshall(xmlObject);
+    String rawXml = SerializeSupport.prettyPrintXML(element);
+
+    return moveSaml2pNamespaceLast(rawXml);
   }
 
   public static XMLObject convertElementToXMLObject(final Element element, final Class<?> clazz)
-      throws UnmarshallingException {
+    throws UnmarshallingException {
     Validate.notNull(element, ELEMENT_MUST_NOT_BE_NULL);
     Validate.notNull(clazz, CLAZZ_MUST_NOT_BE_NULL);
 
@@ -176,13 +180,13 @@ public class SAMLUtils {
 
     Element element = null;
     if (object instanceof SignableSAMLObject
-        && ((SignableSAMLObject) object).isSigned()
-        && object.getDOM() != null) {
+          && ((SignableSAMLObject) object).isSigned()
+          && object.getDOM() != null) {
       element = object.getDOM();
     } else {
       try {
         Marshaller out =
-            XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(object);
+          XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(object);
         out.marshall(object);
         element = object.getDOM();
       } catch (MarshallingException e) {
@@ -194,7 +198,7 @@ public class SAMLUtils {
   }
 
   public static Element convertXMLObjectToElement(XMLObject object, Class<?> clazz)
-      throws MarshallingException {
+    throws MarshallingException {
     Validate.notNull(object, OBJECT_MUST_NOT_BE_NULL);
     Validate.notNull(clazz, CLAZZ_MUST_NOT_BE_NULL);
 
@@ -230,7 +234,7 @@ public class SAMLUtils {
    * @return {@link ArtifactResolve}
    */
   public static ArtifactResolve createUnsignedArtifactResolveRequest(String spEntityId,
-      String artifactResolutionServiceURL, Artifact artifact) {
+                                                                     String artifactResolutionServiceURL, Artifact artifact) {
     ArtifactResolve artifactResolve = SAMLUtils.buildSAMLObject(ArtifactResolve.class);
 
     Issuer issuer = SAMLUtils.buildSAMLObject(Issuer.class);
@@ -253,7 +257,7 @@ public class SAMLUtils {
    * @return {@link AuthnRequest} which still needs to be signed
    */
   public static AuthnRequest createUnsignedAuthnRequest(String spEntityId, String requestUrl,
-      String assertionConsumerServiceUrl) {
+                                                        String assertionConsumerServiceUrl) {
     AuthnRequest authnRequest = SAMLUtils.buildSAMLObject(AuthnRequest.class);
     authnRequest.setIssueInstant(Instant.now());
     authnRequest.setDestination(requestUrl);
@@ -267,7 +271,7 @@ public class SAMLUtils {
   }
 
   public static LogoutResponse createUnsignedLogoutResponse(LogoutRequest logoutRequest, String spEntityId,
-      String logoutURL) {
+                                                            String logoutURL) {
     LogoutResponse response = buildSAMLObject(LogoutResponse.class);
     response.setDestination(logoutURL);
     response.setInResponseTo(logoutRequest.getID());
@@ -305,16 +309,16 @@ public class SAMLUtils {
   }
 
   public static org.projecthusky.xua.saml2.Assertion getXuaAssertionFromResponse(
-      List<XUserAssertionResponse> response) {
+    List<XUserAssertionResponse> response) {
     RequestSecurityTokenResponse responseCollection = ((XUserAssertionResponseImpl) response.get(0)).getWrappedObject();
 
     // copied from XUserAssertionResponseImpl, husky-xua-gen-impl
     List<XMLObject> requestedTokens = responseCollection.getUnknownXMLObjects(new QName(
-        "http://docs.oasis-open.org/ws-sx/ws-trust/200512", "RequestedSecurityToken"));
+      "http://docs.oasis-open.org/ws-sx/ws-trust/200512", "RequestedSecurityToken"));
     if (!requestedTokens.isEmpty()) {
       RequestedSecurityToken token = (RequestedSecurityToken) requestedTokens.get(0);
       org.opensaml.saml.saml2.core.Assertion openSamlAssertion =
-          (org.opensaml.saml.saml2.core.Assertion) token.getUnknownXMLObject();
+        (org.opensaml.saml.saml2.core.Assertion) token.getUnknownXMLObject();
       org.projecthusky.xua.saml2.Assertion xua = AssertionUtils.convertSamlToHuskyAssertion(openSamlAssertion);
       SAMLUtils.logSAMLObject((XMLObject) xua.getWrappedObject());
       return xua;
@@ -356,8 +360,8 @@ public class SAMLUtils {
       Document doc = db.parse(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
 
       Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport
-          .getUnmarshallerFactory()
-          .getUnmarshaller(doc.getDocumentElement());
+                                    .getUnmarshallerFactory()
+                                    .getUnmarshaller(doc.getDocumentElement());
       return unmarshaller.unmarshall(doc.getDocumentElement());
     } catch (Exception e) {
       log.warn("Exception:{}", e.toString());
@@ -374,12 +378,12 @@ public class SAMLUtils {
    * @param samlMessageLifetime allowed message time derivation in ms
    */
   public static void validateArtifactResponse(ArtifactResponse artifactResponse,
-      HttpServletRequest request, long samlMessageLifetime, long samlMessageClockSkew) {
+                                              HttpServletRequest request, long samlMessageLifetime, long samlMessageClockSkew) {
     MessageContext context = new MessageContext();
     context.setMessage(artifactResponse);
 
     SAMLMessageInfoContext messageInfoContext =
-        context.getSubcontext(SAMLMessageInfoContext.class, true);
+      context.getSubcontext(SAMLMessageInfoContext.class, true);
     messageInfoContext.setMessageIssueInstant(artifactResponse.getIssueInstant());
 
     try {
@@ -449,12 +453,12 @@ public class SAMLUtils {
 
   private static void logAuthenticationMethod(Assertion assertion) {
     log.debug("Authentication method: "
-        + assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
-        .getURI());
+                + assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
+                    .getURI());
   }
 
   private static void validateMessageLifetime(MessageContext context, long samlMessageLifetime,
-      long samlMessageClockSkew) throws ComponentInitializationException, MessageHandlerException {
+                                              long samlMessageClockSkew) throws ComponentInitializationException, MessageHandlerException {
     MessageLifetimeSecurityHandler lifetimeSecurityHandler = new MessageLifetimeSecurityHandler();
     lifetimeSecurityHandler.setMessageLifetime(Duration.ofMillis(samlMessageLifetime));
     lifetimeSecurityHandler.setClockSkew(Duration.ofMillis(samlMessageClockSkew));
@@ -463,4 +467,36 @@ public class SAMLUtils {
     lifetimeSecurityHandler.invoke(context);
   }
 
+  /**
+   * Moves the {@code xmlns:saml2p} namespace declaration to the end of the
+   * root element's opening tag, preserving all other content.
+   *
+   * @param xml the XML string to modify
+   * @return the updated XML string with the xmlns:saml2p declaration moved to the end of the root tag
+   */
+  private static String moveSaml2pNamespaceLast(String xml) {
+    Pattern rootTagPattern = Pattern.compile("<(\\w+:[^\\s>/]+)([^>]*)>");
+    Matcher matcher = rootTagPattern.matcher(xml);
+
+    if (!matcher.find()) {
+      return xml;
+    }
+
+    String fullMatch = matcher.group(0);
+    String tagName = matcher.group(1);
+    String attributes = matcher.group(2);
+
+    Pattern nsPattern = Pattern.compile("\\s+xmlns:saml2p=\"[^\"]+\"");
+    Matcher nsMatcher = nsPattern.matcher(attributes);
+
+    if (!nsMatcher.find()) {
+      return xml;
+    }
+
+    String saml2pNs = nsMatcher.group();
+    String attrsWithoutSaml2p = nsMatcher.replaceFirst("").replaceAll("/\\s*$", "");
+
+    String reorderedTag = "<" + tagName + attrsWithoutSaml2p + saml2pNs + ">";
+    return xml.replace(fullMatch, reorderedTag);
+  }
 }

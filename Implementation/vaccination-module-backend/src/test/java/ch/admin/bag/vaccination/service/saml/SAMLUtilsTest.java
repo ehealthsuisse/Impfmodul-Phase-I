@@ -19,11 +19,17 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+<<<<<<< Upstream, based on origin/cf_delivery_1.7.1
 import static org.junit.jupiter.api.Assertions.assertEquals;
+=======
+import static org.junit.jupiter.api.Assertions.assertTrue;
+>>>>>>> f7fe64e NOTICKET Modify SAML order
 
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.LogoutResponse;
+import org.opensaml.saml.saml2.core.impl.LogoutResponseBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
@@ -57,7 +63,7 @@ public class SAMLUtilsTest {
   @Test
   public void unmarshall_logoutRequest() {
     LogoutRequest logoutRequest =
-        (LogoutRequest) SAMLUtils.unmarshall(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"));
+      (LogoutRequest) SAMLUtils.unmarshall(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"));
     assertThat(logoutRequest.getNameID().getValue()).isEqualTo("remery");
     assertThat(logoutRequest.getIssuer().getValue()).isEqualTo("http://sp.example.com/demo1/metadata.php");
     assertThat(logoutRequest.getIssueInstant().toString()).isEqualTo("2014-07-18T01:13:06Z");
