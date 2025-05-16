@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class SAMLUtilsTest {
   }
 
   @Test
-  public void replaceInstantByNow() throws Exception {
+  public void replaceInstantByNow() {
     Instant now = Instant.now();
     now = now.minusMillis(1000);
     String xml = SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml");
@@ -54,7 +55,7 @@ public class SAMLUtilsTest {
   }
 
   @Test
-  public void unmarshall_logoutRequest() throws Exception {
+  public void unmarshall_logoutRequest() {
     LogoutRequest logoutRequest =
         (LogoutRequest) SAMLUtils.unmarshall(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"));
     assertThat(logoutRequest.getNameID().getValue()).isEqualTo("remery");
@@ -62,4 +63,25 @@ public class SAMLUtilsTest {
     assertThat(logoutRequest.getIssueInstant().toString()).isEqualTo("2014-07-18T01:13:06Z");
   }
 
+  @Test
+  void testAddEnvelope_removesXmlDeclaration() {
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><child>value</child></root>";
+    String expected =
+        "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
+            "   <soapenv:Header/>\n" +
+            "   <soapenv:Body><root><child>value</child></root></soapenv:Body>\n" +
+            "</soapenv:Envelope>";
+    assertEquals(expected, SAMLUtils.addEnvelope(input));
+  }
+
+  @Test
+  void testAddEnvelope_withWhitespaceAfterDeclaration() {
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>   \n\n<root/>";
+    String expected =
+        "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
+            "   <soapenv:Header/>\n" +
+            "   <soapenv:Body><root/></soapenv:Body>\n" +
+            "</soapenv:Envelope>";
+    assertEquals(expected, SAMLUtils.addEnvelope(input));
+  }
 }
