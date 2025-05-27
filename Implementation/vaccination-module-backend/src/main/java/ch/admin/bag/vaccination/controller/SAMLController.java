@@ -169,6 +169,9 @@ public class SAMLController {
   private String performLogout(LogoutRequest logoutRequest, HttpServletRequest request) throws MarshallingException {
     String idp = samlService.logout(logoutRequest.getNameID().getValue());
     LogoutResponse logoutResponse = samlService.createLogoutResponse(idp, logoutRequest, request);
-    return SAMLUtils.addEnvelope(SAMLUtils.convertElementToString(logoutResponse));
+    String response = SAMLUtils.addEnvelope(SAMLUtils.convertElementToString(logoutResponse));
+    log.debug("Saml logout response: {}", response);
+
+    return response;
   }
 }
