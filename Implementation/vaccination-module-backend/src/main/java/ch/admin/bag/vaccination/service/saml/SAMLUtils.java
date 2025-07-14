@@ -91,8 +91,24 @@ public class SAMLUtils {
     secureRandomIdGenerator = new RandomIdentifierGenerationStrategy();
   }
 
+  /**
+   * Wraps a given XML request body in a SOAP envelope.
+   *
+   * <p>This method removes the XML declaration (e.g., {@code <?xml version="1.0" encoding="UTF-8"?>})
+   * from the beginning of the input string, if present, and surrounds the resulting content with a
+   * SOAP 1.1 envelope containing an empty header and a body that includes the original request.
+   *
+   * <p>The XML declaration is removed using a regular expression:
+   * <ul>
+   *   <li>{@code ^} ensures it only matches at the beginning of the string.</li>
+   *   <li>{@code \\s*} matches any number of whitespace characters (including {@code \n}, {@code \r}, tabs, etc.).</li>
+   *   <li>{@code replaceFirst} is used because the XML declaration should appear only once at the top.</li>
+   * </ul>
+   * @param request the raw XML request string (optionally starting with an XML declaration)
+   * @return the input XML wrapped inside a SOAP envelope
+   */
   public static String addEnvelope(String request) {
-    request = request.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "");
+    request = request.replaceFirst("^<\\?xml version=\"1\\.0\" encoding=\"UTF-8\"\\?>\\s*", "");
     String open = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
         + "   <soapenv:Header/>\n"
         + "   <soapenv:Body>";

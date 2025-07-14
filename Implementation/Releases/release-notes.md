@@ -1,4 +1,13 @@
-# November 2025 - Release 1.7.0-RC2
+# May 2025 - Hotfix 1.7.1
+This release fixes an issue which was hindering the SAML logout to be proceed via the backchannel.
+ * Fixed the above mentioned issue
+ * Improved logging for the SAML logout messages, enabling the DEBUG loglevel for the SAMLController class now outputs the full SAML LogoutResponse including the SAML envelope.
+
+# February 2025 - Release 1.7.0
+This release wraps up all the RC-feedback for the next stable release, along with few frontend bugfixes for Safari.
+* Fixed the issue that the JSESSIONID cookies of other applications running on the same domain were deleted upon login on Safari.
+
+# January 2025 - Release 1.7.0-RC2
 This release candidat provides some fixes, especially regarding tomcat compatibility.
 * Tomcat 11 compatibility has been fixed, there had been an issue with the CSRF token not being correctly configured.
 * Upgraded to the offical husky release 3.0.2

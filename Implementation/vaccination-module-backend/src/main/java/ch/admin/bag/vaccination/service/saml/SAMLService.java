@@ -171,7 +171,7 @@ public class SAMLService implements SAMLServiceIfc {
     String entityId = getEntityId(idpConfig);
     LogoutResponse response = SAMLUtils.createUnsignedLogoutResponse(logoutRequest, entityId, logoutURL);
     signRequest(response);
-    SAMLUtils.logSAMLObject(response);
+
     return response;
   }
 
