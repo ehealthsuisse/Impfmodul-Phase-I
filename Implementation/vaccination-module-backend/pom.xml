@@ -1,554 +1,569 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <version>1.7.1</version>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.0</version>
-    <relativePath />
-  </parent>
-
-  <groupId>ch.admin.bag.vaccination</groupId>
-  <artifactId>vaccination-module-backend</artifactId>
-  <packaging>${packaging.type}</packaging>
-
-  <name>Vaccination Module Backend for the EPD</name>
-  <description>Backend Module providing REST services for the vaccination module. </description>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-    <java.version>17</java.version>
-    <maven.compiler.release>17</maven.compiler.release>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <junit.version>5.10.0</junit.version>
-    <springdoc.version>1.6.15</springdoc.version>
-    <husky.version>3.0.2</husky.version>
-    <hapi.fhir.version>7.4.0</hapi.fhir.version>
-    <org.hl7.fhir.version>6.4.0</org.hl7.fhir.version>
-    <!-- custom lib Sopra Steria -->
-    <fhir.adapter.version>1.1.9</fhir.adapter.version>
-    <opensaml.version>5.1.3</opensaml.version>
-    <xmlsectool.version>3.0.0</xmlsectool.version>
-    <pdfbox.version>2.0.30</pdfbox.version>
-    <hazelcast.version>5.3.5</hazelcast.version>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>local-maven-repo</id>
-      <name>HuskyLocal</name>
-      <url>file:${project.basedir}/lib/local-maven-repo</url>
-    </repository>
-    <!-- used for latest OpenSAML version -->
-    <repository>
-      <id>Shibboleth</id>
-      <name>Shibboleth</name>
-      <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
-    </repository>
-    <!-- used for FHIR Adapter library -->
-    <repository>
-      <id>fhirAdapter</id>
-      <url>https://innersource.soprasteria.com/api/v4/projects/150475/packages/maven</url>
-    </repository>
-  </repositories>
-  
-  <!-- Internal use for Sopra Steria only --> 
-  <scm>
-    <connection>scm:git:https://innersource.soprasteria.com/bit/bag/vaccination-module-backend</connection>
-    <developerConnection>scm:git:https://innersource.soprasteria.com/bit/bag/vaccination-module-backend</developerConnection>
-    <url>https://innersource.soprasteria.com/bit/bag/vaccination-module-backend</url>
-    <tag>vaccination-module-backend-1.3.1</tag>
-  </scm>
-  
-  <!-- Internal use for Sopra Steria only --> 
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>maven-repository</id>
-      <name>${CI_PROJECT_NAME} Releases</name>
-      <url>${UPLOAD_REPOSITORY_URL}</url>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>maven-repository</id>
-      <name>${CI_PROJECT_NAME} Snapshots</name>
-      <url>${UPLOAD_REPOSITORY_URL}</url>
-    </snapshotRepository>
-  </distributionManagement>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok-maven-plugin</artifactId>
-        <version>1.18.20.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>3.0.24</version>
-      </dependency>
-      <!-- JAXB implementation for jakarta.xml.bind library -->
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>4.0.5</version>
-      </dependency>
-      <!-- Misconfiguration Ipf framework put JUnit to latest version 4 -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.13.2</version>
-      </dependency>
-      <!-- Hapi Fhir -->
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-base</artifactId>
-        <version>${hapi.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-caching-api</artifactId>
-        <version>${hapi.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-structures-r4</artifactId>
-        <version>${hapi.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-validation-resources-r4</artifactId>
-        <version>${hapi.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.convertors</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.utilities</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.validation</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r5</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r4</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r4b</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-annotations-api</artifactId>
-        <version>11.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-core</artifactId>
-        <version>11.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-websocket</artifactId>
-        <version>11.0.2</version>
-      </dependency>
-      <!-- Temporary dependencies needed until project is updated to the new Spring Boot version -->
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.5.13</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.5.13</version>
-      </dependency>
-      <!-- Temporary dependencies needed until a new version pf the Boxable library will be available -->
-      <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>1.18.3</version>
-      </dependency>
-      <!-- Temporary dependencies needed until Hapi Fhir library will be updated to the new version -->
-      <dependency>
-        <groupId>org.fhir</groupId>
-        <artifactId>ucum</artifactId>
-        <version>1.0.9</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <optional>true</optional>
-    </dependency>
-
-    <!-- necessary to support velocity engine for HTTP post -->
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-saml2-service-provider</artifactId>
-      <exclusions>
-        <!-- excluded because the library doesn't exist anymore on version 5.1.3 -->
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Husky -->
-    <dependency>
-      <groupId>org.projecthusky.communication</groupId>
-      <artifactId>husky-communication-gen</artifactId>
-      <version>${husky.version}</version>
-      <exclusions>
-      	<exclusion>
-      		<groupId>xml-apis</groupId>
-      		<artifactId>xml-apis</artifactId>
-      	</exclusion>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-saml-impl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.projecthusky.communication</groupId>
-      <artifactId>husky-communication-ch</artifactId>
-      <version>${husky.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-saml-impl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.projecthusky.communication</groupId>
-      <artifactId>husky-service</artifactId>
-      <version>${husky.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.projecthusky.communication</groupId>
-      <artifactId>husky-xua-ch-impl</artifactId>
-      <version>${husky.version}</version>
-    </dependency>
-    
-    <!-- fhir-adapter -->
-    <dependency>
-      <groupId>ch.admin.bag</groupId>
-      <artifactId>fhir-adapter</artifactId>
-      <version>${fhir.adapter.version}</version>
-    </dependency>
-
-    <!-- Swagger -->
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-ui</artifactId>
-      <version>${springdoc.version}</version>
-    </dependency>
-
-    <!-- SAML -->
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-core-api</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-saml-api</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-saml-impl</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-soap-api</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-xmlsec-api</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-security-api</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-security-impl</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opensaml</groupId>
-      <artifactId>opensaml-profile-api</artifactId>
-      <version>${opensaml.version}</version>
-    </dependency>
-
-    <!-- Hazelcast -->
-    <dependency>
-      <groupId>com.hazelcast</groupId>
-      <artifactId>hazelcast</artifactId>
-    </dependency>
-
-    <!-- Testing -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.junit.vintage</groupId>
-          <artifactId>junit-vintage-engine</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
- 
-    <!-- Syslog server -->
-    <dependency>
-      <groupId>com.github.kwart.syslog</groupId>
-      <artifactId>simple-syslog-server</artifactId>
-      <version>1.1.0-SNAPSHOT-20230315150000</version>
-      <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok-maven-plugin</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
-    <!-- PDF generation -->
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
-      <version>${pdfbox.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.dhorions</groupId>
-      <artifactId>boxable</artifactId>
-      <version>1.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>fontbox</artifactId>
-      <version>${pdfbox.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>pdfbox-tools</artifactId>
-      <version>${pdfbox.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>pdfbox-app</artifactId>
-      <version>${pdfbox.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>xmpbox</artifactId>
-      <version>${pdfbox.version}</version>
-    </dependency>
-    <!-- PDF A1 Validator -->
-    <dependency>
-      <groupId>org.verapdf</groupId>
-      <artifactId>validation-model-jakarta</artifactId>
-      <version>1.26.2</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <!-- plugin version management-->
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.4.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.sonarsource.scanner.maven</groupId>
-          <artifactId>sonar-maven-plugin</artifactId>
-          <version>5.0.0.4389</version>
-        </plugin>
-        <plugin>
-          <!-- used by sonar scanner -->
-          <groupId>org.jooq</groupId>
-          <artifactId>jooq-codegen-maven</artifactId>
-          <version>3.19.16</version>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.12</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
-    <!-- plugin configuration  -->
-    <plugins>
-      <plugin>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <version>1.7.1</version>
+    <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Ressource plugin used to copy config folder to target -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-config-resources</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/config</outputDirectory>
-              <!-- do not check binary files for properties -->
-              <nonFilteredFileExtensions>
-                <nonFilteredFileExtension>p12</nonFilteredFileExtension>
-                <nonFilteredFileExtension>properties</nonFilteredFileExtension>
-                <nonFilteredFileExtension>jks</nonFilteredFileExtension>
-              </nonFilteredFileExtensions>
-              <resources>
-                <resource>
-                  <directory>config</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <!-- Define minimum code coverage of 70% complexity measure -->
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jacoco-report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jacoco-check</id>
-            <phase>test</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <excludes>
-                <!-- exclude all saml related classes -->
-                <exclude>**/saml/**/*.class</exclude>
-              </excludes>
-              <rules>
-                <rule>
-                  <element>BUNDLE</element>
-                  <limits>
-                    <limit>
-                      <counter>COMPLEXITY</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.70</minimum>
-                    </limit>
-                  </limits>
-                </rule>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.0</version>
+        <relativePath />
+    </parent>
 
-  <profiles>
-    <profile>
-      <id>jar</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <packaging.type>jar</packaging.type>
-      </properties>
-    </profile>
-    <profile>
-      <id>war</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <packaging.type>war</packaging.type>
-      </properties>
-      <build>
+    <groupId>ch.admin.bag.vaccination</groupId>
+    <artifactId>vaccination-module-backend</artifactId>
+    <packaging>${packaging.type}</packaging>
+
+    <name>Vaccination Module Backend for the EPD</name>
+    <description>Backend Module providing REST services for the vaccination module.</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <junit.version>5.10.0</junit.version>
+        <springdoc.version>1.6.15</springdoc.version>
+        <husky.version>3.0.2</husky.version>
+        <hapi.fhir.version>7.4.0</hapi.fhir.version>
+        <org.hl7.fhir.version>6.4.0</org.hl7.fhir.version>
+        <!-- custom lib Sopra Steria -->
+        <fhir.adapter.version>1.1.9</fhir.adapter.version>
+        <opensaml.version>5.1.3</opensaml.version>
+        <xmlsectool.version>3.0.0</xmlsectool.version>
+        <pdfbox.version>2.0.30</pdfbox.version>
+        <hazelcast.version>5.3.5</hazelcast.version>
+        <artefactory.repoUrl>
+            https://adswissnetag.jfrog.io/artifactory/ad-swiss-release
+        </artefactory.repoUrl>
+        <artefactory.repoUrl-sn>
+            https://adswissnetag.jfrog.io/artifactory/ad-swiss-snapshot
+        </artefactory.repoUrl-sn>
+    </properties>
+
+    <repositories>
+        <!-- used for latest OpenSAML version -->
+        <repository>
+            <id>Shibboleth</id>
+            <name>Shibboleth</name>
+            <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>artefactory-sn</id>
+            <name>ADS SNAPSHOT Package Repo</name>
+            <url>${artefactory.repoUrl-sn}</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>artefactory</id>
+            <name>ADS Package Repo</name>
+            <url>${artefactory.repoUrl}</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <scm>
+        <connection>scm:git:https://github.com/AD-Swiss-Net-AG/adswiss-ci-service.git</connection>
+        <developerConnection>scm:git:https://github.com/AD-Swiss-Net-AG/adswiss-ci-service.git</developerConnection>
+        <url>https://github.com/AD-Swiss-Net-AG/adswiss-ci-service</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <!-- Internal use for Sopra Steria only -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>artefactory-sn</id>
+            <name>Github SNAPSHOT Package Repo</name>
+            <url>${artefactory.repoUrl-sn}</url>
+        </snapshotRepository>
+        <repository>
+            <id>artefactory</id>
+            <name>Github Package Repo</name>
+            <url>${artefactory.repoUrl}</url>
+        </repository>
+    </distributionManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.20.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>3.0.24</version>
+            </dependency>
+            <!-- JAXB implementation for jakarta.xml.bind library -->
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>4.0.5</version>
+            </dependency>
+            <!-- Misconfiguration Ipf framework put JUnit to latest version 4 -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.13.2</version>
+            </dependency>
+            <!-- Hapi Fhir -->
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-base</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-caching-api</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-structures-r4</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>hapi-fhir-validation-resources-r4</artifactId>
+                <version>${hapi.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.convertors</artifactId>
+                <version>${org.hl7.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.utilities</artifactId>
+                <version>${org.hl7.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.validation</artifactId>
+                <version>${org.hl7.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.r5</artifactId>
+                <version>${org.hl7.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.r4</artifactId>
+                <version>${org.hl7.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ca.uhn.hapi.fhir</groupId>
+                <artifactId>org.hl7.fhir.r4b</artifactId>
+                <version>${org.hl7.fhir.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-annotations-api</artifactId>
+                <version>11.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>11.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>11.0.2</version>
+            </dependency>
+            <!-- Temporary dependencies needed until project is updated to the new Spring Boot version -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.5.13</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.5.13</version>
+            </dependency>
+            <!-- Temporary dependencies needed until a new version pf the Boxable library will be available -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.18.3</version>
+            </dependency>
+            <!-- Temporary dependencies needed until Hapi Fhir library will be updated to the new version -->
+            <dependency>
+                <groupId>org.fhir</groupId>
+                <artifactId>ucum</artifactId>
+                <version>1.0.9</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- necessary to support velocity engine for HTTP post -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-saml2-service-provider</artifactId>
+            <exclusions>
+                <!-- excluded because the library doesn't exist anymore on version 5.1.3 -->
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Husky -->
+        <dependency>
+            <groupId>org.projecthusky.communication</groupId>
+            <artifactId>husky-communication-gen</artifactId>
+            <version>${husky.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-xacml-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-xacml-saml-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.projecthusky.communication</groupId>
+            <artifactId>husky-communication-ch</artifactId>
+            <version>${husky.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-xacml-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml-xacml-saml-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.projecthusky.communication</groupId>
+            <artifactId>husky-service</artifactId>
+            <version>${husky.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projecthusky.communication</groupId>
+            <artifactId>husky-xua-ch-impl</artifactId>
+            <version>${husky.version}</version>
+        </dependency>
+
+        <!-- fhir-adapter -->
+        <dependency>
+            <groupId>ch.admin.bag</groupId>
+            <artifactId>fhir-adapter</artifactId>
+            <version>${fhir.adapter.version}</version>
+        </dependency>
+
+        <!-- Swagger -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- SAML -->
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-core-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-saml-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-soap-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xmlsec-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-security-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-profile-api</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+
+        <!-- Hazelcast -->
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Syslog server -->
+        <dependency>
+            <groupId>com.github.kwart.syslog</groupId>
+            <artifactId>simple-syslog-server</artifactId>
+            <version>1.1.0-SNAPSHOT-20230315150000</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-maven-plugin</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- PDF generation -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dhorions</groupId>
+            <artifactId>boxable</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox-tools</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox-app</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>xmpbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <!-- PDF A1 Validator -->
+        <dependency>
+            <groupId>org.verapdf</groupId>
+            <artifactId>validation-model-jakarta</artifactId>
+            <version>1.26.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- plugin version management-->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>5.0.0.4389</version>
+                </plugin>
+                <plugin>
+                    <!-- used by sonar scanner -->
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq-codegen-maven</artifactId>
+                    <version>3.19.16</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.12</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <!-- plugin configuration  -->
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>3.4.0</version>
-          </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Ressource plugin used to copy config folder to target -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-config-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/config</outputDirectory>
+                            <!-- do not check binary files for properties -->
+                            <nonFilteredFileExtensions>
+                                <nonFilteredFileExtension>p12</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+                            </nonFilteredFileExtensions>
+                            <resources>
+                                <resource>
+                                    <directory>config</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Define minimum code coverage of 70% complexity measure -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <!-- exclude all saml related classes -->
+                                <exclude>**/saml/**/*.class</exclude>
+                            </excludes>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>COMPLEXITY</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.70</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-  </profiles>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>jar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>jar</packaging.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>war</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.4.0</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

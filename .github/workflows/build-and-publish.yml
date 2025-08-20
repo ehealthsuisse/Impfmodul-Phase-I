@@ -1,0 +1,64 @@
+name: Build and Publish to Artifactory
+
+on:
+  push:
+    branches:
+      - main # Passen Sie den Branch-Namen bei Bedarf an
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_USER: ${{ secrets.IT_AD_SWISS_USER }}
+      GITHUB_TOKEN: ${{ secrets.PAT_IT_ADSWISS }}
+      ARTIFACTORY_URL: ${{ secrets.EPD_ARTIFACTORY_RELEASE_URL }}
+      ARTIFACTORY_USER: ${{ secrets.EPD_ARTIFACTORY_USER }}
+      ARTIFACTORY_TOKEN: ${{ secrets.EPD_ARTIFACTORY_PWD }}
+
+    steps:
+      - name: Checkout Quellcode
+        uses: actions/checkout@v4
+
+      - name: Java (JDK) einrichten
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: artifactory # Muss mit der <id> in der pom.xml übereinstimmen
+          server-username: ${{ env.ARTIFACTORY_USER }}
+          server-password: ${{ env.ARTIFACTORY_TOKEN }}
+
+      - name: Maven-Projektversion extrahieren
+        run: echo "PROJECT_VERSION=$(mvn -f Implementation/ehealth-vaccination-backend/pom.xml -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_ENV
+
+      - name: fhir-adapter bauen und veröffentlichen
+        run: mvn -B clean deploy -f Implementation/fhir-adapter/pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Backend bauen und veröffentlichen
+        run: mvn -B clean deploy -DskipTests -f Implementation/vaccination-module-backend/pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'Implementation/vaccination-module-frontend/package-lock.json'
+
+      - name: Frontend bauen
+        working-directory: Implementation/vaccination-module-frontend
+        run: |
+          npm install
+          npm run build -- --configuration production
+
+      - name: Frontend-Artefakt als ZIP packen
+        run: |
+          cd Implementation/vaccination-module-frontend/dist/vaccination-module-frontend
+          zip -r ../../../../../vaccination-module-frontend-${{ env.PROJECT_VERSION }}.zip .
+
+      - name: Frontend-Artefakt in Artifactory hochladen
+        run: |
+          FRONTEND_ZIP="vaccination-module-frontend-${{ env.PROJECT_VERSION }}.zip"
+          echo "Lade Frontend-Artefakt hoch: $FRONTEND_ZIP"
+          curl -u ${{ env.ARTIFACTORY_USER }}:${{ env.ARTIFACTORY_TOKEN }} -T $FRONTEND_ZIP "${{ env.ARTIFACTORY_URL }}/frontend/$FRONTEND_ZIP"
