@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class ValueListService {
     log.info("Read valuelists from folder {}", folderPathValueListProperties);
     List<ValueListDTO> codeSystemValueList = new ArrayList<>();
     try (DirectoryStream<Path> streamFiles =
-        Files.newDirectoryStream(Paths.get(folderPathValueListProperties))) {
+        Files.newDirectoryStream(Path.of(folderPathValueListProperties))) {
       streamFiles.forEach(propertyFile -> {
         if (propertyFile.toString().endsWith("properties")) {
           ValueListDTO createdValueList = createValueList(propertyFile);

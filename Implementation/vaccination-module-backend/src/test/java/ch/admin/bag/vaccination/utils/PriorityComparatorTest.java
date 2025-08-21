@@ -49,7 +49,7 @@ public class PriorityComparatorTest {
 
     List<PriorityValue> sorted = Stream.of(pv1, pv2, pv3, pv4, pv5, pv6).sorted(new PriorityComparator()).toList();
 
-    assertEquals(6, sorted.get(0).getPriority());
+    assertEquals(6, sorted.getFirst().getPriority());
     assertEquals(3, sorted.get(3).getPriority());
     assertEquals(0, sorted.get(5).getPriority());
   }
@@ -76,7 +76,7 @@ public class PriorityComparatorTest {
 
     List<PriorityValue> sorted = Stream.of(pv1, pv2, pv3, pv4, pv5, pv6).sorted(new PriorityComparator()).toList();
 
-    assertEquals(3, sorted.get(0).getPriority());
+    assertEquals(3, sorted.getFirst().getPriority());
     assertEquals(1, sorted.get(1).getPriority());
     assertEquals("Birth weight 1.5 kilogram or less (finding)", sorted.get(1).getDto().getName());
     assertEquals(1, sorted.get(2).getPriority());

@@ -64,6 +64,17 @@ public class VaccinationRecordController {
   @Autowired
   private PdfService pdfService;
 
+  @PostMapping("/communityIdentifier/{communityIdentifier}/convert")
+  @Operation(summary = "Convert a Vaccination Record to a Immunization Administration document")
+  public VaccinationRecordDTO convert(
+      @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier) {
+    Assertion assertion = AssertionUtils.getAssertionFromSession();
+    PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
+    PatientIdentifier patientIdentifierFromEPD = vaccinationService.getPatientIdentifier(communityIdentifier,
+        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtenstion());
+    return vaccinationRecordService.convertVaccinationToImmunization(patientIdentifierFromEPD, assertion);
+  }
+
   @PostMapping("/communityIdentifier/{communityIdentifier}")
   @Operation(summary = "Create a vaccination record")
   public void create(

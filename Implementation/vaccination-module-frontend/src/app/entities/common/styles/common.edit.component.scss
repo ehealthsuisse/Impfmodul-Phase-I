@@ -1,4 +1,4 @@
-@import 'src/assets/scss/global';
+@use 'src/assets/scss/global';
 
 // Affects drop-downs and chips values styling for (vaccines, infectious diseases and adverse events)
 .mdc-list-item {
@@ -30,7 +30,7 @@
 }
 
 // Mobile - edit view mat card (infectious diseases and risk factors)
-@include media-breakpoint(xs) {
+@include global.media-breakpoint(xs) {
   .mdc-card {
     flex-direction: column !important;
   }

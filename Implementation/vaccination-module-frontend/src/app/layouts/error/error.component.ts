@@ -29,12 +29,12 @@ import { SharedLibsModule } from '../../shared/shared-libs.module';
  */
 @Component({
   selector: 'vm-error',
+  standalone: true,
   templateUrl: './error.component.html',
   styles: [
     '.error-wrapper { height: 100vh; width: 100vw; display: grid; place-items: center; position: absolute; top: 0px; left: 0px }',
     '.content { display: grid; place-items: center; }',
   ],
-  standalone: true,
   imports: [SharedLibsModule],
 })
 export class ErrorComponent implements OnInit, OnDestroy {
@@ -68,7 +68,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
       this.forwardToUrl(this.configService.logoutForwardUrl);
     }
   }
-  
+
   forwardToUrl(url: string): void {
     setTimeout(() => {
       window.location.href = url;

@@ -3,6 +3,7 @@
 ######################
 .project
 .metadata
+.factorypath
 tmp/
 log/**/*
 tmp/**/*

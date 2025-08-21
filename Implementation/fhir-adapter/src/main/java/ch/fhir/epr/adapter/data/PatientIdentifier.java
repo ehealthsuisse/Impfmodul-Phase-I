@@ -19,6 +19,7 @@
 package ch.fhir.epr.adapter.data;
 
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import java.io.Serial;
 import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,6 +40,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class PatientIdentifier implements Serializable {
+  @Serial
   private static final long serialVersionUID = 1L;
   /** Community. Ex: GAZELLE, EPDPLAYGROUND */
   private String communityIdentifier;

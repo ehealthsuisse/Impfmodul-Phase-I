@@ -19,14 +19,13 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { SessionInfoService } from 'src/app/core/security/session-info.service';
-import { PerformerToStringPipe } from '../../pipes';
 import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sensor.component';
 import { PatientService } from './patient.service';
 
 @Component({
   selector: 'vm-patient',
   standalone: true,
-  imports: [CommonModule, PerformerToStringPipe],
+  imports: [CommonModule],
   templateUrl: './patient.component.html',
   styleUrls: ['./patient.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

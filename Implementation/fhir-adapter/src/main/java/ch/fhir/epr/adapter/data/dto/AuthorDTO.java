@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,5 +49,30 @@ public class AuthorDTO {
 
   public String getFullName() {
     return user != null ? user.getFullName() : "";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    AuthorDTO that = (AuthorDTO) o;
+    return Objects.equals(user, that.user) &&
+        Objects.equals(organisation, that.organisation) &&
+        Objects.equals(role, that.role) &&
+        Objects.equals(purpose, that.purpose) &&
+        Objects.equals(gln, that.gln) &&
+        Objects.equals(principalId, that.principalId) &&
+        Objects.equals(principalName, that.principalName);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(user, organisation, role, purpose, gln, principalId, principalName);
   }
 }

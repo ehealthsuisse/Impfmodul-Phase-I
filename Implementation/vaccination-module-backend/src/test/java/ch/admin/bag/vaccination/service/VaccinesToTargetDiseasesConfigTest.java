@@ -43,16 +43,16 @@ public class VaccinesToTargetDiseasesConfigTest {
   @Test
   public void testVaccines() {
     assertThat(config.getVaccines().size()).isGreaterThan(85);
-    assertThat(config.getVaccines().get(0).getTarget().size()).isEqualTo(2);
-    assertThat(config.getVaccines().get(0).getTarget().get(0).getCode()).isEqualTo("36653000");
-    assertThat(config.getVaccines().get(0).getVaccine("").getCode()).isEqualTo("14");
-    assertThat(config.getVaccines().get(0).getVaccine("vaccineSystem").getSystem()).isEqualTo("vaccineSystem");
+    assertThat(config.getVaccines().getFirst().getTarget().size()).isEqualTo(2);
+    assertThat(config.getVaccines().getFirst().getTarget().getFirst().getCode()).isEqualTo("36653000");
+    assertThat(config.getVaccines().getFirst().getVaccine("").getCode()).isEqualTo("14");
+    assertThat(config.getVaccines().getFirst().getVaccine("vaccineSystem").getSystem()).isEqualTo("vaccineSystem");
     assertThat(config.getVaccines().get(1).getVaccine("").getCode()).isEqualTo("16");
-    assertThat(config.getVaccines().get(0).getTarget().get(0).getName())
+    assertThat(config.getVaccines().getFirst().getTarget().getFirst().getName())
         .isEqualTo("Rubella");
-    assertThat(config.getVaccines().get(1).getTarget().get(0).getName())
-        .isEqualTo("Cholera (disorder)");
+    assertThat(config.getVaccines().get(1).getTarget().getFirst().getName())
+        .isEqualTo("Cholera");
     config.getVaccines().get(1).setTargetSystem("systemTarget");
-    assertThat(config.getVaccines().get(1).getTarget().get(0).getSystem()).isEqualTo("systemTarget");
+    assertThat(config.getVaccines().get(1).getTarget().getFirst().getSystem()).isEqualTo("systemTarget");
   }
 }

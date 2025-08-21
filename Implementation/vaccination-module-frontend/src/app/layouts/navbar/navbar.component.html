@@ -1,7 +1,7 @@
-<mat-sidenav-container class="navbar-container">
-  <mat-sidenav #sidenav mode="over" position="start" class="mat-sidenav">
+<mat-drawer-container class="mat-drawer-container">
+  <mat-drawer #drawer mode="over" position="start" class="mat-drawer">
     <!-- Mobile content -->
-    <div *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue">
+    <div class="drawer-content" *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()">
       <div class="patient-name">
         <img
           [attr.alt]="'GLOBAL.LOGO_VACCINATION_MODULE' | translate"
@@ -13,12 +13,12 @@
         <mat-label class="mat-label mat-list-item">{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
       </div>
       <div class="logout-button" *ngIf="isVisible">
-        <button mat-icon-button role="button" (click)="samlService.logout(); sidenav.toggle()">
+        <button mat-icon-button role="button" (click)="samlService.logout(); drawer.toggle()">
           <img class="logout-icon" src="./assets/images/logout.png" alt="Logout button image" />
         </button>
       </div>
       <vm-language></vm-language>
-      <vm-navigation (toggleSidenav)="sidenav.toggle()"></vm-navigation>
+      <vm-navigation (toggleSidenav)="drawer.toggle()"></vm-navigation>
       <div aria-hidden="true" class="community-logo">
         <img
           [attr.alt]="'GLOBAL.COMMUNITY_LOGO' | translate"
@@ -28,11 +28,11 @@
         <div class="version">Backend: {{ backendVersion }} | Frontend: {{ frontendVersion }}</div>
       </div>
     </div>
-  </mat-sidenav>
+  </mat-drawer>
 
-  <mat-sidenav #sidenavAction mode="over" position="end" class="mat-sidenav" *ngIf="showActionSidenav">
+  <mat-drawer #drawerAction mode="over" position="end" class="mat-drawer" *ngIf="showActionSidenav">
     <!-- Mobile content -->
-    <div *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()">
+    <div class="drawer-actions" *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()">
       <ng-template [ngIf]="showActionSidenav">
         <vm-details-action *ngIf="!showPatientSidenav"></vm-details-action>
       </ng-template>
@@ -40,13 +40,13 @@
         <vm-patient-action></vm-patient-action>
       </ng-template>
     </div>
-  </mat-sidenav>
+  </mat-drawer>
 
-  <mat-sidenav-content>
+  <mat-drawer-content>
     <!-- Desktop Toolbar -->
     <mat-toolbar
       *ngIf="isDesktop && (isAuthorized || (isAuthorized && samlService.isSsoRedirectCompleted.getValue()))"
-      class="navbar-container__desktop"
+      class="mat-drawer-container__desktop"
     >
       <div class="logo">
         <img
@@ -87,25 +87,16 @@
       </div>
     </mat-toolbar>
     <!-- Mobile Toolbar -->
-    <mat-toolbar *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()" class="navbar-container__mobile">
+    <mat-toolbar *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()" class="mat-drawer-container__mobile">
       <div class="menu-patient-wrapper">
-        <button mat-icon-button (click)="sidenav.toggle()">
+        <button mat-icon-button (click)="drawer.toggle()">
           <mat-icon aria-hidden="true" *ngIf="samlService.isSsoRedirectCompleted.getValue()">menu</mat-icon>
         </button>
         <vm-patient></vm-patient>
       </div>
-      <div
-        class="action-menu"
-        [ngClass]="{
-          'action-menu__mobile': isMobile,
-          'action-menu__desktop': isDesktop,
-          show: showPatientSidenav
-        }"
-      >
-        <button mat-icon-button (click)="sidenavAction.toggle()" *ngIf="showActionSidenav">
-          <mat-icon aria-hidden="true">more_vert</mat-icon>
-        </button>
-      </div>
+      <button mat-icon-button (click)="drawerAction.toggle()" *ngIf="showActionSidenav">
+        <mat-icon aria-hidden="true">more_vert</mat-icon>
+      </button>
     </mat-toolbar>
     <main>
       <div class="spinner-overlay" *ngIf="spinnerService.IsWait">
@@ -113,5 +104,5 @@
       </div>
       <router-outlet></router-outlet>
     </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </mat-drawer-content>
+</mat-drawer-container>

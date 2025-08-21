@@ -20,6 +20,7 @@ package ch.admin.bag.vaccination.service.cache;
 
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
+import java.io.Serial;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -39,6 +40,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class CacheIdentifierKey implements Serializable {
+  @Serial
   private static final long serialVersionUID = 1L;
   private String oid;
   private String localId;

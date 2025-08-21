@@ -36,11 +36,11 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
   styleUrls: ['./infectious-diseases-detail.component.scss'],
 })
 export class InfectiousDiseasesDetailComponent extends BreakPointSensorComponent implements OnInit {
+  infectiousDiseases: IInfectiousDiseases | null = null;
   illnessService: InfectiousDiseasesService = inject(InfectiousDiseasesService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  sharedDataService: SharedDataService = inject(SharedDataService);
 
-  private _infectiousDiseases: IInfectiousDiseases | null = null;
+  sharedDataService: SharedDataService = inject(SharedDataService);
 
   ngOnInit(): void {
     this.displayMenu(true, false);
@@ -61,13 +61,5 @@ export class InfectiousDiseasesDetailComponent extends BreakPointSensorComponent
       }
     });
     initializeActionData('details', this.sharedDataService);
-  }
-
-  get infectiousDiseases(): IInfectiousDiseases | null {
-    return this._infectiousDiseases;
-  }
-
-  set infectiousDiseases(value: IInfectiousDiseases | null) {
-    this._infectiousDiseases = value;
   }
 }

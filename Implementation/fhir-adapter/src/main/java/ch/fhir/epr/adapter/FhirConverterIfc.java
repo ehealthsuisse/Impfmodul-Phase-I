@@ -46,14 +46,27 @@ import org.hl7.fhir.r4.model.Practitioner;
 public interface FhirConverterIfc {
   LocalDateTime convertToLocalDateTime(Date value);
 
-  <T> void copyNotes(Bundle targetBundle, Bundle sourceBundle, Class<T> type);
-
   Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto);
 
   Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       boolean forceImmunizationAdministrationDocument);
 
-  List<CommentDTO> createComments(Bundle bundle, List<Annotation> notes);
+  /**
+   * Creates a {@link CommentDTO} by aggregating multiple {@link Annotation} notes.
+   * <p>
+   * The resulting {@code CommentDTO} uses the author and timestamp from the first note in the list.
+   * The content text is composed as follows:
+   * <ul>
+   *   <li>The text of the first note appears first.</li>
+   *   <li>For each subsequent note, an empty line separates it from the previous entry.</li>
+   *   <li>Each of these entries includes a line with the author and date (without time), followed by the note's text.</li>
+   * </ul>
+   *
+   * @param bundle the FHIR {@link Bundle} containing resources used to resolve author information
+   * @param notes a list of {@link Annotation} objects to convert into a single comment
+   * @return a {@code CommentDTO}, or null if the input is null or empty
+   */
+  CommentDTO createComment(Bundle bundle, List<Annotation> notes);
 
   Bundle deleteBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       Composition compostion, DomainResource resource);

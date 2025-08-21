@@ -16,12 +16,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import dayjs from 'dayjs';
 import { IVaccination } from '../../../model/vaccination.interface';
 import { VaccinationService } from './vaccination.service';
 import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('Vaccination Service', () => {
   let service: VaccinationService;
@@ -32,8 +33,8 @@ describe('Vaccination Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [VaccinationService, RouterTestingModule],
+      imports: [],
+      providers: [VaccinationService, RouterTestingModule, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(VaccinationService);

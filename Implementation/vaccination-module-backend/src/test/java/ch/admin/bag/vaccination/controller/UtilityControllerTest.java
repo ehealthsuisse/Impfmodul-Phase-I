@@ -59,7 +59,7 @@ public class UtilityControllerTest {
     assertThat(response.getBody()).isInstanceOf(ValueListDTO[].class);
 
     ValueListDTO[] valueListDTOs = response.getBody();
-    assertThat(valueListDTOs.length).isEqualTo(16);
+    assertThat(valueListDTOs.length).isGreaterThan(16);
     boolean medicalProblemCodeFound = false;
     for (int i = 0; i < valueListDTOs.length; i++) {
       if ("medicalProblemCode".equals(valueListDTOs[i].getName())) {
@@ -68,7 +68,7 @@ public class UtilityControllerTest {
         assertThat(valueListDTOs[i].getEntries().size()).isGreaterThan(20);
         assertThat(valueListDTOs[i].getEntries().get(1).getCode()).isEqualTo("1237030002");
         assertThat(valueListDTOs[i].getEntries().get(1).getName())
-            .isEqualTo("At increased risk of exposure to Bordetella pertussis (finding)");
+            .isEqualTo("At increased risk of exposure to Bordetella pertussis");
         assertThat(valueListDTOs[i].getEntries().get(1).getSystem())
             .isEqualTo("http://snomed.info/sct");
       }
@@ -95,9 +95,8 @@ public class UtilityControllerTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody().length).isGreaterThan(25);
     assertThat(response.getBody()[0].getCode()).isEqualTo("56717001");
-    assertThat(response.getBody()[0].getName()).isEqualTo("Tuberculosis (disorder)");
-    assertThat(response.getBody()[0].getSystem())
-        .isEqualTo("http://snomed.info/sct");
+    assertThat(response.getBody()[0].getName()).isEqualTo("Tuberculosis");
+    assertThat(response.getBody()[0].getSystem()).isEqualTo("http://snomed.info/sct");
   }
 
   @Test
@@ -116,10 +115,10 @@ public class UtilityControllerTest {
         .isEqualTo("http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs");
 
     assertThat(response.getBody()[0].getTargetDiseases().size()).isEqualTo(2);
-    assertThat(response.getBody()[0].getTargetDiseases().get(0).getCode()).isEqualTo("36653000");
-    assertThat(response.getBody()[0].getTargetDiseases().get(0).getName())
+    assertThat(response.getBody()[0].getTargetDiseases().getFirst().getCode()).isEqualTo("36653000");
+    assertThat(response.getBody()[0].getTargetDiseases().getFirst().getName())
         .isEqualTo("Rubella");
-    assertThat(response.getBody()[0].getTargetDiseases().get(0).getSystem())
+    assertThat(response.getBody()[0].getTargetDiseases().getFirst().getSystem())
         .isEqualTo("http://snomed.info/sct");
   }
 

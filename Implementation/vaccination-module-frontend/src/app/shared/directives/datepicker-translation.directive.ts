@@ -25,6 +25,7 @@ import { Subscription } from 'rxjs';
   // removed because linter complain about not using element as selector and in this case it is much easier.
   // eslint-disable-next-line
   selector: 'mat-datepicker',
+  standalone: false,
 })
 export class DatepickerTranslationDirective implements OnInit, OnDestroy {
   private dateAdapter: DateAdapter<Date> = inject(DateAdapter);

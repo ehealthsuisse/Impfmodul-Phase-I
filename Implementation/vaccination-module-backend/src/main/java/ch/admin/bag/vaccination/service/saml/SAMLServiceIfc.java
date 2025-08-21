@@ -93,13 +93,6 @@ public interface SAMLServiceIfc {
   int getNumberOfSessions();
 
   /**
-   * Invalidates current http session.
-   *
-   * @param httpSession {@link HttpSession}
-   */
-  void invalidateSession(HttpSession httpSession);
-
-  /**
    * Logs out a user by principal name given by the saml artifact response.
    *
    * @param principalName name of the user
@@ -131,4 +124,12 @@ public interface SAMLServiceIfc {
    * @return {@link ArtifactResponse}
    */
   ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig, ArtifactResolve artifactResolve);
+
+  /**
+   * Sends a logout request to the other node in the cluster if configured.
+   *
+   * @param otherNodeLogoutURL URL of the other node to send the logout request to
+   * @param logoutRequestBody body of the logout request containing the SAML logout request
+   */
+  void sendLogoutToOtherNode(String otherNodeLogoutURL, String logoutRequestBody);
 }

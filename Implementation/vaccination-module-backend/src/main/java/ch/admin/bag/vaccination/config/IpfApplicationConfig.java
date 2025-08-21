@@ -18,7 +18,7 @@
  */
 package ch.admin.bag.vaccination.config;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.openehealth.ipf.commons.ihe.ws.cxf.payload.DisablePayloadCollectingDeactivationInterceptor;
@@ -45,7 +45,7 @@ public class IpfApplicationConfig {
   AbstractPhaseInterceptor<?> serverInLogger() {
     if (activeSoapLogging) {
       log.info("Logging soap incoming messages to {}", soapLoggingPath);
-      return new InPayloadLoggerInterceptor(Paths.get(soapLoggingPath, "incomingSoapMessages.log").toString());
+      return new InPayloadLoggerInterceptor(Path.of(soapLoggingPath, "incomingSoapMessages.log").toString());
     }
 
     log.info("Logging of soap incoming messages is disabled.");
@@ -56,7 +56,7 @@ public class IpfApplicationConfig {
   AbstractPhaseInterceptor<?> serverOutLogger() {
     if (activeSoapLogging) {
       log.info("Logging soap outgoing messages to {}", soapLoggingPath);
-      return new OutPayloadLoggerInterceptor(Paths.get(soapLoggingPath, "outgoingSoapMessages.log").toString());
+      return new OutPayloadLoggerInterceptor(Path.of(soapLoggingPath, "outgoingSoapMessages.log").toString());
     }
 
     log.info("Logging of soap outgoing messages is disabled.");

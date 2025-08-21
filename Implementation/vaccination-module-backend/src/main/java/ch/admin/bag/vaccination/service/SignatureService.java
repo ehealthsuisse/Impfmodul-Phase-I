@@ -18,27 +18,14 @@
  */
 package ch.admin.bag.vaccination.service;
 
-import ch.fhir.epr.adapter.exception.TechnicalException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.KeyStore.PasswordProtection;
-import java.security.cert.X509Certificate;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Base64;
 import jakarta.annotation.PostConstruct;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
-import org.opensaml.security.credential.BasicCredential;
-import org.opensaml.security.credential.Credential;
-import org.opensaml.security.credential.UsageType;
-import org.opensaml.security.x509.BasicX509Credential;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
@@ -66,22 +53,6 @@ public class SignatureService {
 
   @Value("${portal.useTimestampInSeconds:false}")
   private boolean isPortalTimestampInSeconds;
-
-  @Value("${sp.keystore.keystore-type}")
-  private String serviceProviderKeystoreType;
-
-  @Value("${sp.keystore.keystore-path}")
-  private String serviceProviderKeystorePath;
-
-  @Value("${sp.keystore.keystore-password}")
-  private String serviceProviderKeystorePassword;
-
-  @Value("${sp.keystore.sp-alias}")
-  private String serviceProviderKeyAlias;
-
-  public Credential getSamlSPCredential() {
-    return getSamlCredential(serviceProviderKeyAlias, true);
-  }
 
   @PostConstruct
   public void init() {
@@ -119,61 +90,6 @@ public class SignatureService {
 
     return encodeSignatureBase64 ? Base64.getEncoder().encodeToString(hmacByte)
         : new String(Hex.encode(hmac.doFinal(data.getBytes(StandardCharsets.UTF_8))));
-  }
-
-  private Credential getSamlCredential(String alias, boolean isPrivateKey) {
-    try {
-      KeyStore idpKeyStore =
-          initKeyStore(serviceProviderKeystorePath, serviceProviderKeystorePassword.toCharArray());
-      KeyStore.Entry key = idpKeyStore.getEntry(alias,
-          isPrivateKey ? new PasswordProtection(serviceProviderKeystorePassword.toCharArray())
-              : null);
-      BasicCredential credential = null;
-
-      if (isPrivateKey) {
-        KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) key;
-        credential = new BasicX509Credential((X509Certificate) privateKeyEntry.getCertificate(),
-            privateKeyEntry.getPrivateKey());
-
-        ((BasicX509Credential) credential).setEntityCertificateChain(
-            Arrays.asList((X509Certificate[]) privateKeyEntry.getCertificateChain()));
-      } else {
-        KeyStore.TrustedCertificateEntry certificate = (KeyStore.TrustedCertificateEntry) key;
-        credential = new BasicCredential(certificate.getTrustedCertificate().getPublicKey());
-      }
-
-      credential.setEntityId(alias);
-      credential.setUsageType(UsageType.UNSPECIFIED);
-      return credential;
-    } catch (Exception ex) {
-      throw new TechnicalException("Something went wrong reading credentials", ex);
-    }
-  }
-
-  private KeyStore initKeyStore(String path, char[] password) {
-    InputStream keyStoreInputStream = null;
-
-    try {
-      KeyStore keystore = KeyStore.getInstance(serviceProviderKeystoreType);
-      keyStoreInputStream = Files.newInputStream(Path.of(path));
-      keystore.load(keyStoreInputStream, password);
-      return keystore;
-    } catch (IOException | GeneralSecurityException ex) {
-      log.error("Could not initiate keystore or truststore, error message {}", ex.getMessage());
-      throw new TechnicalException(ex.getMessage(), ex);
-    } finally {
-      silentClose(keyStoreInputStream);
-    }
-  }
-
-  private void silentClose(InputStream inputStream) {
-    if (inputStream != null) {
-      try {
-        inputStream.close();
-      } catch (IOException ex) {
-        // ignore silently
-      }
-    }
   }
 
   private boolean validateSignature(String fullQueryString) throws GeneralSecurityException {

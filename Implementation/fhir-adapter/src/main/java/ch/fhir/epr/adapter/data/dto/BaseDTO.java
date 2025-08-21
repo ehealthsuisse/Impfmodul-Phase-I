@@ -23,7 +23,7 @@ import ch.fhir.epr.adapter.utils.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,11 +54,13 @@ public abstract class BaseDTO {
   private HumanNameDTO recorder;
   /** organization of the recorder */
   private String organization;
-  private List<CommentDTO> comments;
+  private CommentDTO comment;
   /** content in case of valid fhir document */
   private String json;
   /** confidentiality of an item, e.g. secret to indicate that it is only visible to the patient */
   private ValueDTO confidentiality = FhirConstants.DEFAULT_CONFIDENTIALITY_CODE;
+  /** Status of verification, automatically set to confirmed if author is HCP, ASS or TCU */
+  private ValueDTO verificationStatus;
 
   // Special attributes not used by this library but useful if a bundle could not be parsed. In this
   // case an error DTO can be created and for example filled by the meta information of a document.
@@ -84,6 +86,41 @@ public abstract class BaseDTO {
    */
   public void validate(boolean isReadOrDelete) {
     ValidationUtils.isValid(this, isReadOrDelete);
+  }
+
+  /**
+   * Indicates whether 2 BaseDTO objects are equal.
+   * <p>
+   * Note: The {@code comment} field is intentionally excluded from the equality check,
+   * because two instances of {@code BaseDTO} can be considered equal even if their comments differ.
+   * Comments are treated as supplementary information and do not define the object's identity.
+   *
+   * @param o the reference object with which to compare
+   * @return {@code true} if this object is the same as the obj argument; {@code false} otherwise
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    BaseDTO baseDTO = (BaseDTO) o;
+
+    return deleted == baseDTO.deleted &&
+        hasErrors == baseDTO.hasErrors &&
+        Objects.equals(code, baseDTO.code) &&
+        Objects.equals(recorder, baseDTO.recorder) &&
+        Objects.equals(organization, baseDTO.organization) &&
+        Objects.equals(confidentiality, baseDTO.confidentiality);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(code, recorder, organization, confidentiality);
   }
 }
 

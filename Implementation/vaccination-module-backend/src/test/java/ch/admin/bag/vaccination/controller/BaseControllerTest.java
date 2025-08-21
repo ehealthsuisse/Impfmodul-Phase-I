@@ -72,7 +72,7 @@ class BaseControllerTest extends MockSessionHelper {
         "http://localhost:" + port + "/vaccination/communityIdentifier/GAZELLE", request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(vaccinationService).create(eq("GAZELLE"), eq("1.3.6.1.4.1.12559.11.20.1"), eq("CHPAM204"),
-        any(VaccinationDTO.class), any(AssertionImpl.class));
+        any(VaccinationDTO.class), any(AssertionImpl.class), eq(false));
   }
 
   @Test
@@ -108,6 +108,6 @@ class BaseControllerTest extends MockSessionHelper {
         request, VaccinationDTO.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(vaccinationService).create(eq("EPDPLAYGROUND"), eq("1.3.6.1.4.1.12559.11.20.1"), eq("CHPAM204"),
-        any(VaccinationDTO.class), any(AssertionImpl.class));
+        any(VaccinationDTO.class), any(AssertionImpl.class), eq(false));
   }
 }

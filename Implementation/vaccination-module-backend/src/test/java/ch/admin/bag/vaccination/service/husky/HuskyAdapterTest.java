@@ -135,14 +135,14 @@ class HuskyAdapterTest {
     List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier, communityConfig,
         repositoryConfig, documentEntries, author, null);
 
-    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
+    try (var is = retrievedDocuments.getFirst().getDataHandler().getInputStream()) {
       byte[] bytesOfDocument = is.readAllBytes();
       if (bytesOfDocument != null) {
         // log.debug("{}", new String(bytesOfDocument));
         Bundle bundle = fhirAdapter.unmarshallFromString(new String(bytesOfDocument));
         List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
         assertThat(vaccinations.size()).isEqualByComparingTo(1);
-        VaccinationDTO vaccinationDTO = vaccinations.get(0);
+        VaccinationDTO vaccinationDTO = vaccinations.getFirst();
         log.debug("{}", vaccinationDTO);
         assertThat(vaccinationDTO.getLotNumber()).isEqualTo("AHAVB946A");
         assertThat(syslogServer.getLastMessage()).contains("Retrieve Document Set");
@@ -162,9 +162,9 @@ class HuskyAdapterTest {
     for (DocumentEntry documentEntry : documentEntries) {
       assertThat(documentEntry.getAuthors().size()).isEqualTo(1);
       if ("Allzeit"
-          .equals(documentEntry.getAuthors().get(0).getAuthorPerson().getName().getGivenName()) &&
+          .equals(documentEntry.getAuthors().getFirst().getAuthorPerson().getName().getGivenName()) &&
           "Bereit".equals(
-              documentEntry.getAuthors().get(0).getAuthorPerson().getName().getFamilyName())) {
+              documentEntry.getAuthors().getFirst().getAuthorPerson().getName().getFamilyName())) {
 
         assertEquals("41000179103", documentEntry.getTypeCode().getCode());
         assertEquals("Immunization record",
@@ -191,6 +191,7 @@ class HuskyAdapterTest {
    * Test <a href="https://jira.e-health-suisse.ch/browse/IMAW-299#value">IMAW-299</a>
    */
   @Test
+  @Disabled("Disabled until the Gazelle Patient Manager application is operational again")
   void getPatient_existingPatient_GAZELLE() {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",
@@ -291,16 +292,16 @@ class HuskyAdapterTest {
     List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier, communityConfig,
         repositoryConfig, List.of(documentEntry), author, huskyAssertion);
 
-    assertEquals("application/fhir+json", retrievedDocuments.get(0).getMimeType());
+    assertEquals("application/fhir+json", retrievedDocuments.getFirst().getMimeType());
 
-    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
+    try (var is = retrievedDocuments.getFirst().getDataHandler().getInputStream()) {
       byte[] bytesOfDocument = is.readAllBytes();
       assertNotNull(bytesOfDocument);
       log.debug("{}", new String(bytesOfDocument));
       Bundle bundle = fhirAdapter.unmarshallFromString(new String(bytesOfDocument));
       List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
       assertThat(vaccinations.size()).isEqualByComparingTo(1);
-      VaccinationDTO vaccinationDTO = vaccinations.get(0);
+      VaccinationDTO vaccinationDTO = vaccinations.getFirst();
       log.debug("{}", vaccinationDTO);
       assertThat(vaccinationDTO.getLotNumber()).isEqualTo("AHAVB946A");
       assertThat(syslogServer.getLastMessage()).contains("Retrieve Document Set");
@@ -332,9 +333,9 @@ class HuskyAdapterTest {
         huskyAdapter.getRetrievedDocuments(patientIdentifier, List.of(documentEntry), null, null, true);
     assertThat(retrievedDocuments.size()).isEqualTo(1);
 
-    assertEquals("text/xml", retrievedDocuments.get(0).getMimeType());
+    assertEquals("text/xml", retrievedDocuments.getFirst().getMimeType());
 
-    try (var is = retrievedDocuments.get(0).getDataHandler().getInputStream()) {
+    try (var is = retrievedDocuments.getFirst().getDataHandler().getInputStream()) {
       byte[] bytesOfDocument = is.readAllBytes();
       assertNotNull(bytesOfDocument);
     }
@@ -388,14 +389,14 @@ class HuskyAdapterTest {
         new Identificator("root2", "ext2"),
         vaccination, false);
 
-    assertThat(metadata.getAuthors().get(0).getName().getFamily()).isEqualTo("Frankenstein");
-    assertThat(metadata.getAuthors().get(0).getName().getGiven()).isEqualTo("Victor");
-    assertThat(metadata.getAuthors().get(0).getName().getPrefix()).isEqualTo("Dr.");
-    assertThat(metadata.getAuthors().get(0).getSpeciality()).isEqualTo(
+    assertThat(metadata.getAuthors().getFirst().getName().getFamily()).isEqualTo("Frankenstein");
+    assertThat(metadata.getAuthors().getFirst().getName().getGiven()).isEqualTo("Victor");
+    assertThat(metadata.getAuthors().getFirst().getName().getPrefix()).isEqualTo("Dr.");
+    assertThat(metadata.getAuthors().getFirst().getSpeciality()).isEqualTo(
         new Code("1050", "2.16.756.5.30.1.127.3.5", "Other"));
     assertThat(metadata.getClassCode()).isEqualTo(
         new Code("184216000", "2.16.840.1.113883.6.96", "Patient record type (record artifact)"));
-    assertThat(metadata.getConfidentialityCodes().get(0))
+    assertThat(metadata.getConfidentialityCodes().getFirst())
         .isEqualTo(new Code("17621005", HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getSystem(), "Normal"));
     assertThat(metadata.getFormatCode()).isEqualTo(new Code("urn:che:epr:ch-vacd:immunization-administration:2022",
         "2.16.756.5.30.1.127.3.10.10", "CH VACD Immunization Administration"));
@@ -426,7 +427,7 @@ class HuskyAdapterTest {
         new Identificator("root2", "ext2"), vaccination, false);
 
     ValueDTO cc = HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE;
-    assertThat(metadata.getConfidentialityCodes().get(0))
+    assertThat(metadata.getConfidentialityCodes().getFirst())
         .isEqualTo(new Code(cc.getCode(), cc.getSystem(), cc.getName()));
   }
 
@@ -439,9 +440,9 @@ class HuskyAdapterTest {
     assertThat(metadata.getContentTypeCode())
         .isEqualTo(new Code("71388002", "2.16.840.1.113883.6.96", "Procedure (procedure)"));
     assertThat(metadata.getAuthor().size()).isEqualTo(1);
-    assertThat(metadata.getAuthor().get(0).getName().getFamily()).isEqualTo("Frankenstein");
-    assertThat(metadata.getAuthor().get(0).getName().getGiven()).isEqualTo("Victor");
-    assertThat(metadata.getAuthor().get(0).getName().getPrefix()).isEqualTo("Dr.");
+    assertThat(metadata.getAuthor().getFirst().getName().getFamily()).isEqualTo("Frankenstein");
+    assertThat(metadata.getAuthor().getFirst().getName().getGiven()).isEqualTo("Victor");
+    assertThat(metadata.getAuthor().getFirst().getName().getPrefix()).isEqualTo("Dr.");
     assertThat(metadata.getIpfSubmissionSet().getPatientId().getId()).isEqualTo("ext");
     assertThat(
         metadata.getIpfSubmissionSet().getPatientId().getAssigningAuthority().getUniversalId())
@@ -464,14 +465,14 @@ class HuskyAdapterTest {
   }
 
   @Test
-  void unknownCommunity_throwTechnicalException() throws Exception {
+  void unknownCommunity_throwTechnicalException() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("unknownCommunity", null, null);
     assertThrows(TechnicalException.class,
         () -> huskyAdapter.getDocumentEntries(patientIdentifier, null, null, null, null, true));
   }
 
   @Test
-  void writeDocument_EPDPLAYGROUND() throws Exception {
+  void writeDocument_EPDPLAYGROUND() {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
             "1.2.3.4.123456.1", "waldspital-Id-1234");
@@ -484,6 +485,7 @@ class HuskyAdapterTest {
   }
 
   @Test
+  @Disabled("Disabled until the Gazelle Patient Manager application is operational again")
   void writeDocument_GAZELLE() throws Exception {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",

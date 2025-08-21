@@ -23,7 +23,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MedicalProblemListComponent } from './medical-problem-list.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogModule } from '@angular/material/dialog';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ProblemListComponent', () => {
   let component: MedicalProblemListComponent;
@@ -31,14 +32,8 @@ describe('ProblemListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        MedicalProblemListComponent,
-        RouterTestingModule,
-        NoopAnimationsModule,
-        TranslateModule.forRoot(),
-        MatDialogModule,
-        HttpClientTestingModule,
-      ],
+      imports: [MedicalProblemListComponent, RouterTestingModule, NoopAnimationsModule, TranslateModule.forRoot(), MatDialogModule],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).overrideTemplate(MedicalProblemListComponent, '');
 
     fixture = TestBed.createComponent(MedicalProblemListComponent);

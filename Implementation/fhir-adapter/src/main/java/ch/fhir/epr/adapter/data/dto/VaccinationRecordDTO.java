@@ -28,8 +28,8 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class VaccinationRecordDTO extends BaseDTO {
   private String lang;

@@ -1,7 +1,7 @@
 {
   "ILLNESS_CODE": {
     "38907003": "Varicella",
-    "14189004": "morbillo",
+    "14189004": "Morbillo",
     "36989005": "Parotite",
     "36653000": "Rosolia",
     "40468003": "Epatite virale tipo A",
@@ -28,9 +28,9 @@
     "4740000": "Herpes zoster",
     "23511006": "Malattia da meningococchi",
     "16814004": "Malattia da pneumococchi",
-    "37109004": "EVD - Ebola virus disease",
-    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)",
-    "55735004": "Respiratory syncytial virus infection (disorder)",
-    "38362002": "Dengue (disorder)"
+    "37109004": "Malattia da ebola virus",
+    "860805006": "Encephalomyelitis caused by Neisseria meningitidis",
+    "55735004": "Infezione da virus respiratorio sinciziale",
+    "38362002": "Dengue"
   }
 }

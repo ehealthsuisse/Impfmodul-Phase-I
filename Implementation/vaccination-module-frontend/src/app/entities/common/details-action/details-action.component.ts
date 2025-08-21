@@ -1,6 +1,4 @@
-﻿import { AdverseEventConfirmComponent } from './../../adverse_event/helper-components/confirm/adverse-event-confirm.component';
-import { MedicalProblemConfirmComponent } from './../../medical-problem/helper-components/confirm/medical-problem-confirm.component';
-/**
+﻿/**
  * Copyright (c) 2023 eHealth Suisse
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -26,7 +24,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogService, IBaseDTO, IHumanDTO, TranslateDirective } from 'src/app/shared';
 import { SessionInfoService } from '../../../core/security/session-info.service';
@@ -36,10 +34,8 @@ import { PatientService } from '../../../shared/component/patient/patient.servic
 import { deleteRecord, downloadRecordValue } from '../../../shared/function';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { AdverseEventService } from '../../adverse_event/services/adverse-event.service';
-import { InfectiousDiseasesConfirmComponent } from '../../infectious_diseases/helper-components/confirm/infectious-diseases-confirm.component';
 import { InfectiousDiseasesService } from '../../infectious_diseases/service/infectious-diseases.service';
 import { MedicalProblemService } from '../../medical-problem/service/medical-problem.service';
-import { VaccinationConfirmComponent } from '../../vaccination/helper-components/confirm/vaccination-confirm.component';
 import { VaccinationService } from '../../vaccination/services/vaccination.service';
 
 @Component({
@@ -71,7 +67,6 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   matDialog: MatDialog = inject(MatDialog);
   router: Router = inject(Router);
   dialog: DialogService = inject(DialogService);
-  activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   patientService: PatientService = inject(PatientService);
   isEmergencyMode: boolean = false;
@@ -84,7 +79,7 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   isValidateDisabled: boolean = false;
   itemId: string = '';
 
-  get patient(): IHumanDTO {
+  get patient(): IHumanDTO | null {
     return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
   }
 
@@ -120,24 +115,21 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
 
   deleteRecord(): void {
     this.updateType();
-    let dialogComponent = VaccinationConfirmComponent;
     const baseDetails = { ...this.details };
     this.sharedDataService.showActionMenu = false;
+    const deleteMessage = this.translateService.instant('GLOBAL.DELETE_CONFIRMATION_MESSAGE');
     switch (this.type) {
       case 'vaccination':
-        deleteRecord(this.matDialog, dialogComponent, this.vaccinationService, baseDetails, this.details);
+        deleteRecord(this.matDialog, this.vaccinationService, baseDetails, deleteMessage);
         break;
       case 'infectious-diseases':
-        dialogComponent = InfectiousDiseasesConfirmComponent;
-        deleteRecord(this.matDialog, dialogComponent, this.illnessService, baseDetails, this.details);
+        deleteRecord(this.matDialog, this.illnessService, baseDetails, deleteMessage);
         break;
       case 'medical-problem':
-        dialogComponent = MedicalProblemConfirmComponent;
-        deleteRecord(this.matDialog, dialogComponent, this.problemService, baseDetails, this.details);
+        deleteRecord(this.matDialog, this.problemService, baseDetails, deleteMessage);
         break;
       case 'allergy':
-        dialogComponent = AdverseEventConfirmComponent;
-        deleteRecord(this.matDialog, dialogComponent, this.adverseEventService, baseDetails, this.details);
+        deleteRecord(this.matDialog, this.adverseEventService, baseDetails, deleteMessage);
         break;
     }
   }

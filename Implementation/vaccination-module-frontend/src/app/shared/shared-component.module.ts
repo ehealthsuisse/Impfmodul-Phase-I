@@ -18,26 +18,11 @@
  */
 import { NgModule } from '@angular/core';
 import { CommentComponent, CommonCardFooterComponent, RefreshIndicatorComponent } from './component';
-import { ConfidentialityComponent } from './component/confidentiality';
 import { TranslateDirective } from './language';
 import { PatientComponent } from './component/patient/patient.component';
 
 @NgModule({
-  imports: [
-    CommentComponent,
-    CommonCardFooterComponent,
-    RefreshIndicatorComponent,
-    ConfidentialityComponent,
-    PatientComponent,
-    TranslateDirective,
-  ],
-  exports: [
-    CommentComponent,
-    CommonCardFooterComponent,
-    RefreshIndicatorComponent,
-    ConfidentialityComponent,
-    PatientComponent,
-    TranslateDirective,
-  ],
+  imports: [CommentComponent, CommonCardFooterComponent, RefreshIndicatorComponent, PatientComponent, TranslateDirective],
+  exports: [CommentComponent, CommonCardFooterComponent, RefreshIndicatorComponent, PatientComponent, TranslateDirective],
 })
 export class SharedComponentModule {}

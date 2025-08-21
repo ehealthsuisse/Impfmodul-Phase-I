@@ -22,9 +22,10 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { SessionInfoService } from '../../../core/security/session-info.service';
-import { IVaccination } from '../../../model';
-import { IComment, IValueDTO } from '../../../shared';
+import { IMedicalProblem, IVaccination } from '../../../model';
+import { IComment, IHumanDTO, IValueDTO } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
+import { extractSessionDetailsByRole, setDefaultValues } from '../../../shared/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -52,8 +53,9 @@ type VaccinationFormGroupContent = {
   recorder: FormControl<IVaccination['recorder']>;
   author: FormControl<IVaccination['recorder']>;
   organization: FormControl<IVaccination['organization']>;
-  comments: FormControl<IComment[]>;
+  comment: FormControl<IComment>;
   commentMessage: FormControl;
+  confidentiality: FormControl<IMedicalProblem['confidentiality']>;
 };
 
 export type VaccinationFormGroup = FormGroup<VaccinationFormGroupContent>;
@@ -78,14 +80,7 @@ export class VaccinationFormService {
       ...vaccination,
     };
 
-    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
-    this.validated = isHCP || this.sessionInfo.queryParams.role === 'ASS';
-
-    const authorInfo = this.sessionInfo.author.getValue();
-    const firstName = isHCP ? authorInfo.firstName : '';
-    const lastName = isHCP ? authorInfo.lastName : '';
-    const prefix = isHCP ? authorInfo.prefix : '';
-    const organization = this.sessionInfo.queryParams.organization;
+    const extractSessionDetails = extractSessionDetailsByRole(this.sessionInfo);
     return new FormGroup<VaccinationFormGroupContent>({
       id: new FormControl(
         { value: vaccinationRawValue.id, disabled: true },
@@ -103,13 +98,14 @@ export class VaccinationFormService {
       validated: new FormControl(this.validated),
       vaccineCode: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(firstName),
-        lastName: new FormControl(lastName),
-        prefix: new FormControl(prefix),
+        firstName: new FormControl(extractSessionDetails.firstName),
+        lastName: new FormControl(extractSessionDetails.lastName),
+        prefix: new FormControl(extractSessionDetails.prefix),
       }),
-      organization: new FormControl(organization),
-      comments: new FormControl([]),
+      organization: new FormControl(extractSessionDetails.organization),
+      comment: new FormControl(),
       commentMessage: new FormControl(),
+      confidentiality: new FormControl(),
     } as any);
   }
 
@@ -136,5 +132,27 @@ export class VaccinationFormService {
     if (vaccination?.recorder === null) {
       form.get('recorder')?.reset();
     }
+  }
+
+  resetMandatoryFields(form: VaccinationFormGroup): void {
+    const extractSessionDetails = extractSessionDetailsByRole(this.sessionInfo);
+    const recorder: IHumanDTO = {
+      firstName: extractSessionDetails.firstName,
+      lastName: extractSessionDetails.lastName,
+      prefix: extractSessionDetails.prefix,
+    };
+
+    const fieldsToReset = [
+      { name: 'occurrenceDate', value: new Date() },
+      { name: 'vaccineCode', value: null },
+      { name: 'targetDiseases', value: [] },
+      { name: 'doseNumber', value: null },
+      { name: 'organization', value: extractSessionDetails.organization },
+      { name: 'recorder', value: recorder },
+      { name: 'validated', value: extractSessionDetails.validated },
+      { name: 'confidentiality', value: { code: '17621005', name: 'Normal' } },
+    ];
+
+    fieldsToReset.forEach(field => setDefaultValues(form, field.name, field.value));
   }
 }

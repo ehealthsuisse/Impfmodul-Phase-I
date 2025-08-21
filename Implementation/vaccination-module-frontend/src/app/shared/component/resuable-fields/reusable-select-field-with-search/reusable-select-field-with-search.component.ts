@@ -33,6 +33,7 @@ export class ReusableSelectFieldWithSearchComponent extends SelectControlValueAc
   @Input() item!: IValueDTO;
   @Input() translationKey!: string;
   @Input() labelKey!: string;
+  @Input() isRequired: boolean = false;
   @ViewChildren(MatOption, { read: ElementRef }) matOptions!: QueryList<ElementRef>;
   @ViewChild('searchComponent') searchComponent!: any;
   searchControl = new FormControl();

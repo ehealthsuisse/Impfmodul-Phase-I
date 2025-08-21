@@ -1,0 +1,112 @@
+@use 'src/assets/scss/_breakpoints' as breakpoints;
+@use 'src/assets/scss/_mixins' as mixins;
+
+$cardMaxWidthDesktop: 90vw;
+$cardMaxWidthMobile: 100%;
+$cardWidthMobile: 80vw;
+$cardColor: rgba(0, 0, 0, 0.7);
+$cardFontSizeDesktop: 1.3rem;
+$cardFontSizeMobile: 1rem;
+
+.vaccination_record_wrapper {
+  width: 100%;
+  @include mixins.flex-center(center, center, row);
+  padding-bottom: 50px;
+
+  .vaccination-record__card {
+    max-width: $cardMaxWidthDesktop;
+    height: 100%;
+    width: 100%;
+    padding: 30px 0 0;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  .mat-mdc-card-content {
+    padding: 0;
+    font-size: 14px;
+
+    .mat-mdc-raised-button.mat-accent {
+      --mat-button-protected-container-color: rgba(2, 101, 96, 1);
+    }
+  }
+
+  .mat-mdc-card-title {
+    font-size: 24px;
+    line-height: 22px;
+  }
+
+  &--desktop {
+    margin-top: 40px !important;
+
+    .vaccination-record__card {
+      & mat-card-content:not(:first-of-type) {
+        margin-top: 80px !important;
+      }
+
+      .info-title {
+        margin-bottom: 20px;
+        @include mixins.flex-center(space-between, center, row);
+
+        .patient-name {
+          color: $cardColor;
+          font-size: $cardFontSizeDesktop;
+          @include mixins.flex-center(center, center, row);
+        }
+
+        vm-patient-action {
+          &:last-of-type {
+            transform: translateX(14px);
+            margin: 0 4px;
+          }
+        }
+
+        @include breakpoints.media-breakpoint(md) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  &--mobile {
+    .vaccination-record__card {
+      max-width: $cardMaxWidthMobile;
+      width: $cardWidthMobile;
+      height: 100%;
+
+      .info-title {
+        .patient-name {
+          font-size: $cardFontSizeMobile;
+        }
+      }
+
+      .mat-mdc-card-content {
+        margin-bottom: 16px;
+      }
+
+      .mobile-add-button {
+        background-color: rgba(2, 101, 96, 1);
+        border-radius: 50%;
+        color: #e8e8e8;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .mobile-add-button mat-icon {
+        font-size: 18px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .custom-divider {
+    height: 8px;
+  }
+}

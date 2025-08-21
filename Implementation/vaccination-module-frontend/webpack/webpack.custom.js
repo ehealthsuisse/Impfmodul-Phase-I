@@ -9,6 +9,20 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const BrowserSyncPlugin = require('browser-sync-v3-webpack-plugin');
 const path = require('path');
+
+// TEMPORARY FIX: Suppressing DEP0060 deprecation warning caused by browser-sync's dependency
+// on outdated http-proxy library that uses deprecated util._extend API.
+// This warning appears when using Angular 20 with browser-sync.
+// TODO: Remove this suppression once browser-sync updates its http-proxy dependency
+// or when we migrate away from browser-sync to a more modern alternative.
+const originalEmit = process.emit;
+process.emit = function (name, data, ...args) {
+  if (name === 'warning' && data && data.name === 'DeprecationWarning' && data.code === 'DEP0060') {
+    return false;
+  }
+  return originalEmit.apply(process, arguments);
+};
+
 module.exports = async (config, options, targetOptions) => {
   const languagesHash = await hashElement(path.resolve(__dirname, '../src/assets/i18n'), {
     algo: 'md5',

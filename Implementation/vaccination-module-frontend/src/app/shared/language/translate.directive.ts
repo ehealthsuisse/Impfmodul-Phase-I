@@ -46,7 +46,7 @@ export class TranslateDirective implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnChanges(): void {
-    if (this.vmTranslate) {
+    if (typeof this.vmTranslate === 'string' && this.vmTranslate.trim().length > 0) {
       this.getTranslation();
     }
   }

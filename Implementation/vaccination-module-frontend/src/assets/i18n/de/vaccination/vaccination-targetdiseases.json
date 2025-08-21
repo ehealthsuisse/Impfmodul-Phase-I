@@ -23,14 +23,14 @@
     "719865001": "Pandemische Influenza",
     "719590007": "Saisonale Influenza",
     "67924001": "Pocken",
-    "359814004": "Affenpocken",
+    "359814004": "Mpox",
     "240532009": "HPV-Erkrankung (Humanes Papillomavirus)",
     "4740000": "Herpes zoster",
     "23511006": "Meningokokken-Erkrankung",
     "16814004": "Pneumokokken-Erkrankung",
-    "37109004": "EVD-Ebola virus disease",
-    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)",
-    "55735004": "Respiratory syncytial virus infection (disorder)",
-    "38362002": "Dengue (disorder)"
+    "37109004": "Ebola-Viruskrankheit",
+    "860805006": "Neisseria-meningitidis-Enzephalomyelitis",
+    "55735004": "Infektion durch Respiratorischen Synzytialvirus",
+    "38362002": "Dengue-Fieber"
   }
 }

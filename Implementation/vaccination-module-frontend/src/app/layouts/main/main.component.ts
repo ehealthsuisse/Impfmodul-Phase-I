@@ -16,22 +16,20 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { AfterViewChecked, ChangeDetectorRef, Component, inject, Inject } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, inject, Inject, DOCUMENT } from '@angular/core';
 import { SpinnerService } from '../../shared/services/spinner.service';
 import { TranslateService } from '@ngx-translate/core';
-import { DOCUMENT } from '@angular/common';
-import { SamlService } from '../../core/security/saml.service';
 
 @Component({
   selector: 'vm-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
+  standalone: false,
 })
 export class MainComponent implements AfterViewChecked {
   isMobile: boolean = false;
   isDesktop: boolean = false;
   spinnerService: SpinnerService = inject(SpinnerService);
-  samlService: SamlService = inject(SamlService);
 
   constructor(private cdr: ChangeDetectorRef, private translateService: TranslateService, @Inject(DOCUMENT) private document: Document) {}
 

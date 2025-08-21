@@ -42,10 +42,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -61,8 +61,11 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.Composition.CompositionRelatesToComponent;
 import org.hl7.fhir.r4.model.Composition.DocumentConfidentiality;
+import org.hl7.fhir.r4.model.Composition.DocumentRelationshipType;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -101,43 +104,6 @@ public class FhirConverter implements FhirConverterIfc {
         dateToConvert.toInstant(), ZoneId.systemDefault()) : null;
   }
 
-
-  @Override
-  public <T> void copyNotes(Bundle targetBundle, Bundle sourceBundle, Class<T> type) {
-    List<Annotation> notes;
-    if (type == Immunization.class) {
-      notes = FhirUtils.getResource(Immunization.class, sourceBundle).getNote();
-    } else if (type == AllergyIntolerance.class) {
-      notes = FhirUtils.getResource(AllergyIntolerance.class, sourceBundle).getNote();
-    } else if (type == Condition.class) {
-      notes = FhirUtils.getResource(Condition.class, sourceBundle).getNote();
-    } else {
-      log.warn("copyNotes type {} not supported", type);
-      return;
-    }
-
-    if (notes == null || notes.isEmpty()) {
-      return;
-    }
-
-    for (Annotation note : notes) {
-      log.debug("note:{}", note.getText());
-      if (note.hasAuthorStringType()) {
-        log.debug("hasAuthorStringType:{}", note.getText());
-      } else if (note.hasAuthorReference()) {
-        copyNoteReferenceIfKnown(targetBundle, sourceBundle, note);
-      }
-      log.debug("addNote:{} {}", note.getText(), note.getAuthor());
-      if (type == Immunization.class) {
-        FhirUtils.getResource(Immunization.class, targetBundle).addNote(note);
-      } else if (type == AllergyIntolerance.class) {
-        FhirUtils.getResource(AllergyIntolerance.class, targetBundle).addNote(note);
-      } else if (type == Condition.class) {
-        FhirUtils.getResource(Condition.class, targetBundle).addNote(note);
-      }
-    }
-  }
-
   @Override
   public Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto) {
     return createBundle(ctx, patientIdentifier, dto, false);
@@ -153,8 +119,8 @@ public class FhirConverter implements FhirConverterIfc {
         createComposition(bundle, dto, patientIdentifier, forceImmunizationAdministrationDocument);
     createPatient(bundle, composition, patientIdentifier, "Patient-0001");
 
-    if (dto instanceof VaccinationRecordDTO) {
-      return createVaccinationRecord(bundle, (VaccinationRecordDTO) dto);
+    if (dto instanceof VaccinationRecordDTO tO) {
+      return createVaccinationRecord(bundle, tO);
     }
 
     DomainResource updatedResource;
@@ -182,15 +148,32 @@ public class FhirConverter implements FhirConverterIfc {
   }
 
   @Override
-  public List<CommentDTO> createComments(Bundle bundle, List<Annotation> notes) {
-    List<CommentDTO> commentDTOs = new ArrayList<>();
-    for (Annotation note : notes) {
-      HumanNameDTO author = getAuthor(bundle, note);
-      commentDTOs.add(new CommentDTO(convertToLocalDateTime(note.getTime()), author.getFullName(), note.getText()));
+  public CommentDTO createComment(Bundle bundle, List<Annotation> notes) {
+    if (notes == null || notes.isEmpty()) {
+      return null;
     }
 
-    Collections.sort(commentDTOs, Comparator.comparing(CommentDTO::getDate).reversed());
-    return commentDTOs;
+    notes.sort(Comparator.comparing(Annotation::getTime));
+    Annotation firstNote = notes.getLast();
+    HumanNameDTO author = getAuthor(bundle, firstNote);
+    LocalDateTime date = convertToLocalDateTime(firstNote.getTime());
+
+    StringBuilder combinedText = new StringBuilder();
+    combinedText.append(firstNote.getText());
+
+    for (int i = notes.size() - 2; i >= 0; i--) {
+      Annotation note = notes.get(i);
+      HumanNameDTO noteAuthor = getAuthor(bundle, note);
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN);
+      String formattedDate = convertToLocalDateTime(note.getTime()).toLocalDate().format(formatter);
+
+      combinedText.append("\n\n")
+          .append(noteAuthor.getFullName()).append(", ").append(formattedDate)
+          .append("\n")
+          .append(note.getText());
+    }
+
+    return new CommentDTO(date, author.getFullName(), combinedText.toString());
   }
 
   @Override
@@ -277,8 +260,7 @@ public class FhirConverter implements FhirConverterIfc {
     LocalDate begin = convertToLocalDate(condition.getOnsetDateTimeType().getValue());
     LocalDate end = convertToLocalDate(condition.getAbatementDateTimeType().getValue());
 
-    PastIllnessDTO pastIllnessDTO =
-        new PastIllnessDTO(id, code, clinicalStatus, verificationStatus, recordedData,
+    PastIllnessDTO pastIllnessDTO = new PastIllnessDTO(id, code, clinicalStatus, verificationStatus, recordedData,
             begin, end, recorder, null, organization);
 
     pastIllnessDTO.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
@@ -325,7 +307,8 @@ public class FhirConverter implements FhirConverterIfc {
         organization,
         lotNumber,
         reason,
-        status);
+        status,
+        getImmunizationsVerificationStatus(immunization));
 
     vaccinationDTO.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(status.getCode()));
     vaccinationDTO.setRelatedId(getCrossReference(immunization));
@@ -337,6 +320,14 @@ public class FhirConverter implements FhirConverterIfc {
   public Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       Composition composition, DomainResource resource) {
     Bundle bundle = createBundle(ctx, patientIdentifier, dto);
+
+    CompositionRelatesToComponent crc = new CompositionRelatesToComponent();
+    crc.setCode(DocumentRelationshipType.REPLACES);
+    Reference targetReference = new Reference();
+    targetReference.setReference(FhirUtils.getIdentifierValue(composition));
+    crc.setTarget(targetReference);
+    ((Composition) bundle.getEntryFirstRep().getResource()).setRelatesTo(new ArrayList<>(List.of(crc)));
+
     DomainResource updatedResource = (DomainResource) getReference(bundle, resource.getClass());
     if (dto.isDeleted()) {
       markResourceDeleted(updatedResource);
@@ -497,8 +488,16 @@ public class FhirConverter implements FhirConverterIfc {
     return concept;
   }
 
+  private Coding createCoding(String code, String name, String system) {
+    Coding coding = new Coding();
+    coding.setCode(code);
+    coding.setDisplay(name);
+    coding.setSystem(system);
+    return coding;
+  }
+
   private void createComment(DomainResource resource, BaseDTO dto, String authorReference) {
-    CommentDTO comment = getNewComment(dto);
+    CommentDTO comment = dto.getComment();
     if (comment != null) {
       Annotation annotation = addNote(resource);
 
@@ -718,7 +717,7 @@ public class FhirConverter implements FhirConverterIfc {
     Practitioner practitioner = new Practitioner();
     practitioner.setId("Practitioner-" + entryNumberString);
     Identifier identifier = new Identifier();
-    identifier.setValue(gln != null ? gln : FhirConstants.DEFAULT_PRACTITIONER_CODE);
+    identifier.setValue(gln != null && !"GLN".equalsIgnoreCase(gln) ? gln : FhirConstants.DEFAULT_PRACTITIONER_CODE);
     identifier.setSystem(FhirConstants.FIXED_PRACTITIONER_SYSTEM);
 
     practitioner.setIdentifier(List.of(identifier));
@@ -816,6 +815,7 @@ public class FhirConverter implements FhirConverterIfc {
       immunization.addReasonCode(FhirUtils.toCodeableConcept(dto.getReason()));
     }
     immunization.setStatus(Immunization.ImmunizationStatus.fromCode(dto.getStatus().getCode()));
+    immunization.setExtension(new ArrayList<>(List.of(createImmunizationsVerificationStatus(dto.getVerificationStatus()))));
     immunization.setMeta(createMeta(FhirConstants.META_VACD_IMMUNIZATION_URL));
 
     addEntry(bundle, "Immunization/", immunization);
@@ -857,6 +857,14 @@ public class FhirConverter implements FhirConverterIfc {
     }
 
     return bundle;
+  }
+
+  private Extension createImmunizationsVerificationStatus(ValueDTO status) {
+    Extension verificationStatus =
+        new Extension("http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-verification-status");
+    verificationStatus.setValue(
+        status != null ? createCoding(status.getCode(), status.getName(), status.getSystem()) :  null);
+    return verificationStatus;
   }
 
   private void fillAuthor(Bundle bundle, BaseDTO dto) {
@@ -917,16 +925,20 @@ public class FhirConverter implements FhirConverterIfc {
     return null;
   }
 
-  private CommentDTO getNewComment(BaseDTO newDto) {
-    return newDto.getComments() != null ? newDto.getComments().stream()
-        .filter(comment -> comment.getDate() == null)
-        .findAny().orElse(null) : null;
-  }
-
   private Resource getReference(Bundle bundle, Class<?> clazz) {
     return bundle.getEntry().stream()
         .filter(entry -> clazz.isAssignableFrom(entry.getResource().getClass()))
         .findFirst().get().getResource();
+  }
+
+  private ValueDTO getImmunizationsVerificationStatus(DomainResource domainResource) {
+    Extension verificationStatusExtension = domainResource.getExtensionByUrl(
+        "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-verification-status");
+    if (Objects.nonNull(verificationStatusExtension)) {
+      Coding coding = (Coding) verificationStatusExtension.getValue();
+      return coding != null ? new ValueDTO(coding.getCode(), coding.getDisplay(), coding.getSystem()) : null;
+    }
+    return null;
   }
 
   private void markResourceDeleted(DomainResource resource) {

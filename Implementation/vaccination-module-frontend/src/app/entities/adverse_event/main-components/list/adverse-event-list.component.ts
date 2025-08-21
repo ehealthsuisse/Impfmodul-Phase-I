@@ -30,9 +30,9 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
 
 @Component({
   selector: 'vm-allergy-list',
+  standalone: true,
   templateUrl: './adverse-event-list.component.html',
   styleUrls: ['./adverse-event-list.component.scss'],
-  standalone: true,
   imports: [SharedLibsModule, ListHeaderComponent, TableWrapperComponent],
 })
 export class AdverseEventListComponent extends BreakPointSensorComponent implements OnInit {

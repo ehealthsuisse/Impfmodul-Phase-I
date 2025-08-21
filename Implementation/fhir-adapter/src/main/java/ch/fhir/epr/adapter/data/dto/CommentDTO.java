@@ -19,6 +19,7 @@
 package ch.fhir.epr.adapter.data.dto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,4 +33,24 @@ public class CommentDTO {
   private LocalDateTime date;
   private String author;
   private String text;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (!(o instanceof CommentDTO comment)) {
+      return false;
+    }
+
+    return Objects.equals(date, comment.date) &&
+        Objects.equals(author, comment.author) &&
+        Objects.equals(text, comment.text);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(date, author, text);
+  }
 }

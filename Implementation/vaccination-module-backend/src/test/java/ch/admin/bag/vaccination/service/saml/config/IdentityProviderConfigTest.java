@@ -45,4 +45,18 @@ public class IdentityProviderConfigTest {
     assertEquals(ENTITY_ID, config.getEntityId());
   }
 
+  @Test
+  void getSamlCredentials_noInput_noExceptionOccures_validCertificate() {
+    IdentityProviderConfig idpConfig = createIdpConfig();
+    assertThat(idpConfig.getSamlCredential(true)).isNotNull();
+  }
+
+  private IdentityProviderConfig createIdpConfig() {
+    KeystoreProperties samlKeystoreProps =
+        new KeystoreProperties("PKCS12", "config/keystore-idp.p12", "8vX6_q73K.T1u2", "spkey");
+
+    IdentityProviderConfig identityProviderConfig = new IdentityProviderConfig();
+    identityProviderConfig.setSamlKeystore(samlKeystoreProps);
+    return identityProviderConfig;
+  }
 }

@@ -60,6 +60,10 @@ export class HelpComponent {
     this.dialogService.closeDialog();
   }
 
+  public closeWithX(): void {
+    this.mdDialogRef.close();
+  }
+
   public confirm(): void {
     this.close(true);
   }

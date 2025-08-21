@@ -67,10 +67,11 @@ public class SAMLUtilsTest {
   void testAddEnvelope_removesXmlDeclaration() {
     String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root><child>value</child></root>";
     String expected =
-        "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-            "   <soapenv:Header/>\n" +
-            "   <soapenv:Body><root><child>value</child></root></soapenv:Body>\n" +
-            "</soapenv:Envelope>";
+        """
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+           <soapenv:Header/>
+           <soapenv:Body><root><child>value</child></root></soapenv:Body>
+        </soapenv:Envelope>""";
     assertEquals(expected, SAMLUtils.addEnvelope(input));
   }
 
@@ -78,10 +79,11 @@ public class SAMLUtilsTest {
   void testAddEnvelope_withWhitespaceAfterDeclaration() {
     String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>   \n\n<root/>";
     String expected =
-        "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-            "   <soapenv:Header/>\n" +
-            "   <soapenv:Body><root/></soapenv:Body>\n" +
-            "</soapenv:Envelope>";
+        """
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+           <soapenv:Header/>
+           <soapenv:Body><root/></soapenv:Body>
+        </soapenv:Envelope>""";
     assertEquals(expected, SAMLUtils.addEnvelope(input));
   }
 }

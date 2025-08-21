@@ -7,10 +7,10 @@
     [helpBody]="'HELP.VACCINATION.LIST.BODY' | translate"
     (add)="addNewRecord()"
   ></vm-list-header>
-
   <vm-table-wrapper
     [dataSource]="vaccinations"
     [displayedColumns]="vaccinationColumns"
+    [enableGrouping]="true"
     [translationPrefix]="'VACCINATION.'"
     [fullWidth]="tableWidth"
     (rowClick)="navigateToDetails($event)"

@@ -1,10 +1,11 @@
-@import 'src/assets/scss/global';
+@use 'src/assets/scss/global';
 
 .nav {
   &__desktop {
     & > * {
       display: inline-grid;
       padding: 0 10px;
+      box-shadow: none;
     }
 
     & > *:not(:first-child):not(:last-child) {

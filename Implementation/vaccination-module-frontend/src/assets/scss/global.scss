@@ -1,5 +1,11 @@
-@import './_breakpoints';
-@import './vendor';
+@use './_breakpoints' as breakpoints;
+@use './_mixins' as mixins;
+@use './variables' as variables;
+@use './vendor' as *;
+
+@forward 'mixins';
+@forward 'breakpoints';
+@forward 'variables';
 
 *,
 body,
@@ -16,34 +22,6 @@ html {
   --background-color: rgb(255, 255, 255);
 
   --font-size-base: 12pt;
-}
-
-/* =============== variables  ================= */
-
-/* =============== font family  ================= */
-
-$font-family-base: Roboto, 'Helvetica Neue', sans-serif;
-
-/* =============== fonts sizes  ================= */
-
-/* =============== fonts colors ================= */
-
-$line-height-base: 16px;
-
-/* ========= spacer using padding and margin */
-
-$padding: 16px;
-$padding-left-right-50: 0 50px 0 50px;
-$recorder-label-padding-left: 30px;
-$form-field-padding: 0 30px 0 30px;
-
-/* =============== mixin  ================= */
-
-@mixin flex-center($JustifyContent, $AlignItems, $FlexDirection) {
-  display: flex;
-  justify-content: $JustifyContent;
-  align-items: $AlignItems;
-  flex-direction: $FlexDirection;
 }
 
 /* =============== classes ================= */
@@ -90,7 +68,7 @@ a:focus {
     grid-row-end: auto;
   }
 
-  @include media-breakpoint(tm) {
+  @include breakpoints.media-breakpoint(tm) {
     display: flex;
     flex-direction: column;
     margin-top: 20px;
@@ -116,7 +94,7 @@ a:focus {
       max-width: 100%;
       padding-right: 25px;
       width: 100% !important;
-      @include media-breakpoint(tm) {
+      @include breakpoints.media-breakpoint(tm) {
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -144,7 +122,7 @@ a:focus {
   }
 }
 
-@include media-breakpoint(tm) {
+@include breakpoints.media-breakpoint(tm) {
   .datesWrap {
     flex-direction: column !important;
   }
@@ -218,33 +196,6 @@ a:focus {
     grid-row: 3 / 4;
     grid-column-start: 2;
     grid-row-start: 2;
-    mat-header-cell,
-    th {
-      @for $i from 1 through 10 {
-        width: calc(100% / $i) !important;
-        &:nth-child(#{ $i }) {
-          @if ($i == 1) {
-            width: 1% !important;
-          }
-          @if ($i == 2) {
-            width: 5% !important;
-          }
-        }
-      }
-    }
-    td {
-      @for $i from 1 through 10 {
-        width: calc(100% / $i) !important;
-        &:nth-child(#{ $i }) {
-          @if ($i == 1) {
-            width: 1% !important;
-          }
-          @if ($i == 2) {
-            width: 5% !important;
-          }
-        }
-      }
-    }
   }
 }
 .mobile-list-wrapper {
@@ -297,7 +248,7 @@ a {
   stroke: var(--accent-color);
 }
 
-@include media-breakpoint(xs) {
+@include breakpoints.media-breakpoint(xs) {
   /*responsive style*/
   .mat- {
     &card {
@@ -358,13 +309,13 @@ a {
   display: none;
 
   background: var(--background-color-base);
-  @include media-breakpoint(tm) {
+  @include breakpoints.media-breakpoint(tm) {
     display: block;
     max-width: 100vw;
   }
   &_card {
     display: none;
-    @include media-breakpoint(tm) {
+    @include breakpoints.media-breakpoint(tm) {
       padding: 0;
       box-shadow: none !important;
       .comment-header {
@@ -382,10 +333,10 @@ a {
       &.active {
         display: block;
         margin-bottom: 15px;
-        pre {
-          word-break: break-word;
-          white-space: pre-line;
-        }
+        white-space: pre-line;
+        word-break: break-word;
+        font-weight: unset;
+        font-size: small;
       }
     }
   }
@@ -396,7 +347,7 @@ a {
   cursor: pointer;
 }
 
-@include media-breakpoint(tm) {
+@include breakpoints.media-breakpoint(tm) {
   vm-comment {
     display: none !important;
   }
@@ -405,7 +356,7 @@ a {
 // Material library changes
 .mat-mdc-card {
   box-shadow: none;
-  font-family: $font-family-base;
+  font-family: variables.$font-family-base;
 
   .mat-mdc-card-title {
     color: rgba(0, 0, 0, 0.8);
@@ -422,13 +373,14 @@ a {
 
   .mdc-text-field {
     padding: 0;
-    --mdc-filled-text-field-container-color: #ffffffc9;
-    --mdc-filled-text-field-label-text-weight: 500;
+    --mat-form-field-filled-container-color: #ffffffc9;
+    --mat-form-field-filled-label-text-weight: 500;
   }
 
   .mat-mdc-form-field {
     width: 100%;
     margin-top: 6px;
+    margin-bottom: 1px;
     // Removes field border when hovering
     .mat-mdc-form-field-focus-overlay {
       position: unset !important;
@@ -440,14 +392,14 @@ a {
     --mat-form-field-container-text-line-height: 1.125;
     --mat-form-field-container-text-weight: 400;
     // Details view form field background color
-    --mdc-filled-text-field-disabled-container-color: #ffffffc9;
-    --mdc-filled-text-field-disabled-input-text-color: black;
+    --mat-form-field-filled-disabled-container-color: #ffffffc9;
+    --mat-form-field-filled-disabled-input-text-color: black;
     // Date picker calendar colors when no date and calendar icon are selected
     --mat-datepicker-toggle-active-state-icon-color: #673ab7;
-    --mdc-filled-text-field-focus-active-indicator-color: #673ab7;
+    --mat-form-field-filled-focus-active-indicator-color: #673ab7;
     // Drop-down arrow color when clicked
     --mat-select-focused-arrow-color: #673ab7;
-    --mdc-filled-text-field-focus-label-text-color: #673ab7;
+    --mat-form-field-filled-focus-label-text-color: #673ab7;
   }
 
   // Details view buttons
@@ -471,7 +423,7 @@ a {
   --mat-option-label-text-size: 14px;
   --mat-option-label-text-weight: 500;
   --mat-option-selected-state-label-text-color: #673ab7;
-  --mat-minimal-pseudo-checkbox-selected-checkmark-color: #673ab7;
+  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #673ab7;
 
   white-space: nowrap !important;
   // Nowrap for drop-down rows
@@ -494,7 +446,7 @@ a {
 
 // Common color for the buttons
 .mat-mdc-raised-button.mat-accent {
-  --mdc-protected-button-container-color: rgba(2, 101, 96, 1);
+  --mat-button-protected-container-color: rgba(2, 101, 96, 1);
 }
 
 // Details view mat-mdc-card
@@ -544,4 +496,9 @@ a {
   top: 100%;
   z-index: 1;
   pointer-events: none;
+}
+
+// Adjusts the height of the mobile Convert dialog
+.mdc-dialog__container {
+  height: unset !important;
 }

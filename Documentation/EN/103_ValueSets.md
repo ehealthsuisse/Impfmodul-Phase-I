@@ -5,8 +5,9 @@ The vaccination module uses the following value sets for coded values:
 ### Vaccination
 
 - vaccineCode - [Swissmedic code for vaccine code](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-vaccines-vs.html)
-- targetDesease - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
+- targetDisease - [TargetDiseasesAndIllnessesUndergoneForImmunization](http://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs.html)
 - status - [ImmunizationStatusCodes](http://hl7.org/fhir/R4/valueset-immunization-status.html)
+- verificationStatus - [ImmunizationVerificationStatusCodes](https://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-verification-status-vs.html)
 - reasonCode - [ImmunizationReasonCodes](http://hl7.org/fhir/R4/valueset-immunization-reason.html)
 
 

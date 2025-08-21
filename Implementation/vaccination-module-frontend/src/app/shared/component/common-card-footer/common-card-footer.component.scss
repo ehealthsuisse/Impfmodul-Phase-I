@@ -1,4 +1,4 @@
-@import 'src/assets/scss/global';
+@use 'src/assets/scss/global';
 
 .mat-card {
   padding: 30px;
@@ -12,7 +12,7 @@
     box-shadow: none;
   }
 
-  @include media-breakpoint(tm) {
+  @include global.media-breakpoint(tm) {
     flex-direction: row !important;
     align-items: center !important;
     place-content: center !important;

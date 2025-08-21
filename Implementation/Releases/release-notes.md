@@ -1,3 +1,39 @@
+# August 2025 - Release 1.8.0-RC1
+This release candidate contains major changes for all artifacts (frontend, backend, FHIR library).
+
+### Changes Fhir Library
+* Updated Java to version 21.
+* Updated Spring Boot to version 3.5.0.
+* A new extension was added for Immunizations that contains the verification status.
+* The RelatesTo section was restored in the Composition resource for editing, validating, and deleting operations.
+* Updated default GLN value.
+
+### Changes Vaccination Module Backend
+* Updated Java to version 21.
+* Updated Spring Boot to version 3.4.8, updated further third party libraries
+* Updated Husky Library to the new version 3.1.0.
+* Import of vaccination record if no immunization documents are found in the profile
+* Enable IDP-specific keystore and truststore settings.
+* Enabled propagation and forwarding of logout requests to another url if the session is not found locally. This setting needs to be only used in case the application is run in a cluster.
+* Added a new record validation rule: if a PAT edits or comments on a validated record created by an HCP, the record retains its validated status.
+* Verification status is set based on the role of the author, as well by taking into account the new validation rule.
+* Corrections regarding translations.
+* Updated the value lists according to current ballot 6 version.
+
+### Changes Vaccination Module Frontend
+* Updated Angular to Version 20.
+* The 'Reason for vaccination' field was removed from the edit view but remains visible in the detail view, defaulting to 'Prevention' if no other reason is specified in the document.
+* Redesigned comment view so that only one comment will be visible in the comment view, with previous comments accessible only in older document versions.
+* When 'Save and create another' button is clicked, the form will be reset to the default values.
+* Replaced tooltips with buttons in the list overview, when adding new records also mobile buttons were redesigned.
+* The confidentiality logic was moved from the confirmation dialog to the edit view.
+* Validation status is now visible in the vaccination certificate overview.
+* Added grouping functionality for updated records, with a dropdown to display previous records.
+* In the vaccination certificate overview, 'Save' and 'Download' buttons were renamed and consolidated under a new dropdown button labeled 'More'.
+* Verification status is now set based on the role of the author.
+* Fixed various styling issues.
+* Improved translations and error validation.
+
 # May 2025 - Hotfix 1.7.1
 This release fixes an issue which was hindering the SAML logout to be proceed via the backchannel.
  * Fixed the above mentioned issue
@@ -8,16 +44,16 @@ This release wraps up all the RC-feedback for the next stable release, along wit
 * Fixed the issue that the JSESSIONID cookies of other applications running on the same domain were deleted upon login on Safari.
 
 # January 2025 - Release 1.7.0-RC2
-This release candidat provides some fixes, especially regarding tomcat compatibility.
+This release candidate provides some fixes, especially regarding tomcat compatibility.
 * Tomcat 11 compatibility has been fixed, there had been an issue with the CSRF token not being correctly configured.
-* Upgraded to the offical husky release 3.0.2
+* Upgraded to the official husky release 3.0.2
 * Upgraded few other dependencies on the backend module
 * Fixed some testing annotation which had been marked as deprecated.
 * Fixed an issue that changing the language of the UI was not persisted after a refresh. 
-* Fixed a layouting issue with the validation texts for the date fields
+* Fixed a lay outing issue with the validation texts for the date fields
 
 # November 2024 - Release 1.7.0-RC1
-This release candidat contains major changes for all artifacts (frontend, backend, FHIR library).
+This release candidate contains major changes for all artifacts (frontend, backend, FHIR library).
 <br>Starting with 1.7.0, it is necessary to deploy the application on a new tomcat version. Installation guide has been updated.
 
 ### Changes Fhir Library

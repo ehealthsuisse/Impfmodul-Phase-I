@@ -4,16 +4,38 @@
   </mat-card-header>
   <mat-card-content>
     <mat-card
-      *ngFor="let comment of comments"
+      *ngIf="comment || canAddComments"
       role="article"
       class="comment-card mat-elevation-z0"
-      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDate }}'"
+      [attr.aria-label]="'Comment by {{ comment?.author }} on {{ comment?.date | formatDate }}'"
     >
-      <div class="comment-header">
-        <mat-card-subtitle [attr.aria-label]="comment.author">{{ comment.author }}</mat-card-subtitle>
-        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      <div class="comment-header" *ngIf="comment?.text">
+        <mat-card-subtitle [attr.aria-label]="comment?.author"
+          >{{ 'GLOBAL.LAST_MODIFIED_BY' | translate : { author: comment?.author } }}
+        </mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment?.date | formatDate">{{ comment?.date | formatDate }}</mat-card-subtitle>
       </div>
-      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+      <mat-form-field *ngIf="canAddComments; else viewComment" class="detailed-card-content__form-field">
+        <mat-label class="mat-label" vmTranslate="GLOBAL.COMMENT" [attr.aria-label]="'GLOBAL.COMMENT' | translate">
+          {{ 'GLOBAL.COMMENT' | translate }}
+        </mat-label>
+        <textarea
+          matInput
+          placeholder="{{ 'COMMENT.PLACEHOLDER' | translate }}"
+          cdkTextareaAutosize
+          [cdkAutosizeMinRows]="1"
+          [cdkAutosizeMaxRows]="30"
+          [value]="commentMessage"
+          (input)="onCommentChange($event.target.value)"
+          [attr.aria-label]="'GLOBAL.COMMENT' | translate"
+        ></textarea>
+      </mat-form-field>
+
+      <ng-template #viewComment>
+        <p class="comment-text" [attr.aria-label]="'GLOBAL.COMMENT' | translate">
+          {{ comment?.text }}
+        </p>
+      </ng-template>
     </mat-card>
   </mat-card-content>
 </mat-card>

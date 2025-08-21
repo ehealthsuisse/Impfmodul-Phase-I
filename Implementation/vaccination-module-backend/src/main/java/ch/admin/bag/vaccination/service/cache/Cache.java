@@ -19,7 +19,9 @@
 package ch.admin.bag.vaccination.service.cache;
 
 import ch.admin.bag.vaccination.data.request.EPRDocument;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.Hazelcast;
@@ -39,8 +41,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class Cache {
-  private String PATIENT_IDENTIFIER_CACHE_NAME = "patient-identifier";
-  private String DOCUMENT_CACHE_NAME = "document";
+  private static final String PATIENT_IDENTIFIER_CACHE_NAME = "patient-identifier";
+  public static final String DOCUMENT_CACHE_NAME = "document";
+  public static final String VACCINATION_RECORDS_CACHE_NAME = "vaccination-records";
   private HazelcastInstance hazelcast;
 
   @Value("${epdbackend.cache.enabled:false}")
@@ -49,11 +52,18 @@ public class Cache {
   private String clustername;
   @Value("${epdbackend.cache.ttlInSeconds:300}")
   private int cacheTTLInSeconds;
+  private int vaccinationRecordsTTLInSeconds = 60;
+
+  public CacheIdentifierKey createCacheIdentifier(PatientIdentifier patientIdentifier) {
+    AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
+    return new CacheIdentifierKey(patientIdentifier, author);
+  }
 
   public void clear() {
     log.debug("Clearing both patient identifier and document cache.");
     hazelcast.getMap(PATIENT_IDENTIFIER_CACHE_NAME).clear();
     hazelcast.getMap(DOCUMENT_CACHE_NAME).clear();
+    hazelcast.getMap(VACCINATION_RECORDS_CACHE_NAME).clear();
   }
 
   /**
@@ -62,10 +72,14 @@ public class Cache {
    *
    * @param cacheIdentifier {@link CacheIdentifierKey}
    */
-  public void clear(CacheIdentifierKey cacheIdentifier) {
+  public void clear(CacheIdentifierKey cacheIdentifier, String cacheName) {
     log.debug("Clearing document cache for {}.", cacheIdentifier);
-    Map<CacheIdentifierKey, List<String>> mapDocument = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+    Map<CacheIdentifierKey, List<String>> mapDocument = hazelcast.getMap(cacheName);
     mapDocument.remove(cacheIdentifier);
+  }
+
+  public void clear(CacheIdentifierKey cacheIdentifier) {
+    clear(cacheIdentifier, DOCUMENT_CACHE_NAME);
   }
 
   public boolean dataCacheMiss(CacheIdentifierKey cacheIdentifier) {
@@ -77,11 +91,15 @@ public class Cache {
     return miss;
   }
 
-  public List<EPRDocument> getData(CacheIdentifierKey identifier) {
-    Map<CacheIdentifierKey, List<EPRDocument>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+  public List<EPRDocument> getData(CacheIdentifierKey identifier, String cacheName) {
+    Map<CacheIdentifierKey, List<EPRDocument>> map = hazelcast.getMap(cacheName);
     List<EPRDocument> documents = getData(map, identifier);
     log.debug("Load cache data for {}. Found {} entries", identifier, documents.size());
     return documents;
+  }
+
+  public List<EPRDocument> getData(CacheIdentifierKey identifier) {
+    return getData(identifier, DOCUMENT_CACHE_NAME);
   }
 
   public PatientIdentifier getPatientIdentifier(String localAssigningAuthorityId, String localId) {
@@ -95,14 +113,18 @@ public class Cache {
     return isCacheEnabled;
   }
 
-  public void putData(CacheIdentifierKey cacheIdentifier, EPRDocument document) {
-    Map<CacheIdentifierKey, List<EPRDocument>> map = hazelcast.getMap(DOCUMENT_CACHE_NAME);
+  public void putData(CacheIdentifierKey cacheIdentifier, EPRDocument document, String cacheName) {
+    Map<CacheIdentifierKey, List<EPRDocument>> map = hazelcast.getMap(cacheName);
     List<EPRDocument> eprDocuments = getData(map, cacheIdentifier);
     if (document.getJsonOrXmlFhirContent() != null) {
       eprDocuments.add(document);
     }
     log.debug("Save cache data for {}. Number of entries: {}", cacheIdentifier, eprDocuments.size());
     map.put(cacheIdentifier, eprDocuments);
+  }
+
+  public void putData(CacheIdentifierKey cacheIdentifier, EPRDocument document) {
+    putData(cacheIdentifier, document, DOCUMENT_CACHE_NAME);
   }
 
   public void putPatientIdentifier(PatientIdentifier patientIdentifier) {
@@ -134,6 +156,10 @@ public class Cache {
     documentMapConfig
         .setBackupCount(0)
         .setTimeToLiveSeconds(isCacheEnabled ? cacheTTLInSeconds : 1);
+    MapConfig vaccinationRecordsMapConfig = config.getMapConfig(VACCINATION_RECORDS_CACHE_NAME);
+    vaccinationRecordsMapConfig
+        .setBackupCount(0)
+        .setTimeToLiveSeconds(vaccinationRecordsTTLInSeconds);
     hazelcast = Hazelcast.newHazelcastInstance(config);
   }
 }

@@ -41,7 +41,7 @@ export class BreakPointSensorComponent {
   dialogService = inject(DialogService);
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver.observe([Breakpoints.XSmall,Breakpoints.Small,Breakpoints.HandsetPortrait,
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.HandsetPortrait,
         Breakpoints.Web, this.MY_TABLET_BREAKPOINT, this.MY_DESKTOP_BREAKPOINT,
       ])
       .subscribe(result => {

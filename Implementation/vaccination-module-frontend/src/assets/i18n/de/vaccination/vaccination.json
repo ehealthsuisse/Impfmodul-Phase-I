@@ -16,6 +16,7 @@
     "ACTIVE": "Aktiv",
     "INACTIVE": "Inaktiv",
     "SEARCH_TARGET_DISEASES": "Impfschutz suchen",
-    "DOSE_NUMBER_FORMAT": "Dosis muss eine Zahl sein"
+    "DOSE_NUMBER_FORMAT": "Dosis muss eine Zahl sein",
+    "CONFIDENTIALITY": "Vertraulichkeit"
   }
 }

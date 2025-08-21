@@ -19,26 +19,15 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VaccinationDetailedInformationComponent } from '../vaccination-detailed-information/vaccination-detailed-information.component';
-import { ConfidentialityComponent } from '../../../../shared/component/confidentiality';
 import { MaterialModule } from '../../../../shared/material.module';
 import { TranslateModule } from '@ngx-translate/core';
-import { TranslateDirective } from '../../../../shared';
 import { CommonModule } from '@angular/common';
 import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 
 @Component({
   selector: 'vm-vaccination-confirm',
   standalone: true,
-  imports: [
-    CommonModule,
-    MaterialModule,
-    VaccinationDetailedInformationComponent,
-    ConfidentialityComponent,
-    TranslateModule,
-    TranslateDirective,
-    VaccinationConfirmComponent,
-    ConfirmComponent,
-  ],
+  imports: [CommonModule, MaterialModule, VaccinationDetailedInformationComponent, TranslateModule, ConfirmComponent],
   templateUrl: './vaccination-confirm.component.html',
   styleUrls: ['./vaccination-confirm.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

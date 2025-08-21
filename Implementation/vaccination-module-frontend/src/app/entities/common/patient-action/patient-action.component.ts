@@ -16,13 +16,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit } from '@angular/core';
 import { DialogService, IValueDTO } from '../../../shared';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { downloadRecordValue, openSnackBar } from '../../../shared/function';
 import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination, IVaccinationRecord } from '../../../model';
-import { filterPatientRecordData, VaccinationRecordService } from '../../vaccintion-record/service/vaccination-record.service';
+import { filterPatientRecordData, VaccinationRecordService } from '../../vaccination-record/service/vaccination-record.service';
 import { SpinnerService } from '../../../shared/services/spinner.service';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
@@ -45,13 +45,16 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
   dialog: DialogService = inject(DialogService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   patientService: PatientService = inject(PatientService);
+  elementRef: ElementRef = inject(ElementRef);
   isEmergencyMode: boolean = false;
+  showMoreOptions: boolean = false;
 
   ngOnInit(): void {
     this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
   }
 
   download = (): Subscription => {
+    this.showMoreOptions = false;
     return this.vaccinationRecordService.queryOneRecord().subscribe({
       next: record => {
         const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(record.json!);
@@ -62,6 +65,7 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
   };
 
   save(): Subscription {
+    this.showMoreOptions = false;
     return this.queryRecord()
       .pipe(switchMap(record => this.saveRecord(record)))
       .subscribe();
@@ -80,6 +84,14 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
         this.spinnerService.hide();
       },
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onOutsideClick(event: MouseEvent): void {
+    const clickedInside = this.elementRef.nativeElement.contains(event.target);
+    if (!clickedInside) {
+      this.showMoreOptions = false;
+    }
   }
 
   private queryRecord(): Observable<IVaccinationRecord> {
@@ -160,17 +172,8 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
       vaccineCodes: record.vaccinations.map(item => item.code),
       medicalProblemCodes: record.medicalProblems.map(item => item.code),
     };
-    return this.vaccinationRecordService.exportPdf(payload, record.lang);
+    return this.vaccinationRecordService.exportPdf(payload, this.translateService.currentLang);
   }
-
-  private buildIValueDTO(item: IValueDTO): IValueDTO {
-    return {
-      code: item.code,
-      name: item.name,
-      system: item.system,
-    };
-  }
-
   private handlePdfResponse(response: Blob, record: IVaccinationRecord): void {
     const blob = new Blob([response], { type: 'application/pdf' });
     const url = window.URL.createObjectURL(blob);

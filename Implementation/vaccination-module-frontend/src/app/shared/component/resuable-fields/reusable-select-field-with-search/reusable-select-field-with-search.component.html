@@ -1,7 +1,7 @@
 <mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
   <mat-label [vmTranslate]="translationKey + '.' + labelKey"></mat-label>
   <mat-select
-    required="true"
+    [required]="isRequired"
     ngDefaultControl
     [compareWith]="compareFn"
     [formControl]="formControl"

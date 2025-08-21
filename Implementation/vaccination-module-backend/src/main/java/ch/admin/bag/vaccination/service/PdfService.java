@@ -44,6 +44,8 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +157,7 @@ public class PdfService {
     log.debug("create {} allergies", dtos == null ? 0 : dtos.size());
     if (dtos != null) {
       for (AllergyDTO dto : dtos) {
-        addAllergyRow(table, dto, pdfDocument);
+        addAllergyRow(table, dto, pdfDocument, vaccinationRecordDTO.getLang());
       }
     }
     table.draw();
@@ -171,14 +173,14 @@ public class PdfService {
     return allergyCell;
   }
 
-  private void addAllergyRow(BaseTable table, AllergyDTO dto, PdfDocument pdfDocument) throws IOException {
+  private void addAllergyRow(BaseTable table, AllergyDTO dto, PdfDocument pdfDocument, String lang) throws IOException {
     if (dto == null) {
       log.warn("addRow AllergyDTO null");
       return;
     }
     Row<PDPage> row = table.createRow(CELL_HEIGHT);
     Cell<PDPage> allergyCell = addAllergyCell(dto, pdfDocument, row);
-    addCommentRow(table, dto, pdfDocument, allergyCell);
+    addCommentRow(table, dto, pdfDocument, allergyCell, lang);
     updateYposition(row.getHeight(), pdfDocument);
     swapColor(pdfDocument);
   }
@@ -205,34 +207,51 @@ public class PdfService {
     return cell;
   }
 
-  private Cell<PDPage> addCommentCell(PdfDocument pdfDocument, CommentDTO commentDTO, Row<PDPage> commentRow)
+  private void addCommentCells(PdfDocument pdfDocument, CommentDTO commentDTO, BaseTable table, String lang)
       throws IOException {
-    String comment =
-        getFormattedDateTime(commentDTO.getDate()) + ", " + commentDTO.getAuthor() + ": "
-            + commentDTO.getText().replace("\n", " ");
-    Cell<PDPage> commmentCell = addCell(comment, ADVERSE_EVENTS_TABLE_WIDTHS[0], commentRow,
-        pdfDocument);
-    commmentCell.setFontSize(8);
-    // Removes top border of the comment cell, so that allergy and comments fit in one cell
-    commmentCell.setTopBorderStyle(null);
-    return commmentCell;
+    String header = I18nKey.LAST_MODIFIED_BY.getTranslation(lang) + commentDTO.getAuthor() + " " +
+        getFormattedDateTime(commentDTO.getDate());
+    String[] textLines = commentDTO.getText().split("\\R");
+
+    float colWidth = ADVERSE_EVENTS_TABLE_WIDTHS[0];
+
+    // First row: header
+    Row<PDPage> headerRow = table.createRow(CELL_HEIGHT / 2);
+    Cell<PDPage> headerCell = addCell(header, colWidth, headerRow, pdfDocument);
+    headerCell.setFontSize(8);
+    headerCell.setBottomBorderStyle(null);
+    setRowColor(headerRow, pdfDocument.getRowBackgoundColor());
+
+    // Each line of the comment's text goes into a new row
+    for (int i = 0; i < textLines.length; i++) {
+      String line = textLines[i];
+      Row<PDPage> lineRow = table.createRow(CELL_HEIGHT / 2);
+      Cell<PDPage> lineCell = addCell(line.trim(), colWidth, lineRow, pdfDocument);
+      lineCell.setFontSize(8);
+      lineCell.setTopBorderStyle(null);
+      setRowColor(lineRow, pdfDocument.getRowBackgoundColor());
+
+      if (i == textLines.length - 1) {
+        // Set bottom border only after the texts last line
+        lineCell.setBottomBorderStyle(new LineStyle(Color.BLACK, 1.3f));
+      } else {
+        lineCell.setBottomBorderStyle(null);
+      }
+    }
   }
 
-  private void addCommentRow(BaseTable table, AllergyDTO dto, PdfDocument pdfDocument, Cell<PDPage> allergyCell)
-      throws IOException {
-    for (int i = 0; i < dto.getComments().size(); i++) {
-      CommentDTO commentDTO = dto.getComments().get(i);
-      Row<PDPage> commentRow = table.createRow(CELL_HEIGHT);
-      Cell<PDPage> commmentCell = addCommentCell(pdfDocument, commentDTO,
-          commentRow);
-      // Removed bottom border from allergy cell, in case there is a comment, so that allergy and comments
-      // fit in one cell
+  private void addCommentRow(BaseTable table, AllergyDTO dto, PdfDocument pdfDocument, Cell<PDPage> allergyCell,
+      String lang) throws IOException {
+    CommentDTO commentDTO = dto.getComment();
+    if (commentDTO != null) {
+      addCommentCells(pdfDocument, commentDTO, table, lang);
+
+      // Remove bottom border from allergy cell so allergy and comment appear as one block
       allergyCell.setBottomBorderStyle(null);
-      if (i < dto.getComments().size() - 1) {
-        commmentCell.setBottomBorderStyle(null);
-      }
-      updateYposition(commentRow.getHeight(), pdfDocument);
-      setRowColor(commentRow, pdfDocument.getRowBackgoundColor());
+
+      Row<PDPage> lastRow = table.getRows().get(table.getRows().size() - 1);
+      updateYposition(lastRow.getHeight(), pdfDocument);
+      setRowColor(lastRow, pdfDocument.getRowBackgoundColor());
     }
   }
 

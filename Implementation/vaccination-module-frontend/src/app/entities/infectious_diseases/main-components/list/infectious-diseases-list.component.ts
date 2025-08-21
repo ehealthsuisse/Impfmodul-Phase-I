@@ -30,9 +30,9 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
 
 @Component({
   selector: 'vm-infectious-diseases-list',
+  standalone: true,
   templateUrl: './infectious-diseases-list.component.html',
   styleUrls: ['./infectious-diseases-list.component.scss'],
-  standalone: true,
   imports: [SharedLibsModule, ListHeaderComponent, TableWrapperComponent],
 })
 export class InfectiousDiseasesListComponent extends BreakPointSensorComponent implements OnInit {

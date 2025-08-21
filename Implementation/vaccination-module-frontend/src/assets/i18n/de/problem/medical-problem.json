@@ -12,6 +12,7 @@
     "BEGIN": "Beginn",
     "END": "Ende",
     "SEVERITY": "Schweregrad",
-    "DATE": "Datum der Feststellung"
+    "DATE": "Datum der Feststellung",
+    "CONFIDENTIALITY": "Vertraulichkeit"
   }
 }

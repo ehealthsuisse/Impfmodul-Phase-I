@@ -45,7 +45,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
-  declarations: [],
   imports: [
     MatToolbarModule,
     MatButtonModule,

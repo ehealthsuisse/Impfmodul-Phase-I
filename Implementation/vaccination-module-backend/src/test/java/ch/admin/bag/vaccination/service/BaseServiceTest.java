@@ -34,7 +34,6 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,7 +92,6 @@ class BaseServiceTest {
     assertNotNull(patientIdentifier);
     assertNotNull(patientIdentifier.getPatientInfo());
   }
-
 
   @Test
   void processAndValidateDocuments_documentsUnprocessed_isTrustedIsTrue() {

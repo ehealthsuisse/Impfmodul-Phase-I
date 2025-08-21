@@ -12,7 +12,7 @@
     "63650001": "Colera",
     "27836007": "Pertosse",
     "398102009": "Poliomielite acuta",
-    "18624000": "Alattia da rotavirus",
+    "18624000": "Malattia da rotavirus",
     "14168008": "Rabbia",
     "56717001": "Tubercolosi",
     "4834000": "Febbre tifoidea",
@@ -28,9 +28,9 @@
     "4740000": "Herpes zoster",
     "23511006": "Malattia da meningococchi",
     "16814004": "Malattia da pneumococchi",
-    "37109004": "EVD-Ebola virus disease",
-    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)",
-    "55735004": "Respiratory syncytial virus infection (disorder)",
-    "38362002": "Dengue (disorder)"
+    "37109004": "Malattia da ebola virus",
+    "860805006": "Encephalomyelitis caused by Neisseria meningitidis",
+    "55735004": "Infezione da virus respiratorio sinciziale",
+    "38362002": "Dengue"
   }
 }

@@ -22,8 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import javax.net.ssl.SSLContext;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
@@ -32,7 +40,12 @@ import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
@@ -171,6 +184,53 @@ public class SAMLServiceTest {
   void redirectToIdp_validResponse_noException() {
     HttpServletResponse mock = new MockHttpServletResponse();
     samlService.redirectToIdp(IdpProvider.GAZELLE_IDP_IDENTIFIER, mock);
+  }
+
+  @Test
+  void sendLogoutToOtherNode_validUrl() throws Exception {
+    // Arrange
+    String otherNodeLogoutURL = "http://example.com/logout";
+    String logoutRequestBody = "<logoutRequest>test</logoutRequest>";
+    HttpResponse<String> mockResponse = mock(HttpResponse.class);
+    when(mockResponse.statusCode()).thenReturn(200);
+
+    HttpClient mockHttpClient = mock(HttpClient.class);
+    HttpClient.Builder mockHttpClientBuilder = mock(HttpClient.Builder.class);
+    when(mockHttpClientBuilder.sslContext(any(SSLContext.class))).thenReturn(mockHttpClientBuilder);
+    when(mockHttpClientBuilder.build()).thenReturn(mockHttpClient);
+    when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+      .thenReturn(mockResponse);
+
+    try (MockedStatic<HttpClientBuilder> mockedHttpClientStatic = Mockito.mockStatic(HttpClientBuilder.class);
+         MockedStatic<HttpClient> mockedHttpClient = Mockito.mockStatic(HttpClient.class)) {
+      mockedHttpClient.when(HttpClient::newHttpClient).thenReturn(mockHttpClient);
+      mockedHttpClientStatic.when(HttpClient::newBuilder).thenReturn(mockHttpClientBuilder);
+      SAMLService samlService = new SAMLService();
+
+      // Act
+      samlService.sendLogoutToOtherNode(otherNodeLogoutURL, logoutRequestBody);
+
+      // Assert
+      ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
+      verify(mockHttpClient).send(requestCaptor.capture(), any(HttpResponse.BodyHandler.class));
+      HttpRequest capturedRequest = requestCaptor.getValue();
+
+      assertEquals(otherNodeLogoutURL, capturedRequest.uri().toString());
+      assertEquals("application/soap+xml", capturedRequest.headers().firstValue("Content-Type").orElse(null));
+      assertTrue(capturedRequest.bodyPublisher().isPresent());
+    }
+  }
+
+  @Test
+  void sendLogoutToOtherNode_invalidUrl() {
+    // Arrange
+    String otherNodeLogoutURL = null;
+    String logoutRequestBody = "<logoutRequest>test</logoutRequest>";
+    SAMLService samlService = new SAMLService();
+
+    // Act & Assert
+    samlService.sendLogoutToOtherNode(otherNodeLogoutURL, logoutRequestBody);
+    // No exception should be thrown, and the method should log a warning.
   }
 
   private Assertion createAssertion() {

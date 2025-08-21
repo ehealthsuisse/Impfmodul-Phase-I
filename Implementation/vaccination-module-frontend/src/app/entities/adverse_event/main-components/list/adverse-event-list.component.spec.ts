@@ -19,10 +19,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdverseEventListComponent } from './adverse-event-list.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AllergyListComponent', () => {
   let component: AdverseEventListComponent;
@@ -30,7 +31,8 @@ describe('AllergyListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, AdverseEventListComponent, RouterTestingModule, TranslateModule.forRoot(), MatDialogModule],
+      imports: [AdverseEventListComponent, RouterTestingModule, TranslateModule.forRoot(), MatDialogModule],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     })
       .overrideTemplate(AdverseEventListComponent, '')
       .compileComponents();

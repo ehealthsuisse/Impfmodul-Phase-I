@@ -12,6 +12,7 @@
   <vm-table-wrapper
     [dataSource]="infectiousDiseases"
     [displayedColumns]="displayedColumns"
+    [enableGrouping]="true"
     [translationPrefix]="'ILLNESS.'"
     [fullWidth]="tableWidth"
     (rowClick)="navigateToDetails($event)"

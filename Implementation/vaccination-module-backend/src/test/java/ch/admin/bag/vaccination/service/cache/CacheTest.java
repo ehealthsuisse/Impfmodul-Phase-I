@@ -22,11 +22,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ch.admin.bag.vaccination.data.request.EPRDocument;
+import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,12 +50,12 @@ class CacheTest {
   private Cache cache;
 
   @Test
-  void clear_anyData_mapIsCleared() throws Exception {
+  void clear_anyData_mapIsCleared() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(patientIdentifier, null);
     cache.putPatientIdentifier(patientIdentifier);
-    cache.putData(cacheIdentifier, new EPRDocument(false, "test", null));
+    cache.putData(cacheIdentifier, new EPRDocument(false, "test", null, null));
     cache.clear();
 
     assertThat(cache.getData(cacheIdentifier)).isEmpty();
@@ -80,12 +85,12 @@ class CacheTest {
 
   @Test
   void test_CacheIdentifierKey() {
-    CacheIdentifierKey key1 =
-        new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
+    setAuthorInSession(new AuthorDTO(null, null, "123"));
+    CacheIdentifierKey key1 = cache.createCacheIdentifier(new PatientIdentifier("community", "localId", "oid"));
     assertThat(key1.getOid()).isEqualTo("oid");
     assertThat(key1.getLocalId()).isEqualTo("localId");
     CacheIdentifierKey key2 =
-        new CacheIdentifierKey(new PatientIdentifier("community", "localId", "oid"), new AuthorDTO(null, null, "123"));
+        cache.createCacheIdentifier(new PatientIdentifier("community", "localId", "oid"));
     assertThat(key1.equals(key2)).isTrue();
     assertThat(key1.hashCode()).isEqualTo(key2.hashCode());
 
@@ -102,9 +107,7 @@ class CacheTest {
     key2.setGln("123");
 
     // community does NOT effect key
-    CacheIdentifierKey key3 =
-        new CacheIdentifierKey(new PatientIdentifier("UNKNOWNCOMM", "localId", "oid"),
-            new AuthorDTO(null, null, "123"));
+    CacheIdentifierKey key3 = cache.createCacheIdentifier(new PatientIdentifier("UNKNOWNCOMM", "localId", "oid"));
     assertThat(key1.equals(key3)).isTrue();
     assertThat(key1.hashCode()).isEqualTo(key3.hashCode());
   }
@@ -121,7 +124,7 @@ class CacheTest {
   }
 
   @Test
-  void test_getBeforeTTL() throws Exception {
+  void test_getBeforeTTL() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);
@@ -134,22 +137,34 @@ class CacheTest {
   void test_getJsonsAfterTTL() throws Exception {
     CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
         new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
-    cache.putData(cacheIdentifier, new EPRDocument(false, "json3", null));
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json3", null, LocalDateTime.now()));
     Thread.sleep(2100); // > 2s TTL
     assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(0);
     assertThat(cache.dataCacheMiss(cacheIdentifier)).isTrue();
   }
 
   @Test
-  void test_getJsonsBeforeTTL() throws Exception {
+  void test_vaccinationRecordsCache() throws Exception {
+    CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
+        new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json3", null, LocalDateTime.now()), Cache.VACCINATION_RECORDS_CACHE_NAME);
+    Thread.sleep(2100); // > 2s TTL
+    assertThat(cache.getData(cacheIdentifier, Cache.VACCINATION_RECORDS_CACHE_NAME).size()).isEqualTo(1);
+
+    cache.clear(cacheIdentifier, Cache.VACCINATION_RECORDS_CACHE_NAME);
+    assertThat(cache.getData(cacheIdentifier, Cache.VACCINATION_RECORDS_CACHE_NAME).size()).isEqualTo(0);
+  }
+
+  @Test
+  void test_getJsonsBeforeTTL() {
     CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(
         new PatientIdentifier("communityIdentifier", "localId", "oid"), new AuthorDTO(null, null, "123"));
     assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(0);
     assertThat(cache.dataCacheMiss(cacheIdentifier)).isTrue();
-    cache.putData(cacheIdentifier, new EPRDocument(false, "json1", null));
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json1", null, LocalDateTime.now()));
     assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(1);
     assertThat(cache.dataCacheMiss(cacheIdentifier)).isFalse();
-    cache.putData(cacheIdentifier, new EPRDocument(false, "json2", null));
+    cache.putData(cacheIdentifier, new EPRDocument(false, "json2", null, LocalDateTime.now()));
     assertThat(cache.getData(cacheIdentifier).size()).isEqualTo(2);
   }
 
@@ -183,7 +198,7 @@ class CacheTest {
   }
 
   @Test
-  void test_replace() throws Exception {
+  void test_replace() {
     PatientIdentifier patientIdentifier = new PatientIdentifier("communityIdentifier", "localId", "oid");
     patientIdentifier.setSpidRootAuthority("SRA");
     cache.putPatientIdentifier(patientIdentifier);
@@ -203,5 +218,10 @@ class CacheTest {
   private void setEnableCacheAndReinit(boolean isCacheEnabled) {
     ReflectionTestUtils.setField(cache, "isCacheEnabled", isCacheEnabled);
     ReflectionTestUtils.invokeMethod(cache, "init");
+  }
+
+  private void setAuthorInSession(AuthorDTO author) {
+    Objects.nonNull(author);
+    HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHOR, author);
   }
 }

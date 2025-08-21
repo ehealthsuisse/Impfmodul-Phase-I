@@ -28,7 +28,7 @@ import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -66,7 +66,7 @@ class HuskyAdapterWriteDocumentTest {
         huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "1.2.3.4", "localId");
 
     String ret = huskyAdapter.writeDocument(patientIdentifier, "testfile", json, vaccination, null);
-    Files.delete(Paths.get("config", "testfiles", "json", "testfile.json"));
+    Files.delete(Path.of("config", "testfiles", "json", "testfile.json"));
     assertThat(ret).isEqualTo("SUCCESS");
   }
 

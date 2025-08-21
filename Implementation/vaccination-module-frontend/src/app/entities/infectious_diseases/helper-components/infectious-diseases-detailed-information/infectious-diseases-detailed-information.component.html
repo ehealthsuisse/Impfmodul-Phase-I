@@ -9,15 +9,13 @@
     [notEditableValue]="infectiousDiseases.recordedDate | formatDate"
   ></vm-reusable-date-field>
 
-  <vm-reusable-select-field-with-search
-    [options$]="infectiousDiseasesFilteredList"
-    [item]="infectiousDiseases.code!"
+  <vm-reusable-select-field
+    [formControl]="infectiousDiseasesForm.controls.code!"
     [isEditable]="false"
-    [translationKey]="'ILLNESS_CODE.'"
-    [labelKey]="'ILLNESS.ILLNESS_CODE'"
-    [formControl]="infectiousDiseasesForm.controls.code"
-    #singleSelect
-  ></vm-reusable-select-field-with-search>
+    [translationKey]="'ILLNESS_CODE'"
+    [labelTranslationKey]="'ILLNESS.ILLNESS_CODE'"
+    [mainValueKey]="'ILLNESS_CODE.' + infectiousDiseases.code.code! | translate"
+  ></vm-reusable-select-field>
 
   <div fxLayout="row" fxLayoutAlign="space-between" class="datesWrap">
     <vm-reusable-date-field
@@ -43,8 +41,17 @@
   >
   </vm-reusable-recorder-field>
 
+  <vm-reusable-select-field
+    [formControl]="infectiousDiseasesForm.controls.confidentiality!"
+    [isEditable]="false"
+    [translationKey]="'GLOBAL.CONFIDENTIALITY'"
+    [labelTranslationKey]="'GLOBAL.CONFIDENTIALITY'"
+    [mainValueKey]="'CONFIDENTIALITY.' + infectiousDiseases.confidentiality.code! | translate"
+  >
+  </vm-reusable-select-field>
+
   <mat-form-field class="detailed-card-content__form-field" *ngIf="infectiousDiseases.commentMessage">
-    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
+    <mat-label vmTranslate="COMMENT.COMMENT" [attr.aria-label]="'COMMENT.COMMENT' | translate"></mat-label>
     <textarea
       matInput
       [attr.aria-label]="infectiousDiseases.commentMessage"
@@ -53,8 +60,8 @@
     ></textarea>
   </mat-form-field>
 
-  <div class="commentsContent">
-    <div fxLayout="row" fxLayoutAlign="space-between center  " role="group">
+  <div *ngIf="!isConfirmComponentParent" class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
       <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
       <mat-icon
         tabindex="0"
@@ -77,7 +84,7 @@
     </div>
 
     <mat-card
-      *ngFor="let comment of infectiousDiseases?.comments"
+      *ngIf="infectiousDiseases?.comment as comment"
       role="article"
       class="commentsContent_card comment-card mat-elevation-z0"
       [ngClass]="{ active: commentsOpened }"
@@ -90,7 +97,7 @@
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
     </mat-card>
     <p
-      *ngIf="infectiousDiseases?.comments?.length === 0"
+      *ngIf="!infectiousDiseases?.comment"
       vmTranslate="COMMENT.NO_COMMENTS"
       class="commentsContent_card no-comments"
       [ngClass]="{ active: commentsOpened }"

@@ -88,6 +88,11 @@ public class SAMLControllerTest {
   }
 
   @Test
+  void sendSoapSamlLogoutRequest_forwardToken_expectValidResponse() {
+    performLogout("saml/samlSoapLogoutRequest_forwarded.xml");
+  }
+
+  @Test
   void sendSoapSamlLogoutRequest_swissId_expectValidResponse() {
     performLogout("saml/samlLogoutRequestSwissId.xml");
   }
@@ -105,7 +110,7 @@ public class SAMLControllerTest {
     when(idPAdapter.sendAndReceiveArtifactResolve(any(), any())).thenReturn(artifactResponse);
 
     assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
-    sendSamlArtifact(SAML_ART);
+    sendSamlArtifact();
     assertThat(samlService.getNumberOfSessions()).isEqualTo(1);
     performLogout("saml/samlLogoutRequest.xml");
     assertThat(samlService.getNumberOfSessions()).isEqualTo(0);
@@ -135,14 +140,14 @@ public class SAMLControllerTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
-    response.getBody().toString().contains(
+    assertThat(response.getBody()).contains(
         "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">");
   }
 
-  private void sendSamlArtifact(String samlArtifact) throws Exception {
+  private void sendSamlArtifact() throws Exception {
     RequestEntity<Void> entity = new RequestEntity<>(null, HttpMethod.GET,
         new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT_NEW + "?RelayState=GAZELLE&SAMLart="
-            + samlArtifact));
+            + SAML_ART));
     ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

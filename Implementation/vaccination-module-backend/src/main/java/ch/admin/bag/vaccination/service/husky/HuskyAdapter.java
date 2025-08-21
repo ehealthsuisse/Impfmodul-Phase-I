@@ -45,7 +45,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.net.URI;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -102,7 +102,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class HuskyAdapter implements HuskyAdapterIfc {
-
   private static final String GAZELLE = "GAZELLE";
 
   @Autowired
@@ -422,9 +421,9 @@ public class HuskyAdapter implements HuskyAdapterIfc {
 
   private void fillPatientIdentifierByResult(PatientIdentifier patientIdentifier,
       final PdqSearchResults pdqSearchResults) {
-    List<Identificator> resultIdentificators = pdqSearchResults.getPatients().get(0).getIdentificators();
+    List<Identificator> resultIdentificators = pdqSearchResults.getPatients().getFirst().getIdentificators();
     log.debug("Found patient with following IDs {}.", resultIdentificators);
-    Identificator firstId = resultIdentificators.get(0);
+    Identificator firstId = resultIdentificators.getFirst();
     Identificator secondId = resultIdentificators.get(1);
     if (firstId.getRoot().equals(patientIdentifier.getGlobalAuthority())) {
       patientIdentifier.setGlobalExtension(firstId.getExtension());
@@ -435,13 +434,24 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     }
   }
 
-  private boolean filterAndLogDocumentType(String documentType, DocumentEntry entry) {
-    boolean flag = entry.getTypeCode().getCode().equals(documentType);
-    if (!flag) {
-      log.debug("Filter metadata {}", entry.getEntryUuid());
+  private List<DocumentEntry> filterDocumentsByType(List<DocumentEntry> documentEntries, String documentType) {
+    log.debug("Filtering results on documentType {}", documentType);
+    documentEntries = documentEntries.stream()
+        .filter(entry -> {
+          boolean matches = entry.getTypeCode().getCode().equals(documentType);
+          if (!matches) {
+            log.debug("Filtered out document with UUID: {}", entry.getEntryUuid());
+          }
+          return matches;
+        }).collect(Collectors.toList());
+
+    if (!documentEntries.isEmpty()) {
+      log.debug("Found {} metadata with matching document type.", documentEntries.size());
+    } else {
+      log.debug("No metadata matched the document type, return all metadata (for testing purposes).");
     }
 
-    return flag;
+    return documentEntries;
   }
 
   private CommunityConfig getCommunityConfig(String communityIdentifier) {
@@ -490,23 +500,10 @@ public class HuskyAdapter implements HuskyAdapterIfc {
           .build();
       log.debug("Request approved document entries for identificator {} and format codes {}", globalId, formatCodes);
       QueryResponse response = huskyService.send(xdsRegistryStoredFindDocumentsQuery);
-      List<DocumentEntry> result = response.getDocumentEntries();
-      log.debug("Found metadata for {} documents.", result.size());
-      if (!result.isEmpty() && documentType != null) {
-        log.debug("Filtering results on documentType {}", documentType);
-        result = result.stream().filter(entry -> filterAndLogDocumentType(documentType, entry))
-            .collect(Collectors.toList());
-        if (!result.isEmpty()) {
-          log.debug("Found {} metadata with matching document type.", result.size());
-          return result;
-        }
-        log.debug("No metadata matched the document type, return all metadata (for testing purposes).");
-      }
-
-      return response.getDocumentEntries();
+      return filterDocumentsByType(response.getDocumentEntries(), documentType);
     } catch (Exception ex) {
       log.warn("Error while retrieving document entries: {}", ex.getMessage());
-      return Arrays.asList();
+      return List.of();
     }
   }
 
@@ -548,7 +545,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
       throw new TechnicalException("Patient was not found. Details: " + patientIdentifier);
     }
 
-    FhirPatient patient = pdqSearchResults.getPatients().get(0);
+    FhirPatient patient = pdqSearchResults.getPatients().getFirst();
     log.debug("Found patient {} communityId: {}, local Assigning Authority {}, local extension: {}",
         patient.getConvenienceName().getFullName(), communityIdentifier, localAssigningAuthorityOid, localId);
     fillPatientIdentifierByResult(patientIdentifier, pdqSearchResults);
@@ -662,7 +659,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     }
     if (Boolean.TRUE.equals(profileConfig.getHuskyLocalMode())) {
       uuid = uuid.replace(FhirConstants.DEFAULT_ID_PREFIX, "");
-      String filepath = Paths.get(FhirAdapter.CONFIG_TESTFILES_JSON, uuid + ".json").toString();
+      String filepath = Path.of(FhirAdapter.CONFIG_TESTFILES_JSON, uuid + ".json").toString();
       try (PrintStream out = new PrintStream(new FileOutputStream(filepath))) {
         out.print(json);
       }

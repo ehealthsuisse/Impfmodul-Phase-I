@@ -17,17 +17,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SharedLibsModule } from '../../shared-libs.module';
-import { ConfidentialityComponent } from '../confidentiality';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'vm-confirm',
   standalone: true,
-  imports: [SharedLibsModule, ConfidentialityComponent],
+  imports: [SharedLibsModule],
   templateUrl: './confirm.component.html',
   styleUrls: ['./confirm.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,22 +34,20 @@ import { Router } from '@angular/router';
 export class ConfirmComponent {
   @Input() data: any;
   isMobile: boolean = false;
-  isDesktop: boolean = false;
   isDetailPage: boolean = false;
-  constructor(public dialogRef: MatDialogRef<ConfirmComponent>, private breakpointObserver: BreakpointObserver, private route: Router) {
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmComponent>,
+    private breakpointObserver: BreakpointObserver,
+    private route: Router,
+    private cdr: ChangeDetectorRef
+  ) {
     this.isDetailPage = this.route.url.includes('detail');
 
-    this.breakpointObserver.observe(['(max-width: 600px)']).subscribe({
-      next: result => {
-        this.isMobile = result.matches;
-      },
+    this.breakpointObserver.observe(['(max-width: 715px)']).subscribe(result => {
+      this.isMobile = result.matches;
+      this.cdr.markForCheck();
     });
 
-    this.breakpointObserver.observe(['(min-width: 601px)']).subscribe({
-      next: result => {
-        this.isDesktop = result.matches;
-      },
-    });
     dialogRef.backdropClick().subscribe(() => {
       this.dialogRef.close();
     });

@@ -12,6 +12,7 @@
   <vm-table-wrapper
     [dataSource]="allergies"
     [displayedColumns]="displayedColumns"
+    [enableGrouping]="true"
     [translationPrefix]="'ALLERGY.'"
     [fullWidth]="tableWidth"
     (rowClick)="navigateToDetails($event)"

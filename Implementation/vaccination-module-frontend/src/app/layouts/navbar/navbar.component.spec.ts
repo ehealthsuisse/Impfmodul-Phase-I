@@ -22,7 +22,8 @@ import { NavbarComponent } from './navbar.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { TranslateModule } from '@ngx-translate/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -31,7 +32,8 @@ describe('NavbarComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [],
-      imports: [NavbarComponent, RouterTestingModule, TranslateModule.forRoot(), NgxWebstorageModule.forRoot(), HttpClientTestingModule],
+      imports: [NavbarComponent, RouterTestingModule, TranslateModule.forRoot(), NgxWebstorageModule.forRoot()],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     })
       .overrideTemplate(NavbarComponent, '')
       .compileComponents();

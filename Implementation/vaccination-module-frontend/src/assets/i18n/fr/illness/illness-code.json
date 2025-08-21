@@ -28,9 +28,9 @@
     "4740000": "Zona",
     "23511006": "Infection à méningocoques",
     "16814004": "Infection à pneumocoques",
-    "37109004": "EVD - Ebola virus disease",
-    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)",
-    "55735004": "Respiratory syncytial virus infection (disorder)",
-    "38362002": "Dengue (disorder)"
+    "37109004": "Fièvre Ébola",
+    "860805006": "Encéphalomyélite causée par un méningocoque",
+    "55735004": "Infection à virus respiratoire syncytial",
+    "38362002": "Dengue"
   }
 }

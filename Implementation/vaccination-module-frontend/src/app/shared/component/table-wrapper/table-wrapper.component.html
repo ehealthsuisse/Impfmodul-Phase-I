@@ -7,18 +7,39 @@
   <mat-table
     mat-table
     matSort
-    [dataSource]="dataSource"
+    [dataSource]="dataSourceForTemplate"
     class="mat-elevation-z8 table-wrapper"
+    [ngClass]="{
+      'mobile-app-template': isMobile || isTablet,
+      'desktop-app-template': !isMobile,
+      'has-expand-column': enableGrouping && hasRelatedRecords()
+    }"
     #table
     [attr.aria-label]="tableName"
     [attr.aria-labelledby]="tableName"
-    [ngClass]="isMobile ? 'mobile-app-template' : 'desktop-app-template'"
   >
-    <!-- Position Column -->
+    <!-- Expand Column -->
+    <ng-container matColumnDef="expand" *ngIf="enableGrouping && hasRelatedRecords()">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element" [style.padding-left.px]="element.level * 20">
+        <button
+          mat-icon-button
+          *ngIf="element.isParent"
+          (click)="toggleExpand(element); $event.stopPropagation()"
+          [attr.aria-label]="element.isExpanded ? 'Collapse' : 'Expand'"
+        >
+          <mat-icon>{{ element.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Dynamic Columns -->
     <ng-container [matColumnDef]="columnName" *ngFor="let columnName of displayedColumns">
       <ng-container *ngIf="isSortable(columnName); else unsortables">
         <th mat-header-cell *matHeaderCellDef mat-sort-header role="cell" scope="col">
-          {{ columnName | convertToSnakeCaseTranslation : translationPrefix | translate }}
+          <ng-container *ngIf="columnName !== 'entryStatus'">
+            {{ columnName | convertToSnakeCaseTranslation : translationPrefix | translate }}
+          </ng-container>
         </th>
       </ng-container>
       <ng-template #unsortables>
@@ -30,59 +51,59 @@
       </ng-template>
 
       <ng-container *matCellDef="let element" [ngSwitch]="columnName">
-        <ng-container *ngSwitchCase="'recorder'">
-          <td mat-cell role="row">
-            <span *ngIf="element[columnName]">
-              {{ element[columnName] | translate }}
-            </span>
-            <span *ngIf="!element[columnName]">{{ element.organization | translate }}</span>
-          </td>
-        </ng-container>
-        <ng-container *ngSwitchCase="'targetDiseases'">
-          <td mat-cell role="cell">
-            <span class="code">
-              {{ element.targetDiseases[0] | translate }}
-              <ng-container *ngIf="element.targetDiseases.length > 1">+{{ element.targetDiseases.length - 1 }}</ng-container>
-            </span>
-          </td>
-        </ng-container>
-        <ng-container *ngSwitchCase="'entryStatus'">
-          <td class="w-60" mat-cell role="gridcell">
-            <div class="icon-wrapper">
-              <mat-icon
-                color="accent"
-                class="validated-icon"
-                [attr.aria-label]="'ICONS.RECORD_VALIDATED' | translate"
-                [matTooltip]="'ICONS.RECORD_VALIDATED' | translate"
-                *ngIf="!element.deleted && !element.updated && element.validated && canValidated"
-                >check
-              </mat-icon>
-              <mat-icon
-                color="warn"
-                [attr.aria-label]="'ICONS.RECORD_DELETED' | translate"
-                [matTooltip]="'ICONS.RECORD_DELETED' | translate"
-                *ngIf="element.deleted && !element.updated"
-                class="deleted-icon"
-                >close
-              </mat-icon>
-              <mat-icon
-                color="accent"
-                [attr.aria-label]="'ICONS.RECORD_UPDATED' | translate"
-                [matTooltip]="'ICONS.RECORD_UPDATED' | translate"
-                *ngIf="element.updated"
-                class="warning-icon"
-              >
-                warning
-              </mat-icon>
-            </div>
-          </td>
-        </ng-container>
+        <td mat-cell role="row" [ngClass]="{ 'child-row': element.level > 0 }" *ngSwitchCase="'recorder'">
+          <span>{{ (element.record?.[columnName] || element.record.organization) | translate }}</span>
+        </td>
 
-        <td mat-cell *ngSwitchDefault role="gridcell">{{ element[columnName] | translate }}</td>
+        <td mat-cell role="cell" [ngClass]="{ 'child-row': element.level > 0 }" *ngSwitchCase="'targetDiseases'">
+          <span class="code">
+            {{ element.record.targetDiseases[0] | translate }}
+            <ng-container *ngIf="element.record.targetDiseases.length > 1">+{{ element.record.targetDiseases.length - 1 }}</ng-container>
+          </span>
+        </td>
+
+        <td class="w-60" mat-cell role="gridcell" [ngClass]="{ 'child-row': element.level > 0 }" *ngSwitchCase="'entryStatus'">
+          <div class="icon-wrapper">
+            <mat-icon
+              color="accent"
+              class="validated-icon"
+              [attr.aria-label]="'ICONS.RECORD_VALIDATED' | translate"
+              [matTooltip]="'ICONS.RECORD_VALIDATED' | translate"
+              *ngIf="!element.record.deleted && !element.record.updated && element.record.validated && canValidated"
+              >check</mat-icon
+            >
+            <mat-icon
+              color="warn"
+              [attr.aria-label]="'ICONS.RECORD_DELETED' | translate"
+              [matTooltip]="'ICONS.RECORD_DELETED' | translate"
+              *ngIf="element.record.deleted && !element.record.updated"
+              class="deleted-icon"
+              >close</mat-icon
+            >
+            <mat-icon
+              color="accent"
+              [attr.aria-label]="'ICONS.RECORD_UPDATED' | translate"
+              [matTooltip]="'ICONS.RECORD_UPDATED' | translate"
+              *ngIf="element.record.updated"
+              class="warning-icon"
+              >warning</mat-icon
+            >
+          </div>
+        </td>
+
+        <td mat-cell *ngSwitchDefault role="gridcell" [ngClass]="{ 'child-row': element.level > 0 }">
+          {{ element.record?.[columnName] | translate }}
+        </td>
       </ng-container>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row class="selectable data-row" *matRowDef="let row; columns: displayedColumns" (click)="rowClick.emit(row)"></tr>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr
+      mat-row
+      class="selectable data-row"
+      *matRowDef="let row; columns: columnsToDisplay"
+      (click)="onRowClick(row)"
+      [ngClass]="{ 'child-row': row.level > 0 }"
+    ></tr>
   </mat-table>
 </div>

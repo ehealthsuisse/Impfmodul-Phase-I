@@ -12,15 +12,17 @@
     "BACK": "Back",
     "CONTINUE": "Continue",
     "VERIFY": "Verify",
-    "EXPORT": "Export/Print",
+    "EXPORT": "Create PDF",
     "VALIDATE": "Validate",
     "ADD_ALLERGY": "Add an adverse event",
     "ADD_VACCINATION": "Add a vaccination",
     "ADD_PAST_ILLNESS": "Add an infectious disease",
     "ADD_PROBLEM": "Add a risk factor",
-    "DOWNLOAD": "Download",
+    "DOWNLOAD": "Download FHIR",
     "HELP": "Help",
     "SAVE_AND_STAY": "Save and create another",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "MORE": "More",
+    "SAVE_TO": "Save to EPR"
   }
 }

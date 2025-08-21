@@ -20,6 +20,7 @@ package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.service.saml.SAMLService;
 import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
 import ch.admin.bag.vaccination.service.saml.SAMLUtils;
 import ch.fhir.epr.adapter.exception.TechnicalException;
@@ -61,6 +62,9 @@ public class SAMLController {
   @Value("${sp.forwardArtifactToClientUrl}")
   private String forwardArtifactToClientUrl;
 
+  @Value("${sp.otherNodeLogoutURL:#{null}}")
+  private String otherNodeLogoutURL;
+
   @Autowired
   private SAMLServiceIfc samlService;
 
@@ -82,7 +86,7 @@ public class SAMLController {
 
   @GetMapping("/saml/login")
   @Operation(description = "empty login")
-  public String login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public String login(HttpServletRequest request) throws IOException {
     // For development purpose only!
     // If no session was initiated on local mode, use dummy session
     if (profileConfig.isLocalMode() && !HttpSessionUtils.getIsInitialCallValidFromSession()) {
@@ -117,7 +121,8 @@ public class SAMLController {
     log.debug("Received samlLogout, to switch to TRACE log level");
     log.trace("Saml logout request: {}", xml);
     try {
-      XMLObject samlObject = SAMLUtils.unmarshall(xml);
+      String xmlWithoutForwardToken = xml.replace(SAMLService.FORWARD_TOKEN, "");
+      XMLObject samlObject = SAMLUtils.unmarshall(xmlWithoutForwardToken);
       if (samlObject == null) {
         log.warn("Received empty logout - ignoring request.");
         return new ResponseEntity<>("SamlObject was not found or could not be parsed.", HttpStatus.BAD_REQUEST);
@@ -125,21 +130,21 @@ public class SAMLController {
 
       SAMLUtils.logSAMLObject(samlObject);
       if (samlObject instanceof LogoutRequest logoutRequest) {
-        return new ResponseEntity<>(performLogout(logoutRequest, request), HttpStatus.OK);
+        return new ResponseEntity<>(performLogout(logoutRequest, xml, request), HttpStatus.OK);
       }
 
       if (samlObject instanceof Envelope envelope) {
         Body body = envelope.getBody();
         List<XMLObject> children = body.getUnknownXMLObjects(LogoutRequest.DEFAULT_ELEMENT_NAME);
-        XMLObject child = !children.isEmpty() ? children.get(0) : null;
+        XMLObject child = !children.isEmpty() ? children.getFirst() : null;
         if (child instanceof LogoutRequest logoutRequest) {
-          return new ResponseEntity<>(performLogout(logoutRequest, request), HttpStatus.OK);
+          return new ResponseEntity<>(performLogout(logoutRequest, xml, request), HttpStatus.OK);
         }
       }
 
       log.warn("Samlobject {} not supported!", samlObject.getClass().getSimpleName());
     } catch (Exception ex) {
-      log.warn("Exception occured during logout procedure: {}", ex.toString(), ex);
+      log.warn("Exception occured during logout procedure", ex);
     }
 
     throw new TechnicalException("Logout Request could not be processed.");
@@ -166,12 +171,19 @@ public class SAMLController {
     response.sendRedirect(forwardArtifactToClientUrl + "?SAMLart=" + samlArtifact + "&RelayState=" + idpIdentifier);
   }
 
-  private String performLogout(LogoutRequest logoutRequest, HttpServletRequest request) throws MarshallingException {
+  private String performLogout(LogoutRequest logoutRequest, String xml, HttpServletRequest request) throws MarshallingException {
     String idp = samlService.logout(logoutRequest.getNameID().getValue());
+    boolean isForwardedRequest = xml.startsWith(SAMLService.FORWARD_TOKEN);
+    if (idp == null && !isForwardedRequest) {
+      log.debug("Session not found for logout request with NameID: {}", logoutRequest.getNameID().getValue());
+      samlService.sendLogoutToOtherNode(otherNodeLogoutURL, xml);
+    }
+
     LogoutResponse logoutResponse = samlService.createLogoutResponse(idp, logoutRequest, request);
     String response = SAMLUtils.addEnvelope(SAMLUtils.convertElementToString(logoutResponse));
     log.debug("Saml logout response: {}", response);
 
     return response;
   }
+
 }

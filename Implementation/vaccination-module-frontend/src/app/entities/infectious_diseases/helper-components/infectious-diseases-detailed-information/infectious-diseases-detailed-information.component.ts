@@ -16,14 +16,14 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject, Input, OnInit, Optional, ViewChild } from '@angular/core';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { IInfectiousDiseases } from '../../../../model';
 import { InfectiousDiseasesFormGroup, InfectiousDiseasesFormService } from '../../service/infectious-diseases-form.service';
+import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
 import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
-import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { ReplaySubject } from 'rxjs';
 import { IValueDTO } from '../../../../shared';
 import { filterDropdownList, setDropDownInitialValue } from '../../../../shared/function';
@@ -33,13 +33,7 @@ import { MatSelect } from '@angular/material/select';
 @Component({
   selector: 'vm-infectious-diseases-detailed-information',
   standalone: true,
-  imports: [
-    SharedLibsModule,
-    ReusableDateFieldComponent,
-    ReusableRecorderFieldComponent,
-    ReusableSelectFieldComponent,
-    ReusableSelectFieldWithSearchComponent,
-  ],
+  imports: [SharedLibsModule, ReusableDateFieldComponent, ReusableRecorderFieldComponent, ReusableSelectFieldComponent],
   templateUrl: './infectious-diseases-detailed-information.component.html',
   styleUrls: ['./infectious-diseases-detailed-information.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,14 +49,17 @@ export class InfectiousDiseasesDetailedInformationComponent implements OnInit, A
   formOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();
   infectiousDiseasesFilterControl: FormControl = new FormControl();
 
+  constructor(@Optional() private confirmParent: ConfirmComponent) {}
+
+  get isConfirmComponentParent(): boolean {
+    return !!this.confirmParent;
+  }
+
   toggleComments(): void {
     this.commentsOpened = !this.commentsOpened;
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.ngOnInit();
-    }, 200);
     filterDropdownList(this.formOptions.get('conditionCode')!, this.infectiousDiseasesFilteredList, this.infectiousDiseasesFilterControl);
   }
 

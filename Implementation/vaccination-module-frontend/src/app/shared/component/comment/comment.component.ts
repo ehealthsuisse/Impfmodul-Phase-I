@@ -16,7 +16,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IComment } from '../../interfaces';
 import { SharedLibsModule } from '../../shared-libs.module';
 
@@ -27,6 +27,22 @@ import { SharedLibsModule } from '../../shared-libs.module';
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.scss'],
 })
-export class CommentComponent {
-  @Input() comments: IComment[] | null = null;
+export class CommentComponent implements OnInit {
+  @Input() comment: IComment | null = null;
+  @Input() canAddComments: boolean = false;
+  @Input() commentMessage: string = '';
+  @Output() commentMessageChange = new EventEmitter<string>();
+
+  ngOnInit(): void {
+    if (this.comment) {
+      this.commentMessage = this.comment.text || '';
+    } else if (this.canAddComments) {
+      this.commentMessage = '';
+    }
+  }
+
+  onCommentChange(value: string): void {
+    this.commentMessage = value;
+    this.commentMessageChange.emit(value);
+  }
 }

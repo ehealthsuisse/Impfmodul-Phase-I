@@ -23,7 +23,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogModule } from '@angular/material/dialog';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('DetailComponent', () => {
   let component: InfectiousDiseasesDetailComponent;
@@ -31,14 +32,8 @@ describe('DetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        InfectiousDiseasesDetailComponent,
-        RouterTestingModule,
-        NoopAnimationsModule,
-        TranslateModule.forRoot(),
-        MatDialogModule,
-        HttpClientTestingModule,
-      ],
+      imports: [InfectiousDiseasesDetailComponent, RouterTestingModule, NoopAnimationsModule, TranslateModule.forRoot(), MatDialogModule],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(InfectiousDiseasesDetailComponent);

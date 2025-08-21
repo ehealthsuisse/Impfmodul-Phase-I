@@ -20,6 +20,7 @@ package ch.fhir.epr.adapter.data.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,9 +41,9 @@ public class VaccinationDTO extends BaseDTO {
   private ValueDTO reason;
   private ValueDTO status;
 
-  public VaccinationDTO(String id, ValueDTO code, List<ValueDTO> targetDiseases,
-      List<CommentDTO> comments, Integer doseNumber, LocalDate occurrenceDate, HumanNameDTO performer,
-      String organization, String lotNumber, ValueDTO reason, ValueDTO status) {
+  public VaccinationDTO(String id, ValueDTO code, List<ValueDTO> targetDiseases, CommentDTO comment, Integer doseNumber,
+      LocalDate occurrenceDate, HumanNameDTO performer, String organization, String lotNumber, ValueDTO reason,
+      ValueDTO status, ValueDTO verificationStatus) {
     this.targetDiseases = targetDiseases;
     this.doseNumber = doseNumber;
     this.occurrenceDate = occurrenceDate;
@@ -53,12 +54,40 @@ public class VaccinationDTO extends BaseDTO {
     setCode(code);
     setRecorder(performer);
     setOrganization(organization);
-    setComments(comments);
+    setComment(comment);
+    setVerificationStatus(verificationStatus);
   }
 
   @Override
   public LocalDate getDateOfEvent() {
     return getOccurrenceDate();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (!(o instanceof VaccinationDTO vaccination)) {
+      return false;
+    }
+
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    return Objects.equals(targetDiseases, vaccination.getTargetDiseases()) &&
+        Objects.equals(lotNumber, vaccination.lotNumber) &&
+        Objects.equals(occurrenceDate, vaccination.occurrenceDate) &&
+        Objects.equals(doseNumber, vaccination.doseNumber) &&
+        Objects.equals(reason, vaccination.reason) &&
+        Objects.equals(status, vaccination.status);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(targetDiseases, lotNumber, occurrenceDate, lotNumber, reason, status);
   }
 
   @Deprecated

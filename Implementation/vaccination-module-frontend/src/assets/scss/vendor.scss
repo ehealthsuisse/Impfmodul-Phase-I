@@ -1,4 +1,4 @@
-@import './_breakpoints';
+@use './_breakpoints' as breakpoints;
 
 .mat-input-element[disabled] {
   color: var(--text-color-base) !important;
@@ -92,7 +92,7 @@ mat-label {
   font-weight: bold !important;
 }
 
-@include media-breakpoint(xs) {
+@include breakpoints.media-breakpoint(xs) {
   .cdk-global-overlay-wrapper {
     padding-top: 50px;
     padding-left: 0;

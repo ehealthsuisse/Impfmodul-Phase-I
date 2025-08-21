@@ -16,13 +16,12 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
 import { ReplaySubject, take } from 'rxjs';
 import '../date/dayjs';
-import { IBaseDTO, IValueDTO } from '../interfaces';
+import { IBaseDTO, IComment, IValueDTO } from '../interfaces';
 import { IHumanDTO } from '../interfaces/humanDTO.interface';
-import { Type } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SharedDataService } from '../services/shared-data.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -32,6 +31,7 @@ import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../date';
 import { Router } from '@angular/router';
 import { PatientService } from '../component/patient/patient.service';
+import { ReusableDialogComponent } from '../component/resuable-fields/reusable-dialog/reusable-dialog.component';
 
 /*
  * @param humanDTO
@@ -86,19 +86,13 @@ export function downloadRecordValue<T extends IBaseDTO>(t: T, patientService: Pa
   document.body.removeChild(link);
 }
 
-export function deleteRecord<T>(matDialog: MatDialog, dialogComponent: Type<any>, service: any, baseDetails: T, details: IBaseDTO): void {
-  const dialogData = {
-    value: { ...baseDetails },
-    button: { delete: 'buttons.DELETE' },
-  };
-  const dialogConfig = {
-    width: '60vw',
-    data: dialogData,
-  };
-
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
+export function deleteRecord(matDialog: MatDialog, service: any, details: IBaseDTO, deleteMessage: string): void {
   matDialog
-    .open(dialogComponent, dialogConfig)
+    .open(ReusableDialogComponent, {
+      data: {
+        message: deleteMessage,
+      },
+    })
     .afterClosed()
     .subscribe(confirmed => {
       if (confirmed) {
@@ -163,7 +157,6 @@ export const filterPredicateExcludeJSONField = (data: any, filter: string): bool
 };
 
 export function openSnackBar(translate: TranslateService, snackBar: MatSnackBar, body: string): void {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   snackBar.open(translate.instant(body), 'Dismiss', {
     duration: 2500,
     horizontalPosition: 'center',
@@ -179,4 +172,37 @@ export function routecall(router: Router, sessionInfoService: SessionInfoService
   } else {
     router.navigate(['/vaccination-record']);
   }
+}
+
+export function buildComment(commentText: string, author = 'will be added by the system'): IComment | undefined {
+  const trimmed = commentText?.trim();
+  return trimmed ? { text: trimmed, author } : undefined;
+}
+
+// function used when resetting a form to provide default values
+export function setDefaultValues(form: FormGroup, fieldName: string, value: any): void {
+  const control = form.get(fieldName);
+  if (control) {
+    control.setValue(value);
+  }
+}
+
+export function extractSessionDetailsByRole(sessionInfo: SessionInfoService): {
+  validated: boolean;
+  firstName: string;
+  lastName: string;
+  prefix: string;
+  organization: string;
+} {
+  const role = sessionInfo.queryParams.role;
+  const isHCP = role === 'HCP';
+  const validated = isHCP || role === 'ASS';
+
+  const authorInfo = sessionInfo.author.getValue();
+  const firstName = isHCP ? authorInfo.firstName : '';
+  const lastName = isHCP ? authorInfo.lastName : '';
+  const prefix = isHCP ? authorInfo.prefix ?? '' : '';
+  const organization = sessionInfo.queryParams.organization;
+
+  return { validated, firstName, lastName, prefix, organization };
 }

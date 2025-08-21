@@ -1,6 +1,7 @@
 {
   "VACCINATION_REASON": {
     "429060002": "Procedura per soddisfare i requisiti professionali",
-    "281657000": "Vaccinazioni di viaggio"
+    "281657000": "Vaccinazioni di viaggio",
+    "DEFAULT": "Prevenzione"
   }
 }

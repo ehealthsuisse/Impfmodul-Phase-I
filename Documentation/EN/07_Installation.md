@@ -10,7 +10,7 @@ Additionally, starting with version 1.2, the FHIR adapter library is provided. T
 
 The vaccination module requires the following pre-installed elements:
  - A Java Web Application Server
- - Java 17 Runtime Environment
+ - Java 21 Runtime Environment
  - Network connection to an IdP and an EPR platform
 
 The vaccination module is provided as the following artifacts:
@@ -34,7 +34,7 @@ The vaccination module can be build manually. You may use the following steps fo
 4. After compiling the vaccination module software will be stored in the *dist/vaccination-module-frontend* subfolder.
 
 **Backend**
-1. Install [Java 17 SDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+1. Install [Java 21 SDK](https://developers.redhat.com/products/openjdk/download)
 2. Install the Build-Tools [Maven](https://maven.apache.org/download.cgi)
 3. Compile the backend component using `mvn clean install -Pwar`
 4. A WAR-Archive file will created and stored in the *target* subfolder.
@@ -103,7 +103,7 @@ Vaccination Module for the EPR
 profile: local
 config: ${vaccination_config}
 
-Powered by Spring Boot 3.3.4
+Powered by Spring Boot 3.4.8
 ```
 
 The following environment variables must be set appropriately:
@@ -225,19 +225,34 @@ idp:
     securityTokenServiceURL: https://is.not.set.for.gazelle
     entityId: OverwriteDefaultEntityIDIfNecessary
     logoutURL: https://logout.url.set.in.logout.request.destination
+    samlKeystore: # IDP specific setting overriding the sp.keystore setting 
+      keystoreType: PKCS12
+      keystorePath: path.to.keystore.p12
+      keystorePassword: password
+      spAlias: spkeyAlias
+    tlsKeystore: # IDP specific setting overriding the sp.keystore setting 
+      keystoreType: JKS
+      keystorePath: path.to.keystore.jks
+      keystorePassword: password
   - identifier: [...]
 
 # Service Provider - this application
 sp:
   assertionConsumerServiceUrl: https://my.backend.url/saml/sso
   forwardArtifactToClientUrl: https://my.frontend.url/saml-acs
+  otherNodeLogoutURL: https://otherNode.backend.url/saml/logout
 
-  # keystore containing our private key
+  # keystore containing the private key used for MTLS with the EPD backend
   keystore:
    keystore-type: PKCS12
-   keystore-path: path.to.keystore.p12
-   keystore-password: password
-   sp-alias: spkeyAlias
+   keystore-path: path.to.keystore
+   keystore-password: keystore.password
+   sp-alias: key.alias.used.for.idp
+  # Keystore containing the private key used for MTLS with the IDPs
+  tlsKeystore:
+    keystore-type: JKS
+    keystore-path: path.to.keystore.jks
+    keystore-password: password 
 ```
 
 The parameter are interpreted as follows:
@@ -249,24 +264,39 @@ The parameter are interpreted as follows:
 - supportedProvider.artifactResolutionServiceURL: URL of the Identity Providers accepting the SAML Artefact and returning the IdP Assertion..
 - supportedProvider.securityTokenServiceURL: URL of the security token service needed to refresh the IDP token.
 - supportedProvider.entityId: Allows to override the entity ID for a specific IDP. This was a necessary workaround for HIN IDP to ensure that both vaccination module and portal application resolve to same NameID within the IDP Token.
-- supportedProvider.logoutURL: URL string filled into the destination field of the LogoutResponse. If not set, the issuer from the LogoutRequest is used. 
+- supportedProvider.logoutURL: URL string filled into the destination field of the LogoutResponse. If not set, the issuer from the LogoutRequest is used.
+- supportedProvider.samlKeystore: Allows for an IDP-specific configuration, if it is not filled, default configuration will be used.
+- supportedProvider.samlKeystore.keystoreType: Type of the IdP keystore file (JKS or PKCS12).
+- supportedProvider.samlKeystore.keystorePath: Filesystem path to the IdP keystore file.
+- supportedProvider.samlKeystore.keystorePassword: Password to access the IdP keystore.
+- supportedProvider.samlKeystore.spAlias: Alias of the service provider’s private key within the IdP keystore.
+- supportedProvider.tlsKeystore: Configuration of the IdP’s truststore used for mTLS communication.
+- supportedProvider.tlsKeystore.keystoreType: Type of the IdP truststore file (JKS or PKCS12).
+- supportedProvider.tlsKeystore.keystorePath: Filesystem path to the IdP truststore file.
+- supportedProvider.tlsKeystore.keystorePassword: Password to access the IdP truststore.
 - assertionConsumerServiceUrl: URL of the vaccination module accepting callbacks from the Identity Provider. Using the path variable *{idp}*, the vaccination module now can look up which IDP configuration it needs to check for the artifact response.
 - forwardArtifactToClientUrl: URL of a backend endpoint which will forward the SAMLartifact to the Angular frontend application. This workaround was implemented if it is not possible by the IDP to send a HTTP GET to the Frontend application directly.
+- otherNodeLogoutURL: URL of a secondary backend node to forward logout requests when the session cannot be retrieved locally. Enables logout propagation across nodes when configured.
   
 **Note:** The suffix */saml/sso* is mandatory and only the root address must be set.
-- keystore: Keystore settings.
-- keystore.keystore-type: Type to the Keystore file (either JKS or PKCS12).
+- keystore: General keystore setting which can be overwritten by the IDP-specific setting. If not set, the keystore according to the security configuration chapter (see below) is used. 
+- keystore.keystore-type: Type of the Keystore file (either JKS or PKCS12).
 - keystore.keystore-path: Path to the Keystore file.
-- keystore-password: Keystore's Password.
+- keystore-password: Password used to access the keystore.
 - sp-alias: Alias name of the private key used for the communication with the Identity Provider.
+
+- truststore: General Truststore setting which can be overwritten by the IDP-specific setting. If not set, the keystore according to the security configuration chapter (see below) is used..
+- tlsKeystore.keystore-type: Type of the Keystore file (either JKS or PKCS12).
+- tlsKeystore.keystore-path: Path to the Keystore file.
+- tlsKeystore-password: Password used to access the keystore.
 
 **Logging Property**  
 The configuration of the log levels are located in the *logging.properties* file. Each row starting with *logging.level* represents a setting.
 Each setting consists of a package name and the corresponding loglevel. The package names are hereby structured hierarchically, i.e. configuration for logging.level.ch includes all subpages unless there is a more specific role.
 Following debug level are available
 * INFO = general information 
-* DEBUG = detailed information incl. some privacy information.  
-**Do not activate unless necessary due to GDPR.**
+** Be aware that user related information is logged which could violate data protection regularions. Should only be used for error analysis.**
+* DEBUG = detailed information incl. privacy information.  
 * TRACE = For the SAML configuration, it is possible to log all telegrams going over the interfaces. **Does contain sensitive information**
 
 **Portal Configuration**  
@@ -305,4 +335,5 @@ The parameter are interpreted as follows:
  - *javax.net.ssl.trustStore*: Path to the trustStore for securing the TLS connections.
  - *javax.net.ssl.trustStorePassword*: Password for the Truststore.
 
-**Note**: The keytore must contain the private key sibling of the public key defined in the SAML-Metadata. The truststore must contain all public keys used for mTLS of the endpoints of the EPR platform and the identity provider.
+These settings can be overwritten using the configuration in the idp-config-local.yaml 
+**Note**: The keystore must contain the private key sibling of the public key defined in the SAML-Metadata. The truststore must contain all public keys used for mTLS of the endpoints of the EPR platform and the identity provider.

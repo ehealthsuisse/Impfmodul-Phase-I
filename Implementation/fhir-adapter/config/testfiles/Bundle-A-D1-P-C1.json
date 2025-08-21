@@ -329,6 +329,14 @@
             "valueReference": {
               "reference": "Patient/TC-patient"
             }
+          },
+          {
+            "url": "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-verification-status",
+            "valueCoding": [ {
+              "system": "http://snomed.info/sct",
+              "code": "59156000",
+              "display": "Confirmed"
+            } ]
           }
         ],
         "identifier": [

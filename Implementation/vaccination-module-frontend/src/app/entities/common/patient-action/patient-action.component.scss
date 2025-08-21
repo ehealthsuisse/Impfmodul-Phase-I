@@ -1,8 +1,23 @@
-@import 'src/assets/scss/global';
+@use 'src/assets/scss/global';
 
 .actions {
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .button-text {
+      order: 1;
+    }
+
+    mat-icon {
+      order: 2;
+      margin-left: 8px;
+    }
+  }
+
   &.mobile {
-    @include flex-center(center, center, column);
+    @include global.flex-center(center, center, column);
 
     button {
       width: 150px !important;
@@ -11,14 +26,11 @@
   }
 
   &.desktop {
-    @include flex-center(center, center, row);
-  }
-
-  & .download-btn {
-    display: none;
+    @include global.flex-center(center, center, row);
   }
 }
 
 * {
   margin: 0 4px;
+  --mat-menu-item-label-text-weight: 500;
 }

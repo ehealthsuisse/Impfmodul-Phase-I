@@ -109,11 +109,13 @@ public class SAMLUtils {
    */
   public static String addEnvelope(String request) {
     request = request.replaceFirst("^<\\?xml version=\"1\\.0\" encoding=\"UTF-8\"\\?>\\s*", "");
-    String open = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-        + "   <soapenv:Header/>\n"
-        + "   <soapenv:Body>";
-    String close = "</soapenv:Body>\n"
-        + "</soapenv:Envelope>";
+    String open = """
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+           <soapenv:Header/>
+           <soapenv:Body>""";
+    String close = """
+        </soapenv:Body>
+        </soapenv:Envelope>""";
     return open + request + close;
   }
 
@@ -175,8 +177,8 @@ public class SAMLUtils {
     }
 
     Element element = null;
-    if (object instanceof SignableSAMLObject
-        && ((SignableSAMLObject) object).isSigned()
+    if (object instanceof SignableSAMLObject signableObject
+        && signableObject.isSigned()
         && object.getDOM() != null) {
       element = object.getDOM();
     } else {
@@ -296,7 +298,7 @@ public class SAMLUtils {
       if (log.isTraceEnabled()) {
         SAMLUtils.logSAMLObject(response);
       }
-      return response.getAssertions().get(0);
+      return response.getAssertions().getFirst();
     }
 
     String errorMsg = "Artifact response message is empty and does not contain any assertion.";
@@ -306,13 +308,13 @@ public class SAMLUtils {
 
   public static org.projecthusky.xua.saml2.Assertion getXuaAssertionFromResponse(
       List<XUserAssertionResponse> response) {
-    RequestSecurityTokenResponse responseCollection = ((XUserAssertionResponseImpl) response.get(0)).getWrappedObject();
+    RequestSecurityTokenResponse responseCollection = ((XUserAssertionResponseImpl) response.getFirst()).getWrappedObject();
 
     // copied from XUserAssertionResponseImpl, husky-xua-gen-impl
     List<XMLObject> requestedTokens = responseCollection.getUnknownXMLObjects(new QName(
         "http://docs.oasis-open.org/ws-sx/ws-trust/200512", "RequestedSecurityToken"));
     if (!requestedTokens.isEmpty()) {
-      RequestedSecurityToken token = (RequestedSecurityToken) requestedTokens.get(0);
+      RequestedSecurityToken token = (RequestedSecurityToken) requestedTokens.getFirst();
       org.opensaml.saml.saml2.core.Assertion openSamlAssertion =
           (org.opensaml.saml.saml2.core.Assertion) token.getUnknownXMLObject();
       org.projecthusky.xua.saml2.Assertion xua = AssertionUtils.convertSamlToHuskyAssertion(openSamlAssertion);
@@ -435,7 +437,7 @@ public class SAMLUtils {
   }
 
   private static void logAssertionAttributes(Assertion assertion) {
-    for (Attribute attribute : assertion.getAttributeStatements().get(0).getAttributes()) {
+    for (Attribute attribute : assertion.getAttributeStatements().getFirst().getAttributes()) {
       log.debug("Attribute name: " + attribute.getName());
       for (XMLObject attributeValue : attribute.getAttributeValues()) {
         log.debug("Attribute value: " + ((XSString) attributeValue).getValue());
@@ -444,12 +446,12 @@ public class SAMLUtils {
   }
 
   private static void logAuthenticationInstant(Assertion assertion) {
-    log.debug("Authentication instant: " + assertion.getAuthnStatements().get(0).getAuthnInstant());
+    log.debug("Authentication instant: " + assertion.getAuthnStatements().getFirst().getAuthnInstant());
   }
 
   private static void logAuthenticationMethod(Assertion assertion) {
     log.debug("Authentication method: "
-        + assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
+        + assertion.getAuthnStatements().getFirst().getAuthnContext().getAuthnContextClassRef()
         .getURI());
   }
 
@@ -462,5 +464,4 @@ public class SAMLUtils {
     lifetimeSecurityHandler.initialize();
     lifetimeSecurityHandler.invoke(context);
   }
-
 }

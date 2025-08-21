@@ -14,7 +14,15 @@
     </mat-card-header>
 
     <mat-card-content class="detail-wrapper__card-content form-wrapper">
-      <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form-wrapper__form" role="form">
+      <form
+        [formGroup]="editForm"
+        #formGroupDirective="ngForm"
+        name="form"
+        novalidate
+        (ngSubmit)="save()"
+        class="form-wrapper__form"
+        role="form"
+      >
         <vm-reusable-date-field
           [formControl]="editForm.controls.occurrenceDate"
           [labelTranslationKey]="'ALLERGY.DATE'"
@@ -24,6 +32,7 @@
 
         <vm-reusable-select-field-with-search
           #singleSelect
+          [isRequired]="true"
           [options$]="filteredAllergies"
           [item]="adverseEvent?.code!"
           [isEditable]="true"
@@ -41,15 +50,27 @@
         >
         </vm-reusable-recorder-field>
 
-        <mat-form-field class="detailed-card-content__form-field">
+        <mat-form-field *ngIf="isMobile" class="detailed-card-content__form-field">
           <mat-label [attr.aria-label]="'GLOBAL.COMMENT' | translate" class="mat-label" vmTranslate="GLOBAL.COMMENT"></mat-label>
           <textarea
-            [attr.aria-label]="'GLOBAL.COMMENT' | translate"
             matInput
-            formControlName="commentMessage"
+            [value]="editForm.get('comment')?.value?.text || ''"
+            (input)="commentMessage = $event.target.value"
+            [attr.aria-label]="'GLOBAL.COMMENT' | translate"
             [placeholder]="'COMMENT.PLACEHOLDER' | translate"
           ></textarea>
         </mat-form-field>
+
+        <vm-reusable-select-field-with-search
+          [options$]="confidentialityList"
+          [item]="adverseEvent?.confidentiality!"
+          [isEditable]="true"
+          [translationKey]="'GLOBAL'"
+          [labelKey]="'CONFIDENTIALITY'"
+          [formControl]="editForm.controls.confidentiality"
+          formControlName="confidentiality"
+        ></vm-reusable-select-field-with-search>
+
         <vm-common-card-footer
           [isEditFooter]="true"
           [dialogTitle]="helpDialogTitle | translate"
@@ -61,5 +82,10 @@
       </form>
     </mat-card-content>
   </mat-card>
-  <vm-comment class="detail-wrapper__comment" [comments]="adverseEvent?.comments!"></vm-comment>
+  <vm-comment
+    class="detail-wrapper__comment"
+    [(commentMessage)]="commentMessage"
+    [comment]="adverseEvent?.comment!"
+    [canAddComments]="true"
+  ></vm-comment>
 </div>

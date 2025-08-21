@@ -24,7 +24,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ArrayObjectsToFlatPipe<T> implements PipeTransform {
   transform(inputArray: T[] | undefined, displayKey: keyof T): string {
-    // eslint-disable-next-line security/detect-object-injection -- Safe as no value holds user input
     return inputArray?.map(arrayElement => arrayElement[displayKey]).join('; ') || '';
   }
 }

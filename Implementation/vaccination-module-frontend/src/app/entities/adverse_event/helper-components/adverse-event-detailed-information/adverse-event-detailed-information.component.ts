@@ -16,10 +16,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, Optional } from '@angular/core';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { IAdverseEvent } from '../../../../model';
 import { AdverseEventFormGroup, AdverseEventFormService } from '../../services/adverse-event-form.service';
+import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
 import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
@@ -35,9 +36,15 @@ import { ReusableSelectFieldComponent } from '../../../../shared/component/resua
 export class AdverseEventDetailedInformationComponent {
   @Input() adverseEvent: IAdverseEvent | null = null;
   @Input() showTitle: boolean = false;
+  @Input() adverseEventForm: AdverseEventFormGroup = inject(AdverseEventFormService).createAllergyFormGroup();
+
   commentsOpened: boolean = false;
 
-  @Input() adverseEventForm: AdverseEventFormGroup = inject(AdverseEventFormService).createAllergyFormGroup();
+  constructor(@Optional() private confirmParent: ConfirmComponent) {}
+
+  get isConfirmComponentParent(): boolean {
+    return !!this.confirmParent;
+  }
 
   toggleComments(): void {
     this.commentsOpened = !this.commentsOpened;

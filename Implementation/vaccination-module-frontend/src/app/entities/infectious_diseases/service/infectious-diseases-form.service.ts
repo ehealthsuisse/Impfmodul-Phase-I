@@ -24,8 +24,9 @@ import utc from 'dayjs/plugin/utc';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { dateValidator, notFutureDateValidator, validateDatesNotBefore } from '../../../core/validators/date-order-validator';
 import { IInfectiousDiseases } from '../../../model';
-import { IComment } from '../../../shared';
+import { IComment, IHumanDTO } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
+import { extractSessionDetailsByRole, setDefaultValues } from '../../../shared/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -50,7 +51,7 @@ type InfectiousDiseasesFormGroupContent = {
   recordedDate: FormControl<IInfectiousDiseases['recordedDate']>;
   begin: FormControl<IInfectiousDiseases['begin']>;
   end: FormControl<IInfectiousDiseases['end']>;
-  comments: FormControl<IComment[]>;
+  comment: FormControl<IComment>;
   commentMessage: FormControl;
   confidentiality: FormControl<IInfectiousDiseases['confidentiality']>;
 };
@@ -75,12 +76,7 @@ export class InfectiousDiseasesFormService {
       ...infectiousDiseases,
     };
 
-    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
-    const authorInfo = this.sessionInfo.author.getValue();
-    const firstName = isHCP ? authorInfo.firstName : '';
-    const lastName = isHCP ? authorInfo.lastName : '';
-    const prefix = isHCP ? authorInfo.prefix : '';
-    const organization = this.sessionInfo.queryParams.organization;
+    const extractSessionDetails = extractSessionDetailsByRole(this.sessionInfo);
     return new FormGroup<InfectiousDiseasesFormGroupContent>({
       id: new FormControl(
         { value: illnessRawValue.id, disabled: true },
@@ -99,12 +95,12 @@ export class InfectiousDiseasesFormService {
       end: new FormControl(null, [dateValidator('begin', 'end')]),
       code: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(firstName),
-        lastName: new FormControl(lastName),
-        prefix: new FormControl(prefix),
+        firstName: new FormControl(extractSessionDetails.firstName),
+        lastName: new FormControl(extractSessionDetails.lastName),
+        prefix: new FormControl(extractSessionDetails.prefix),
       }),
-      organization: new FormControl(organization),
-      comments: new FormControl([]),
+      organization: new FormControl(extractSessionDetails.organization),
+      comment: new FormControl(),
       commentMessage: new FormControl(),
       confidentiality: new FormControl(),
     } as any);
@@ -136,5 +132,25 @@ export class InfectiousDiseasesFormService {
     if (infectiousDisease?.recorder === null) {
       form.get('recorder')?.reset();
     }
+  }
+
+  resetMandatoryFields(form: InfectiousDiseasesFormGroup): void {
+    const extractSessionDetails = extractSessionDetailsByRole(this.sessionInfo);
+    const recorder: IHumanDTO = {
+      firstName: extractSessionDetails.firstName,
+      lastName: extractSessionDetails.lastName,
+      prefix: extractSessionDetails.prefix,
+    };
+
+    const fieldsToReset = [
+      { name: 'code', value: null },
+      { name: 'recordedDate', value: new Date() },
+      { name: 'begin', value: new Date() },
+      { name: 'organization', value: extractSessionDetails.organization },
+      { name: 'recorder', value: recorder },
+      { name: 'confidentiality', value: { code: '17621005', name: 'Normal' } },
+    ];
+
+    fieldsToReset.forEach(field => setDefaultValues(form, field.name, field.value));
   }
 }

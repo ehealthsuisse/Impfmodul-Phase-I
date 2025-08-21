@@ -1,21 +1,22 @@
-@import 'src/assets/scss/global';
+@use 'src/assets/scss/global';
+
 .actionBtns {
   &--mobile {
-    @include flex-center(center, center, column);
+    @include global.flex-center(center, center, column);
     & button {
       width: 150px !important;
       margin-bottom: 10px;
       height: 36px !important;
     }
     & > section {
-      @include flex-center(center, center, column);
+      @include global.flex-center(center, center, column);
     }
     & .previousBtn {
       display: none;
     }
   }
   &--desktop {
-    @include flex-center(space-between, center, row);
+    @include global.flex-center(space-between, center, row);
     & > button {
       margin-right: 10px;
     }

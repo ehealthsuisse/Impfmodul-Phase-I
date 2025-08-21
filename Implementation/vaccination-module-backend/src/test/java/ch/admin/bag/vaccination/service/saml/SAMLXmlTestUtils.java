@@ -87,7 +87,7 @@ public class SAMLXmlTestUtils {
       return Files.readString(file.toPath());
     } catch (Exception e) {
       log.warn("Exception:{}", e.toString());
-      return null;
+      return "";
     }
   }
 }

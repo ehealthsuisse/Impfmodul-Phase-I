@@ -1,186 +1,128 @@
-@import 'src/assets/scss/global';
+@use 'src/assets/scss/breakpoints' as breakpoints;
+@use 'src/assets/scss/mixins' as mixins;
+@use 'src/assets/scss/variables' as *;
 
-$toolbar-height-desktop: 120px;
-$toolbar-height-mobile: 60px;
-$logo-size-desktop: 60px;
-$logo-size-mobile: 40px;
-$community-logo-size-desktop: 150px !important;
-$community-logo-size-mobile: 150px !important;
-$logout-button-size-desktop: 30px !important;
-$logout-button-size-mobile: 30px !important;
-$toolbar-background-color: #fff;
-
-@mixin logoSize($width, $height) {
-  .logo {
-    max-width: $width;
-    width: $width;
-    max-height: $height;
-    height: $height;
-    cursor: pointer;
-
-    &:focus {
-      box-shadow: 0 0 5px #000;
-    }
-
-    &__syringe {
-      width: $width;
-      height: $height;
-      margin-right: 2px;
-    }
-  }
-}
-
-@mixin communityLogoSize($width) {
-  .community-logo img {
-    max-width: $width;
-    width: $width;
-  }
-
-  .community-logo .version {
-    width: $width;
-    font-size: 8px;
-    margin-top: 40px;
-  }
-}
-
-@mixin logout-button($width) {
-  .logout-button {
-    width: $width;
-    @include flex-center(right, center, row);
-  }
-}
-
+// Main content container
 main {
-  margin-top: 80px;
-  min-height: calc(100vh - 80px);
+  margin-top: $toolbar-height-mobile;
+  min-height: calc(100vh - #{$toolbar-height-mobile});
   padding: 20px 0;
 }
 
+// Drawer container
 .mat-drawer-container {
-  background: $toolbar-background-color !important;
-}
-
-.navbar-container {
-  .mat-toolbar {
-    position: fixed;
-    z-index: 1;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    letter-spacing: normal;
-  }
-
-  &__desktop {
-    height: $toolbar-height-desktop;
-    max-width: 100vw;
-    background: $toolbar-background-color;
-    margin-bottom: 5vh;
-
-    &.display {
-      display: flex;
-    }
-
-    &.hide {
-      display: none;
-    }
-
-    @include flex-center(space-around, center, row);
-    @include logoSize($logo-size-desktop, $logo-size-desktop);
-    @include communityLogoSize($community-logo-size-desktop);
-    @include logout-button($logout-button-size-desktop);
-  }
-
-  &__mobile {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-    .menu-patient-wrapper {
-      @include flex-center(space-between, center, row);
-    }
-
-    height: $toolbar-height-mobile;
-    background: $toolbar-background-color;
-    border-bottom: 1px solid #ccc;
-    @include flex-center(space-between, center, row);
-
-    .navbar__tabletMenu__toggle {
-      position: fixed !important;
-      top: 0;
-      right: 0;
-    }
-
-    .vm-navigation,
-    .vm-language {
-      position: absolute;
-      width: 100vw;
-      height: calc(100vh - #{$toolbar-height-mobile});
-      background: $toolbar-background-color;
-      transition: transform 0.3s ease-in-out;
-      transform: translateX(100%);
-
-      &.isMenuOpen {
-        transform: translateX(0);
-      }
-    }
-  }
-}
-// vertical scroll bar visibility for the main form and also for categories form
-.mat-sidenav-container,
-.mat-sidenav-content {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.mat-sidenav {
-  width: 75vw;
-  max-width: 400px;
-  background: $toolbar-background-color;
-  position: fixed;
-  @include logoSize($logo-size-mobile, $logo-size-mobile);
-  @include communityLogoSize($community-logo-size-mobile);
-}
-
-.mat-drawer {
-  @include logoSize($logo-size-mobile, $logo-size-mobile);
-  @include communityLogoSize($community-logo-size-mobile);
-
   background: $toolbar-background-color;
 
-  ::ng-deep.mat-drawer-inner-container {
-    ::ng-deep.ng-star-inserted {
-      flex-direction: column;
-      height: 100%;
-      @include flex-center(space-around, center, column);
+  .mat-drawer {
+    width: 75vw;
+    max-width: 400px;
+    background: $toolbar-background-color;
+    position: fixed;
+    @include mixins.logoSize($logo-size-mobile, $logo-size-mobile);
+    @include mixins.communityLogoSize($community-logo-size-mobile);
+
+    // Shared styles for drawer-content and drawer-actions
+    .drawer-shared {
       display: grid;
+      height: 100%;
+      justify-content: space-around;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .drawer-content {
+      @extend .drawer-shared;
+
+      display: grid;
+      height: 100%;
+      justify-content: space-around;
+      align-items: center;
+      flex-direction: column;
 
       .patient-name {
         display: inline-flex;
         flex-wrap: wrap;
-        @include flex-center(center, center, column);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
 
-        & .syringe {
+        .syringe {
           width: 60px;
           height: 60px;
         }
+
+        .mat-label {
+          margin-top: 0.5rem;
+          font-size: 1rem;
+        }
+      }
+
+      .logout-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .logout-icon {
+          width: 30px;
+          height: 30px;
+        }
+      }
+    }
+
+    .drawer-actions {
+      @extend .drawer-shared;
+    }
+  }
+
+  // Toolbar styles
+  .mat-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    letter-spacing: normal;
+
+    // Desktop toolbar
+    &.mat-drawer-container__desktop {
+      height: $toolbar-height-desktop;
+      max-width: 100vw;
+      background: $toolbar-background-color;
+      margin-bottom: 5vh;
+      @include mixins.flex-center(space-around, center, row);
+      @include mixins.logoSize($logo-size-desktop, $logo-size-desktop);
+      @include mixins.communityLogoSize($community-logo-size-desktop);
+      @include mixins.logout-button($logout-button-size-desktop);
+
+      &.display {
+        display: flex;
+      }
+
+      &.hide {
+        display: none;
+      }
+    }
+
+    // Mobile toolbar
+    &.mat-drawer-container__mobile {
+      height: $toolbar-height-mobile;
+      background: $toolbar-background-color;
+      border-bottom: 1px solid #ccc;
+      @include mixins.flex-center(space-between, center, row);
+
+      .menu-patient-wrapper {
+        @include mixins.flex-center(space-between, center, row);
+      }
+
+      .vm-navigation,
+      .vm-language {
+        position: absolute;
+        width: 100vw;
+        height: calc(100vh - #{$toolbar-height-mobile});
+        background: $toolbar-background-color;
+        transition: transform 0.3s ease-in-out;
+        transform: translateX(100%);
       }
     }
   }
-}
-
-.action-menu {
-  @include media-breakpoint(md) {
-    display: none;
-  }
-  &__mobile {
-    @include flex-center(space-between, center, row);
-    padding: 0 0;
-  }
-}
-.show {
-  @include flex-center(space-between, center, row);
-}
-
-.logout-icon {
-  composes: download-icon;
-  width: 30px;
-  height: 30px;
 }

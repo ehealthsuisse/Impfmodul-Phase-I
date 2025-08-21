@@ -17,7 +17,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
+import { MatDrawer } from '@angular/material/sidenav';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { environment } from '../../../environment';
 import { ConfigService } from '../../core/config/config.service';
@@ -25,7 +25,7 @@ import { SamlService } from '../../core/security/saml.service';
 import { SessionInfoService } from '../../core/security/session-info.service';
 import { DetailsActionComponent } from '../../entities/common/details-action/details-action.component';
 import { PatientActionComponent } from '../../entities/common/patient-action/patient-action.component';
-import { VaccinationRecordService } from '../../entities/vaccintion-record/service/vaccination-record.service';
+import { VaccinationRecordService } from '../../entities/vaccination-record/service/vaccination-record.service';
 import { IHumanDTO, LANGUAGES } from '../../shared';
 import { BreakPointSensorComponent } from '../../shared/component/break-point-sensor/break-point-sensor.component';
 import { PatientComponent } from '../../shared/component/patient/patient.component';
@@ -33,7 +33,6 @@ import { PatientService } from '../../shared/component/patient/patient.service';
 import { SharedDataService } from '../../shared/services/shared-data.service';
 import { SpinnerService } from '../../shared/services/spinner.service';
 import { SharedLibsModule } from '../../shared/shared-libs.module';
-import { ErrorComponent } from '../error/error.component';
 import { LanguageComponent } from './language/language.component';
 import { NavigationComponent } from './navigation/navigation.component';
 
@@ -41,19 +40,11 @@ import { NavigationComponent } from './navigation/navigation.component';
  * Used to display the top bar.
  */
 @Component({
-  standalone: true,
   selector: 'vm-navbar',
+  standalone: true,
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
-  imports: [
-    SharedLibsModule,
-    PatientComponent,
-    PatientActionComponent,
-    DetailsActionComponent,
-    NavigationComponent,
-    LanguageComponent,
-    ErrorComponent,
-  ],
+  imports: [SharedLibsModule, PatientComponent, PatientActionComponent, DetailsActionComponent, NavigationComponent, LanguageComponent],
 })
 export class NavbarComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   languages = LANGUAGES;
@@ -64,8 +55,8 @@ export class NavbarComponent extends BreakPointSensorComponent implements OnInit
   canVisit$!: Observable<boolean>;
   user: IHumanDTO = {} as IHumanDTO;
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
-  @ViewChild('sidenav') sidenav!: MatSidenav;
-  @ViewChild('sidenavAction') sidenavAction!: MatSidenav;
+  @ViewChild('drawer') drawer!: MatDrawer;
+  @ViewChild('drawerAction') drawerAction!: MatDrawer;
   samlService: SamlService = inject(SamlService);
   showActionSidenav: boolean = false;
   showActionSidenavSubscription!: Subscription;

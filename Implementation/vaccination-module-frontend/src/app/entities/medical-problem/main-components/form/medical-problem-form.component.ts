@@ -25,13 +25,12 @@ import { SessionInfoService } from '../../../../core/security/session-info.servi
 import { IMedicalProblem } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ConfidentialityService } from '../../../../shared/services/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
-import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
-import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
+import { buildComment, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
@@ -39,16 +38,16 @@ import { MedicalProblemConfirmComponent } from '../../helper-components/confirm/
 import { MedicalProblemFormService, ProblemFormGroup } from '../../service/medical-problem-form.service';
 import { MedicalProblemService } from '../../service/medical-problem.service';
 import { takeUntil } from 'rxjs/operators';
+import { FormGroupDirective } from '@angular/forms';
 
 @Component({
-  standalone: true,
   selector: 'vm-problem-update',
+  standalone: true,
   templateUrl: './medical-problem-form.component.html',
   styleUrls: ['./medical-problem-form.component.scss'],
   imports: [
     SharedLibsModule,
     SharedComponentModule,
-    FilterPipePipe,
     ReusableDateFieldComponent,
     ReusableRecorderFieldComponent,
     ReusableSelectFieldComponent,
@@ -57,9 +56,11 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class MedicalProblemFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   problemFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
+  confidentialityList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   problemStatus: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
   @ViewChild('clinicalStatus', { static: true }) clinicalStatus!: MatSelect;
+  @ViewChild('formGroupDirective') formGroupDirective!: FormGroupDirective;
   isSaving = false;
   problems: IMedicalProblem | null = null;
   editForm: ProblemFormGroup = inject(MedicalProblemFormService).createProblemFormGroup();
@@ -74,6 +75,7 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   sharedDataService: SharedDataService = inject(SharedDataService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
+  commentMessage: string = '';
   private problemFormService: MedicalProblemFormService = inject(MedicalProblemFormService);
   private matDialog: MatDialog = inject(MatDialog);
   private destroy$: Subject<void> = new Subject<void>();
@@ -82,6 +84,7 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     this.displayMenu(false, false);
     initializeActionData('', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
+    let role: string = this.sharedDataService.storedData['role']!;
     this.problemService.find(id).subscribe(problem => {
       if (problem) {
         this.problem = problem;
@@ -97,6 +100,7 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     });
 
     this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
   }
 
   ngAfterViewInit(): void {
@@ -117,17 +121,14 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   }
 
   save(): void {
-    if (this.editForm.value.commentMessage) {
-      const commentObj = {
-        text: this.editForm.value.commentMessage,
-        author: 'will be added by the system',
-      };
-      this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
-      this.editForm.value.comments!.push(commentObj);
-    }
+    this.editForm.value.comment = buildComment(this.commentMessage);
+
     const problem = { ...this.problem, ...this.problemFormService.getProblem(this.editForm) };
-    problem.verificationStatus = this.formOptionsService.getOption('conditionVerificationStatus', 'unconfirmed');
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
+    problem.verificationStatus = this.formOptionsService.getOption(
+      'conditionVerificationStatus',
+      this.sessionInfoService.canValidate() ? 'confirmed' : 'unconfirmed'
+    );
+
     this.matDialog
       .open(MedicalProblemConfirmComponent, {
         width: '60vw',
@@ -137,7 +138,6 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
       .afterClosed()
       .subscribe({
         next: (result: { action?: string } = {}) => {
-          problem.confidentiality = this.confidentialityService.confidentialityStatus;
           if (result.action === 'SAVE') {
             if (problem.id) {
               this.subscribeToSaveResponse(this.problemService.update(problem), true);
@@ -147,6 +147,8 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
           }
           if (result.action === 'SAVE_AND_STAY') {
             this.subscribeToSaveResponse(this.problemService.create(problem), false);
+            this.formGroupDirective.resetForm();
+            this.problemFormService.resetMandatoryFields(this.editForm);
           }
         },
       });

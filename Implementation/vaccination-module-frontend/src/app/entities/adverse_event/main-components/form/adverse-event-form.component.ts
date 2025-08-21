@@ -25,38 +25,38 @@ import { SessionInfoService } from '../../../../core/security/session-info.servi
 import { IAdverseEvent } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ConfidentialityService } from '../../../../shared/services/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
-import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
-import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
+import { buildComment, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { AdverseEventConfirmComponent } from '../../helper-components/confirm/adverse-event-confirm.component';
 import { AdverseEventFormGroup, AdverseEventFormService } from '../../services/adverse-event-form.service';
 import { AdverseEventService } from '../../services/adverse-event.service';
+import { FormGroupDirective } from '@angular/forms';
 
 @Component({
-  standalone: true,
   selector: 'vm-allergy-form',
+  standalone: true,
   templateUrl: './adverse-event-form.component.html',
   styleUrls: ['./adverse-event-form.component.scss'],
   imports: [
     SharedLibsModule,
     SharedComponentModule,
-    FilterPipePipe,
     ReusableDateFieldComponent,
     ReusableRecorderFieldComponent,
     ReusableSelectFieldWithSearchComponent,
   ],
 })
-export class AdverseEventFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit {
+export class AdverseEventFormComponent extends BreakPointSensorComponent implements AfterViewInit, OnInit {
   filteredAllergies: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
+  confidentialityList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   sharedDataService: SharedDataService = inject(SharedDataService);
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
-
+  @ViewChild('formGroupDirective') formGroupDirective!: FormGroupDirective;
   isSaving = false;
   editForm: AdverseEventFormGroup = inject(AdverseEventFormService).createAllergyFormGroup();
   formOptionsService: FormOptionsService = inject(FormOptionsService);
@@ -69,6 +69,7 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
   helpDialogBody = 'HELP.ALLERGY.DETAIL.BODY';
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
+  commentMessage: string = '';
 
   private allergyFormService: AdverseEventFormService = inject(AdverseEventFormService);
   private matDialog: MatDialog = inject(MatDialog);
@@ -77,6 +78,7 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
     this.displayMenu(false, false);
     initializeActionData('', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
+    let role: string = this.sharedDataService.storedData['role']!;
     this.adverseEventService.find(id).subscribe(allergy => {
       if (allergy) {
         this.adverseEvent = allergy;
@@ -92,6 +94,7 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
     });
 
     this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
   }
 
   ngAfterViewInit(): void {
@@ -99,21 +102,17 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
   }
 
   save(): void {
-    if (this.editForm.value.commentMessage) {
-      const commentObj = {
-        text: this.editForm.value.commentMessage,
-        author: 'will be added by the system',
-      };
-      this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
-      this.editForm.value.comments!.push(commentObj);
-    }
+    this.editForm.value.comment = buildComment(this.commentMessage);
+
     const allergy = { ...this.adverseEvent, ...this.allergyFormService.getAllergy(this.editForm) };
     allergy.category = this.formOptionsService.getOption('allergyCategory', 'medication');
-    allergy.verificationStatus = this.formOptionsService.getOption('allergyVerificationStatus', 'unconfirmed');
+    allergy.verificationStatus = this.formOptionsService.getOption(
+      'allergyVerificationStatus',
+      this.sessionInfoService.canValidate() ? 'confirmed' : 'unconfirmed'
+    );
     allergy.clinicalStatus = this.formOptionsService.getOption('allergyClinicalStatus', 'active');
     allergy.criticality = this.formOptionsService.getOption('allergyCriticality', 'unable-to-assess');
 
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.matDialog
       .open(AdverseEventConfirmComponent, {
         width: '60vw',
@@ -122,7 +121,6 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
       })
       .afterClosed()
       .subscribe((result: { action?: string } = {}) => {
-        allergy.confidentiality = this.confidentialityService.confidentialityStatus;
         if (result.action === 'SAVE') {
           if (allergy.id) {
             this.subscribeToSaveResponse(this.adverseEventService.update(allergy), true);
@@ -132,6 +130,8 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
         }
         if (result.action === 'SAVE_AND_STAY') {
           this.subscribeToSaveResponse(this.adverseEventService.create(allergy), false);
+          this.formGroupDirective.resetForm();
+          this.allergyFormService.resetMandatoryFields(this.editForm);
         }
       });
   }

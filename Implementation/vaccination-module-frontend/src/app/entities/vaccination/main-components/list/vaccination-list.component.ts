@@ -21,7 +21,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { filterPredicateExcludeJSONField, initializeActionData } from 'src/app/shared/function/functions';
-import { ListHeaderComponent, MainWrapperComponent, MapperService, TableWrapperComponent, trackLangChange } from '../../../../shared';
+import { ListHeaderComponent, MapperService, TableWrapperComponent, trackLangChange } from '../../../../shared';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { VaccinationService } from '../../services/vaccination.service';
 import { IVaccination } from '../../../../model';
@@ -30,10 +30,10 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
 
 @Component({
   selector: 'vm-vaccination-list',
+  standalone: true,
   templateUrl: './vaccination-list.component.html',
   styleUrls: ['./vaccination-list.component.scss'],
-  standalone: true,
-  imports: [SharedLibsModule, TableWrapperComponent, ListHeaderComponent, MainWrapperComponent],
+  imports: [SharedLibsModule, TableWrapperComponent, ListHeaderComponent],
 })
 export class VaccinationListComponent extends BreakPointSensorComponent implements OnInit {
   vaccinations!: MatTableDataSource<IVaccination>;
