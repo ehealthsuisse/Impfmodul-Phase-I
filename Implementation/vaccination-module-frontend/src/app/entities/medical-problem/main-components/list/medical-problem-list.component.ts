@@ -30,9 +30,9 @@ import { MedicalProblemService } from '../../service/medical-problem.service';
 
 @Component({
   selector: 'vm-problem-list',
+  standalone: true,
   templateUrl: './medical-problem-list.component.html',
   styleUrls: ['./medical-problem-list.component.scss'],
-  standalone: true,
   imports: [SharedLibsModule, ListHeaderComponent, TableWrapperComponent],
 })
 export class MedicalProblemListComponent extends BreakPointSensorComponent implements OnInit {

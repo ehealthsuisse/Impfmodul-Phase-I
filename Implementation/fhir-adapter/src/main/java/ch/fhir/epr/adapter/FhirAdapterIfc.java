@@ -56,7 +56,7 @@ public interface FhirAdapterIfc {
    * future.
    *
    * @param patientIdentifier {@link PatientIdentifier}
-   * @param record {@link VaccinationRecordDTO}
+   * @param dto {@link BaseDTO}
    * @return {@link Bundle}
    */
   Bundle createImmunizationAdministrationDocument(PatientIdentifier patientIdentifier, BaseDTO dto);

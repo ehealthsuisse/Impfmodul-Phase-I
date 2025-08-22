@@ -36,10 +36,10 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
   styleUrls: ['./medical-problem-detail.component.scss'],
 })
 export class MedicalProblemDetailComponent extends BreakPointSensorComponent implements OnInit {
+  problem: IMedicalProblem | null = null;
   problemService: MedicalProblemService = inject(MedicalProblemService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sharedDataService: SharedDataService = inject(SharedDataService);
-  private _problem: IMedicalProblem | null = null;
 
   ngOnInit(): void {
     this.displayMenu(true, false);
@@ -60,13 +60,5 @@ export class MedicalProblemDetailComponent extends BreakPointSensorComponent imp
       }
     });
     initializeActionData('details', this.sharedDataService);
-  }
-
-  get problem(): IMedicalProblem | null {
-    return this._problem;
-  }
-
-  set problem(value: IMedicalProblem | null) {
-    this._problem = value;
   }
 }

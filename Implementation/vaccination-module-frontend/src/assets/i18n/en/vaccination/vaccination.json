@@ -17,6 +17,7 @@
     "ACTIVE": "active",
     "INACTIVE": "inactive",
     "SEARCH_TARGET_DISEASES": "Search for vaccination protection",
-    "DOSE_NUMBER_FORMAT": "Dose number must be a number"
+    "DOSE_NUMBER_FORMAT": "Dose number must be a number",
+    "CONFIDENTIALITY": "Confidentiality"
   }
 }

@@ -21,6 +21,8 @@ package ch.admin.bag.vaccination.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
+import ch.admin.bag.vaccination.service.saml.config.KeystoreProperties;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -62,7 +64,7 @@ class SignatureServiceTest {
   private SignatureService signatureService;
 
   @Test
-  void currentTimestamp_tsInSecondsComparedToNow_returnTrue() throws Exception {
+  void currentTimestamp_tsInSecondsComparedToNow_returnTrue() {
     boolean timestampInSeconds = true;
     ReflectionTestUtils.setField(signatureService, "isPortalTimestampInSeconds", timestampInSeconds);
 
@@ -72,11 +74,6 @@ class SignatureServiceTest {
 
     log.warn("Timstamp in sec: {}, Comparison: {}", tsInSeconds, epochMilli / 1000);
     assertTrue((epochMilli / 1000 - tsInSeconds) < allowedDerivation);
-  }
-
-  @Test
-  void getSamlCredentials_noInput_noExceptionOccures_validCertificate() {
-    assertThat(signatureService.getSamlSPCredential()).isNotNull();
   }
 
   @Test
@@ -118,7 +115,7 @@ class SignatureServiceTest {
   }
 
   @Test
-  void validateQueryString_tsInSeconds_returnTrue() throws Exception {
+  void validateQueryString_tsInSeconds_returnTrue() {
     boolean timestampInSeconds = true;
     ReflectionTestUtils.setField(signatureService, "isPortalTimestampInSeconds", timestampInSeconds);
     long epochInSeconds = Instant.now().toEpochMilli() / 1000;
@@ -164,7 +161,7 @@ class SignatureServiceTest {
     return hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
   }
 
-  private SignatureService createServiceWithDefaultTimestamp() throws NoSuchFieldException {
+  private SignatureService createServiceWithDefaultTimestamp() {
     SignatureService customSignatureService = new SignatureService() {
       @Override
       protected long getCurrentTimestamp() {
@@ -176,5 +173,4 @@ class SignatureServiceTest {
     ReflectionTestUtils.setField(customSignatureService, "portalPresharedKey", PORTAL_PRESHAREDKEY);
     return customSignatureService;
   }
-
 }

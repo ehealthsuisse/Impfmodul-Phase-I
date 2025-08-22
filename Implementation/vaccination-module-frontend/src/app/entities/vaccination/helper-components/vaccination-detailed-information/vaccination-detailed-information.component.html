@@ -46,8 +46,8 @@
     <mat-label vmTranslate="VACCINATION.VACCINATION_REASON" [attr.aria-label]="'VACCINATION.VACCINATION_REASON' | translate"></mat-label>
     <input
       matInput
-      [attr.aria-label]="'VACCINATION_REASON.' + vaccination?.reason?.code | translate"
-      value="{{ 'VACCINATION_REASON.' + vaccination?.reason?.code | translate }}"
+      [attr.aria-label]="getTranslatedVaccinationReason(vaccination?.reason?.code)"
+      value="{{ getTranslatedVaccinationReason(vaccination?.reason?.code) }}"
       disabled
     />
   </mat-form-field>
@@ -81,12 +81,23 @@
     <input matInput [attr.aria-label]="vaccination?.organization" value="{{ vaccination?.organization }}" disabled />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field" *ngIf="vaccination?.commentMessage">
-    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
-    <textarea matInput [attr.aria-label]="vaccination?.commentMessage" value="{{ vaccination?.commentMessage }}" disabled> </textarea>
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label vmTranslate="GLOBAL.CONFIDENTIALITY" [attr.aria-label]="'GLOBAL.CONFIDENTIALITY' | translate"></mat-label>
+    <input
+      matInput
+      [attr.aria-label]="'CONFIDENTIALITY.' + vaccination?.confidentiality?.code | translate"
+      value="{{ 'CONFIDENTIALITY.' + vaccination?.confidentiality?.code | translate }}"
+      disabled
+    />
   </mat-form-field>
-  <div class="commentsContent">
-    <div fxLayout="row" fxLayoutAlign="space-between center  " role="group">
+
+  <mat-form-field class="mat-form-field" *ngIf="vaccination?.commentMessage">
+    <mat-label vmTranslate="COMMENT.COMMENT" [attr.aria-label]="'COMMENT.COMMENT' | translate"></mat-label>
+    <textarea matInput [attr.aria-label]="vaccination?.commentMessage" value="{{ vaccination?.commentMessage }}" disabled></textarea>
+  </mat-form-field>
+
+  <div *ngIf="!isConfirmComponentParent" class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
       <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
       <mat-icon
         tabindex="0"
@@ -109,7 +120,7 @@
     </div>
 
     <mat-card
-      *ngFor="let comment of vaccination?.comments"
+      *ngIf="vaccination?.comment as comment"
       role="article"
       class="commentsContent_card comment-card mat-elevation-z0"
       [ngClass]="{ active: commentsOpened }"
@@ -122,7 +133,7 @@
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
     </mat-card>
     <p
-      *ngIf="vaccination?.comments?.length === 0"
+      *ngIf="!vaccination?.comment"
       vmTranslate="COMMENT.NO_COMMENTS"
       class="commentsContent_card no-comments"
       [ngClass]="{ active: commentsOpened }"

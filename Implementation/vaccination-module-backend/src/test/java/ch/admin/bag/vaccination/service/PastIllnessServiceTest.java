@@ -34,7 +34,6 @@ import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,28 +53,28 @@ class PastIllnessServiceTest extends AbstractServiceTest {
 
     ValueDTO illnessCode = new ValueDTO("123456789", "987654321", "testsystem");
     ValueDTO clinicalStatus = new ValueDTO("clinicalStatus", "clinicalStatus", "testsystem");
-    ValueDTO verficationStatus = new ValueDTO("verficationStatus", "verficationStatus", "testsystem");
+    ValueDTO verificationStatus = new ValueDTO("verificationStatus", "verificationStatus", "testsystem");
     String commentText = "BlaBla";
     CommentDTO comment = new CommentDTO(null, recorder.getFullName(), commentText);
-    PastIllnessDTO newPastIllnessDTO = new PastIllnessDTO(null, illnessCode, clinicalStatus, verficationStatus,
-        LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, List.of(comment),
+    PastIllnessDTO newPastIllnessDTO = new PastIllnessDTO(null, illnessCode, clinicalStatus, verificationStatus,
+        LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, comment,
         "My organization AG");
     author.setRole("PAT");
     newPastIllnessDTO.setAuthor(author);
 
     PastIllnessDTO result = pastIllnessService.create(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
-        "waldspital-Id-1234", newPastIllnessDTO, null);
+        "waldspital-Id-1234", newPastIllnessDTO, null, false);
     assertThat(result.getCode().getCode()).isEqualTo(illnessCode.getCode());
     assertThat(result.getClinicalStatus()).isEqualTo(clinicalStatus);
-    assertThat(result.getVerificationStatus()).isEqualTo(verficationStatus);
+    assertThat(result.getVerificationStatus()).isEqualTo(verificationStatus);
     assertThat(result.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(result.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
     assertThat(result.getConfidentiality().getCode()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getCode());
     assertThat(result.getConfidentiality().getName()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getName());
     assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirConstants.SNOMED_SYSTEM_URL);
-    assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
-    assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
-    assertThat(result.getComments().get(0).getDate()).isNotNull();
+    assertThat(result.getComment().getAuthor()).isEqualTo(author.getUser().getFullName());
+    assertThat(result.getComment().getText()).isEqualTo(commentText);
+    assertThat(result.getComment().getDate()).isNotNull();
     assertThat(result.isValidated()).isFalse();
   }
 
@@ -119,10 +118,10 @@ class PastIllnessServiceTest extends AbstractServiceTest {
             "1.2.3.4.123456.1",
             "waldspital-Id-1234", null);
     assertThat(pastIllnessDTOs.size()).isGreaterThan(0);
-    assertThat(pastIllnessDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("resolved");
-    assertThat(pastIllnessDTOs.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
-    assertThat(pastIllnessDTOs.get(0).getId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
-    assertThat(pastIllnessDTOs.get(0).getCode().getCode()).isEqualTo("38907003");
+    assertThat(pastIllnessDTOs.getFirst().getClinicalStatus().getCode()).isEqualTo("resolved");
+    assertThat(pastIllnessDTOs.getFirst().getVerificationStatus().getCode()).isEqualTo("confirmed");
+    assertThat(pastIllnessDTOs.getFirst().getId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
+    assertThat(pastIllnessDTOs.getFirst().getCode().getCode()).isEqualTo("38907003");
   }
 
   @Test
@@ -137,11 +136,11 @@ class PastIllnessServiceTest extends AbstractServiceTest {
     List<PastIllnessDTO> pastIllnessDTOs = pastIllnessService.getAll(EPDCommunity.GAZELLE.name(),
         "1.3.6.1.4.1.21367.13.20.3000", "IHEBLUE-2599", null);
     assertThat(pastIllnessDTOs.size()).isEqualTo(1);
-    assertThat(pastIllnessDTOs.get(0).getId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
-    assertThat(pastIllnessDTOs.get(0).getCode().getCode()).isEqualTo("38907003");
-    assertThat(pastIllnessDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("resolved");
-    assertThat(pastIllnessDTOs.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
-    assertThat(pastIllnessDTOs.get(0).getJson()).contains("5f727b7b-87ae-464f-85ac-1a45d23f0897");
+    assertThat(pastIllnessDTOs.getFirst().getId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
+    assertThat(pastIllnessDTOs.getFirst().getCode().getCode()).isEqualTo("38907003");
+    assertThat(pastIllnessDTOs.getFirst().getClinicalStatus().getCode()).isEqualTo("resolved");
+    assertThat(pastIllnessDTOs.getFirst().getVerificationStatus().getCode()).isEqualTo("confirmed");
+    assertThat(pastIllnessDTOs.getFirst().getJson()).contains("5f727b7b-87ae-464f-85ac-1a45d23f0897");
   }
 
   @Override
@@ -158,13 +157,11 @@ class PastIllnessServiceTest extends AbstractServiceTest {
 
     ValueDTO newIllnessCode = new ValueDTO("newCode", "newCode", "testsystem");
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
-    ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
     String commentText = "BlaBla";
-    CommentDTO knownComment = new CommentDTO(LocalDateTime.now().minusDays(1), recorder.getFullName(), "test");
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
 
-    PastIllnessDTO newPastIllnessDTO = new PastIllnessDTO(null, newIllnessCode, newClinicalStatus, newVerficationStatus,
-        LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, List.of(knownComment, comment),
+    PastIllnessDTO newPastIllnessDTO = new PastIllnessDTO(null, newIllnessCode, newClinicalStatus, null,
+        LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, comment,
         "My new organization AG");
     newPastIllnessDTO.setAuthor(author);
 
@@ -174,17 +171,49 @@ class PastIllnessServiceTest extends AbstractServiceTest {
     assertThat(updatedPastIllnessDTO.getRelatedId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
     assertThat(updatedPastIllnessDTO.getCode()).isEqualTo(newIllnessCode);
     assertThat(updatedPastIllnessDTO.getClinicalStatus()).isEqualTo(newClinicalStatus);
-    assertThat(updatedPastIllnessDTO.getVerificationStatus()).isEqualTo(newVerficationStatus);
+    assertThat(updatedPastIllnessDTO.getVerificationStatus())
+        .isEqualTo(new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status"));
     assertThat(updatedPastIllnessDTO.getOrganization()).isEqualTo("My new organization AG");
     assertThat(updatedPastIllnessDTO.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(updatedPastIllnessDTO.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
-    assertThat(updatedPastIllnessDTO.getComments().get(0).getAuthor())
+    assertThat(updatedPastIllnessDTO.getComment().getAuthor())
         .isEqualTo(author.getUser().getFullName());
-    assertThat(updatedPastIllnessDTO.getComments().get(0).getText()).isEqualTo(commentText);
-    assertThat(updatedPastIllnessDTO.getComments().get(0).getDate()).isNotNull();
+    assertThat(updatedPastIllnessDTO.getComment().getText()).isEqualTo("BlaBla");
+    assertThat(updatedPastIllnessDTO.getComment().getDate()).isNotNull();
 
     pastIllnesses = pastIllnessService.getAll(patientIdentifier, null, true);
     assertThat(pastIllnesses.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void testUpdate_authorAsREP_onlyCommentChanged_verificationStatusRemainsTheSame() {
+    PatientIdentifier patientIdentifier =
+        pastIllnessService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            "waldspital-Id-1234");
+
+    List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll(patientIdentifier, null, true);
+    assertThat(pastIllnesses.size()).isEqualTo(1);
+    assertThat(pastIllnesses.getFirst().getVerificationStatus())
+        .isEqualTo(new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status"));
+
+    String commentText = "BlaBla";
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
+
+    PastIllnessDTO newPastIllnessDTO = pastIllnesses.getFirst();
+    author.setRole("REP");
+    newPastIllnessDTO.setAuthor(author);
+    newPastIllnessDTO.setComment(comment);
+
+    PastIllnessDTO updatedPastIllnessDTO =
+        pastIllnessService.update(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            "waldspital-Id-1234", "5f727b7b-87ae-464f-85ac-1a45d23f0897", newPastIllnessDTO, null);
+    assertThat(updatedPastIllnessDTO.getRelatedId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
+    assertThat(updatedPastIllnessDTO.getVerificationStatus())
+        .isEqualTo(new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status"));
+    assertThat(updatedPastIllnessDTO.getComment().getAuthor())
+        .isEqualTo(author.getUser().getFullName());
+    assertThat(updatedPastIllnessDTO.getComment().getText()).isEqualTo("BlaBla");
+    assertThat(updatedPastIllnessDTO.getComment().getDate()).isNotNull();
   }
 
   @Override
@@ -194,10 +223,10 @@ class PastIllnessServiceTest extends AbstractServiceTest {
 
     ValueDTO newIllnessCode = new ValueDTO("newCode", "newCode", "testsystem");
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
-    ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
+    ValueDTO newVerificationStatus = new ValueDTO("newVerificationStatus", "newVerificationStatus", "testsystem");
 
-    PastIllnessDTO newPastIllnessDTO = new PastIllnessDTO(null, newIllnessCode, newClinicalStatus, newVerficationStatus,
-        LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, List.of(),
+    PastIllnessDTO newPastIllnessDTO = new PastIllnessDTO(null, newIllnessCode, newClinicalStatus, newVerificationStatus,
+        LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, null,
         "My new organization AG");
 
     PastIllnessDTO updatedPastIllnessDTO =
@@ -206,7 +235,8 @@ class PastIllnessServiceTest extends AbstractServiceTest {
     assertThat(updatedPastIllnessDTO.getRelatedId()).isEqualTo("5f727b7b-87ae-464f-85ac-1a45d23f0897");
     assertThat(updatedPastIllnessDTO.getCode()).isEqualTo(newIllnessCode);
     assertThat(updatedPastIllnessDTO.getClinicalStatus()).isEqualTo(newClinicalStatus);
-    assertThat(updatedPastIllnessDTO.getVerificationStatus()).isEqualTo(newVerficationStatus);
+    assertThat(updatedPastIllnessDTO.getVerificationStatus())
+        .isEqualTo(new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status"));
     assertThat(updatedPastIllnessDTO.getOrganization()).isEqualTo("My new organization AG");
     assertThat(updatedPastIllnessDTO.getBegin()).isEqualTo(LocalDate.of(2000, 1, 1));
     assertThat(updatedPastIllnessDTO.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));

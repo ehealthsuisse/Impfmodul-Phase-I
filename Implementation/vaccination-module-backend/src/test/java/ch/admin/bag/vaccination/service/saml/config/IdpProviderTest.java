@@ -20,14 +20,15 @@ package ch.admin.bag.vaccination.service.saml.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@TestPropertySource(locations = "file:./config/idp-config-test.yml")
 class IdpProviderTest {
 
   @Autowired
@@ -51,4 +52,21 @@ class IdpProviderTest {
         .getArtifactResolutionServiceURL()).contains("ehealthsuisse");
   }
 
+  @Test
+  void idpProvider_initBean_hasDefaultSamlKeystoreValuesSet() {
+    assertThat(idpProvider.getSp().getSamlKeystorePath()).isNotNull();
+    assertThat(idpProvider.getSp().getSamlKeystorePath()).isEqualTo("config/keystore-idp.p12");
+    assertThat(idpProvider.getSp().getSamlKeystoreType()).isNotNull();
+    assertThat(idpProvider.getSp().getSamlKeystoreType()).isEqualTo("PKCS12");
+    assertThat(idpProvider.getSp().getSamlKeystorePassword()).isNotNull();
+    assertThat(idpProvider.getSp().getSamlSpAlias()).isNotNull();
+    assertThat(idpProvider.getSp().getSamlSpAlias()).isEqualTo("spkey");
+  }
+
+  @Test
+  void idpProvider_initBean_noDefaultTlsKeystoreValuesAreProvided_shouldReturnNull() {
+    assertThat(idpProvider.getSp().getTlsKeystorePath()).isNull();
+    assertThat(idpProvider.getSp().getTlsKeystoreType()).isNull();
+    assertThat(idpProvider.getSp().getTlsKeystorePassword()).isNull();
+  }
 }

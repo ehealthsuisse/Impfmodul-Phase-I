@@ -37,6 +37,11 @@
     "VALIDATION_TITLE": "La convalida non è riuscita",
     "VALIDATION_TEXT": "Correggere i dati inseriti per convalidarli.",
     "ORGANIZATION": "Organizzazione",
-    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Controllo di ingresso"
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Controllo di ingresso",
+    "CONFIDENTIALITY": "Riservatezza",
+    "DELETE_CONFIRMATION_MESSAGE": "Questo documento deve essere cancellato?<br>Nota: al documento cancellato viene assegnato lo stesso livello di riservatezza del documento da cancellare.",
+    "CONVERSION_DIALOG_TITLE": "Convertire il record",
+    "NO_IMMUNIZATION_RECORDS_FOUND": "Non ha ancora vaccinazioni registrate in questa applicazione.<br>Desidera importare le vaccinazioni dalla sua CIP a partire dalla data {{ createdAt }}?",
+    "LAST_MODIFIED_BY": "Ultima modifica di: {{author}}"
   }
 }

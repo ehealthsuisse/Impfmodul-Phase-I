@@ -24,8 +24,9 @@ import utc from 'dayjs/plugin/utc';
 import { IMedicalProblem } from 'src/app/model/medical-problem.interface';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { dateValidator, notFutureDateValidator } from '../../../core/validators/date-order-validator';
-import { IComment } from '../../../shared';
+import { IComment, IHumanDTO } from '../../../shared';
 import { TNewEntity } from '../../../shared/typs/NewEntityType';
+import { extractSessionDetailsByRole, setDefaultValues } from '../../../shared/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -52,7 +53,7 @@ type ProblemFormGroupContent = {
   recordedDate: FormControl<IMedicalProblem['recordedDate']>;
   begin: FormControl<IMedicalProblem['begin']>;
   end: FormControl<IMedicalProblem['end']>;
-  comments: FormControl<IComment[]>;
+  comment: FormControl<IComment>;
   commentMessage: FormControl;
   confidentiality: FormControl<IMedicalProblem['confidentiality']>;
 };
@@ -76,12 +77,7 @@ export class MedicalProblemFormService {
       ...problem,
     };
 
-    const isHCP = this.sessionInfo.queryParams.role === 'HCP';
-    const authorInfo = this.sessionInfo.author.getValue();
-    const firstName = isHCP ? authorInfo.firstName : '';
-    const lastName = isHCP ? authorInfo.lastName : '';
-    const prefix = isHCP ? authorInfo.prefix : '';
-    const organization = this.sessionInfo.queryParams.organization;
+    const extractSessionDetails = extractSessionDetailsByRole(this.sessionInfo);
     return new FormGroup<ProblemFormGroupContent>({
       id: new FormControl(
         { value: medicalProblemRawValue.id, disabled: true },
@@ -98,12 +94,12 @@ export class MedicalProblemFormService {
       verificationStatus: new FormControl(),
       clinicalStatus: new FormControl(null, Validators.required),
       recorder: new FormGroup({
-        firstName: new FormControl(firstName),
-        lastName: new FormControl(lastName),
-        prefix: new FormControl(prefix),
+        firstName: new FormControl(extractSessionDetails.firstName),
+        lastName: new FormControl(extractSessionDetails.lastName),
+        prefix: new FormControl(extractSessionDetails.prefix),
       }),
-      organization: new FormControl(organization),
-      comments: new FormControl([]),
+      organization: new FormControl(extractSessionDetails.organization),
+      comment: new FormControl(),
       commentMessage: new FormControl(),
       confidentiality: new FormControl(),
     } as any);
@@ -135,5 +131,26 @@ export class MedicalProblemFormService {
     if (medicalProblem?.recorder === null) {
       form.get('recorder')?.reset();
     }
+  }
+
+  resetMandatoryFields(form: ProblemFormGroup): void {
+    const extractSessionDetails = extractSessionDetailsByRole(this.sessionInfo);
+    const recorder: IHumanDTO = {
+      firstName: extractSessionDetails.firstName,
+      lastName: extractSessionDetails.lastName,
+      prefix: extractSessionDetails.prefix,
+    };
+
+    const fieldsToReset = [
+      { name: 'code', value: null },
+      { name: 'clinicalStatus', value: { code: '', name: '' } },
+      { name: 'recordedDate', value: new Date() },
+      { name: 'begin', value: new Date() },
+      { name: 'organization', value: extractSessionDetails.organization },
+      { name: 'recorder', value: recorder },
+      { name: 'confidentiality', value: { code: '17621005', name: 'Normal' } },
+    ];
+
+    fieldsToReset.forEach(field => setDefaultValues(form, field.name, field.value));
   }
 }

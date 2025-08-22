@@ -30,22 +30,22 @@ import org.projecthusky.xua.saml2.Assertion;
  */
 public interface BaseServiceIfc<T> {
 
-  public T create(String communityIdentifier, String oid, String localId,
-      T newDto, Assertion assertion);
+  T create(String communityIdentifier, String oid, String localId,
+      T newDto, Assertion assertion, boolean forceImmunizationAdministrationDocument);
 
-  public T delete(String commununityIdentifier, String oid, String localId,
+  T delete(String commununityIdentifier, String oid, String localId,
       String uuid, ValueDTO confidentiality, Assertion assertion);
 
-  public List<T> getAll(PatientIdentifier patientIdentifier, Assertion assertion, boolean isLifecycleActive);
+  List<T> getAll(PatientIdentifier patientIdentifier, Assertion assertion, boolean isLifecycleActive);
 
-  public List<T> getAll(String commununityIdentifier, String oid, String localId, Assertion assertion);
+  List<T> getAll(String commununityIdentifier, String oid, String localId, Assertion assertion);
 
-  public List<T> getAll(String commununityIdentifier, String oid,
+  List<T> getAll(String commununityIdentifier, String oid,
       String localId, Assertion assertion, boolean isLifecycleActive);
 
-  public T update(String communityIdentifier, String oid, String localId,
+  T update(String communityIdentifier, String oid, String localId,
       String uuid, T newDto, Assertion assertion);
 
-  public T validate(String communityIdentifier, String oid, String localId,
+  T validate(String communityIdentifier, String oid, String localId,
       String toUpdateUuid, T newDto, Assertion assertion);
 }

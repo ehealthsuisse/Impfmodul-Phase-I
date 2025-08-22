@@ -20,7 +20,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PatientComponent } from './patient.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { VaccinationRecordService } from '../../../entities/vaccintion-record/service/vaccination-record.service';
+import { VaccinationRecordService } from '../../../entities/./vaccination-record/service/vaccination-record.service';
 import { SharedTestingModule } from '../../shared-testing.module';
 
 describe('PatientComponent', () => {

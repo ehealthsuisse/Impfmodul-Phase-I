@@ -35,7 +35,7 @@ public class PdfOutputConfigTest {
   @Test
   void basicVaccinationCodes() {
     assertThat(config.getBasicVaccination().getCodes().size()).isEqualTo(11);
-    assertThat(config.getBasicVaccination().getCodes().get(0)).isEqualTo("397430003");
+    assertThat(config.getBasicVaccination().getCodes().getFirst()).isEqualTo("397430003");
     assertThat(config.getBasicVaccination().getCodes().get(10)).isEqualTo("240532009");
   }
 
@@ -43,7 +43,7 @@ public class PdfOutputConfigTest {
   @Test
   void otherVaccinationCodes() {
     assertThat(config.getOtherVaccination().getCodes().size()).isEqualTo(18);
-    assertThat(config.getOtherVaccination().getCodes().get(0)).isEqualTo("40468003");
+    assertThat(config.getOtherVaccination().getCodes().getFirst()).isEqualTo("40468003");
     assertThat(config.getOtherVaccination().getCodes().get(6)).isEqualTo("840539006");
   }
 }

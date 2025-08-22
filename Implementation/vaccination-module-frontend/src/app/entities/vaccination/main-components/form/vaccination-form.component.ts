@@ -26,46 +26,47 @@ import { finalize, map, Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IVaccination } from '../../../../model';
-import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValueDTO, MainWrapperComponent } from '../../../../shared';
+import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ConfidentialityService } from '../../../../shared/services/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
-import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
+import { buildComment, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { VaccinePredefinedDiseases } from '../../../../shared/interfaces/vaccination-with-disease.interface';
-import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { VaccinationConfirmComponent } from '../../helper-components/confirm/vaccination-confirm.component';
 import { VaccinationFormGroup, VaccinationFormService } from '../../services/vaccination-form.service';
 import { VaccinationService } from '../../services/vaccination.service';
 import { ChipsHandler } from './chips-handler';
+import { SpinnerService } from '../../../../shared/services/spinner.service';
+import { FormGroupDirective } from '@angular/forms';
 
 @Component({
-  standalone: true,
   selector: 'vm-vaccination-form',
+  standalone: true,
   templateUrl: './vaccination-form.component.html',
   styleUrls: ['./vaccination-form.component.scss'],
   encapsulation: ViewEncapsulation.None,
   imports: [
     SharedLibsModule,
-    MainWrapperComponent,
     CommonCardFooterComponent,
     CommentComponent,
-    FilterPipePipe,
     ReusableDateFieldComponent,
     ReusableSelectFieldWithSearchComponent,
   ],
 })
 export class VaccinationFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   vaccinationFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
+  confidentialityList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   reasons: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   diseases: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
 
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
-  @ViewChild('status', { static: true }) staus!: MatSelect;
+  @ViewChild('status', { static: true }) status!: MatSelect;
   @ViewChild('reason', { static: true }) reason!: MatSelect;
   @ViewChild('diseasesChipsList', { static: true }) diseasesList!: MatSelect;
+  @ViewChild('formGroupDirective') formGroupDirective!: FormGroupDirective;
 
   isSaving = false;
   editForm: VaccinationFormGroup = inject(VaccinationFormService).createVaccinationFormGroup();
@@ -81,6 +82,8 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   helpDialogBody = 'HELP.VACCINATION.DETAIL.BODY';
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
+  spinnerService: SpinnerService = inject(SpinnerService);
+  commentMessage: string = '';
 
   private vaccinationFormService: VaccinationFormService = inject(VaccinationFormService);
   private matDialog: MatDialog = inject(MatDialog);
@@ -94,6 +97,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     this.getDropdownData();
     initializeActionData('', this.sharedDataService);
     let id = this.activatedRoute.snapshot.params['id'];
+    let role: string = this.sharedDataService.storedData['role']!;
     this.vaccinationService.find(id).subscribe(vaccine => {
       if (vaccine) {
         this.vaccination = vaccine;
@@ -109,15 +113,16 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     });
 
     this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
     this.editForm
       .get('vaccineCode')
       ?.valueChanges.pipe(takeUntil(this.unsubscribe$))
       .subscribe(vaccine => {
-        const targetDiseases = this.vaccinationDiseases[vaccine.code];
+        const targetDiseases = this.vaccinationDiseases[vaccine?.code];
 
         this.diseasesChips.selected = [];
         this.editForm.get('targetDiseases')?.setValue([]);
-        targetDiseases.forEach((disease: unknown) => {
+        targetDiseases?.forEach((disease: unknown) => {
           if (this.diseasesChips) {
             this.diseasesChips.select({ option: { value: disease } } as MatAutocompleteSelectedEvent, this.editForm);
           }
@@ -137,19 +142,16 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   }
 
   save(): void {
-    if (this.editForm.value.commentMessage) {
-      const commentObj = {
-        text: this.editForm.value.commentMessage,
-        author: 'will be added by the system',
-      };
-      this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
-      this.editForm.value.comments!.push(commentObj);
-    }
+    this.editForm.value.comment = buildComment(this.commentMessage);
+
     const vaccination = { ...this.vaccination, ...this.vaccinationFormService.getVaccination(this.editForm) };
     vaccination.status = this.formOptionsService.getOption('immunizationStatusCode', 'completed');
+    vaccination.verificationStatus = this.formOptionsService.getOption(
+      'immunizationVerificationStatus',
+      this.sessionInfoService.canValidate() ? '59156000' : '76104008'
+    );
     vaccination.lotNumber = vaccination.lotNumber || '-';
 
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.matDialog
       .open(VaccinationConfirmComponent, {
         width: '60vw',
@@ -159,7 +161,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
       .afterClosed()
       .subscribe({
         next: (res: { action?: string } = {}) => {
-          vaccination.confidentiality = this.confidentialityService.confidentialityStatus;
           if (res.action === 'SAVE') {
             if (vaccination.id) {
               this.subscribeToSaveResponse(this.vaccinationService.update(vaccination), true);
@@ -169,6 +170,9 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
           }
           if (res.action === 'SAVE_AND_STAY') {
             this.subscribeToSaveResponse(this.vaccinationService.create(vaccination), false);
+            this.formGroupDirective.resetForm();
+            this.resetDiseasesSelection();
+            this.vaccinationFormService.resetMandatoryFields(this.editForm);
           }
         },
       });
@@ -237,6 +241,15 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   private getDropdownData(): void {
     this.diseases.subscribe(res => {
       this.diseasesChips.setupChipsControls(_.cloneDeep(res));
+    });
+  }
+
+  // Resets the selected items in diseasesChips list
+  private resetDiseasesSelection(): void {
+    this.diseasesChips.list.forEach(item => {
+      if (item.selected) {
+        item.selected = false;
+      }
     });
   }
 }

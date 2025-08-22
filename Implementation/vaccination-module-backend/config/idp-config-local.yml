@@ -17,16 +17,31 @@ idp:
     securityTokenServiceURL: https://is.not.set.for.gazelle
     entityId: OverwriteDefaultEntityIDIfNecessary
     logoutURL: https://logout.url.set.in.logout.request.destination
+    samlKeystore: # IDP specific setting overriding the sp.keystore setting 
+      keystoreType: PKCS12
+      keystorePath: path.to.keystore.p12
+      keystorePassword: password
+      spAlias: spkeyAlias
+    tlsKeystore: # IDP specific setting overriding the sp.tlsKeystore setting
+      keystoreType: JKS
+      keystorePath: path.to.keystore.jks
+      keystorePassword: password
   - identifier: DUMMY
   
 # Service Provider - this application
 sp:
   assertionConsumerServiceUrl: https://my.backend.url/saml/sso
   forwardArtifactToClientUrl: https://my.frontend.url/saml-acs
+  otherNodeLogoutURL: https://otherNode.backend.url/saml/logout
 
-  # keystore containing our private key
+  # keystore containing the private key used for MTLS with the EPD backend
   keystore:
    keystore-type: PKCS12
    keystore-path: path.to.keystore
    keystore-password: keystore.password
    sp-alias: key.alias.used.for.idp
+  # Keystore containing the private key used for MTLS with the IDPs
+  tlsKeystore:
+    keystore-type: JKS
+    keystore-path: path.to.keystore.jks
+    keystore-password: password 

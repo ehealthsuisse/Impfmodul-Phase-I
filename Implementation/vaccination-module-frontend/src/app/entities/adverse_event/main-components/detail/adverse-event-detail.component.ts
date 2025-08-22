@@ -32,19 +32,19 @@ import { AdverseEventService } from '../../services/adverse-event.service';
 
 @Component({
   selector: 'vm-adverse-event-detail',
+  standalone: true,
   templateUrl: './adverse-event-detail.component.html',
   styleUrls: ['./adverse-event-detail.component.scss'],
   imports: [SharedLibsModule, SharedComponentModule, AdverseEventDetailedInformationComponent, DetailsActionComponent],
-  standalone: true,
 })
 export class AdverseEventDetailComponent extends BreakPointSensorComponent implements OnInit {
-  adverseEventService: AdverseEventService = inject(AdverseEventService);
   adverseEvent: IAdverseEvent | null = null;
+  adverseEventService: AdverseEventService = inject(AdverseEventService);
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sharedDataService: SharedDataService = inject(SharedDataService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
 
-  get patient(): IHumanDTO {
+  get patient(): IHumanDTO | null {
     return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
   }
 

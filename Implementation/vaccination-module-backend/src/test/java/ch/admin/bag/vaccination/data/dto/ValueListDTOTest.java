@@ -43,7 +43,7 @@ public class ValueListDTOTest {
 
     assertEquals(NAME, valueListDTO.getName());
     assertEquals(1, valueListDTO.getEntries().size());
-    assertEquals(value, valueListDTO.getEntries().get(0));
+    assertEquals(value, valueListDTO.getEntries().getFirst());
   }
 
   @Test

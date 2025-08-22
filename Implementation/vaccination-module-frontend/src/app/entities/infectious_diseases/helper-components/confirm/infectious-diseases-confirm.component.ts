@@ -20,13 +20,12 @@ import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { InfectiousDiseasesDetailedInformationComponent } from '../infectious-diseases-detailed-information/infectious-diseases-detailed-information.component';
-import { ConfidentialityComponent } from '../../../../shared/component/confidentiality';
 import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 
 @Component({
   selector: 'vm-illness-confirm',
   standalone: true,
-  imports: [SharedLibsModule, InfectiousDiseasesDetailedInformationComponent, ConfidentialityComponent, ConfirmComponent],
+  imports: [SharedLibsModule, InfectiousDiseasesDetailedInformationComponent, ConfirmComponent],
   templateUrl: './infectious-diseases-confirm.component.html',
   styleUrls: ['./infectious-diseases-confirm.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

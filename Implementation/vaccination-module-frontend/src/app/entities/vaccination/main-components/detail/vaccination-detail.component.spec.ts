@@ -20,9 +20,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { VaccinationDetailComponent } from './vaccination-detail.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('VaccinationDetailComponent', () => {
   let component: VaccinationDetailComponent;
@@ -30,13 +31,8 @@ describe('VaccinationDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        VaccinationDetailComponent,
-        RouterTestingModule.withRoutes([]),
-        HttpClientTestingModule,
-        TranslateModule.forRoot(),
-        MatDialogModule,
-      ],
+      imports: [VaccinationDetailComponent, RouterTestingModule.withRoutes([]), TranslateModule.forRoot(), MatDialogModule],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     })
       .overrideTemplate(VaccinationDetailComponent, '')
       .compileComponents();

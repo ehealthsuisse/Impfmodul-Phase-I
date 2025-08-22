@@ -19,7 +19,7 @@
 package ch.fhir.epr.adapter.data.dto;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,23 +34,47 @@ import lombok.ToString;
 public class AllergyDTO extends BaseDTO {
   private LocalDate occurrenceDate;
   private ValueDTO type;
+  /** excluded from equals method for backward compatibility, there are older records without criticality */
   private ValueDTO criticality;
   private ValueDTO clinicalStatus;
-  private ValueDTO verificationStatus;
 
   public AllergyDTO(String id, LocalDate occurrenceDate, ValueDTO code, ValueDTO criticality,
       ValueDTO clinicalStatus, ValueDTO verificationStatus, ValueDTO type, HumanNameDTO recorder,
-      List<CommentDTO> comments, String organization) {
+      CommentDTO comment, String organization) {
     this.occurrenceDate = occurrenceDate;
     this.criticality = criticality;
     this.clinicalStatus = clinicalStatus;
-    this.verificationStatus = verificationStatus;
     this.type = type;
     setId(id);
     setCode(code);
     setRecorder(recorder);
     setOrganization(organization);
-    setComments(comments);
+    setComment(comment);
+    setVerificationStatus(verificationStatus);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (!(o instanceof AllergyDTO allergy)) {
+      return false;
+    }
+
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    return Objects.equals(occurrenceDate, allergy.occurrenceDate) &&
+        Objects.equals(type, allergy.type) &&
+        Objects.equals(clinicalStatus, allergy.clinicalStatus);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), occurrenceDate, type, clinicalStatus);
   }
 
   @Override

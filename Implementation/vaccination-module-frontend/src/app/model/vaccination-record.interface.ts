@@ -31,4 +31,5 @@ export interface IVaccinationRecord extends IBaseDTO {
   i18nTargetDiseases: IValueDTO[];
   patient: IHumanDTO;
   author?: Author;
+  retrievedFromEPD: boolean;
 }

@@ -30,7 +30,7 @@ export class CryptoJsService {
       );
       this.encryptedData.split('&').forEach(pair => {
         const [key, value] = pair.split('=');
-        (this.storedData as any)[key] = value;
+        Object.assign(this.storedData, { [key]: value });
       });
     } else {
       localStorage.setItem(this.portalKey, '');

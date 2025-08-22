@@ -26,7 +26,6 @@ export interface IAdverseEvent extends IBaseDTO {
   allergyCode: IValueDTO;
   clinicalStatus: IValueDTO;
   criticality: IValueDTO;
-  verificationStatus: IValueDTO;
   category: IValueDTO;
   author?: Author;
   validated: boolean;

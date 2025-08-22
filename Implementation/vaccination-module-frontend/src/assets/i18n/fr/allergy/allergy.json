@@ -7,6 +7,7 @@
     "ALLERGY_CODE": "Effet indésirable",
     "RECORDER": "Enregistré par",
     "OCCURRENCE_DATE": "Date",
-    "DATE": "Date de la constatation"
+    "DATE": "Date de la constatation",
+    "CONFIDENTIALITY": "Confidentialité"
   }
 }

@@ -1,5 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild} from '@angular/core';
-import { FormControl, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
+import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { SharedLibsModule } from '../../../shared-libs.module';
 import { BreakPointSensorComponent } from '../../break-point-sensor/break-point-sensor.component';
@@ -30,7 +40,10 @@ import { takeUntil } from 'rxjs/operators';
     { provide: MAT_DATE_FORMATS, useValue: DATE_FORMAT },
   ],
 })
-export class ReusableDateFieldComponent extends BreakPointSensorComponent implements OnDestroy, AfterViewInit, OnChanges {
+export class ReusableDateFieldComponent
+  extends BreakPointSensorComponent
+  implements OnDestroy, AfterViewInit, OnChanges, ControlValueAccessor
+{
   @Input() formControl!: FormControl;
   @Input() isEditable!: boolean;
   @ViewChild('picker') picker!: MatDatepicker<Date>;

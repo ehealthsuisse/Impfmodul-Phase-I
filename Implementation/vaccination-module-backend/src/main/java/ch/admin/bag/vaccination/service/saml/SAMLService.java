@@ -20,20 +20,28 @@ package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.service.HttpSessionUtils;
-import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.net.ssl.SSLContext;
+
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.component.ComponentInitializationException;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.xml.security.c14n.Canonicalizer;
@@ -55,7 +63,6 @@ import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.LogoutResponse;
 import org.opensaml.saml.saml2.core.impl.AssertionBuilder;
-import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.opensaml.xmlsec.keyinfo.impl.X509KeyInfoGeneratorFactory;
 import org.opensaml.xmlsec.signature.KeyInfo;
@@ -78,8 +85,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SAMLService implements SAMLServiceIfc {
-  @Autowired
-  private SignatureService signatureService;
+  public static final String FORWARD_TOKEN = "FORWARD;;";
 
   @Autowired
   private IdpProvider idpProviders;
@@ -96,14 +102,14 @@ public class SAMLService implements SAMLServiceIfc {
   @Value("${sp.assertionConsumerServiceUrl}")
   private String assertionConsumerServiceUrl;
 
-  private Map<String, SecurityContext> sessionIdToSecurityContext = new ConcurrentHashMap<>();
-  private Map<String, String> nameToSessionId = new ConcurrentHashMap<>();
+  private final Map<String, SecurityContext> sessionIdToSecurityContext = new ConcurrentHashMap<>();
+  private final Map<String, String> nameToSessionId = new ConcurrentHashMap<>();
 
   @Override
   public ArtifactResolve buildArtifactResolve(IdentityProviderConfig idpConfig, Artifact artifact) {
     ArtifactResolve artifactResolve = SAMLUtils.createUnsignedArtifactResolveRequest(getEntityId(idpConfig),
         idpConfig.getArtifactResolutionServiceURL(), artifact);
-    signRequest(artifactResolve);
+    signRequest(artifactResolve, idpConfig);
 
     return artifactResolve;
   }
@@ -130,13 +136,8 @@ public class SAMLService implements SAMLServiceIfc {
 
   @Override
   public void createAuthenticatedSession(String idp, HttpServletRequest request, Assertion assertion) {
-    AuthenticatedPrincipal principal = new AuthenticatedPrincipal() {
-
-      @Override
-      public String getName() {
-        return assertion.getSubject() != null ? assertion.getSubject().getNameID().getValue() : idp;
-      }
-    };
+    AuthenticatedPrincipal principal =
+        () -> assertion.getSubject() != null ? assertion.getSubject().getNameID().getValue() : idp;
 
     Authentication auth = new SAMLAuthentication(principal, idp, assertion);
     SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -170,7 +171,7 @@ public class SAMLService implements SAMLServiceIfc {
     }
     String entityId = getEntityId(idpConfig);
     LogoutResponse response = SAMLUtils.createUnsignedLogoutResponse(logoutRequest, entityId, logoutURL);
-    signRequest(response);
+    signRequest(response, idpConfig);
 
     return response;
   }
@@ -183,12 +184,6 @@ public class SAMLService implements SAMLServiceIfc {
   @Override
   public int getNumberOfSessions() {
     return sessionIdToSecurityContext.size();
-  }
-
-  @Override
-  public void invalidateSession(HttpSession httpSession) {
-    removeSecurityContextFromSession(httpSession);
-    httpSession.invalidate();
   }
 
   @Override
@@ -217,7 +212,7 @@ public class SAMLService implements SAMLServiceIfc {
 
     SAMLEndpointContext endpointContext = peerEntityContext.ensureSubcontext(SAMLEndpointContext.class);
     endpointContext.setEndpoint(SAMLUtils.createEndpoint(idpConfig.getAuthnrequestURL()));
-    idpAdapter.addSigningParametersToContext(context);
+    idpAdapter.addSigningParametersToContext(context, idpConfig);
 
     HTTPPostEncoder encoder = new HTTPPostEncoder();
     VelocityEngine vEngine = createEngine();
@@ -262,7 +257,7 @@ public class SAMLService implements SAMLServiceIfc {
         Instant instant = assertion.getConditions().getNotOnOrAfter();
 
         long millisUntilExpiry = instant.toEpochMilli() - Instant.now().toEpochMilli();
-        long oneMinutesInMillis = 1 * 60 * 1000;
+        long oneMinutesInMillis = 60 * 1000;
 
         if (millisUntilExpiry <= 0) {
           log.warn("Removing expired session for {} and IDP {}.", samlAuthentication.getName(), idp);
@@ -274,7 +269,7 @@ public class SAMLService implements SAMLServiceIfc {
           String stsURL = idpConfig.getSecurityTokenServiceURL();
           if (stsURL != null) {
             try {
-              Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL);
+              Assertion renewedAssertion = idpAdapter.refreshToken(assertion, stsURL, idpConfig);
               samlAuthentication.setAssertion(renewedAssertion);
               log.debug("Renewal successful.");
             } catch (Exception ex) {
@@ -316,6 +311,29 @@ public class SAMLService implements SAMLServiceIfc {
     return idpAdapter.sendAndReceiveArtifactResolve(idpConfig, artifactResolve);
   }
 
+  @Override
+  public void sendLogoutToOtherNode(String otherNodeLogoutURL, String logoutRequestBody) {
+    if (otherNodeLogoutURL == null || otherNodeLogoutURL.isBlank()) {
+      log.warn("No other node logout URL configured, skipping logout to other node.");
+      return;
+    }
+
+    try {
+      log.debug("Sending logout request to other node: {}", otherNodeLogoutURL);
+      HttpClient httpClient = HttpClient.newBuilder().sslContext(SSLContext.getDefault()).build();
+      HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(otherNodeLogoutURL))
+        .header("Content-Type", "application/soap+xml")
+        .POST(HttpRequest.BodyPublishers.ofString(FORWARD_TOKEN + logoutRequestBody))
+        .build();
+
+      HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      log.debug("Successfully sent logout request to other node, received statusCode {}.", response.statusCode());
+    } catch (Exception e) {
+      log.error("Failed to redirect to other node {} for logout", otherNodeLogoutURL, e);
+    }
+  }
+
   private void addAuthenticatedSessionId(String sessionId, SecurityContext securityContext) {
     log.debug("add {} {}", sessionId, securityContext.getAuthentication().getName());
     sessionIdToSecurityContext.put(sessionId, securityContext);
@@ -325,7 +343,7 @@ public class SAMLService implements SAMLServiceIfc {
   private AuthnRequest createAuthnRequest(IdentityProviderConfig idpConfig) {
     AuthnRequest authnRequest = SAMLUtils.createUnsignedAuthnRequest(getEntityId(idpConfig),
         idpConfig.getAuthnrequestURL(), assertionConsumerServiceUrl);
-    signRequest(authnRequest);
+    signRequest(authnRequest, idpConfig);
 
     return authnRequest;
   }
@@ -348,31 +366,27 @@ public class SAMLService implements SAMLServiceIfc {
     return idpConfig != null && idpConfig.getEntityId() != null ? idpConfig.getEntityId() : spEntityId;
   }
 
-  private Credential getServiceProviderSignatureCredential() {
-    return signatureService.getSamlSPCredential();
-  }
-
   private void removeSecurityContextFromSession(HttpSession httpSession) {
     SecurityContextHolder.clearContext();
     removeSession(httpSession.getId());
   }
 
-  private void signRequest(SignableSAMLObject request) {
+  private void signRequest(SignableSAMLObject request, IdentityProviderConfig idpConfig) {
     try {
       SignatureBuilder signFactory = new SignatureBuilder();
       Signature signature = signFactory.buildObject(Signature.DEFAULT_ELEMENT_NAME);
       signature.setCanonicalizationAlgorithm(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
       signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
-      signature.setSigningCredential(getServiceProviderSignatureCredential());
+      signature.setSigningCredential(idpConfig.getSamlCredential(true));
 
       X509KeyInfoGeneratorFactory x509Factory = new X509KeyInfoGeneratorFactory();
       x509Factory.setEmitEntityCertificate(true);
       KeyInfoGenerator generator = x509Factory.newInstance();
-      KeyInfo keyInfo = generator.generate(getServiceProviderSignatureCredential());
+      KeyInfo keyInfo = generator.generate(idpConfig.getSamlCredential(true));
       signature.setKeyInfo(keyInfo);
 
       request.setSignature(signature);
-      ((SAMLObjectContentReference) signature.getContentReferences().get(0))
+      ((SAMLObjectContentReference) signature.getContentReferences().getFirst())
       .setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA256);
 
       Marshaller marshaller =
@@ -390,10 +404,9 @@ public class SAMLService implements SAMLServiceIfc {
   private void synchronizeSessionMaps() {
     if (nameToSessionId.size() != sessionIdToSecurityContext.size()) {
       Map<String, String> map = new ConcurrentHashMap<>(sessionIdToSecurityContext.size());
-      sessionIdToSecurityContext.entrySet().forEach(entry -> {
-        String sessionId = entry.getKey();
-        if (entry.getValue() != null && entry.getValue().getAuthentication() != null) {
-          String name = entry.getValue().getAuthentication().getName();
+      sessionIdToSecurityContext.forEach((sessionId, value) -> {
+        if (value != null && value.getAuthentication() != null) {
+          String name = value.getAuthentication().getName();
           if (name != null) {
             map.put(name, sessionId);
           }

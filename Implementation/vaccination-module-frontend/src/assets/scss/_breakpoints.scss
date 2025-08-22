@@ -1,3 +1,5 @@
+@use 'sass:map';
+
 // Media step breakpoint mixin based on Angular Material lib
 $breakpoints: (
   xs: 'screen and (max-width: 599px)',
@@ -28,7 +30,7 @@ $helper-breakpoints: (
 );
 
 @mixin media-breakpoint($breakpointName) {
-  $mediaQuery: map-get($breakpoints, $breakpointName);
+  $mediaQuery: map.get($breakpoints, $breakpointName);
 
   @if ($mediaQuery == null) {
     @content;

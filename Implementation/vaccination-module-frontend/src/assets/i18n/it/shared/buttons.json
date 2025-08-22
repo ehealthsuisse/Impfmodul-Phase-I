@@ -2,7 +2,7 @@
   "buttons": {
     "ADD": "Aggiungi",
     "EDIT": "Correggi",
-    "SAVE": "Salvare",
+    "SAVE": "Salva",
     "CANCEL": "Annulla",
     "DELETE": "Cancellare",
     "OK": "OK",
@@ -12,16 +12,18 @@
     "BACK": "Indietro",
     "CONTINUE": "Avanti",
     "VERIFY": "Verifica",
-    "EXPORT": "Esporta/Stampa",
+    "EXPORT": "Crea PDF",
     "PRINT": "Stampa",
     "VALIDATE": "Convalidare",
     "ADD_ALLERGY": "Aggiungi un effetto indesiderato",
     "ADD_VACCINATION": "Aggiungi una vaccinazione",
     "ADD_PAST_ILLNESS": "Aggiungi una malattia infettiva",
     "ADD_PROBLEM": "Aggiungi un fattore di rischio",
-    "DOWNLOAD": "Scaricare",
+    "DOWNLOAD": "Scaricare FHIR",
     "HELP": "Aiuto",
     "SAVE_AND_STAY": "Salva e crea un altro",
-    "LOGOUT": "Esci"
+    "LOGOUT": "Esci",
+    "MORE": "Guida",
+    "SAVE_TO": "Salva in CIP"
   }
 }

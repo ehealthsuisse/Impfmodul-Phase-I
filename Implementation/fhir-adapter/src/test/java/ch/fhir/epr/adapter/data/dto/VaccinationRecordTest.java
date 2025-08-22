@@ -20,48 +20,84 @@
 package ch.fhir.epr.adapter.data.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class VaccinationRecordTest {
-
   @Test
-  void testConstructorAllArgsConstructor() {
+  void testConstructor_shouldDelegateSettingToBaseDTO() {
     VaccinationRecordDTO vaccinationRecord = new VaccinationRecordDTO(
         new AuthorDTO(new HumanNameDTO("firstNameA", "lastNameA", "prefixA", LocalDate.of(11, 11, 11), "genderA")), //
         new HumanNameDTO("firstNameB", "lastNameB", "prefixB", LocalDate.of(12, 12, 12), "genderB"), //
-        Arrays.asList(new AllergyDTO()), //
-        Arrays.asList(new PastIllnessDTO()), //
-        Arrays.asList(new VaccinationDTO()), //
-        Arrays.asList(new MedicalProblemDTO())//
+        List.of(new AllergyDTO()), //
+        List.of(new PastIllnessDTO()), //
+        List.of(new VaccinationDTO()), //
+        List.of(new MedicalProblemDTO())//
     );
+    vaccinationRecord.setCreatedAt(LocalDateTime.parse("2025-04-28T11:07:08"));
 
     assertNull(vaccinationRecord.getJson());
     assertNull(vaccinationRecord.getId());
     assertNull(vaccinationRecord.getRelatedId());
 
-    assertEquals(vaccinationRecord.getAuthor().getUser().getFirstName(), "firstNameA");
-    assertEquals(vaccinationRecord.getAuthor().getUser().getLastName(), "lastNameA");
-    assertEquals(vaccinationRecord.getAuthor().getUser().getPrefix(), "prefixA");
-    assertEquals(vaccinationRecord.getAuthor().getUser().getBirthday(), LocalDate.of(11, 11, 11));
-    assertEquals(vaccinationRecord.getAuthor().getUser().getGender(), "genderA");
+    assertEquals("firstNameA", vaccinationRecord.getAuthor().getUser().getFirstName());
+    assertEquals("lastNameA", vaccinationRecord.getAuthor().getUser().getLastName());
+    assertEquals("prefixA", vaccinationRecord.getAuthor().getUser().getPrefix());
+    assertEquals(LocalDate.of(11, 11, 11), vaccinationRecord.getAuthor().getUser().getBirthday());
+    assertEquals("genderA", vaccinationRecord.getAuthor().getUser().getGender());
 
-    assertEquals(vaccinationRecord.getPatient().getFirstName(), "firstNameB");
-    assertEquals(vaccinationRecord.getPatient().getLastName(), "lastNameB");
-    assertEquals(vaccinationRecord.getPatient().getPrefix(), "prefixB");
-    assertEquals(vaccinationRecord.getPatient().getBirthday(), LocalDate.of(12, 12, 12));
-    assertEquals(vaccinationRecord.getPatient().getGender(), "genderB");
+    assertEquals("firstNameB", vaccinationRecord.getPatient().getFirstName());
+    assertEquals("lastNameB", vaccinationRecord.getPatient().getLastName());
+    assertEquals("prefixB", vaccinationRecord.getPatient().getPrefix());
+    assertEquals(LocalDate.of(12, 12, 12), vaccinationRecord.getPatient().getBirthday());
+    assertEquals("genderB", vaccinationRecord.getPatient().getGender());
 
-    assertEquals(vaccinationRecord.getAllergies().size(), 1);
-    assertEquals(vaccinationRecord.getPastIllnesses().size(), 1);
-    assertEquals(vaccinationRecord.getVaccinations().size(), 1);
-    assertEquals(vaccinationRecord.getMedicalProblems().size(), 1);
+    assertEquals(1, vaccinationRecord.getAllergies().size());
+    assertEquals(1, vaccinationRecord.getPastIllnesses().size());
+    assertEquals(1, vaccinationRecord.getVaccinations().size());
+    assertEquals(1, vaccinationRecord.getMedicalProblems().size());
+    assertEquals(LocalDateTime.parse("2025-04-28T11:07:08"), vaccinationRecord.getCreatedAt());
   }
 
+
+  @Test
+  void testConstructorAllArgsConstructor() {
+    VaccinationRecordDTO vaccinationRecord = new VaccinationRecordDTO("de",
+        new HumanNameDTO("firstNameA", "lastNameA", "prefixA",
+            LocalDate.of(11, 11, 11), "genderA"), //
+        List.of(new AllergyDTO()), //
+        List.of(new PastIllnessDTO()), //
+        List.of(new VaccinationDTO()), //
+        List.of(new MedicalProblemDTO()),//
+        List.of(new ValueDTO()) //
+    );
+    vaccinationRecord.setCreatedAt(LocalDateTime.parse("2025-04-28T11:07:08"));
+
+    assertNull(vaccinationRecord.getJson());
+    assertNull(vaccinationRecord.getId());
+    assertNull(vaccinationRecord.getRelatedId());
+
+    assertEquals("firstNameA", vaccinationRecord.getPatient().getFirstName());
+    assertEquals("lastNameA", vaccinationRecord.getPatient().getLastName());
+    assertEquals("prefixA", vaccinationRecord.getPatient().getPrefix());
+    assertEquals(LocalDate.of(11, 11, 11), vaccinationRecord.getPatient().getBirthday());
+    assertEquals("genderA", vaccinationRecord.getPatient().getGender());
+
+    assertEquals(1, vaccinationRecord.getAllergies().size());
+    assertEquals(1, vaccinationRecord.getPastIllnesses().size());
+    assertEquals(1, vaccinationRecord.getVaccinations().size());
+    assertEquals(1, vaccinationRecord.getMedicalProblems().size());
+    assertEquals(1, vaccinationRecord.getI18nTargetDiseases().size());
+    assertEquals(LocalDateTime.parse("2025-04-28T11:07:08"), vaccinationRecord.getCreatedAt());
+
+  }
   @Test
   void testConstructorNoArgsConstructor() {
     VaccinationRecordDTO vaccinationRecord = new VaccinationRecordDTO();
@@ -70,14 +106,12 @@ public class VaccinationRecordTest {
     assertNull(vaccinationRecord.getRelatedId());
     assertNull(vaccinationRecord.getAuthor());
     assertNull(vaccinationRecord.getPatient());
-
-    assertNull(vaccinationRecord.getAuthor());
-
     assertNull(vaccinationRecord.getAllergies());
     assertNull(vaccinationRecord.getPastIllnesses());
     assertNull(vaccinationRecord.getVaccinations());
     assertNull(vaccinationRecord.getMedicalProblems());
-    assertThrows(UnsupportedOperationException.class, () -> vaccinationRecord.getDateOfEvent());
+    assertNull(vaccinationRecord.getCreatedAt());
+    assertThrows(UnsupportedOperationException.class, vaccinationRecord::getDateOfEvent);
   }
 }
 

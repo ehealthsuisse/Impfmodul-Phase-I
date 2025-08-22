@@ -1,5 +1,6 @@
-@import 'src/assets/scss/global';
-@include media-breakpoint(tm) {
+@use 'src/assets/scss/global';
+
+@include global.media-breakpoint(tm) {
   .datesWrap {
     flex-direction: column !important;
   }

@@ -56,10 +56,10 @@ public class ValueListServiceTest {
   @Test
   void getAllListOfValues_returnValues() {
     List<ValueListDTO> valueListDTO = valueListService.getAllListOfValues();
-    assertThat(valueListDTO.size()).isEqualByComparingTo(16);
-    assertFalse(valueListDTO.get(0).getName().contains("properties"));
-    assertEquals(valueListDTO.get(0).getEntries().get(0).getName(),
-        valueListDTO.get(0).getEntries().get(0).getName().trim());
+    assertThat(valueListDTO.size()).isEqualByComparingTo(17);
+    assertFalse(valueListDTO.getFirst().getName().contains("properties"));
+    assertEquals(valueListDTO.getFirst().getEntries().getFirst().getName(),
+        valueListDTO.getFirst().getEntries().getFirst().getName().trim());
   }
 
   @Test

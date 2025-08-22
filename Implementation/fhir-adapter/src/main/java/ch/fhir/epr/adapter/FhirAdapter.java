@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -129,10 +128,6 @@ public class FhirAdapter implements FhirAdapterIfc {
       log.warn("bundle is null.");
       return dtos;
     }
-    if (FhirUtils.isVaccinationRecord(bundle)) {
-      log.debug("Bundle contains VaccinationRecord and is therefor ignored.");
-      return dtos;
-    }
 
     SectionType sectionType = getSectionType(clazz);
     try {
@@ -149,7 +144,7 @@ public class FhirAdapter implements FhirAdapterIfc {
         }
       }
     } catch (Exception e) {
-      log.warn("Exception:{}", e);
+      log.warn("Exception: {}", e.getMessage());
       throw new TechnicalException(e.getMessage());
     }
 
@@ -218,7 +213,7 @@ public class FhirAdapter implements FhirAdapterIfc {
           ToStringBuilder.reflectionToString(parsed, ToStringStyle.JSON_STYLE));
       return parsed;
     } catch (Exception ex) {
-      log.warn("Bundle could not be parsed. Exception: {}", ex);
+      log.warn("Bundle could not be parsed. Exception: {}", ex.getMessage());
       return null;
     }
   }
@@ -231,14 +226,9 @@ public class FhirAdapter implements FhirAdapterIfc {
       FhirContext ctx = getFhirContext();
       Composition composition = FhirUtils.getResource(Composition.class, updatedBundle);
 
-      Bundle bundle = fhirConverter.updateBundle(ctx, patientIdentifier, dto, composition, resource);
-      // TODO : use the uuid too !
-      @SuppressWarnings("unchecked")
-      Class<DomainResource> resourceType = (Class<DomainResource>) getResourceType(dto.getClass());
-      fhirConverter.copyNotes(bundle, updatedBundle, resourceType);
-      return bundle;
+      return fhirConverter.updateBundle(ctx, patientIdentifier, dto, composition, resource);
     } catch (Exception e) {
-      log.warn("Exception:{}", e);
+      log.warn("Exception: {}", e.getMessage());
       throw new TechnicalException(e.getMessage());
     }
   }
@@ -267,7 +257,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     MedicalProblemDTO dto = fhirConverter.toMedicalProblemDTO(condition, practitioner, organization);
-    dto.setComments(fhirConverter.createComments(bundle, condition.getNote()));
+    dto.setComment(fhirConverter.createComment(bundle, condition.getNote()));
     return dto;
   }
 
@@ -282,7 +272,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     PastIllnessDTO dto = fhirConverter.toPastIllnessDTO(condition, practitioner, organization);
-    dto.setComments(fhirConverter.createComments(bundle, condition.getNote()));
+    dto.setComment(fhirConverter.createComment(bundle, condition.getNote()));
     return dto;
   }
 
@@ -322,7 +312,7 @@ public class FhirAdapter implements FhirAdapterIfc {
       FhirContext ctx = getFhirContext();
       return fhirConverter.createBundle(ctx, patientIdentifier, dto, forceImmunizationAdministrationDocument);
     } catch (Exception e) {
-      log.warn("Exception:{}", e);
+      log.warn("Exception: {}", e.getMessage());
       throw new TechnicalException(e.getMessage());
     }
   }
@@ -334,7 +324,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     AllergyDTO dto = fhirConverter.toAllergyDTO(allergyIntolerance, practitioner, organization);
-    dto.setComments(fhirConverter.createComments(bundle, allergyIntolerance.getNote()));
+    dto.setComment(fhirConverter.createComment(bundle, allergyIntolerance.getNote()));
     return dto;
   }
 
@@ -407,7 +397,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     VaccinationDTO dto = fhirConverter.toVaccinationDTO(immunization, practitioner, organization);
-    dto.setComments(fhirConverter.createComments(bundle, immunization.getNote()));
+    dto.setComment(fhirConverter.createComment(bundle, immunization.getNote()));
     return dto;
   }
 
@@ -446,7 +436,7 @@ public class FhirAdapter implements FhirAdapterIfc {
 
   private String jsonFromFile(String filename) {
     try {
-      return new String(Files.readAllBytes(Paths.get(filename)));
+      return new String(Files.readAllBytes(Path.of(filename)));
     } catch (Exception e) {
       log.warn("Exception:{}", e.getMessage());
       return null;

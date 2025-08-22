@@ -18,9 +18,13 @@
  */
 package ch.admin.bag.vaccination.service.saml;
 
-import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
+import ch.admin.bag.vaccination.service.saml.config.KeystoreProperties;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.List;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.component.ComponentInitializationException;
@@ -40,10 +44,8 @@ import org.opensaml.saml.saml2.binding.encoding.impl.HttpClientRequestSOAP11Enco
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.security.credential.Credential;
 import org.opensaml.security.x509.BasicX509Credential;
 import org.opensaml.soap.client.http.AbstractPipelineHttpSOAPClient;
-import org.opensaml.soap.common.SOAPException;
 import org.opensaml.soap.soap11.Envelope;
 import org.opensaml.soap.wstrust.RequestSecurityTokenResponse;
 import org.opensaml.soap.wstrust.RequestedSecurityToken;
@@ -52,7 +54,6 @@ import org.opensaml.xmlsec.context.SecurityParametersContext;
 import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.opensaml.xmlsec.keyinfo.impl.X509KeyInfoGeneratorFactory;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -63,13 +64,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class IdPAdapter {
 
-  @Autowired
-  private SignatureService signatureService;
-
-  public void addSigningParametersToContext(MessageContext contextout) {
+  public void addSigningParametersToContext(MessageContext contextout, IdentityProviderConfig idpConfig) {
     SignatureSigningParameters signatureSigningParameters = new SignatureSigningParameters();
     signatureSigningParameters.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
-    signatureSigningParameters.setSigningCredential(getServiceProviderSignatureCredential());
+    signatureSigningParameters.setSigningCredential(idpConfig.getSamlCredential(true));
     signatureSigningParameters.setSignatureCanonicalizationAlgorithm(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
 
     X509KeyInfoGeneratorFactory x509Factory = new X509KeyInfoGeneratorFactory();
@@ -81,14 +79,14 @@ public class IdPAdapter {
         .setSignatureSigningParameters(signatureSigningParameters);
   }
 
-  public Assertion refreshToken(Assertion assertion, String tokenRenewalURL) {
+  public Assertion refreshToken(Assertion assertion, String tokenRenewalURL, IdentityProviderConfig idpConfig) {
     if (tokenRenewalURL == null) {
       log.warn("Token could not be refreshed as no security token service url was provided in the config.");
       return assertion;
     }
 
     Envelope request = AssertionRenewalUtils.createRenewalRequest(assertion,
-        (BasicX509Credential) getServiceProviderSignatureCredential());
+        (BasicX509Credential) idpConfig.getSamlCredential(true));
 
     MessageContext contextout = new MessageContext();
     contextout.setMessage(request);
@@ -97,7 +95,7 @@ public class IdPAdapter {
 
     AbstractPipelineHttpSOAPClient soapClient = null;
     try {
-      soapClient = AssertionRenewalUtils.createRenewalSoapClient(request, createHttpClient());
+      soapClient = AssertionRenewalUtils.createRenewalSoapClient(request, createHttpClient(idpConfig));
       SAMLUtils.logSAMLObject((XMLObject) context.getOutboundMessageContext().getMessage());
       soapClient.send(tokenRenewalURL, context);
       return processResponse(context.getInboundMessageContext().getMessage());
@@ -113,7 +111,7 @@ public class IdPAdapter {
   public ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig,
       ArtifactResolve artifactResolve) {
     log.debug("Sending and receiving artifact resolve for idp {}", idpConfig.getIdentifier());
-    return sendMessage(idpConfig.getArtifactResolutionServiceURL(), artifactResolve);
+    return sendMessage(idpConfig, artifactResolve);
   }
 
   Assertion processResponse(Object response) {
@@ -126,7 +124,7 @@ public class IdPAdapter {
       log.debug("Refresh Token Response is instance of RequestSecurityTokenResponse");
       List<XMLObject> tokenReference = secTokenResponse.getUnknownXMLObjects(RequestedSecurityToken.ELEMENT_NAME);
       log.debug("Found {} SecurityTokenReference elements.", tokenReference.size());
-      if (!tokenReference.isEmpty() && tokenReference.get(0) instanceof RequestedSecurityToken rst) {
+      if (!tokenReference.isEmpty() && tokenReference.getFirst() instanceof RequestedSecurityToken rst) {
         return (Assertion) rst.getUnknownXMLObject();
       }
     }
@@ -135,10 +133,13 @@ public class IdPAdapter {
         + "RequestSecurityTokenResponse.");
   }
 
-  private HttpClient createHttpClient() throws Exception {
+  private HttpClient createHttpClient(IdentityProviderConfig idpConfig) throws Exception {
+    SSLContext sslContext = createSSLContext(idpConfig.getTlsKeystore());
+
     HttpClientBuilder clientBuilder = new HttpClientBuilder();
-    clientBuilder.setTLSSocketFactory(new TLSSocketFactory(SSLContext.getDefault()));
+    clientBuilder.setTLSSocketFactory(new TLSSocketFactory(sslContext));
     clientBuilder.setUseSystemProperties(true);
+
     return clientBuilder.buildClient();
   }
 
@@ -147,10 +148,10 @@ public class IdPAdapter {
    * client cannot be used for renewal request because the object structure does not correspond to
    * opensaml standard!
    */
-  private AbstractPipelineHttpSOAPClient createSimpleSoapClient() throws Exception {
+  private AbstractPipelineHttpSOAPClient createSimpleSoapClient(IdentityProviderConfig idpConfig) throws Exception {
     AbstractPipelineHttpSOAPClient soapClient = new AbstractPipelineHttpSOAPClient() {
       @Override
-      protected HttpClientMessagePipeline newPipeline() throws SOAPException {
+      protected HttpClientMessagePipeline newPipeline() {
         HttpClientRequestSOAP11Encoder encoder = new HttpClientRequestSOAP11Encoder();
         HttpClientResponseSOAP11Decoder decoder = new HttpClientResponseSOAP11Decoder();
         SAMLOutboundProtocolMessageSigningHandler signingHandler = new SAMLOutboundProtocolMessageSigningHandler();
@@ -163,9 +164,27 @@ public class IdPAdapter {
       }
     };
 
-    HttpClient httpClient = createHttpClient();
+    HttpClient httpClient = createHttpClient(idpConfig);
     soapClient.setHttpClient(httpClient);
     return soapClient;
+  }
+
+  private SSLContext createSSLContext(KeystoreProperties tlsKeystoreProps) throws Exception {
+    if (tlsKeystoreProps.getKeystorePath() == null) {
+      return SSLContext.getDefault();
+    }
+
+    KeyStore keyStore = KeyStore.getInstance(tlsKeystoreProps.getKeystoreType());
+    try (FileInputStream fis = new FileInputStream(tlsKeystoreProps.getKeystorePath())) {
+      keyStore.load(fis, tlsKeystoreProps.getKeystorePassword().toCharArray());
+    }
+
+    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    kmf.init(keyStore, tlsKeystoreProps.getKeystorePassword().toCharArray());
+
+    SSLContext sslContext = SSLContext.getInstance("TLS");
+    sslContext.init(kmf.getKeyManagers(), null, new SecureRandom());
+    return sslContext;
   }
 
   private void initialiseSOAPComponents(HttpClientResponseSOAP11Decoder decoder,
@@ -195,25 +214,21 @@ public class IdPAdapter {
     }
   }
 
-  private Credential getServiceProviderSignatureCredential() {
-    return signatureService.getSamlSPCredential();
-  }
-
   @SuppressWarnings("unchecked")
-  private <T> T sendMessage(String destinationUrl, Object messageBody) {
+  private <T> T sendMessage(IdentityProviderConfig idpConfig, Object messageBody) {
     AbstractPipelineHttpSOAPClient soapClient = null;
     try {
       MessageContext contextout = new MessageContext();
       contextout.setMessage(messageBody);
 
-      addSigningParametersToContext(contextout);
+      addSigningParametersToContext(contextout, idpConfig);
 
       InOutOperationContext context = new ProfileRequestContext();
       context.setOutboundMessageContext(contextout);
 
-      soapClient = createSimpleSoapClient();
+      soapClient = createSimpleSoapClient(idpConfig);
       SAMLUtils.logSAMLObject((XMLObject) context.getOutboundMessageContext().getMessage());
-      soapClient.send(destinationUrl, context);
+      soapClient.send(idpConfig.getArtifactResolutionServiceURL(), context);
 
       return (T) context.getInboundMessageContext().getMessage();
     } catch (Exception e) {

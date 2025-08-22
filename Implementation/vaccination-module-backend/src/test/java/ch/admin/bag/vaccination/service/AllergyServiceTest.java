@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atMostOnce;
@@ -55,28 +56,28 @@ class AllergyServiceTest extends AbstractServiceTest {
     ValueDTO allergyCode = new ValueDTO("123456789", "987654321", "testsystem");
     ValueDTO criticality = new ValueDTO("low", "lowName", "testsystem");
     ValueDTO clinicalStatus = new ValueDTO("clinicalStatus", "clinicalStatusName", "testsystem");
-    ValueDTO verficationStatus = new ValueDTO("verficationStatus", "verficationStatusName", "testsystem");
+    ValueDTO verificationStatus = new ValueDTO("verificationStatus", "verificationStatusName", "testsystem");
     ValueDTO type = new ValueDTO(AllergyIntoleranceType.ALLERGY.toCode(),
         AllergyIntoleranceType.ALLERGY.getDisplay(), AllergyIntoleranceType.ALLERGY.getSystem());
     String commentText = "BlaBla";
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
     AllergyDTO newAllergyDTO = new AllergyDTO(null, LocalDate.now(), allergyCode, criticality,
-        clinicalStatus, verficationStatus, type, recorder, List.of(comment), "My organization AG");
+        clinicalStatus, verificationStatus, type, recorder, comment, "My organization AG");
     author.setRole("REP");
     AllergyDTO result =
         allergyService.create(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
-            "waldspital-Id-1234", newAllergyDTO, null);
+            "waldspital-Id-1234", newAllergyDTO, null, false);
     assertThat(result.getCode().getCode()).isEqualTo(allergyCode.getCode());
     assertThat(result.getCriticality().getCode()).isEqualTo(criticality.getCode());
     assertThat(result.getClinicalStatus()).isEqualTo(clinicalStatus);
-    assertThat(result.getVerificationStatus()).isEqualTo(verficationStatus);
+    assertThat(result.getVerificationStatus()).isEqualTo(verificationStatus);
     assertThat(result.getType()).isEqualTo(type);
     assertThat(result.getConfidentiality().getCode()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getCode());
     assertThat(result.getConfidentiality().getName()).isEqualTo(HuskyUtils.DEFAULT_CONFIDENTIALITY_CODE.getName());
     assertThat(result.getConfidentiality().getSystem()).isEqualTo(FhirConstants.SNOMED_SYSTEM_URL);
-    assertThat(result.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
-    assertThat(result.getComments().get(0).getText()).isEqualTo(commentText);
-    assertThat(result.getComments().get(0).getDate()).isNotNull();
+    assertThat(result.getComment().getAuthor()).isEqualTo(author.getUser().getFullName());
+    assertThat(result.getComment().getText()).isEqualTo(commentText);
+    assertThat(result.getComment().getDate()).isNotNull();
     assertThat(result.isValidated()).isFalse();
   }
 
@@ -121,11 +122,11 @@ class AllergyServiceTest extends AbstractServiceTest {
         allergyService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234", null);
     assertThat(allergyDTOs.size()).isEqualTo(1);
-    assertThat(allergyDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("active");
-    assertThat(allergyDTOs.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
-    assertThat(allergyDTOs.get(0).getId()).isEqualTo("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
-    assertThat(allergyDTOs.get(0).getCode().getCode()).isEqualTo("293109003");
-    assertThat(allergyDTOs.get(0).getJson()).contains("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
+    assertThat(allergyDTOs.getFirst().getClinicalStatus().getCode()).isEqualTo("active");
+    assertThat(allergyDTOs.getFirst().getVerificationStatus().getCode()).isEqualTo("confirmed");
+    assertThat(allergyDTOs.getFirst().getId()).isEqualTo("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
+    assertThat(allergyDTOs.getFirst().getCode().getCode()).isEqualTo("293109003");
+    assertThat(allergyDTOs.getFirst().getJson()).contains("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
   }
 
   @Test
@@ -133,16 +134,15 @@ class AllergyServiceTest extends AbstractServiceTest {
     List<AllergyDTO> allergyDTOs = allergyService.getAll(EPDCommunity.GAZELLE.name(), "1.3.6.1.4.1.21367.13.20.3000",
             "IHEBLUE-2599", null);
     assertThat(allergyDTOs.size()).isEqualTo(1);
-    assertThat(allergyDTOs.get(0).getClinicalStatus().getCode()).isEqualTo("active");
-    assertThat(allergyDTOs.get(0).getVerificationStatus().getCode()).isEqualTo("confirmed");
-    assertThat(allergyDTOs.get(0).getId()).isEqualTo("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
-    assertThat(allergyDTOs.get(0).getCode().getCode()).isEqualTo("293109003");
+    assertThat(allergyDTOs.getFirst().getClinicalStatus().getCode()).isEqualTo("active");
+    assertThat(allergyDTOs.getFirst().getVerificationStatus().getCode()).isEqualTo("confirmed");
+    assertThat(allergyDTOs.getFirst().getId()).isEqualTo("00476f5f-f3b7-4e49-9b52-5ec88d65c18e");
+    assertThat(allergyDTOs.getFirst().getCode().getCode()).isEqualTo("293109003");
   }
 
   @Override
   @Test
   public void testUpdate() {
-
     PatientIdentifier patientIdentifier =
         allergyService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
             "waldspital-Id-1234");
@@ -154,13 +154,13 @@ class AllergyServiceTest extends AbstractServiceTest {
     ValueDTO newAllergyCode = new ValueDTO("newCode", "newName", "testsystem");
     ValueDTO newCriticality = new ValueDTO("low", "lowName", "testsystem");
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
-    ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
+    ValueDTO newVerificationStatus = new ValueDTO("newVerificationStatus", "newVerificationStatus", "testsystem");
     ValueDTO newType = new ValueDTO(AllergyIntoleranceType.INTOLERANCE.toCode(),
         AllergyIntoleranceType.INTOLERANCE.getDisplay(), AllergyIntoleranceType.INTOLERANCE.getSystem());
     String commentText = "BlaBla";
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
     AllergyDTO newAllergyDTO = new AllergyDTO(null, LocalDate.now(), newAllergyCode, newCriticality,
-        newClinicalStatus, newVerficationStatus, newType, recorder, List.of(comment), "My organization AG");
+        newClinicalStatus, newVerificationStatus, newType, recorder, comment, "My organization AG");
     newAllergyDTO.setAuthor(author);
 
     AllergyDTO updatedAllergy =
@@ -169,15 +169,42 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(updatedAllergy.getCode()).isEqualTo(newAllergyCode);
     assertThat(updatedAllergy.getCriticality().getCode()).isEqualTo(newCriticality.getCode());
     assertThat(updatedAllergy.getClinicalStatus()).isEqualTo(newClinicalStatus);
-    assertThat(updatedAllergy.getVerificationStatus()).isEqualTo(newVerficationStatus);
+    assertThat(updatedAllergy.getVerificationStatus())
+        .isEqualTo(new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification"));
     assertThat(updatedAllergy.getType()).isEqualTo(newType);
-    assertThat(updatedAllergy.getComments().size()).isEqualTo(1);
-    assertThat(updatedAllergy.getComments().get(0).getAuthor()).isEqualTo(author.getUser().getFullName());
-    assertThat(updatedAllergy.getComments().get(0).getText()).isEqualTo(commentText);
-    assertThat(updatedAllergy.getComments().get(0).getDate()).isNotNull();
+    assertNotNull(updatedAllergy.getComment());
+    assertThat(updatedAllergy.getComment().getAuthor()).isEqualTo(author.getUser().getFullName());
+    assertThat(updatedAllergy.getComment().getText()).isEqualTo(commentText);
+    assertThat(updatedAllergy.getComment().getDate()).isNotNull();
 
     allergies = allergyService.getAll(patientIdentifier, null, true);
     assertThat(allergies.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void testUpdate_authorAsPAT_onlyCommentWasChanged_verificationStatusShouldRemainConfirmed() {
+    PatientIdentifier patientIdentifier =
+        allergyService.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            "waldspital-Id-1234");
+    List<AllergyDTO> allergies = allergyService.getAll(patientIdentifier, null, true);
+    assertThat(allergies.size()).isEqualTo(1);
+
+    String commentText = "BlaBla";
+    CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
+    AllergyDTO newAllergyDTO = allergies.getFirst();
+    newAllergyDTO.setComment(comment);
+    author.setRole("PAT");
+    newAllergyDTO.setAuthor(author);
+
+    AllergyDTO updatedAllergy =
+        allergyService.update(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
+            "waldspital-Id-1234", "00476f5f-f3b7-4e49-9b52-5ec88d65c18e", newAllergyDTO, null);
+    assertThat(updatedAllergy.getVerificationStatus()).isEqualTo(new ValueDTO("confirmed", "Confirmed",
+        "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification"));
+    assertNotNull(updatedAllergy.getComment());
+    assertThat(updatedAllergy.getComment().getAuthor()).isEqualTo(author.getUser().getFullName());
+    assertThat(updatedAllergy.getComment().getText()).isEqualTo(commentText);
+    assertThat(updatedAllergy.getComment().getDate()).isNotNull();
   }
 
   @Override
@@ -188,11 +215,10 @@ class AllergyServiceTest extends AbstractServiceTest {
     ValueDTO newAllergyCode = new ValueDTO("newCode", "newName", "testsystem");
     ValueDTO newCriticality = new ValueDTO("low", "lowName", "testsystem");
     ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
-    ValueDTO newVerficationStatus = new ValueDTO("newVerficationStatus", "newVerficationStatus", "testsystem");
     ValueDTO newType = new ValueDTO(AllergyIntoleranceType.INTOLERANCE.toCode(),
         AllergyIntoleranceType.INTOLERANCE.getDisplay(), AllergyIntoleranceType.INTOLERANCE.getSystem());
     AllergyDTO newAllergyDTO = new AllergyDTO(null, LocalDate.now(), newAllergyCode, newCriticality,
-        newClinicalStatus, newVerficationStatus, newType, recorder, List.of(), "My organization AG");
+        newClinicalStatus, null, newType, recorder, null, "My organization AG");
 
     setPatientIdentifierInSession(
         new PatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(), "waldspital-Id-1234", "1.2.3.4.123456.1"));
@@ -202,7 +228,8 @@ class AllergyServiceTest extends AbstractServiceTest {
     assertThat(updatedAllergy.getCode()).isEqualTo(newAllergyCode);
     assertThat(updatedAllergy.getCriticality().getCode()).isEqualTo(newCriticality.getCode());
     assertThat(updatedAllergy.getClinicalStatus()).isEqualTo(newClinicalStatus);
-    assertThat(updatedAllergy.getVerificationStatus()).isEqualTo(newVerficationStatus);
+    assertThat(updatedAllergy.getVerificationStatus()).isEqualTo(
+        new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification"));
     assertThat(updatedAllergy.getType()).isEqualTo(newType);
   }
 

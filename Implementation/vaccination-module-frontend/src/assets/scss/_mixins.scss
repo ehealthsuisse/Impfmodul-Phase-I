@@ -1,0 +1,46 @@
+@mixin communityLogoSize($width) {
+  .community-logo img {
+    max-width: $width;
+    width: $width;
+  }
+
+  .community-logo .version {
+    width: $width;
+    font-size: 8px;
+    margin-top: 40px;
+  }
+}
+
+@mixin flex-center($JustifyContent, $AlignItems, $FlexDirection) {
+  display: flex;
+  justify-content: $JustifyContent;
+  align-items: $AlignItems;
+  flex-direction: $FlexDirection;
+}
+
+@mixin logoSize($width, $height) {
+  .logo {
+    max-width: $width;
+    width: $width;
+    max-height: $height;
+    height: $height;
+    cursor: pointer;
+
+    &:focus {
+      box-shadow: 0 0 5px #000;
+    }
+
+    &__syringe {
+      width: $width;
+      height: $height;
+      margin-right: 2px;
+    }
+  }
+}
+
+@mixin logout-button($width) {
+  .logout-button {
+    width: $width;
+    @include flex-center(right, center, row);
+  }
+}

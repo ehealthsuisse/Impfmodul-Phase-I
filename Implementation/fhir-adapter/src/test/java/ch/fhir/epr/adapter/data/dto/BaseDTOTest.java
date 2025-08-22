@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,15 +36,14 @@ public class BaseDTOTest {
   void getterSetter_returnSameValue() {
     AuthorDTO authorMock = mock(AuthorDTO.class);
     ValueDTO valueMock = mock(ValueDTO.class);
-    @SuppressWarnings("unchecked")
-    List<CommentDTO> commentsMock = mock(List.class);
+    CommentDTO commentMock = mock(CommentDTO.class);
     byte[] contentMock = {};
     LocalDateTime now = LocalDateTime.now();
     HumanNameDTO recorder = mock(HumanNameDTO.class);
 
     dto.setAuthor(authorMock);
     dto.setCode(valueMock);
-    dto.setComments(commentsMock);
+    dto.setComment(commentMock);
     dto.setConfidentiality(valueMock);
     dto.setContent(contentMock);
     dto.setCreatedAt(now);
@@ -62,7 +60,7 @@ public class BaseDTOTest {
 
     assertEquals(authorMock, dto.getAuthor());
     assertEquals(valueMock, dto.getCode());
-    assertEquals(commentsMock, dto.getComments());
+    assertEquals(commentMock, dto.getComment());
     assertEquals(valueMock, dto.getConfidentiality());
     assertArrayEquals(contentMock, dto.getContent());
     assertEquals(now, dto.getCreatedAt());

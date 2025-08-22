@@ -24,8 +24,8 @@ public class FhirUtilsTest {
 
     CodeableConcept legacyTargetDisease = FhirUtils.replaceLegacyTargetDiseaseCoding(codeableConcept);
 
-    assertEquals(FhirConstants.CURRENT_TARGET_DISEASE_CODE, legacyTargetDisease.getCoding().get(0).getCode());
-    assertEquals(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY, legacyTargetDisease.getCoding().get(0).getDisplay());
+    assertEquals(FhirConstants.CURRENT_TARGET_DISEASE_CODE, legacyTargetDisease.getCoding().getFirst().getCode());
+    assertEquals(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY, legacyTargetDisease.getCoding().getFirst().getDisplay());
   }
 
   @Test

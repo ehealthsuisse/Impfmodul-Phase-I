@@ -30,7 +30,6 @@ export class HelpService {
   dialogRef!: MatDialogRef<HelpComponent>;
 
   public open(options: any): void {
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.dialogRef = this.dialog.open(HelpComponent, {
       width: '60vw',
       data: { ...options },

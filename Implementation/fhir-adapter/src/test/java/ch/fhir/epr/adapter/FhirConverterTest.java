@@ -38,8 +38,6 @@ import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -65,7 +63,6 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.PractitionerRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,13 +108,13 @@ class FhirConverterTest {
   void constructur_validInput_gettersReturnCorrectValues() {
     assertEquals(ID, vaccinationDTO.getId());
     assertEquals(CODE, vaccinationDTO.getCode().getCode());
-    assertEquals(1, vaccinationDTO.getComments().size());
-    assertEquals(COMMENT, vaccinationDTO.getComments().get(0).getText());
+    assertNotNull(vaccinationDTO.getComment());
+    assertEquals(COMMENT, vaccinationDTO.getComment().getText());
     assertEquals(LocalDate.now(), vaccinationDTO.getOccurrenceDate());
     assertEquals(DOSE_NUMBER, vaccinationDTO.getDoseNumber());
     assertEquals(1, vaccinationDTO.getTargetDiseases().size());
-    assertEquals(DISPLAY, vaccinationDTO.getTargetDiseases().get(0).getName());
-    assertEquals(CODE, vaccinationDTO.getTargetDiseases().get(0).getCode());
+    assertEquals(DISPLAY, vaccinationDTO.getTargetDiseases().getFirst().getName());
+    assertEquals(CODE, vaccinationDTO.getTargetDiseases().getFirst().getCode());
     assertEquals(LOT_NUMBER, vaccinationDTO.getLotNumber());
     assertEquals(DISPLAY, vaccinationDTO.getReason().getName());
     assertEquals(CODE, vaccinationDTO.getReason().getCode());
@@ -192,7 +189,7 @@ class FhirConverterTest {
 
     Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, "Practitioner-0001");
 
-    assertEquals("7600000000000", practitioner.getIdentifier().get(0).getValue());
+    assertEquals("7601007922000", practitioner.getIdentifier().getFirst().getValue());
   }
 
   @Test
@@ -210,7 +207,7 @@ class FhirConverterTest {
 
     Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, "Practitioner-0001");
 
-    assertEquals(authorDTO.getGln(), practitioner.getIdentifier().get(0).getValue());
+    assertEquals("7601007922000", practitioner.getIdentifier().getFirst().getValue());
   }
 
   @Test
@@ -253,7 +250,7 @@ class FhirConverterTest {
         .setStatus(STATUS);
 
     vaccinationDTO = fhirConverter.toVaccinationDTO(immunization, practitioner, ORGANIZATION);
-    vaccinationDTO.setComments(fhirConverter.createComments(null, immunization.getNote()));
+    vaccinationDTO.setComment(fhirConverter.createComment(null, immunization.getNote()));
     vaccinationDTO.setAuthor(createAuthor());
 
     fhirConfig.setPractitionerRoles(List.of("ASS", "HCP"));

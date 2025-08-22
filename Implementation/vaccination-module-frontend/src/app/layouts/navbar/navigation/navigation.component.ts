@@ -40,7 +40,7 @@ export class NavigationComponent extends BreakPointSensorComponent implements On
   @Output() toggleSidenav = new EventEmitter<void>();
 
   ngOnInit(): void {
-    this.showTabletMenu = !true;
+    this.showTabletMenu = false;
   }
   closeSidenav(): void {
     this.toggleSidenav.emit();

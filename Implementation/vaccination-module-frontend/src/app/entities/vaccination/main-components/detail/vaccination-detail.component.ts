@@ -30,10 +30,10 @@ import { VaccinationService } from '../../services/vaccination.service';
 
 @Component({
   selector: 'vm-vaccination-detail',
+  standalone: true,
   templateUrl: './vaccination-detail.component.html',
   styleUrls: ['./vaccination-detail.component.scss'],
   imports: [SharedLibsModule, VaccinationDetailedInformationComponent, DetailsActionComponent, CommentComponent],
-  standalone: true,
 })
 export class VaccinationDetailComponent extends BreakPointSensorComponent implements OnInit {
   vaccination: IVaccination | null = null;
@@ -41,7 +41,7 @@ export class VaccinationDetailComponent extends BreakPointSensorComponent implem
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   sharedDataService: SharedDataService = inject(SharedDataService);
 
-  get patient(): IHumanDTO {
+  get patient(): IHumanDTO | null {
     return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
   }
 

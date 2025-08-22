@@ -3,7 +3,7 @@ epdbackend:
   soapLoggingPath: log/
   cache:
     ttlInSeconds: 2
-    cluster-name: ImpfmoduleTest
+    clustername: ImpfmoduleTest
 
 ipf:
   atna:

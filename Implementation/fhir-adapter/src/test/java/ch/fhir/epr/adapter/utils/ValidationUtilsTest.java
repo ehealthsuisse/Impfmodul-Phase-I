@@ -20,8 +20,12 @@ package ch.fhir.epr.adapter.utils;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
+import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
@@ -214,6 +218,79 @@ public class ValidationUtilsTest {
     assertDoesNotThrow(() -> ValidationUtils.isValid(missingRecLastNameOnly, IS_READ));
   }
 
+  @Test
+  void testShouldRecordBeValidated_equalObjectsAndPATAuthor_onlyCommentChanged_shouldReturnTrue() {
+    VaccinationDTO oldVaccination = createVaccinationDTO();
+    oldVaccination.setValidated(true);
+    oldVaccination.setAuthor(new AuthorDTO(new HumanNameDTO("Mike", "McDonald", "Dr.", null, null), "HCP", "GLN"));
+
+    VaccinationDTO updatedVaccination = createVaccinationDTO();
+    CommentDTO commentDTO = createCommentDTO();
+    commentDTO.setText("updated comment");
+    updatedVaccination.setComment(commentDTO);
+    // verificationStatus should not be taken into account when checking equality
+    updatedVaccination.setVerificationStatus(createValueDTO("59156000", "Confirmed", "http://snomed.info/sct"));
+    assertTrue(ValidationUtils.shouldRecordBeValidated(oldVaccination, updatedVaccination));
+  }
+
+  @Test
+  void testShouldRecordBeValidated_notEqualObjectsAndPATAuthor_commentAndDoseChanged_shouldReturnFalse() {
+    VaccinationDTO oldVaccination = createVaccinationDTO();
+    oldVaccination.setValidated(true);
+    oldVaccination.setAuthor(new AuthorDTO(new HumanNameDTO("Mike", "McDonald", "Dr.", null, null), "HCP", "GLN"));
+
+    VaccinationDTO updatedVaccination = createVaccinationDTO();
+    updatedVaccination.setDoseNumber(2);
+    CommentDTO commentDTO = createCommentDTO();
+    commentDTO.setText("updated comment");
+    updatedVaccination.setComment(commentDTO);
+    assertFalse(ValidationUtils.shouldRecordBeValidated(oldVaccination, updatedVaccination));
+  }
+
+  @Test
+  void testShouldRecordBeValidated_notEqualObjectsAndHCPAuthor_shouldReturnTrue() {
+    AllergyDTO oldAllergy = createAllergyDTO();
+    oldAllergy.setValidated(false);
+
+    AllergyDTO updatedAllergy = createAllergyDTO();
+    updatedAllergy.setCode(createValueDTO("219082005", "Cholera vaccine adverse reaction", "http://snomed.info/sct"));
+    updatedAllergy.setVerificationStatus(createValueDTO("59156000", "Confirmed", "http://snomed.info/sct"));
+    updatedAllergy.setAuthor(new AuthorDTO(new HumanNameDTO("Mike", "McDonald", "Dr.", null, null), "HCP", "GLN"));
+    assertTrue(ValidationUtils.shouldRecordBeValidated(oldAllergy, updatedAllergy));
+  }
+
+  @Test
+  void testShouldRecordBeValidated_equalObjectsOnlyLetterCaseDiffers_shouldReturnTrue() {
+    AllergyDTO oldAllergy = createAllergyDTO();
+    oldAllergy.setAuthor(new AuthorDTO(new HumanNameDTO("Mike", "McDonald", "Dr.", null, null), "HCP", "GLN"));
+    oldAllergy.setValidated(true);
+
+    AllergyDTO updatedAllergy = createAllergyDTO();
+    updatedAllergy.setType(createValueDTO("allergy", "allergy", "http://hl7.org/fhir/allergy-intolerance-type"));
+    updatedAllergy.setCode(createValueDTO("39579001", "anaphylactic reaction", "HTTP://snomed.info/sct"));
+    updatedAllergy.setCriticality(createValueDTO("Unable-To-assess", "unable To assess risk", "HTTP://hl7.org/fhir/allergy-INTOLERANCE-criticality"));
+    CommentDTO commentDTO = createCommentDTO();
+    commentDTO.setText("updated comment");
+    updatedAllergy.setComment(commentDTO);
+    assertTrue(ValidationUtils.shouldRecordBeValidated(oldAllergy, updatedAllergy));
+  }
+
+  private AllergyDTO createAllergyDTO() {
+    AllergyDTO allergyDTO = new AllergyDTO();
+    allergyDTO.setAuthor(new AuthorDTO(new HumanNameDTO("John", "Doe", "Dr.", null, null),
+        "PAT", "GLN"));
+    allergyDTO.setCode(createValueDTO("39579001", "Anaphylactic reaction", "http://snomed.info/sct"));
+    allergyDTO.setCriticality(createValueDTO("unable-to-assess", "Unable to Assess Risk",
+        "http://hl7.org/fhir/allergy-intolerance-criticality"));
+    allergyDTO.setVerificationStatus(createValueDTO("76104008", "Not confirmed", "http://snomed.info/sct"));
+    allergyDTO.setType(createValueDTO("allergy", "Allergy", "http://hl7.org/fhir/allergy-intolerance-type"));
+    return allergyDTO;
+  }
+
+  private CommentDTO createCommentDTO() {
+    return new CommentDTO(null, "John Doe", "original comment");
+  }
+
   // Test holds for all entities
   private MedicalProblemDTO createMedicalProblem() {
     ValueDTO medicalProblemCode = new ValueDTO("51244008", "Disorder of spleen (disorder)", "http://snomed.info/sct");
@@ -229,5 +306,20 @@ public class ValidationUtilsTest {
     valideMedicalProblem.setRecorder(humanNameDTO);
 
     return valideMedicalProblem;
+  }
+
+  private VaccinationDTO createVaccinationDTO() {
+    VaccinationDTO vaccinationDTO = new VaccinationDTO();
+    vaccinationDTO.setAuthor(
+        new AuthorDTO(new HumanNameDTO("John", "Doe", "Dr.", null, null), "PAT", "GLN"));
+    vaccinationDTO.setDoseNumber(1);
+    vaccinationDTO.setVerificationStatus(createValueDTO("76104008", "Not confirmed", "http://snomed.info/sct"));
+    vaccinationDTO.setComment(createCommentDTO());
+    vaccinationDTO.setCode(createValueDTO("38907003", "Varicella", "http://snomed.info/sct"));
+    return vaccinationDTO;
+  }
+
+  private ValueDTO createValueDTO(String code, String name, String system) {
+    return new ValueDTO(code, name, system);
   }
 }

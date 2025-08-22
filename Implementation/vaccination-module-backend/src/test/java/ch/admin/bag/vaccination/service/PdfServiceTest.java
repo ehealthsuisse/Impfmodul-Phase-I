@@ -94,13 +94,9 @@ public class PdfServiceTest {
 
   @Test
   public void test_pdf_creation() throws Exception {
-    allergyDTOs.get(0).setComments(Arrays.asList(
+    allergyDTOs.getFirst().setComment(
         new CommentDTO(LocalDateTime.now().minusDays(10), " Dr. Michel Dupont ",
-            "Comment1"),
-        new CommentDTO(LocalDateTime.now().minusDays(5), " Dr. Michel Dupont ",
-            "Comment2"),
-        new CommentDTO(LocalDateTime.now().minusDays(1), " Dr. Michel Dupont ",
-            "Comment3")));
+            "Comment1"));
 
     vaccinationDTOs.add(new VaccinationDTO("id",
         new ValueDTO("123", "myVaccine", "myySystem"),
@@ -109,7 +105,8 @@ public class PdfServiceTest {
             new ValueDTO("4740000", "Herpes zoster", "myySystem"),
             new ValueDTO("777", "myDisease", "myySystem")),
         null, 1234, LocalDate.now(), new HumanNameDTO("John", "Doe", "Dr", null, null),
-        "organization", "lotNumber", new ValueDTO("reason", null, null), new ValueDTO("status", null, null)));
+        "organization", "lotNumber", new ValueDTO("reason", null, null), new ValueDTO("status", null, null),
+            new ValueDTO("59156000", "Confirmed", "http://snomed.info/sct")));
     vaccinationDTOs.add(new VaccinationDTO("id",
         new ValueDTO("123", "anotherVaccine", "myySystem"),
         Arrays.asList(
@@ -117,7 +114,8 @@ public class PdfServiceTest {
             new ValueDTO("4740000", "Herpes zoster", "myySystem"),
             new ValueDTO("777", "myDisease", "myySystem")),
         null, 1234, LocalDate.now(), new HumanNameDTO("Michel", "Dupont", "Dr", null, null),
-        "organization", "lotNumber", new ValueDTO("reason", null, null), new ValueDTO("status", null, null)));
+        "organization", "lotNumber", new ValueDTO("reason", null, null), new ValueDTO("status", null, null),
+           new ValueDTO("76104008", "Not confirmed", "http://snomed.info/sct")));
 
     InputStream stream = pdfService.create(
         new VaccinationRecordDTO("de", patient, allergyDTOs, pastIllnessDTOs, vaccinationDTOs, medicalProblemDTOs,

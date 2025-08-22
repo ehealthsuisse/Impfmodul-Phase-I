@@ -25,7 +25,6 @@ import { SessionInfoService } from '../session-info.service';
 
 @Component({
   selector: 'vm-samlassertion-consumer',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './samlassertion-consumer.component.html',
   styleUrls: ['./samlassertion-consumer.component.scss'],

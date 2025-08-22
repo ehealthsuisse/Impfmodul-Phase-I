@@ -30,11 +30,12 @@ export interface IBaseDTO {
   validated?: boolean | null;
   recorder?: IHumanDTO;
   author?: Author;
-  comments?: IComment[];
+  comment?: IComment;
   commentMessage?: string;
   json?: string;
   content: any[];
   hasErrors?: boolean;
+  verificationStatus: IValueDTO;
   readonly createdAt?: Dayjs;
   readonly deleted?: boolean;
   readonly relatedId?: string;

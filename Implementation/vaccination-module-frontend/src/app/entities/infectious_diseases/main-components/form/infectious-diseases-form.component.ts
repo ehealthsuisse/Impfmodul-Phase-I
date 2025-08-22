@@ -25,12 +25,11 @@ import { SessionInfoService } from '../../../../core/security/session-info.servi
 import { IInfectiousDiseases } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
-import { ConfidentialityService } from '../../../../shared/component/confidentiality/confidentiality.service';
+import { ConfidentialityService } from '../../../../shared/services/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
-import { initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
-import { FilterPipePipe } from '../../../../shared/pipes/filter-pipe.pipe';
+import { buildComment, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { SharedComponentModule } from '../../../../shared/shared-component.module';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
@@ -38,16 +37,16 @@ import { InfectiousDiseasesConfirmComponent } from '../../helper-components/conf
 import { InfectiousDiseasesFormGroup, InfectiousDiseasesFormService } from '../../service/infectious-diseases-form.service';
 import { InfectiousDiseasesService } from '../../service/infectious-diseases.service';
 import { takeUntil } from 'rxjs/operators';
+import { FormGroupDirective } from '@angular/forms';
 
 @Component({
-  standalone: true,
   selector: 'vm-infectious-diseases-update',
+  standalone: true,
   templateUrl: './infectious-diseases-form.component.html',
   styleUrls: ['./infectious-diseases-form.component.scss'],
   imports: [
     SharedLibsModule,
     SharedComponentModule,
-    FilterPipePipe,
     ReusableDateFieldComponent,
     ReusableRecorderFieldComponent,
     ReusableSelectFieldWithSearchComponent,
@@ -55,7 +54,9 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent implements OnInit, AfterViewInit, OnDestroy {
   illnessesFilteredList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
+  confidentialityList: ReplaySubject<IValueDTO[]> = new ReplaySubject<IValueDTO[]>(1);
   @ViewChild('singleSelect', { static: true }) singleSelect!: MatSelect;
+  @ViewChild('formGroupDirective') formGroupDirective!: FormGroupDirective;
   isSaving = false;
   illnesses: IInfectiousDiseases | null = null;
   editForm: InfectiousDiseasesFormGroup = inject(InfectiousDiseasesFormService).createInfectiousDiseasesFormGroup();
@@ -69,8 +70,8 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
   helpDialogBody = 'HELP.PAST_ILLNESS.DETAIL.BODY';
   sharedDataService: SharedDataService = inject(SharedDataService);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
-
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
+  commentMessage: string = '';
 
   private illnessesFormService: InfectiousDiseasesFormService = inject(InfectiousDiseasesFormService);
   private matDialog: MatDialog = inject(MatDialog);
@@ -79,6 +80,7 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
   ngOnInit(): void {
     this.displayMenu(false, false);
     let id = this.activatedRoute.snapshot.params['id'];
+    let role: string = this.sharedDataService.storedData['role']!;
     this.illnessService.find(id).subscribe(illness => {
       if (illness) {
         this.illness = illness;
@@ -95,6 +97,7 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
 
     initializeActionData('', this.sharedDataService);
     this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
   }
 
   ngAfterViewInit(): void {
@@ -115,19 +118,16 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
   }
 
   save(): void {
-    if (this.editForm.value.commentMessage) {
-      const commentObj = {
-        text: this.editForm.value.commentMessage,
-        author: 'will be added by the system',
-      };
-      this.editForm.value.comments = Object.assign([], this.editForm.value.comments);
-      this.editForm.value.comments!.push(commentObj);
-    }
+    this.editForm.value.comment = buildComment(this.commentMessage);
+
     const illness = { ...this.illness, ...this.illnessesFormService.getInfectiousDiseases(this.editForm) };
-    illness.verificationStatus = this.formOptionsService.getOption('conditionVerificationStatus', 'unconfirmed');
+    illness.verificationStatus = this.formOptionsService.getOption(
+      'conditionVerificationStatus',
+      this.sessionInfoService.canValidate() ? 'confirmed' : 'unconfirmed'
+    );
     illness.clinicalStatus = this.formOptionsService.getOption('conditionClinicalStatus', 'resolved');
     illness.illnessCode = illness.code;
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
+
     this.matDialog
       .open(InfectiousDiseasesConfirmComponent, {
         width: '60vw',
@@ -137,7 +137,6 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
       .afterClosed()
       .subscribe({
         next: (result: { action?: string } = {}) => {
-          illness.confidentiality = this.confidentialityService.confidentialityStatus;
           if (result.action === 'SAVE') {
             if (illness.id) {
               this.subscribeToSaveResponse(this.illnessService.update(illness), true);
@@ -148,6 +147,8 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
           if (result.action === 'SAVE_AND_STAY') {
             illness.confidentiality = this.illnessService.confidentialityStatus;
             this.subscribeToSaveResponse(this.illnessService.create(illness), false);
+            this.formGroupDirective.resetForm();
+            this.illnessesFormService.resetMandatoryFields(this.editForm);
           }
         },
       });

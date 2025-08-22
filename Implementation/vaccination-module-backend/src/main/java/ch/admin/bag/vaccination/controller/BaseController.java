@@ -57,7 +57,7 @@ public abstract class BaseController<T extends BaseDTO> {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
     T result = service.create(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(), newDTO, assertion);
+        patientIdentifier.getLocalExtenstion(), newDTO, assertion, false);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

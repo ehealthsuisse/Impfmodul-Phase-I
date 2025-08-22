@@ -26,7 +26,7 @@ export const ENTITIES_ROUTE: Routes = [
   },
   {
     path: 'vaccination-record',
-    loadComponent: () => import('./vaccintion-record/record/vaccination-record.component').then(c => c.VaccinationRecordComponent),
+    loadComponent: () => import('./vaccination-record/record/vaccination-record.component').then(c => c.VaccinationRecordComponent),
     canActivate: [AuthGuard],
   },
 

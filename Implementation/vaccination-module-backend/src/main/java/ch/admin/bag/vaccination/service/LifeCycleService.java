@@ -22,6 +22,7 @@ import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
+import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -56,7 +57,6 @@ public class LifeCycleService {
    */
   public List<? extends BaseDTO> handle(List<? extends BaseDTO> items, boolean keepModifiedEntries) {
     Map<String, BaseDTO> map = new ConcurrentHashMap<>();
-    items.sort(Comparator.comparing(BaseDTO::getCreatedAt));
     for (BaseDTO item : items) {
       map.put(item.getId(), item);
     }
@@ -65,10 +65,15 @@ public class LifeCycleService {
       map = keepOnePrevious(map);
     }
 
-    for (BaseDTO entry : map.values()) {
+    List<BaseDTO> sortedByCreatedAt = map.values().stream()
+        .sorted(Comparator.comparing(BaseDTO::getCreatedAt))
+        .toList();
+
+    for (BaseDTO entry : sortedByCreatedAt) {
       BaseDTO previous = previous(map, entry);
       if (previous != null) {
         boolean isDeleted = checkDeletedFlag(map, entry, keepModifiedEntries);
+        entry.setValidated(ValidationUtils.shouldRecordBeValidated(previous, entry));
         while (previous != null) {
           previous.setDeleted(isDeleted);
           previous.setUpdated(true);

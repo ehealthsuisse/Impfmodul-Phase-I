@@ -37,6 +37,11 @@
     "VALIDATION_TITLE": "Échec de la validation",
     "VALIDATION_TEXT": "Veuillez corriger l'entrée pour la valider.",
     "ORGANIZATION": "Organisation",
-    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Vérification de saisie"
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Vérification de saisie",
+    "CONFIDENTIALITY": "Confidentialité",
+    "DELETE_CONFIRMATION_MESSAGE": "Ce document doit-il être supprimé?<br>Remarque : le document supprimé reçoit le même niveau de confidentialité que le document à supprimer.",
+    "CONVERSION_DIALOG_TITLE": "Convertir l'enregistrement",
+    "NO_IMMUNIZATION_RECORDS_FOUND": "Vous n'avez pas encore de vaccinations enregistrées dans cette application.<br>Les vaccinations devraient-elles être transférées depuis votre DEP à partir de la date {{ createdAt }}?",
+    "LAST_MODIFIED_BY": "Dernière modification par: {{author}}"
   }
 }

@@ -49,7 +49,6 @@ export class DialogService {
       object: object,
       button: buttons,
     };
-    /* eslint-disable-next-line security/detect-non-literal-fs-filename -- Safe as no value holds user input */
     this.helpService.open(options);
   }
 

@@ -16,11 +16,12 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import dayjs from 'dayjs';
 import { IAdverseEvent } from '../../../model';
 import { AdverseEventService } from './adverse-event.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('Vaccination Service', () => {
   let service: AdverseEventService;
@@ -31,7 +32,8 @@ describe('Vaccination Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(AdverseEventService);
@@ -41,6 +43,7 @@ describe('Vaccination Service', () => {
     elemDefault = {
       confidentiality: { code: 'AAAAA', name: 'AAAAA' },
       id: '0',
+      allergyCode: { code: 'AAAAA', name: 'AAAAA' },
       code: { code: 'AAAAA', name: 'AAAAA' },
       criticality: { code: 'AAAAA', name: 'AAAAA' },
       verificationStatus: { code: 'AAAAA', name: 'AAAAA' },

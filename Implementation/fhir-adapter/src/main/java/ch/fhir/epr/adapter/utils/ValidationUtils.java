@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.utils;
 
+import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
@@ -30,6 +31,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,7 +53,7 @@ public class ValidationUtils {
   /**
    * Differenciate validation for read and write mode, especially for the recorder. In read mode, we
    * allow either first or last name to be empty.
-   * 
+   *
    * @param dto {@link BaseDTO}
    * @param isReadOrDelete true for read or delete operations
    */
@@ -74,8 +76,37 @@ public class ValidationUtils {
     }
   }
 
+  /**
+   * Determines whether a record should be validated after an update.
+   * <p>
+   * A record should be validated if the updated object is otherwise equal to the old object
+   * (i.e., all relevant fields excluding the comment are the same),
+   * but the comment has changed and the original record was already validated by a HCP.
+   * <p>
+   * Covers also the case when a record previously not validated, will be validated by a HCP (when clicking Validate button)
+   *
+   * @param oldObject     the original {@code BaseDTO} instance before the update
+   * @param updatedObject the new {@code BaseDTO} instance after the update
+   * @return {@code true} if the updated record should be re-validated; {@code false} otherwise
+   */
+  public static Boolean shouldRecordBeValidated(BaseDTO oldObject, BaseDTO updatedObject) {
+    if (isTrustedAuthor(updatedObject)) {
+      return true;
+    }
+
+    if (!Objects.equals(oldObject, updatedObject)) {
+      return false;
+    }
+
+    return hasCommentsChanged(oldObject, updatedObject) && oldObject.isValidated();
+  }
+
   private static boolean areAllStringNullOrEmpty(List<String> values) {
     return values.stream().allMatch(value -> Objects.isNull(value) || StringUtils.isBlank(value));
+  }
+
+  private static boolean hasCommentsChanged(BaseDTO oldObject, BaseDTO updatedObject) {
+    return !Objects.equals(oldObject.getComment(), updatedObject.getComment());
   }
 
   private static void isDateInTheFuture(String field, LocalDate date) {
@@ -115,6 +146,11 @@ public class ValidationUtils {
     if (StringUtils.isBlank(text)) {
       throw new ValidationException("The field " + field + " should not be empty.");
     }
+  }
+
+  private static boolean isTrustedAuthor(BaseDTO updatedObject) {
+    return updatedObject.getAuthor() != null && Arrays.asList(FhirConstants.HCP, FhirConstants.ASS, FhirConstants.TCU)
+        .contains(updatedObject.getAuthor().getRole());
   }
 
   private static void validateAllergy(AllergyDTO allergy) {

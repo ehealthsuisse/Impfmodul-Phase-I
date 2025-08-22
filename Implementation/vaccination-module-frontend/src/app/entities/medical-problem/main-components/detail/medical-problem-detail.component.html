@@ -11,5 +11,5 @@
     </mat-card-content>
     <vm-details-action *ngIf="!isMobile" class="details__action"></vm-details-action>
   </mat-card>
-  <vm-comment class="detail-wrapper__comment" [comments]="problem.comments!"></vm-comment>
+  <vm-comment class="detail-wrapper__comment" [comment]="problem.comment!" [canAddComments]="false"></vm-comment>
 </section>

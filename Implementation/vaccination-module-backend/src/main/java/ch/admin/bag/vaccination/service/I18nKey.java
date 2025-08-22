@@ -62,7 +62,8 @@ public enum I18nKey {
       "Il libretto di vaccinazione non è un documento ufficiale."), //
   LOGO_FILE_NAME("/Logo_EN_EPR.jpg", "/Logo_DE_EPD.jpg", "/Logo_FR_DEP.jpg", "/Logo_IT_CIP.jpg"),
   ACTIVE("Active", "Aktiv", "Actif", "Attivo"),
-  INACTIVE("Inactive", "Inaktiv", "Inactif", "Inattivo");
+  INACTIVE("Inactive", "Inaktiv", "Inactif", "Inattivo"),
+  LAST_MODIFIED_BY("Last modified by: ", "Zuletzt geändert von: ", "Dernière modification par: ", "Ultima modifica di: ");
 
   public static boolean exists(String gender) {
     return Arrays.stream(values()).anyMatch(value -> value.name().equals(gender));

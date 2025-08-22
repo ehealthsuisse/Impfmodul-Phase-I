@@ -37,6 +37,11 @@
     "VALIDATION_TITLE": "Validierung fehlgeschlagen",
     "VALIDATION_TEXT": "Bitte korrigieren Sie den Eintrag, um diesen zu validieren.",
     "ORGANIZATION": "Organisation",
-    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Überprüfung der Eingabe"
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Überprüfung der Eingabe",
+    "CONFIDENTIALITY": "Vertraulichkeit",
+    "DELETE_CONFIRMATION_MESSAGE": "Soll das vorliegende Dokument gelöscht werden?<br>Hinweis: Das gelöschte Dokument erhält dieselbe Vertraulichkeitsstufe wie das zu löschen Dokument.",
+    "CONVERSION_DIALOG_TITLE": "Datensatz konvertieren",
+    "NO_IMMUNIZATION_RECORDS_FOUND": "Sie haben noch keine Impfeinträge in dieser Anwendung.<br>Sollen die Impfungen ab dem Datum {{ createdAt }} aus Ihrem EPD übernommen werden?",
+    "LAST_MODIFIED_BY": "Zuletzt geändert von: {{author}}"
   }
 }

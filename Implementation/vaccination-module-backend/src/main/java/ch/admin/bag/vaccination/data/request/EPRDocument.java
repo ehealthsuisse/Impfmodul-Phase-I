@@ -19,6 +19,8 @@
 package ch.admin.bag.vaccination.data.request;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,8 +39,13 @@ public class EPRDocument implements Serializable {
   private boolean isTrusted;
   private String jsonOrXmlFhirContent;
   private transient RetrievedDocument retrievedDocument;
+  private LocalDateTime creationDate;
+
+  public EPRDocument(boolean isTrusted, RetrievedDocument retrievedDocument, LocalDateTime creationDate) {
+    this(isTrusted, null, retrievedDocument, creationDate);
+  }
 
   public EPRDocument(boolean isTrusted, RetrievedDocument retrievedDocument) {
-    this(isTrusted, null, retrievedDocument);
+    this(isTrusted, retrievedDocument, null);
   }
 }

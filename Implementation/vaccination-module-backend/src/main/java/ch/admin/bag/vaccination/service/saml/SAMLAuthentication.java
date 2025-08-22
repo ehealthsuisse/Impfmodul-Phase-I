@@ -86,9 +86,9 @@ public class SAMLAuthentication extends AbstractAuthenticationToken {
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || (obj instanceof SAMLAuthentication
-            && Objects.equal(((SAMLAuthentication) obj).principal, principal)
-            && Objects.equal(((SAMLAuthentication) obj).assertion, assertion));
+        || (obj instanceof SAMLAuthentication samla
+            && Objects.equal(samla.principal, principal)
+            && Objects.equal(samla.assertion, assertion));
   }
 
   @Override

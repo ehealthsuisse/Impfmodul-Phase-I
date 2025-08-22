@@ -1,65 +1,73 @@
-.save-and-stay {
-  margin-left: 10px;
-}
-
-.mobile-mat-dialog-content {
-  max-height: 90%;
-  height: 85% !important;
-  overflow: hidden;
-  // Confirm card box-shadow
-  .mat-mdc-card {
-    box-shadow: none;
+.desktop-dialog-wrapper {
+  .save-and-stay {
+    margin-left: 10px;
   }
 
-  // Confirm dialog Performer font weight
-  --mdc-dialog-supporting-text-weight: 500;
-}
-
-.mobile-mat-dialog-actions {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  div {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    .mat-button {
-      width: calc(50% - 5px);
+  // Confirm dialog styling
+  .mat-dialog-content {
+    overflow-x: hidden !important;
+    // Performer text weight
+    --mat-dialog-supporting-text-weight: 500;
+    // Normal text styling
+    --mat-select-trigger-text-size: 14px;
+    --mat-select-trigger-text-weight: 500;
+    .mat-mdc-card {
+      box-shadow: none !important;
     }
   }
-  .mobile-save-and-stay {
-    margin-top: 20px;
-    width: 100%;
+
+  // Confirm dialog buttons
+  .mat-mdc-dialog-actions {
+    margin-bottom: 8px !important;
+    margin-left: 44px !important;
+    margin-right: 26px !important;
   }
 }
 
-// Confirm dialog styling
-.mat-dialog-content {
-  overflow-x: hidden !important;
-  // Performer text weight
-  --mdc-dialog-supporting-text-weight: 500;
-  // Normal text styling
-  --mat-select-trigger-text-size: 14px;
-  --mat-select-trigger-text-weight: 500;
-  .mat-mdc-card {
-    box-shadow: none !important;
-  }
-}
+.mobile-dialog-wrapper {
+  .mobile-mat-dialog-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
 
-// Confirm dialog buttons
-.mat-mdc-dialog-actions {
-  margin-bottom: 8px !important;
-  margin-left: 16px !important;
+    .mat-mdc-card {
+      box-shadow: none;
+    }
+
+    --mat-dialog-supporting-text-weight: 500;
+  }
+
+  .mobile-mat-dialog-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 10px;
+
+    div {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      .mat-button {
+        width: calc(50% - 5px);
+      }
+    }
+
+    .mobile-save-and-stay {
+      width: 100%;
+    }
+  }
 }
 
 // Common color for the buttons (save and cancel)
 .mat-mdc-raised-button {
   &.mat-accent {
-    --mdc-protected-button-container-color: rgba(2, 101, 96, 1);
+    --mat-button-protected-container-color: rgba(2, 101, 96, 1);
   }
 
   &.mat-warn {
-    --mdc-protected-button-container-color: rgba(204, 29, 16, 1);
+    --mat-button-protected-container-color: rgba(204, 29, 16, 1);
   }
 }

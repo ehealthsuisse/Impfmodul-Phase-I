@@ -1,4 +1,4 @@
-<div class="list-wrapper">
+<div [ngClass]="isMobile ? 'mobile-list-wrapper' : 'list-wrapper'">
   <vm-list-header
     class="mat-card mat-elevation-z0"
     [toggle]="toggleHeader"
@@ -12,6 +12,7 @@
   <vm-table-wrapper
     [dataSource]="problems"
     [displayedColumns]="displayedColumns"
+    [enableGrouping]="true"
     [translationPrefix]="'MEDICAL_PROBLEM.'"
     [fullWidth]="tableWidth"
     (rowClick)="navigateToDetails($event)"

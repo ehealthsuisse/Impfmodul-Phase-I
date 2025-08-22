@@ -22,11 +22,10 @@ import { Author, IBaseDTO, IValueDTO } from '../shared';
 
 export interface IInfectiousDiseases extends IBaseDTO {
   recordedDate: Dayjs | string;
-  begin: Dayjs;
+  begin: Dayjs | string;
   end: Dayjs | null;
   illnessCode: IValueDTO;
   clinicalStatus: IValueDTO;
-  verificationStatus: IValueDTO;
   author?: Author;
   validated: boolean;
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <version>1.7.1</version>
+  <version>1.8.0</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.0</version>
+    <version>3.4.8</version>
     <relativePath />
   </parent>
 
@@ -19,21 +19,20 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-    <java.version>17</java.version>
-    <maven.compiler.release>17</maven.compiler.release>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <java.version>21</java.version>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
     <junit.version>5.10.0</junit.version>
-    <springdoc.version>1.6.15</springdoc.version>
-    <husky.version>3.0.2</husky.version>
-    <hapi.fhir.version>7.4.0</hapi.fhir.version>
-    <org.hl7.fhir.version>6.4.0</org.hl7.fhir.version>
+    <springdoc.version>1.8.0</springdoc.version>
+    <husky.version>3.1.0</husky.version>
+    <hapi.fhir.version>8.0.0</hapi.fhir.version>
     <!-- custom lib Sopra Steria -->
-    <fhir.adapter.version>1.1.9</fhir.adapter.version>
+    <fhir.adapter.version>1.2.0</fhir.adapter.version>
     <opensaml.version>5.1.3</opensaml.version>
     <xmlsectool.version>3.0.0</xmlsectool.version>
     <pdfbox.version>2.0.30</pdfbox.version>
-    <hazelcast.version>5.3.5</hazelcast.version>
+    <tomcat.version>11.0.8</tomcat.version>
   </properties>
 
   <repositories>
@@ -104,12 +103,34 @@
         <artifactId>junit</artifactId>
         <version>4.13.2</version>
       </dependency>
-      <!-- Hapi Fhir -->
+      <!-- Overrides the incomplete or vulnerable dependencies bundled with the husky-communication-gen -->
       <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>hapi-fhir-base</artifactId>
-        <version>${hapi.fhir.version}</version>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <version>10.2</version>
       </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.18.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.14</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.14.2</version>
+      </dependency>
+
+      <!-- Hapi Fhir -->
       <dependency>
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>hapi-fhir-caching-api</artifactId>
@@ -125,73 +146,27 @@
         <artifactId>hapi-fhir-validation-resources-r4</artifactId>
         <version>${hapi.fhir.version}</version>
       </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.convertors</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.utilities</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.validation</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r5</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r4</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r4b</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
+      <!-- Tomcat -->
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-annotations-api</artifactId>
-        <version>11.0.2</version>
+        <version>${tomcat.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-core</artifactId>
-        <version>11.0.2</version>
+        <version>${tomcat.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-websocket</artifactId>
-        <version>11.0.2</version>
+        <version>${tomcat.version}</version>
       </dependency>
-      <!-- Temporary dependencies needed until project is updated to the new Spring Boot version -->
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.5.13</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.5.13</version>
-      </dependency>
-      <!-- Temporary dependencies needed until a new version pf the Boxable library will be available -->
+      <!-- Temporary dependencies needed until a new version of the Boxable library will be available -->
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
         <version>1.18.3</version>
-      </dependency>
-      <!-- Temporary dependencies needed until Hapi Fhir library will be updated to the new version -->
-      <dependency>
-        <groupId>org.fhir</groupId>
-        <artifactId>ucum</artifactId>
-        <version>1.0.9</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -237,35 +212,11 @@
       <groupId>org.projecthusky.communication</groupId>
       <artifactId>husky-communication-gen</artifactId>
       <version>${husky.version}</version>
-      <exclusions>
-      	<exclusion>
-      		<groupId>xml-apis</groupId>
-      		<artifactId>xml-apis</artifactId>
-      	</exclusion>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-saml-impl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.projecthusky.communication</groupId>
       <artifactId>husky-communication-ch</artifactId>
       <version>${husky.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.opensaml</groupId>
-          <artifactId>opensaml-xacml-saml-impl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.projecthusky.communication</groupId>
@@ -352,6 +303,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
  
     <!-- Syslog server -->
     <dependency>
@@ -429,7 +390,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.12</version>
+          <version>0.8.13</version>
         </plugin>
       </plugins>
     </pluginManagement>

@@ -40,7 +40,7 @@ export class ChipsHandler {
       return;
     }
     const formCtrl = this.getFormCtrl(form);
-    this.selected = formCtrl.value ? [...formCtrl.value, i] : [i];
+    this.selected = Array.isArray(formCtrl.value) ? [...formCtrl.value, i] : [i];
     if (this.list.length > 0) {
       this.list.filter(x => x.code === i.code)[0].selected = true;
     }

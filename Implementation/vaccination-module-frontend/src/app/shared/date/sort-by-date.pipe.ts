@@ -19,7 +19,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import _ from 'lodash';
-/* eslint-disable security/detect-object-injection */
 
 @Pipe({
   name: 'sortByDate',

@@ -218,14 +218,14 @@ public final class AssertionRenewalUtils {
         }
 
         List<XMLObject> soapBodyChildren = soapMessage.getBody().getUnknownXMLObjects();
-        if (soapBodyChildren.size() < 1 || soapBodyChildren.size() > 1) {
+        if (soapBodyChildren.size() != 1) {
           log.error("Unexpected number of children in the SOAP body, " + soapBodyChildren.size()
               + ".  Unable to extract SAML message");
           throw new MessageHandlerException(
               "Unexpected number of children in the SOAP body, unable to extract SAML message");
         }
 
-        XMLObject incomingMessage = soapBodyChildren.get(0);
+        XMLObject incomingMessage = soapBodyChildren.getFirst();
         messageContext.setMessage(incomingMessage);
       }
     });

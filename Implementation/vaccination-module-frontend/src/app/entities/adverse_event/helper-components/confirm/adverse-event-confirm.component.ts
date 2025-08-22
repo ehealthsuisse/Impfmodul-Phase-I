@@ -25,7 +25,6 @@ import { AdverseEventDetailedInformationComponent } from '../adverse-event-detai
 
 @Component({
   selector: 'vm-adverse-event-confirm',
-  standalone: true,
   imports: [SharedLibsModule, AdverseEventDetailedInformationComponent, SharedComponentModule, ConfirmComponent],
   templateUrl: './adverse-event-confirm.component.html',
   styleUrls: ['./adverse-event-confirm.component.scss'],

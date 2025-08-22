@@ -10,6 +10,7 @@
     "RECORDED_DATE": "Data",
     "BEGIN": "Data di inizio",
     "END": "Data di fine",
-    "DATE": "Data di diagnosi"
+    "DATE": "Data di diagnosi",
+    "CONFIDENTIALITY": "Riservatezza"
   }
 }

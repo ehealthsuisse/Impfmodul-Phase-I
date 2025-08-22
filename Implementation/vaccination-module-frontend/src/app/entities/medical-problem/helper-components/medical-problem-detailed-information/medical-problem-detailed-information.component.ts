@@ -16,11 +16,12 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject, Input, OnInit, Optional, ViewChild } from '@angular/core';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
 import { IMedicalProblem } from '../../../../model';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { MedicalProblemFormService, ProblemFormGroup } from '../../service/medical-problem-form.service';
+import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
 import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
@@ -54,6 +55,12 @@ export class MedicalProblemDetailedInformationComponent implements OnInit, After
   formOptions: Map<string, IValueDTO[]> = new Map<string, IValueDTO[]>();
   problemFilteredList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   problemFilterControl: FormControl = new FormControl();
+
+  constructor(@Optional() private confirmParent: ConfirmComponent) {}
+
+  get isConfirmComponentParent(): boolean {
+    return !!this.confirmParent;
+  }
 
   toggleComments(): void {
     this.commentsOpened = !this.commentsOpened;

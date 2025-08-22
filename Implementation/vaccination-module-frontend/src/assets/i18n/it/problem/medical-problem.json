@@ -11,6 +11,7 @@
     "RECORDED_DATE": "Data",
     "BEGIN": "Data di inizio",
     "END": "Data di fine",
-    "DATE": "Data di determinazione"
+    "DATE": "Data di determinazione",
+    "CONFIDENTIALITY": "Riservatezza"
   }
 }

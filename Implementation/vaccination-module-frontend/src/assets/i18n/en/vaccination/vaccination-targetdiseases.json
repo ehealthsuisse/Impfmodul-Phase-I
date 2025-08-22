@@ -29,8 +29,8 @@
     "23511006": "Meningococcal disease",
     "16814004": "Pneumococcal disease",
     "37109004": "EVD-Ebola virus disease",
-    "860805006": "Encephalomyelitis caused by Neisseria meningitidis (disorder)",
-    "55735004": "Respiratory syncytial virus infection (disorder)",
-    "38362002": "Dengue (disorder)"
+    "860805006": "Encephalomyelitis caused by Neisseria meningitidis",
+    "55735004": "Respiratory syncytial virus infection",
+    "38362002": "Dengue"
   }
 }

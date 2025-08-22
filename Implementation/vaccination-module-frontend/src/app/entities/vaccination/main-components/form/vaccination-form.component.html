@@ -14,7 +14,15 @@
     </mat-card-header>
 
     <mat-card-content class="detail-wrapper__card-content form-wrapper">
-      <form [formGroup]="editForm" name="form" novalidate (ngSubmit)="save()" class="form-wrapper__form" role="form">
+      <form
+        [formGroup]="editForm"
+        #formGroupDirective="ngForm"
+        name="form"
+        novalidate
+        (ngSubmit)="save()"
+        class="form-wrapper__form"
+        role="form"
+      >
         <vm-reusable-date-field
           [formControl]="editForm.controls.occurrenceDate"
           [labelTranslationKey]="'VACCINATION.DATE'"
@@ -24,6 +32,7 @@
 
         <vm-reusable-select-field-with-search
           #singleSelect
+          [isRequired]="true"
           [options$]="vaccinationFilteredList"
           [item]="vaccination?.code!"
           [isEditable]="true"
@@ -92,28 +101,6 @@
           <input matInput [attr.aria-label]="'VACCINATION.LOT_NUMBER' | translate" formControlName="lotNumber" />
         </mat-form-field>
 
-        <mat-form-field class="detailed-card-content__form-field">
-          <mat-label vmTranslate="VACCINATION.VACCINATION_REASON"></mat-label>
-          <mat-select
-            #reason
-            [attr.aria-label]="'VACCINATION.VACCINATION_REASON' | translate"
-            required="false"
-            formControlName="reason"
-            ngDefaultControl
-          >
-            <mat-select-trigger *ngIf="!reason.value">{{ 'GLOBAL.NONE_OPTION' | translate }}</mat-select-trigger>
-            <mat-select-trigger *ngIf="reason.value">{{ 'VACCINATION_REASON.' + reason.value.code | translate }}</mat-select-trigger>
-            <mat-option [value]="null">{{ 'GLOBAL.NONE_OPTION' | translate }}</mat-option>
-            <mat-option
-              *ngFor="let reason of reasons | async"
-              [attr.aria-label]="'VACCINATION_REASON.' + reason.code | translate"
-              vmTranslate="{{ 'VACCINATION_REASON.' + reason.code }}"
-              [value]="reason"
-            >
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <mat-card class="mat-elevation-z0 form-wrapper__form-recorder" fxLayout="column" fxLayoutAlign="center">
           <mat-label
             class="form-wrapper__form-recorder__label"
@@ -162,10 +149,26 @@
             [required]="!fName.value"
           />
         </mat-form-field>
-        <mat-form-field class="detailed-card-content__form-field">
+        <mat-form-field *ngIf="isMobile" class="detailed-card-content__form-field">
           <mat-label [attr.aria-label]="'GLOBAL.COMMENT' | translate" class="mat-label" vmTranslate="GLOBAL.COMMENT"></mat-label>
-          <textarea [attr.aria-label]="'GLOBAL.COMMENT' | translate" matInput formControlName="commentMessage"></textarea>
+          <textarea
+            matInput
+            [value]="editForm.get('comment')?.value?.text || ''"
+            (input)="commentMessage = $event.target.value"
+            [attr.aria-label]="'GLOBAL.COMMENT' | translate"
+            [placeholder]="'COMMENT.PLACEHOLDER' | translate"
+          ></textarea>
         </mat-form-field>
+
+        <vm-reusable-select-field-with-search
+          [options$]="confidentialityList"
+          [item]="vaccination?.confidentiality!"
+          [isEditable]="true"
+          [translationKey]="'GLOBAL'"
+          [labelKey]="'CONFIDENTIALITY'"
+          [formControl]="editForm.controls.confidentiality"
+          formControlName="vaccineCode"
+        ></vm-reusable-select-field-with-search>
 
         <vm-common-card-footer
           [isEditFooter]="true"
@@ -177,5 +180,10 @@
       </form>
     </mat-card-content>
   </mat-card>
-  <vm-comment class="detail-wrapper__comment" [comments]="vaccination?.comments!"></vm-comment>
+  <vm-comment
+    class="detail-wrapper__comment"
+    [(commentMessage)]="commentMessage"
+    [comment]="vaccination?.comment!"
+    [canAddComments]="true"
+  ></vm-comment>
 </div>

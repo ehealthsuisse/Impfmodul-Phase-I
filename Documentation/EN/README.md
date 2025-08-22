@@ -24,6 +24,16 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+### August 2025 - Release 1.8.0-RC1
+The module has been enhanced by incorporating feedback from users, providers, and audits, while also integrating the latest technical advancements.
+
+1. Upgrade the frontend application to use Angular 20.
+2. Upgrade the backend application as well as the fhir library to use Java 21.
+3. Backend application now uses the new Husky library version 3.1.0.
+4. Added a new parameter in the IdPs configuration files.
+5. Enable IDP-specific keystore and truststore settings.
+6. FHIR value lists update along with various bugfixes.
+
 ### May 2025 - Hotfix 1.7.1
 An issue has been identified which was hindering the SAML logout to be proceed via the backchannel.
 
@@ -37,8 +47,8 @@ The 2nd release candidate contains a fix for Tomcat 11 compatibility as well as 
 Improving the vaccination module based on new FHIR regulations and technical evolutions.
 
 1. Upgrade the frontend application to use Angular 17
-2. Upgrade the backend applicatino to use Spring Boot 3.x and Spring 6.x. This major change has an impact on the environment. Starting with 1.7.0, the vaccination module needs to be run with Tomcat 10+. This version was tested to run with Tomcat 11.0.1
-3. Various upgrades of the FHIR bundle structure. These updates mainly concern metaURLs and the crossreferences. Old bundle structures will be backwards compatible.
+2. Upgrade the backend application to use Spring Boot 3.x and Spring 6.x. This major change has an impact on the environment. Starting with 1.7.0, the vaccination module needs to be run with Tomcat 10+. This version was tested to run with Tomcat 11.0.1
+3. Various upgrades of the FHIR bundle structure. These updates mainly concern metaURLs and the cross-references. Old bundle structures will be backwards compatible.
 4. Various bugfixes
 
 ### September 2024 - Hotfix 1.6.3 

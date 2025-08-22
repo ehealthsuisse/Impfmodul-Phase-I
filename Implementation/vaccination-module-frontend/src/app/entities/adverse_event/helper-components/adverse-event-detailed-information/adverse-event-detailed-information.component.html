@@ -25,12 +25,21 @@
     [isEditable]="false"
   ></vm-reusable-recorder-field>
 
+  <vm-reusable-select-field
+    [formControl]="adverseEventForm.controls.confidentiality!"
+    [isEditable]="false"
+    [translationKey]="'GLOBAL.CONFIDENTIALITY'"
+    [labelTranslationKey]="'GLOBAL.CONFIDENTIALITY'"
+    [mainValueKey]="'CONFIDENTIALITY.' + adverseEvent?.confidentiality?.code! | translate"
+  >
+  </vm-reusable-select-field>
+
   <mat-form-field class="detailed-card-content__form-field" *ngIf="adverseEvent?.commentMessage">
-    <mat-label vmTranslate="GLOBAL.COMMENTS" [attr.aria-label]="'GLOBAL.COMMENTS' | translate"></mat-label>
+    <mat-label vmTranslate="COMMENT.COMMENT" [attr.aria-label]="'COMMENT.COMMENT' | translate"></mat-label>
     <textarea matInput [attr.aria-label]="adverseEvent?.commentMessage" value="{{ adverseEvent?.commentMessage }}" disabled></textarea>
   </mat-form-field>
 
-  <div class="commentsContent">
+  <div *ngIf="!isConfirmComponentParent" class="commentsContent">
     <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
       <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
       <mat-icon
@@ -54,7 +63,7 @@
     </div>
 
     <mat-card
-      *ngFor="let comment of adverseEvent?.comments"
+      *ngIf="adverseEvent?.comment as comment"
       role="article"
       class="commentsContent_card comment-card mat-elevation-z0"
       [ngClass]="{ active: commentsOpened }"
@@ -67,7 +76,7 @@
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
     </mat-card>
     <p
-      *ngIf="adverseEvent?.comments?.length === 0"
+      *ngIf="!adverseEvent?.comment"
       vmTranslate="COMMENT.NO_COMMENTS"
       class="commentsContent_card no-comments"
       [ngClass]="{ active: commentsOpened }"

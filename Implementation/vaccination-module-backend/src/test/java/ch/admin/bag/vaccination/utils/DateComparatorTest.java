@@ -41,11 +41,11 @@ public class DateComparatorTest {
     List<PastIllnessDTO> pastIllnessDTOS = DateComparator.sortByDateDesc(generatePastIllnessData(),
         Comparator.comparing(PastIllnessDTO::getRecordedDate));
 
-    assertEquals(allergyDTOS.get(0).getOccurrenceDate(), LocalDate.of(2023, 8, 5));
+    assertEquals(allergyDTOS.getFirst().getOccurrenceDate(), LocalDate.of(2023, 8, 5));
     assertEquals(allergyDTOS.get(2).getOccurrenceDate(), LocalDate.of(2021, 3, 15));
-    assertEquals(medicalProblemDTOS.get(0).getRecordedDate(), LocalDate.of(2023, 7, 25));
+    assertEquals(medicalProblemDTOS.getFirst().getRecordedDate(), LocalDate.of(2023, 7, 25));
     assertEquals(medicalProblemDTOS.get(2).getRecordedDate(), LocalDate.of(2021, 3, 5));
-    assertEquals(pastIllnessDTOS.get(0).getRecordedDate(), LocalDate.of(2023, 7, 25));
+    assertEquals(pastIllnessDTOS.getFirst().getRecordedDate(), LocalDate.of(2023, 7, 25));
     assertEquals(pastIllnessDTOS.get(2).getRecordedDate(), LocalDate.of(2021, 3, 5));
 
   }
@@ -54,21 +54,18 @@ public class DateComparatorTest {
     List<PastIllnessDTO> data = new ArrayList<>();
     data.add(new PastIllnessDTO(
         new ValueDTO("ClinicalStatus1", "Clinical Status 1", null),
-        new ValueDTO("VerificationStatus1", "Verification Status 1", null),
         LocalDate.of(2022, 5, 10),
         LocalDate.of(2022, 5, 20),
         LocalDate.of(2022, 5, 1)
     ));
     data.add(new PastIllnessDTO(
         new ValueDTO("ClinicalStatus2", "Clinical Status 2", null),
-        new ValueDTO("VerificationStatus2", "Verification Status 2", null),
         LocalDate.of(2021, 3, 15),
         LocalDate.of(2021, 3, 25),
         LocalDate.of(2021, 3, 5)
     ));
     data.add(new PastIllnessDTO(
         new ValueDTO("ClinicalStatus3", "Clinical Status 3", null),
-        new ValueDTO("VerificationStatus3", "Verification Status 3", null),
         LocalDate.of(2023, 8, 5),
         LocalDate.of(2023, 8, 15),
         LocalDate.of(2023, 7, 25)
@@ -80,21 +77,18 @@ public class DateComparatorTest {
     List<MedicalProblemDTO> data = new ArrayList<>();
     data.add(new MedicalProblemDTO(
         new ValueDTO("ClinicalStatus1", "Clinical Status 1", null),
-        new ValueDTO("VerificationStatus1", "Verification Status 1", null),
         LocalDate.of(2022, 5, 10),
         LocalDate.of(2022, 5, 20),
         LocalDate.of(2022, 5, 1)
     ));
     data.add(new MedicalProblemDTO(
         new ValueDTO("ClinicalStatus2", "Clinical Status 2", null),
-        new ValueDTO("VerificationStatus2", "Verification Status 2", null),
         LocalDate.of(2021, 3, 15),
         LocalDate.of(2021, 3, 25),
         LocalDate.of(2021, 3, 5)
     ));
     data.add(new MedicalProblemDTO(
         new ValueDTO("ClinicalStatus3", "Clinical Status 3", null),
-        new ValueDTO("VerificationStatus3", "Verification Status 3", null),
         LocalDate.of(2023, 8, 5),
         LocalDate.of(2023, 8, 15),
         LocalDate.of(2023, 7, 25)
@@ -108,22 +102,19 @@ public class DateComparatorTest {
         LocalDate.of(2022, 5, 10),
         new ValueDTO("Type1", "Type 1", null),
         new ValueDTO("Criticality1", "Criticality 1", null),
-        new ValueDTO("ClinicalStatus1", "Clinical Status 1", null),
-        new ValueDTO("VerificationStatus1", "Verification Status 1", null)
+        new ValueDTO("ClinicalStatus1", "Clinical Status 1", null)
     ));
     data.add(new AllergyDTO(
         LocalDate.of(2021, 3, 15),
         new ValueDTO("Type2", "Type 2", null),
         new ValueDTO("Criticality2", "Criticality 2", null),
-        new ValueDTO("ClinicalStatus2", "Clinical Status 2", null),
-        new ValueDTO("VerificationStatus2", "Verification Status 2", null)
+        new ValueDTO("ClinicalStatus2", "Clinical Status 2", null)
     ));
     data.add(new AllergyDTO(
         LocalDate.of(2023, 8, 5),
         new ValueDTO("Type3", "Type 3", null),
         new ValueDTO("Criticality3", "Criticality 3", null),
-        new ValueDTO("ClinicalStatus3", "Clinical Status 3", null),
-        new ValueDTO("VerificationStatus3", "Verification Status 3", null)
+        new ValueDTO("ClinicalStatus3", "Clinical Status 3", null)
     ));
     return data;
   }

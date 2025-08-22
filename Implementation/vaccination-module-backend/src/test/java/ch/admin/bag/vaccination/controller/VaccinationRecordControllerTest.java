@@ -19,11 +19,16 @@
 package ch.admin.bag.vaccination.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.data.request.TranslationsRequest;
 import ch.admin.bag.vaccination.service.SignatureService;
+import ch.admin.bag.vaccination.service.VaccinationRecordService;
 import ch.admin.bag.vaccination.utils.MockSessionHelper;
+import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.io.File;
 import java.io.InputStream;
@@ -36,6 +41,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.projecthusky.xua.saml2.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -49,6 +55,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -58,10 +65,13 @@ public class VaccinationRecordControllerTest extends MockSessionHelper {
   private int port;
   @MockitoBean
   private SignatureService signatureService;
+  @MockitoSpyBean
+  private VaccinationRecordService vaccinationRecordService;
   @Autowired
   private TestRestTemplate restTemplate;
   @Autowired
   private ProfileConfig profileConfig;
+
   private List<String> cookies;
 
   @BeforeAll
@@ -112,6 +122,17 @@ public class VaccinationRecordControllerTest extends MockSessionHelper {
         restTemplate.getForEntity("http://localhost:" + port + "/vaccinationRecord/communityIdentifier/GAZELLE",
             Object.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    verify(vaccinationRecordService).create(any(PatientIdentifier.class), any(Assertion.class));
+  }
+
+  @Test
+  public void testConvert() {
+    HttpEntity<VaccinationRecordDTO> request = new HttpEntity<>(new VaccinationRecordDTO());
+    ResponseEntity<VaccinationRecordDTO> response =
+        restTemplate.postForEntity("http://localhost:" + port + "/vaccinationRecord/communityIdentifier/GAZELLE/convert",
+            request, VaccinationRecordDTO.class);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    verify(vaccinationRecordService).convertVaccinationToImmunization(any(PatientIdentifier.class), any(Assertion.class));
   }
 
   private TranslationsRequest createTranslationsRequest(ValueDTO tuberkulose, ValueDTO herpes, ValueDTO masern) {

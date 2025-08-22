@@ -18,8 +18,10 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class HumanNameDTO implements Serializable {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String firstName;
@@ -47,5 +50,28 @@ public class HumanNameDTO implements Serializable {
     return ((prefix != null ? prefix + " " : "")
         + (firstName != null ? firstName + " " : "")
         + (lastName != null ? lastName : "")).trim();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    HumanNameDTO that = (HumanNameDTO) o;
+    return Objects.equals(firstName, that.firstName) &&
+        Objects.equals(lastName, that.lastName) &&
+        Objects.equals(prefix, that.prefix) &&
+        Objects.equals(birthday, that.birthday) &&
+        Objects.equals(gender, that.gender);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(firstName, lastName, prefix, birthday, gender);
   }
 }

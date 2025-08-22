@@ -24,6 +24,7 @@ import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
+import ch.admin.bag.vaccination.utils.JsonFieldExtractor;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirUtils;
@@ -37,13 +38,15 @@ import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import ch.fhir.epr.adapter.utils.ValidationUtils;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -67,6 +70,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   private static final String LOAD_DATA_FOR_FROM = "Load data for {} from";
+
   @Autowired
   protected LifeCycleService lifeCycleService;
   @Autowired
@@ -84,13 +88,16 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
 
   @Override
   public T create(String communityIdentifier, String oid, String localId,
-      T newDTO, Assertion assertion) {
+      T newDTO, Assertion assertion, boolean forceImmunizationAdministrationDocument) {
     log.debug("create {} {} {}", communityIdentifier, oid, localId);
+
     PatientIdentifier patientIdentifier = getPatientIdentifier(communityIdentifier, oid, localId);
     AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
     newDTO.setAuthor(author);
+    Bundle createdBundle = forceImmunizationAdministrationDocument ?
+        fhirAdapter.createImmunizationAdministrationDocument(patientIdentifier, newDTO) :
+        fhirAdapter.create(patientIdentifier, newDTO);
 
-    Bundle createdBundle = fhirAdapter.create(patientIdentifier, newDTO);
     if (createdBundle != null) {
       return getDTOAfterParsingBundle(newDTO, assertion, createdBundle, patientIdentifier, author);
     }
@@ -114,7 +121,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     Optional<T> deletedResource = eprDocuments.stream()
         .filter(eprDocument -> eprDocument.getJsonOrXmlFhirContent().contains(FhirConstants.ENTERED_IN_ERROR))
         .map(eprDocument -> fhirAdapter.unmarshallFromString(eprDocument.getJsonOrXmlFhirContent()))
-        .map(alreadyDeletedBundle -> parseBundle(patientIdentifier, alreadyDeletedBundle).get(0))
+        .map(alreadyDeletedBundle -> parseBundle(patientIdentifier, alreadyDeletedBundle).getFirst())
         .findFirst();
 
     if (deletedResource.isPresent()) {
@@ -167,7 +174,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     }
 
     eprDocuments.removeAll(invalid);
-    CacheIdentifierKey cacheIdentifier = createCacheIdentifier(patientIdentifier);
+    CacheIdentifierKey cacheIdentifier = cache.createCacheIdentifier(patientIdentifier);
     if (cache.dataCacheMiss(cacheIdentifier)) {
       for (EPRDocument doc : eprDocuments) {
         cache.putData(cacheIdentifier, doc);
@@ -220,8 +227,8 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       if (dto != null && toUpdateUuid.equals(dto.getId())) {
         AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
         newDto.setAuthor(author);
-        Bundle updatedBundle =
-            fhirAdapter.update(patientIdentifier, newDto, bundleToUpdate, toUpdateUuid);
+        modifyVerificationStatus(dto, newDto);
+        Bundle updatedBundle = fhirAdapter.update(patientIdentifier, newDto, bundleToUpdate, toUpdateUuid);
         if (updatedBundle != null) {
           return getDTOAfterParsingBundle(newDto, assertion, updatedBundle, patientIdentifier, author);
         }
@@ -248,14 +255,9 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     return (Class<T>) BaseDTO.class;
   }
 
-  private CacheIdentifierKey createCacheIdentifier(PatientIdentifier patientIdentifier) {
-    AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
-    return new CacheIdentifierKey(patientIdentifier, author);
-  }
-
   private EPRDocument createEPRDocument(DocumentEntry entry, Map<String, RetrievedDocument> docMap) {
     List<String> rolesMetadata = entry.getExtraMetadata().get(HuskyUtils.UPLOADER_ROLE_METADATA_KEY);
-    String[] roles = rolesMetadata.get(0).split("\\^", 2);
+    String[] roles = rolesMetadata.getFirst().split("\\^", 2);
     boolean isTrusted = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(roles[0]);
 
     RetrievedDocument retrievedDoc = docMap.get(entry.getUniqueId());
@@ -265,7 +267,16 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     }
 
     docMap.remove(retrievedDoc.getRequestData().getDocumentUniqueId());
-    return new EPRDocument(isTrusted, retrievedDoc);
+    return new EPRDocument(isTrusted, retrievedDoc, LocalDateTime.now());
+  }
+
+  private List<EPRDocument> createEPRDocuments(List<DocumentEntry> allDocumentEntries,
+      PatientIdentifier patientIdentifier, List<DocumentEntry> filteredDocumentEntries, AuthorDTO author,
+      Assertion assertion, boolean useInternal) {
+
+    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier,
+        filteredDocumentEntries, author, assertion, useInternal);
+    return processAndValidateDocuments(allDocumentEntries, retrievedDocuments);
   }
 
   @SuppressWarnings("unchecked")
@@ -287,34 +298,116 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     dto.setCreatedAt(LocalDateTime.now());
     dto.setCode(new ValueDTO("---", "---", "---"));
     dto.setHasErrors(true);
-    dto.setContent(json.getBytes(Charset.forName("UTF-8")));
+    dto.setContent(json.getBytes(StandardCharsets.UTF_8));
     return dto;
   }
 
   private EPRDocument createValidatedDocument(AuthorDTO author, String json) {
     boolean isTrusted = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU).contains(author.getRole());
-    return new EPRDocument(isTrusted, json, null);
+    return new EPRDocument(isTrusted, json, null, LocalDateTime.now());
+  }
+
+  /**
+   * Updates the verification status of the given DTO based on the author role
+   * and record validation rules.
+   * <p>
+   * The verification status is determined as follows:
+   * <ul>
+   *  *   <li>If the <b>previous record (oldDto)</b> has a {@code null} verification status,
+   *  *       a new verification status will be assigned based on the author role.</li>
+   *  *   <li>If the <b>author</b> has a GFP role
+   *  *       ({@link HuskyUtils#HCP}, {@link HuskyUtils#ASS}, or {@link HuskyUtils#TCU}),
+   *  *       the record is always marked as <b>Confirmed</b>.</li>
+   *  *   <li>If the <b>author</b> is a PAT (patient) modifying a record created by a GFP,
+   *  *       and the modification consists only of adding or updating a comment,
+   *  *       the record will <b>remain confirmed</b> and will not be downgraded.</li>
+   *  *   <li>If the author is not GFP:
+   *  *     <ul>
+   *  *       <li>If {@link ValidationUtils#shouldRecordBeValidated(BaseDTO, BaseDTO)}
+   *  *           returns {@code true}, the record is marked as <b>Confirmed</b>.</li>
+   *  *       <li>Otherwise, the record is marked as <b>Not confirmed</b> / <b>Unconfirmed</b>,
+   *  *           depending on the DTO type.</li>
+   *  *     </ul>
+   *  *   </li>
+   *  * </ul>
+   * <p>
+   * The mapping of DTO type to verification status is:
+   * <ul>
+   *   <li>{@code VaccinationDTO} → SNOMED code <i>59156000 (Confirmed)</i> or <i>76104008 (Not confirmed)</i></li>
+   *   <li>{@code AllergyDTO}, {@code PastIllnessDTO}, {@code MedicalProblemDTO} →
+   *       "confirmed"/"unconfirmed" textual codes</li>
+   * </ul>
+   *
+   * @param oldDto     the previous state of the DTO, used for validation checks
+   * @param updatedDto the current DTO whose verification status will be modified
+   */
+  private void modifyVerificationStatus(T oldDto, T updatedDto) {
+    boolean isAuthorGFP = Arrays.asList(HuskyUtils.HCP, HuskyUtils.ASS, HuskyUtils.TCU)
+        .contains(updatedDto.getAuthor().getRole());
+    boolean shouldConfirm = ValidationUtils.shouldRecordBeValidated(oldDto, updatedDto) || isAuthorGFP;
+    ValueDTO status = switch (updatedDto) {
+      case VaccinationDTO v -> shouldConfirm
+          ? new ValueDTO("59156000", "Confirmed", "http://snomed.info/sct")
+          : new ValueDTO("76104008", "Not confirmed", "http://snomed.info/sct");
+      case AllergyDTO a -> shouldConfirm
+          ? new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification")
+          : new ValueDTO("unconfirmed", "Unconfirmed", "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification");
+      case PastIllnessDTO p -> shouldConfirm
+          ? new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status")
+          : new ValueDTO("unconfirmed", "Unconfirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status");
+      case MedicalProblemDTO m -> shouldConfirm
+          ? new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status")
+          : new ValueDTO("unconfirmed", "Unconfirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status");
+      default -> updatedDto.getVerificationStatus();
+    };
+    updatedDto.setVerificationStatus(status);
   }
 
   private List<EPRDocument> fetchDocuments(PatientIdentifier patientIdentifier, AuthorDTO author,
       Assertion assertion, boolean useInternal) {
     List<DocumentEntry> documentEntries =
         huskyAdapter.getDocumentEntries(patientIdentifier, author, assertion, useInternal);
+    List<DocumentEntry> immunizationRecords = documentEntries.stream()
+        .filter(doc -> doc.getFormatCode().getCode().equals(
+            FhirConstants.COMPOSITION_IMMUNIZATON_CATEGORY.getFirst().getCoding().getFirst().getCode())).toList();
 
-    List<DocumentEntry> filteredDocumentEntries =
-        documentEntries.stream().filter(doc -> doc.getMimeType().toLowerCase().contains("fhir"))
-            .collect(Collectors.toList());
+    if (!immunizationRecords.isEmpty()) {
+      List<DocumentEntry> fhirImmunizationDocs = filterByMimeType(immunizationRecords);
+      return createEPRDocuments(immunizationRecords, patientIdentifier, fhirImmunizationDocs, author, assertion, useInternal);
+    }
 
-    int numberOfFilteredEntries = documentEntries.size() - filteredDocumentEntries.size();
-    if (documentEntries.size() > filteredDocumentEntries.size()) {
+    List<DocumentEntry> vaccinationRecords = documentEntries.stream()
+        .filter(doc -> doc.getFormatCode().getCode().equals(
+            FhirConstants.COMPOSITION_RECORD_CATEGORY.getFirst().getCoding().getFirst().getCode()))
+        .max(Comparator.comparing(entry -> entry.getCreationTime().getDateTime().toInstant()))
+        .map(Collections::singletonList)
+        .orElse(Collections.emptyList());
+    List<DocumentEntry> fhirVaccinations = filterByMimeType(vaccinationRecords);
+
+    if (!vaccinationRecords.isEmpty()) {
+      List<EPRDocument> eprDocuments = createEPRDocuments(vaccinationRecords, patientIdentifier, fhirVaccinations, author,
+          assertion,useInternal);
+
+      CacheIdentifierKey cacheIdentifier = cache.createCacheIdentifier(patientIdentifier);
+      if (cache.dataCacheMiss(cacheIdentifier)) {
+        for (EPRDocument doc : eprDocuments) {
+          cache.putData(cacheIdentifier, doc, Cache.VACCINATION_RECORDS_CACHE_NAME);
+        }
+      }
+    }
+    return Collections.emptyList();
+  }
+
+  private List<DocumentEntry> filterByMimeType(List<DocumentEntry> documentEntries) {
+    List<DocumentEntry> filteredFhirDocuments =
+        documentEntries.stream().filter(doc -> doc.getMimeType().toLowerCase().contains("fhir")).toList();
+    int numberOfFilteredEntries = documentEntries.size() - filteredFhirDocuments.size();
+    if (numberOfFilteredEntries > 0) {
       log.debug("Filtered {} meta entries because of wrong mimetype, i.e. mimetype does not contain \"fhir\"",
           numberOfFilteredEntries);
     }
 
-    List<RetrievedDocument> retrievedDocuments = huskyAdapter.getRetrievedDocuments(patientIdentifier,
-        filteredDocumentEntries, author, assertion, useInternal);
-
-    return processAndValidateDocuments(documentEntries, retrievedDocuments);
+    return filteredFhirDocuments;
   }
 
   private List<EPRDocument> getData(PatientIdentifier patientIdentifier, Assertion assertion) {
@@ -324,7 +417,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     }
 
     AuthorDTO author = HttpSessionUtils.getAuthorFromSession();
-    CacheIdentifierKey cacheIdentifier = createCacheIdentifier(patientIdentifier);
+    CacheIdentifierKey cacheIdentifier = new CacheIdentifierKey(patientIdentifier, author);
     List<EPRDocument> eprDocuments = new ArrayList<>();
 
     if (cache.isEnabled() && !cache.dataCacheMiss(cacheIdentifier)) {
@@ -347,7 +440,8 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     }
 
     log.debug(LOAD_DATA_FOR_FROM + " Filesystem", patientIdentifier.getPatientInfo().getFullName());
-    return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(true, localEntity, null))
+    return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(true, localEntity, null,
+            JsonFieldExtractor.extractFieldAsLocalDateTime(localEntity, "timestamp")))
         .collect(Collectors.toList());
   }
 
@@ -356,7 +450,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       InputStream is = retrievedDocument.getDataHandler().getInputStream();
       byte[] bytesOfDocument = is.readAllBytes();
 
-      return new String(bytesOfDocument, Charset.forName("UTF-8"));
+      return new String(bytesOfDocument, StandardCharsets.UTF_8);
     } catch (Exception ex) {
       log.warn("Error while retrieving document data: {}", ex.getMessage());
       return null;
@@ -369,17 +463,18 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
     String updatedJson = fhirAdapter.convertBundleToJson(newOrUpdatedBundle);
     huskyAdapter.writeDocument(patientIdentifier, FhirUtils.getUuidFromBundle(newOrUpdatedBundle), updatedJson,
         newOrUpdatedDto, assertion);
-    cache.putData(createCacheIdentifier(patientIdentifier), createValidatedDocument(author, updatedJson));
-    return parseBundle(patientIdentifier, newOrUpdatedBundle).get(0);
+    cache.putData(cache.createCacheIdentifier(patientIdentifier), createValidatedDocument(author, updatedJson));
+    return parseBundle(patientIdentifier, newOrUpdatedBundle).getFirst();
   }
 
   private void handleRetrievedDocument(EPRDocument doc) {
     String document = getDocumentData(doc.getRetrievedDocument());
     doc.setJsonOrXmlFhirContent(document);
+    doc.setCreationDate(JsonFieldExtractor.extractFieldAsLocalDateTime(document, "timestamp"));
   }
 
   @SuppressWarnings("unchecked")
-  private List<T> parseBundle(PatientIdentifier patientIdentifier, Bundle bundle) {
+  protected List<T> parseBundle(PatientIdentifier patientIdentifier, Bundle bundle) {
     Class<T> dtoClass = getDtoClass();
 
     try {

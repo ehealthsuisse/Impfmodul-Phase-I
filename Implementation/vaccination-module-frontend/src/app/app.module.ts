@@ -16,14 +16,14 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { inject, LOCALE_ID, NgModule, provideAppInitializer } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateService } from '@ngx-translate/core';
-import { NgxWebstorageModule } from 'ngx-webstorage';
+import { provideNgxWebstorage, withLocalStorage, withNgxWebstorageConfig, withSessionStorage } from 'ngx-webstorage';
 import { AppRoutingModule } from './app-routing.module';
 import { ErrorInterceptor, FooterComponent, MainComponent, NavbarComponent } from './core';
 import { TranslationModule } from './shared';
@@ -57,20 +57,17 @@ export function initializeSessionInfo(sessionInfoService: SessionInfoService) {
 
 @NgModule({
   declarations: [MainComponent],
+  bootstrap: [MainComponent],
   imports: [
     SharedModule,
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
-    HttpClientModule,
     FooterComponent,
     AppRoutingModule,
     NavbarComponent,
-    NgxWebstorageModule.forRoot({ prefix: 'vm', separator: '-', caseSensitive: true }),
     TranslationModule,
     MatDialogModule,
   ],
-  bootstrap: [MainComponent],
   providers: [
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: TranslateService },
@@ -79,23 +76,29 @@ export function initializeSessionInfo(sessionInfoService: SessionInfoService) {
     { provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true },
     { provide: TitleStrategy, useClass: CustomPageTitleStrategy },
     {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [ConfigService, ValidationService],
-      multi: true,
-    },
-    SessionInfoService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeSessionInfo,
-      deps: [SessionInfoService, ConfigService, ValidationService],
-      multi: true,
-    },
-    {
       provide: MAT_DATE_LOCALE,
       useFactory: (sessionInfoService: SessionInfoService) => sessionInfoService.queryParams.lang,
       deps: [SessionInfoService],
     },
+    provideAppInitializer(() => {
+      const configService = inject(ConfigService);
+      const validationService = inject(ValidationService);
+      return initializeApp(configService, validationService)();
+    }),
+    provideAppInitializer(() => {
+      const sessionInfoService = inject(SessionInfoService);
+      return initializeSessionInfo(sessionInfoService)();
+    }),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideNgxWebstorage(
+      withNgxWebstorageConfig({
+        prefix: 'vm',
+        separator: '-',
+        caseSensitive: true,
+      }),
+      withSessionStorage(),
+      withLocalStorage()
+    ),
   ],
 })
 export class AppModule {}

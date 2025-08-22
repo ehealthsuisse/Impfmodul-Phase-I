@@ -5,38 +5,43 @@
     </ng-container>
   </button>
 
-  <button
-    mat-raised-button
-    type="button"
-    color="accent"
-    (click)="save()"
-    [disabled]="isEmergencyMode"
-    [attr.aria-label]="'buttons.SAVE' | translate"
-  >
-    <ng-container class="button-content">
-      <span class="button-text" [vmTranslate]="'buttons.SAVE'"></span>
-    </ng-container>
-  </button>
+  <!-- Desktop view: More button with dropdown menu -->
+  <div *ngIf="isDesktop">
+    <button
+      mat-raised-button
+      color="accent"
+      [matMenuTriggerFor]="moreMenu"
+      (click)="showMoreOptions = !showMoreOptions"
+      [ngClass]="{ 'more-active': showMoreOptions }"
+    >
+      <span class="button-text" [vmTranslate]="'buttons.MORE'"></span>
+      <mat-icon>{{ showMoreOptions ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+      <button mat-menu-item (click)="save()" [disabled]="isEmergencyMode" [attr.aria-label]="'buttons.SAVE_TO' | translate">
+        <span [vmTranslate]="'buttons.SAVE_TO'"></span>
+      </button>
+      <button mat-menu-item (click)="download()" [attr.aria-label]="'buttons.DOWNLOAD'">
+        <span [vmTranslate]="'buttons.DOWNLOAD'"></span>
+      </button>
+    </mat-menu>
+  </div>
 
-  <button
-    type="button"
-    mat-raised-button
-    [color]="!isMobile || !isTablet ? undefined : 'accent'"
-    [ngClass]="isMobile || isTablet ? 'mat-accent' : 'mat-action-button'"
-    [attr.aria-label]="'buttons.DOWNLOAD'"
-    (click)="download()"
-    [matTooltip]="'buttons.DOWNLOAD' | translate"
-  >
-    <ng-template [ngIf]="isMobile || isTablet"><span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span> </ng-template>
-    <ng-template [ngIf]="isDesktop">
-      <img
-        [attr.aria-label]="'buttons.DOWNLOAD' | translate"
-        alt="{{ 'buttons.DOWNLOAD' | translate }}"
-        class="download-icon"
-        src="./assets/images/download.png"
-      />
-    </ng-template>
-  </button>
+  <!-- Mobile and Tablet views: Individual raised buttons -->
+  <div *ngIf="isMobile || isTablet">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="save()"
+      [disabled]="isEmergencyMode"
+      [attr.aria-label]="'buttons.SAVE_TO' | translate"
+    >
+      <span [vmTranslate]="'buttons.SAVE_TO'"></span>
+    </button>
+    <button mat-raised-button color="accent" (click)="download()" [attr.aria-label]="'buttons.DOWNLOAD'">
+      <span [vmTranslate]="'buttons.DOWNLOAD'"></span>
+    </button>
+  </div>
 
   <button
     type="button"

@@ -28,6 +28,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
 import { DatepickerTranslationDirective } from './directives/datepicker-translation.directive';
 import { FormatBasedOnTypePipe, PerformerToStringPipe } from './pipes';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 @NgModule({
   imports: [
@@ -44,6 +45,7 @@ import { FormatBasedOnTypePipe, PerformerToStringPipe } from './pipes';
     FlexLayoutModule,
     FormatBasedOnTypePipe,
     TranslateModule,
+    TextFieldModule,
   ],
   declarations: [DatepickerTranslationDirective],
   exports: [
@@ -61,6 +63,7 @@ import { FormatBasedOnTypePipe, PerformerToStringPipe } from './pipes';
     DatepickerTranslationDirective,
     FormatBasedOnTypePipe,
     ReactiveFormsModule,
+    TextFieldModule,
   ],
 })
 export class SharedLibsModule {}

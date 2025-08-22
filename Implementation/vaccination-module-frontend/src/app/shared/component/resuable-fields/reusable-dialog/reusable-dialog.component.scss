@@ -1,0 +1,54 @@
+.mobile-mat-dialog-content {
+  overflow: hidden;
+  // Confirm card box-shadow
+  .mat-mdc-card {
+    box-shadow: none;
+  }
+
+  // Convert dialog font weight
+  --mat-dialog-supporting-text-weight: 500;
+}
+
+.mobile-mat-dialog-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    .mat-button {
+      width: calc(50% - 5px);
+    }
+  }
+}
+
+// Convert dialog styling
+.mat-dialog-content {
+  overflow-x: hidden !important;
+  // Performer text weight
+  --mat-dialog-supporting-text-weight: 500;
+  // Normal text styling
+  --mat-select-trigger-text-size: 14px;
+  --mat-select-trigger-text-weight: 500;
+  .mat-mdc-card {
+    box-shadow: none !important;
+  }
+}
+
+// Convert dialog buttons
+.mat-mdc-dialog-actions {
+  justify-content: center;
+}
+
+// Common color for the buttons (yes and no)
+.mat-mdc-raised-button {
+  &.mat-accent {
+    --mat-button-protected-container-color: rgba(2, 101, 96, 1);
+  }
+
+  &.mat-warn {
+    --mat-button-protected-container-color: rgba(204, 29, 16, 1);
+  }
+}

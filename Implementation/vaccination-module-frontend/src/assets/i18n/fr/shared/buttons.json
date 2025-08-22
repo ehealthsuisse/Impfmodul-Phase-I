@@ -12,15 +12,17 @@
     "BACK": "Précédent",
     "CONTINUE": "Suivant",
     "VERIFY": "Vérifier",
-    "EXPORT": "Exporter/Imprimer",
+    "EXPORT": "Créer un PDF",
     "VALIDATE": "Valider",
     "ADD_ALLERGY": "Ajouter un effet indésirable",
     "ADD_VACCINATION": "Ajouter une vaccination",
     "ADD_PAST_ILLNESS": "Ajouter une maladie infectieuse",
     "ADD_PROBLEM": "Ajouter un facteur de risque",
-    "DOWNLOAD": "Télécharger",
+    "DOWNLOAD": "Télécharger FHIR",
     "HELP": "Aide",
     "SAVE_AND_STAY": "Enregistrer et créer une autre",
-    "LOGOUT": "Déconnexion"
+    "LOGOUT": "Déconnexion",
+    "MORE": "Autres",
+    "SAVE_TO": "Enregistrer dans EPD"
   }
 }

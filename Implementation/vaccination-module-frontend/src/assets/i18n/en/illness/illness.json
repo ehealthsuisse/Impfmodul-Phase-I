@@ -10,6 +10,7 @@
     "RECORDED_DATE": "Date",
     "BEGIN": "Begin",
     "END": "End",
-    "DATE": "Date of diagnosis"
+    "DATE": "Date of diagnosis",
+    "CONFIDENTIALITY": "Confidentiality"
   }
 }

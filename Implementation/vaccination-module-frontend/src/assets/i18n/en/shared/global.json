@@ -37,6 +37,11 @@
     "VALIDATION_TITLE": "Validation failed",
     "VALIDATION_TEXT": "Please edit the entry to validate it.",
     "ORGANIZATION": "Organization",
-    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Checking input"
+    "SAVE_NEW_RECORD_CONFIRM_TITLE": "Checking input",
+    "CONFIDENTIALITY": "Confidentiality",
+    "DELETE_CONFIRMATION_MESSAGE": "Should this document be deleted?<br>Note: The deleted document is assigned the same confidentiality level as the document to be deleted.",
+    "CONVERSION_DIALOG_TITLE": "Convert record",
+    "NO_IMMUNIZATION_RECORDS_FOUND": "You have no vaccinations in this application yet.<br>Do you want to import the vaccinations from date {{ createdAt }} from your EPR?",
+    "LAST_MODIFIED_BY": "Last modified by: {{author}}"
   }
 }

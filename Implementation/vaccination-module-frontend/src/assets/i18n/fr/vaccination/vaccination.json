@@ -17,6 +17,7 @@
     "ACTIVE": "Actif",
     "INACTIVE": "Inactif",
     "SEARCH_TARGET_DISEASES": "Rechercher une protection vaccinale",
-    "DOSE_NUMBER_FORMAT": "La dose doit être un nombre entier positif"
+    "DOSE_NUMBER_FORMAT": "La dose doit être un nombre entier positif",
+    "CONFIDENTIALITY": "Confidentialité"
   }
 }

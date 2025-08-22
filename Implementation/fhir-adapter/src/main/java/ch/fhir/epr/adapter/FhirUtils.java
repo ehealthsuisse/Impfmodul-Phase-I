@@ -66,7 +66,7 @@ public final class FhirUtils {
   }
 
   public static CodeableConcept replaceLegacyTargetDiseaseCoding(CodeableConcept codeableConcept) {
-    Coding coding = codeableConcept.getCoding().get(0);
+    Coding coding = codeableConcept.getCoding().getFirst();
     String code = coding.getCode();
     String display = coding.getDisplay();
     if (FhirConstants.LEGACY_TARGET_DISEASE_CODE.equals(code)
@@ -252,7 +252,7 @@ public final class FhirUtils {
         || bundle.getMeta().getProfile().isEmpty()) {
       return false;
     }
-    if (FhirConstants.META_VACCINATION_RECORD_TYPE_URL.equals(bundle.getMeta().getProfile().get(0).getValue())) {
+    if (FhirConstants.META_VACCINATION_RECORD_TYPE_URL.equals(bundle.getMeta().getProfile().getFirst().getValue())) {
       return true;
     }
     return false;

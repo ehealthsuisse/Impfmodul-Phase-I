@@ -16,11 +16,12 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { IValueDTO } from 'src/app/shared';
 import { IVaccination } from '../../../../model';
 import { SharedLibsModule } from '../../../../shared/shared-libs.module';
+import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 
 @Component({
   selector: 'vm-vaccination-detailed-information',
@@ -34,7 +35,12 @@ export class VaccinationDetailedInformationComponent {
   @Input() vaccination: IVaccination | null = null;
   @Input() showTitle: boolean = false;
   commentsOpened: boolean = false;
-  constructor(private translateService: TranslateService) {}
+
+  constructor(private translateService: TranslateService, @Optional() private confirmParent: ConfirmComponent) {}
+
+  get isConfirmComponentParent(): boolean {
+    return !!this.confirmParent;
+  }
 
   toggleComments(): void {
     this.commentsOpened = !this.commentsOpened;
@@ -45,5 +51,9 @@ export class VaccinationDetailedInformationComponent {
       return targetDiseases.map(dto => this.translateService.instant('vaccination-targetdiseases.' + dto.code)).join('; ');
     }
     return undefined;
+  }
+
+  getTranslatedVaccinationReason(reasonCode?: string): string {
+    return this.translateService.instant('VACCINATION_REASON.' + (reasonCode || 'DEFAULT'));
   }
 }

@@ -20,9 +20,11 @@ package ch.admin.bag.vaccination.service.saml.config;
 
 import ch.fhir.epr.adapter.exception.ValidationException;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,9 +36,19 @@ public class IdpProvider {
 
   public static final String GAZELLE_IDP_IDENTIFIER = "GAZELLE";
 
+  @Autowired
+  private ServiceProvider sp;
+
   /** entityId which is registered at the IDP */
   private String knownEntityId;
   private List<IdentityProviderConfig> supportedProvider;
+
+  @PostConstruct
+  public void init() {
+    if (supportedProvider != null) {
+      supportedProvider.forEach(this::applyKeystoreDefaults);
+    }
+  }
 
   public IdentityProviderConfig getProviderConfig(String providerIdentifier) {
     return supportedProvider.stream()
@@ -44,5 +56,18 @@ public class IdpProvider {
         .findFirst()
         .orElseThrow(() -> new ValidationException("Configuration for provider with identifier: "
             + providerIdentifier + " not found."));
+  }
+
+  private void applyKeystoreDefaults(IdentityProviderConfig config) {
+    config.setSamlKeystore(config.getSamlKeystore() != null ? config.getSamlKeystore() :
+        createDefaultKeystore(sp.getSamlKeystoreType(), sp.getSamlKeystorePath(), sp.getSamlKeystorePassword(),
+            sp.getSamlSpAlias()));
+    config.setTlsKeystore(config.getTlsKeystore() != null ? config.getTlsKeystore() :
+        createDefaultKeystore(sp.getTlsKeystoreType(), sp.getTlsKeystorePath(), sp.getTlsKeystorePassword(), null));
+  }
+
+  private KeystoreProperties createDefaultKeystore(String keystoreType, String keystorePath, String keystorePassword,
+      String spAlias) {
+    return new KeystoreProperties(keystoreType, keystorePath, keystorePassword, spAlias);
   }
 }

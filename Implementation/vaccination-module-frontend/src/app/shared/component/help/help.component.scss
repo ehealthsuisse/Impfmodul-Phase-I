@@ -8,6 +8,21 @@
     margin: 8px;
     .h3-header {
       margin-left: 16px;
+      margin-right: 16px;
+      flex-grow: 1;
+      word-break: break-word;
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .close-button {
+      flex-shrink: 0;
+      position: absolute;
+      top: 8px;
+      right: 8px;
     }
   }
   .mat-mdc-card-title {
@@ -15,15 +30,16 @@
   }
 
   // Help text sizing
-  --mdc-dialog-supporting-text-color: black !important;
-  --mdc-dialog-supporting-text-size: 14px !important;
-  --mdc-dialog-supporting-text-weight: 400 !important;
+  --mat-dialog-supporting-text-color: black !important;
+  --mat-dialog-supporting-text-size: 14px !important;
+  --mat-dialog-supporting-text-weight: 400 !important;
   // Removes box-shadow on mobile view
-  --mdc-elevated-card-container-elevation: none !important;
+  --mat-card-elevated-container-elevation: none !important;
 
   .mdc-card__actions {
     margin-left: 6px;
   }
+
   // Unexpected error button styling
   .mat-mdc-button:not(:disabled) {
     background: var(--alert-color);

@@ -75,7 +75,7 @@ class VaccinationConfigTest {
   @Test
   void repositoryConfig() {
     assertThat(
-        communitiesConfig.getCommunities().get(0).getRepositoryConfig(EPDCommunity.DUMMY.name()))
+        communitiesConfig.getCommunities().getFirst().getRepositoryConfig(EPDCommunity.DUMMY.name()))
             .isNull();
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())
         .getRepositoryConfig(EPDRepository.PDQ.name()).getIdentifier())

@@ -23,7 +23,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { InfectiousDiseasesListComponent } from './infectious-diseases-list.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogModule } from '@angular/material/dialog';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('IllnessesListComponent', () => {
   let component: InfectiousDiseasesListComponent;
@@ -31,14 +32,8 @@ describe('IllnessesListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        InfectiousDiseasesListComponent,
-        RouterTestingModule,
-        NoopAnimationsModule,
-        TranslateModule.forRoot(),
-        MatDialogModule,
-        HttpClientTestingModule,
-      ],
+      imports: [InfectiousDiseasesListComponent, RouterTestingModule, NoopAnimationsModule, TranslateModule.forRoot(), MatDialogModule],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).overrideTemplate(InfectiousDiseasesListComponent, '');
 
     fixture = TestBed.createComponent(InfectiousDiseasesListComponent);

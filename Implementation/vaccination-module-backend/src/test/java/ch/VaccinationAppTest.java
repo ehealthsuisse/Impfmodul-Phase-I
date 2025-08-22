@@ -76,7 +76,7 @@ class VaccinationAppTest {
   void communitiesConfig() {
     assertThat(communitiesConfig).isNotNull();
     assertThat(communitiesConfig.getCommunities()).isNotNull();
-    assertThat(communitiesConfig.getCommunities().get(0).getIdentifier())
+    assertThat(communitiesConfig.getCommunities().getFirst().getIdentifier())
         .isEqualTo(EPDCommunity.DUMMY.name());
 
     assertThat(communitiesConfig.getCommunityConfig(EPDCommunity.GAZELLE.name())

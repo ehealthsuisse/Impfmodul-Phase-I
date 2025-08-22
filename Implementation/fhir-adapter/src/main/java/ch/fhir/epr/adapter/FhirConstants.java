@@ -40,7 +40,7 @@ public final class FhirConstants {
   /** Fixed system url defined in the standard */
   public static final String FIXED_PRACTITIONER_SYSTEM = "urn:oid:2.51.1.3";
   /** Used if practitioner GLN is unknown */
-  public static final String DEFAULT_PRACTITIONER_CODE = "7600000000000";
+  public static final String DEFAULT_PRACTITIONER_CODE = "7601007922000";
 
   /** various URLs used for meta information */
   public static final String META_VACCINATION_RECORD_TYPE_URL =
@@ -95,4 +95,9 @@ public final class FhirConstants {
     FhirUtils.toCodeableConcept(new ValueDTO("urn:che:epr:ch-vacd:vaccination-record:2022",
       "CH VACD Vaccination Record",
       "urn:oid:2.16.756.5.30.1.127.3.10.10"))));
+
+  /** Author roles */
+  public static final String HCP = "HCP";
+  public static final String ASS = "ASS";
+  public static final String TCU = "TCU";
 }

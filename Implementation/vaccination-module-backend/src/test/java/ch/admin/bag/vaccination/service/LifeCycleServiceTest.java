@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
+import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
@@ -102,7 +104,7 @@ public class LifeCycleServiceTest {
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
 
     assertThat(managedList.size()).isEqualTo(1);
-    assertThat(managedList.get(0).getId()).isEqualTo("1");
+    assertThat(managedList.getFirst().getId()).isEqualTo("1");
   }
 
   @Test
@@ -121,9 +123,9 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(1).isUpdated()).isTrue();
     assertThat(managedList.get(1).getRelatedId()).isEqualTo("2");
     assertThat(managedList.get(1).isDeleted()).isTrue();
-    assertThat(managedList.get(0).isUpdated()).isFalse();
-    assertThat(managedList.get(0).getRelatedId()).isEqualTo("3");
-    assertThat(managedList.get(0).isDeleted()).isTrue();
+    assertThat(managedList.getFirst().isUpdated()).isFalse();
+    assertThat(managedList.getFirst().getRelatedId()).isEqualTo("3");
+    assertThat(managedList.getFirst().isDeleted()).isTrue();
   }
 
   /**
@@ -138,7 +140,7 @@ public class LifeCycleServiceTest {
 
     assertThat(managedList.size()).isEqualTo(2);
     assertThat(managedList.get(1).getId()).isEqualTo("1");
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
   }
 
   @Test
@@ -155,8 +157,8 @@ public class LifeCycleServiceTest {
     assertThat(managedList.get(2).isUpdated()).isTrue();
     assertThat(managedList.get(1).getRelatedId()).isEqualTo("2");
     assertThat(managedList.get(1).isUpdated()).isTrue();
-    assertThat(managedList.get(0).getRelatedId()).isEqualTo("3");
-    assertThat(managedList.get(0).isUpdated()).isFalse();
+    assertThat(managedList.getFirst().getRelatedId()).isEqualTo("3");
+    assertThat(managedList.getFirst().isUpdated()).isFalse();
   }
 
   /**
@@ -171,7 +173,7 @@ public class LifeCycleServiceTest {
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
 
     assertThat(managedList.size()).isEqualTo(1);
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
   }
 
   /**
@@ -186,7 +188,7 @@ public class LifeCycleServiceTest {
 
     assertThat(managedList.size()).isEqualTo(2);
     assertThat(managedList.get(1).getId()).isEqualTo("1");
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
   }
 
 
@@ -217,7 +219,93 @@ public class LifeCycleServiceTest {
     assertThat(managedList.size()).isEqualTo(3);
     assertThat(managedList.get(2).getId()).isEqualTo("1");
     assertThat(managedList.get(1).getId()).isEqualTo("3");
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
+  }
+
+  @Test
+  void test_handle_objectsAreEqualOnlyCommentsDiffer_updatedRecordShouldBeValidated() {
+    vaccinationDTOs[1].setValidated(true);
+
+    vaccinationDTOs[2].setRelatedId("2");
+    vaccinationDTOs[2].setDoseNumber(vaccinationDTOs[1].getDoseNumber());
+    vaccinationDTOs[2].setLotNumber(vaccinationDTOs[1].getLotNumber());
+    vaccinationDTOs[2].setCode(vaccinationDTOs[1].getCode());
+    vaccinationDTOs[2].setRecorder(vaccinationDTOs[1].getRecorder());
+    vaccinationDTOs[2].setComment(new CommentDTO(LocalDateTime.now(), "Max Mustermann", "first comment"));
+
+    vaccinationDTOs[3].setRelatedId("3");
+    vaccinationDTOs[3].setDoseNumber(vaccinationDTOs[1].getDoseNumber());
+    vaccinationDTOs[3].setLotNumber(vaccinationDTOs[1].getLotNumber());
+    vaccinationDTOs[3].setCode(vaccinationDTOs[1].getCode());
+    vaccinationDTOs[3].setRecorder(vaccinationDTOs[1].getRecorder());
+    vaccinationDTOs[3].setComment(new CommentDTO(LocalDateTime.now(), "Max Mustermann", "second comment"));
+
+    List<VaccinationDTO> managedList =
+        (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), true);
+
+    assertThat(managedList.size()).isEqualTo(4);
+    assertThat(managedList.get(2).getId()).isEqualTo("2");
+    assertThat(managedList.get(2).isUpdated()).isEqualTo(true);
+    assertThat(managedList.get(1).getRelatedId()).isEqualTo("2");
+    assertThat(managedList.get(1).isValidated()).isEqualTo(true);
+    assertThat(managedList.get(1).isUpdated()).isEqualTo(true);
+    assertThat(managedList.getFirst().getRelatedId()).isEqualTo("3");
+    assertThat(managedList.getFirst().isValidated()).isEqualTo(true);
+    assertThat(managedList.getFirst().isUpdated()).isEqualTo(false);
+  }
+
+  @Test
+  void test_handle_objectsAreNotEqual_updatedRecordShouldNotBeValidated() {
+    vaccinationDTOs[1].setValidated(true);
+
+    vaccinationDTOs[2].setRelatedId("2");
+    vaccinationDTOs[2].setComment(new CommentDTO(LocalDateTime.now(), "Max Mustermann", "first comment"));
+
+    List<VaccinationDTO> managedList =
+        (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), true);
+
+    assertThat(managedList.size()).isEqualTo(4);
+    assertThat(managedList.get(2).getId()).isEqualTo("2");
+    assertThat(managedList.get(2).isUpdated()).isEqualTo(true);
+    assertThat(managedList.get(1).getRelatedId()).isEqualTo("2");
+    assertThat(managedList.get(1).isValidated()).isEqualTo(false);
+    assertThat(managedList.get(1).isUpdated()).isEqualTo(false);
+  }
+
+  @Test
+  void test_handle_authorOfTheUpdatedRecordIsHCP_updatedRecordShouldBeValidated() {
+    vaccinationDTOs[1].setValidated(false);
+
+    vaccinationDTOs[2].setRelatedId("2");
+    vaccinationDTOs[2].setAuthor(new AuthorDTO(new HumanNameDTO("testfirstname", "testlastname",
+        "testprefix", LocalDate.now(), "MALE"), "HCP", "gln:1.2.3.4"));
+
+    List<VaccinationDTO> managedList =
+        (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), true);
+
+    assertThat(managedList.size()).isEqualTo(4);
+    assertThat(managedList.get(2).getId()).isEqualTo("2");
+    assertThat(managedList.get(2).isUpdated()).isEqualTo(true);
+    assertThat(managedList.get(1).getRelatedId()).isEqualTo("2");
+    assertThat(managedList.get(1).isValidated()).isEqualTo(true);
+    assertThat(managedList.get(1).isUpdated()).isEqualTo(false);
+  }
+
+  @Test
+  void test_handle_authorOfTheUpdatedRecordIsASS_updatedRecordShouldBeValidated() {
+    vaccinationDTOs[2].setRelatedId("2");
+    vaccinationDTOs[2].setAuthor(new AuthorDTO(new HumanNameDTO("testfirstname", "testlastname",
+        "testprefix", LocalDate.now(), "FEMALE"), "ASS", "gln:1.2.3.4"));
+
+    List<VaccinationDTO> managedList =
+        (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), true);
+
+    assertThat(managedList.size()).isEqualTo(4);
+    assertThat(managedList.get(2).getId()).isEqualTo("2");
+    assertThat(managedList.get(2).isUpdated()).isEqualTo(true);
+    assertThat(managedList.get(1).getRelatedId()).isEqualTo("2");
+    assertThat(managedList.get(1).isValidated()).isEqualTo(true);
+    assertThat(managedList.get(1).isUpdated()).isEqualTo(false);
   }
 
   /**
@@ -238,7 +326,7 @@ public class LifeCycleServiceTest {
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
     assertThat(managedList.size()).isEqualTo(2);
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
     assertThat(managedList.get(1).getId()).isEqualTo("2");
   }
 
@@ -277,7 +365,7 @@ public class LifeCycleServiceTest {
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
     assertThat(managedList.size()).isEqualTo(1);
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
   }
 
 
@@ -344,7 +432,7 @@ public class LifeCycleServiceTest {
     List<VaccinationDTO> managedList =
         (List<VaccinationDTO>) lifeCycleService.handle(Arrays.asList(vaccinationDTOs), false);
     assertThat(managedList.size()).isEqualTo(4);
-    assertThat(managedList.get(0).getId()).isEqualTo("4");
+    assertThat(managedList.getFirst().getId()).isEqualTo("4");
     assertThat(managedList.get(1).getId()).isEqualTo("3");
     assertThat(managedList.get(2).getId()).isEqualTo("2");
     assertThat(managedList.get(3).getId()).isEqualTo("1");
@@ -383,14 +471,16 @@ public class LifeCycleServiceTest {
 
   private void createVaccinations() {
     ValueDTO status = new ValueDTO("completed", "completed", "testsystem");
+    ValueDTO verificationStatus = new ValueDTO("59156000", "Confirmed", "http://snomed.info/sct");
     ValueDTO targetDisease = new ValueDTO("38907003", "Varicella", "http://snomed.info/sct");
     for (int i = 1; i <= 4; i++) {
       String counter = String.valueOf(i);
       vaccinationDTOs[i - 1] = new VaccinationDTO(counter, new ValueDTO(counter, counter, "testsystem"),
-          List.of(targetDisease),
-          null, i,
-          LocalDate.now(), new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.",
-          null, null), null, "lotNumber" + counter, null, status);
+          List.of(targetDisease), null, i, LocalDate.now(),
+          new HumanNameDTO("Victor" + counter, "Frankenstein" + counter, "Dr.",
+          null, null), null, "lotNumber" + counter, null, status, verificationStatus);
+      vaccinationDTOs[i - 1].setAuthor(new AuthorDTO(new HumanNameDTO("testfirstname", "testlastname",
+          "testprefix", LocalDate.now(), "FEMALE"), "PAT", "gln:1.2.3.4"));
       vaccinationDTOs[i - 1].setCreatedAt(LocalDateTime.now().plusSeconds(i));
     }
   }

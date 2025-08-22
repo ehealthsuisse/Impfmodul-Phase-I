@@ -26,7 +26,6 @@ export interface IMedicalProblem extends IBaseDTO {
   end: Dayjs | null;
   medicalProblemCode: IValueDTO;
   clinicalStatus: IValueDTO;
-  verificationStatus: IValueDTO;
   author?: Author;
   validated: boolean;
 }

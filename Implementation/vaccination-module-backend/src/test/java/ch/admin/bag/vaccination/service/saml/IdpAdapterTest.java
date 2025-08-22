@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -60,7 +60,7 @@ public class IdpAdapterTest {
   @Test
   void sendRequest_injectGoodResponse_noExceptionOccurs_assertionExtractedFromRequest() throws Exception {
     ClassLoader classLoader = getClass().getClassLoader();
-    String samlEnvelop = Files.readString(Paths.get(classLoader.getResource("saml/samlIdpRenewResponse.xml").toURI()));
+    String samlEnvelop = Files.readString(Path.of(classLoader.getResource("saml/samlIdpRenewResponse.xml").toURI()));
 
     InOutOperationContext context = sendSamlEnvelop(samlEnvelop);
     Assertion assertion = adapter.processResponse(context.getInboundMessageContext().getMessage());

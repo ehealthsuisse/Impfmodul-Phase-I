@@ -1,25 +1,26 @@
 @use '@angular/material' as mat;
-@import './global';
+@use './global';
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 @include mat.strong-focus-indicators();
 
-$typography-config: mat.define-typography-config(
-  $font-family: $font-family-base,
-  $headline-1: mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
-  $headline-2: mat.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
-  $headline-3: mat.define-typography-level(45px, 48px, 500, $letter-spacing: -0.005em),
-  $subtitle-1: mat.define-typography-level(16px, 28px, 400),
-  $body-1: mat.define-typography-level(12pt, 24px, 700),
-  $body-2: mat.define-typography-level(12pt, 24px, 500),
-  $button: mat.define-typography-level(14px, 14px, 500),
+$typography-config: mat.m2-define-typography-config(
+  $font-family: global.$font-family-base,
+  $headline-1: mat.m2-define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $headline-2: mat.m2-define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $headline-3: mat.m2-define-typography-level(45px, 48px, 500, $letter-spacing: -0.005em),
+  $subtitle-1: mat.m2-define-typography-level(16px, 28px, 400),
+  $body-1: mat.m2-define-typography-level(12pt, 24px, 700),
+  $body-2: mat.m2-define-typography-level(12pt, 24px, 500),
+  $button: mat.m2-define-typography-level(14px, 14px, 500),
 );
 
-$my-primary: mat.define-palette(mat.$green-palette, 500);
-$my-accent: mat.define-palette(mat.$green-palette, 900);
+$my-primary: mat.m2-define-palette(mat.$m2-green-palette, 500);
+$my-accent: mat.m2-define-palette(mat.$m2-green-palette, 900);
 
-$my-theme: mat.define-light-theme(
+$my-theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $my-primary,

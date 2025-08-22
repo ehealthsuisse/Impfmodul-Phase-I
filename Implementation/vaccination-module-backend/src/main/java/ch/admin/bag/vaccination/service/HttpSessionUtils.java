@@ -83,8 +83,8 @@ public final class HttpSessionUtils {
 
   public static void setParameterInSession(String paramName, Object value) {
     RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-    if (requestAttributes instanceof ServletRequestAttributes) {
-      HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+    if (requestAttributes instanceof ServletRequestAttributes attributes) {
+      HttpServletRequest request = attributes.getRequest();
       request.getSession().setAttribute(paramName, value);
     }
   }
