@@ -19,7 +19,7 @@
 package ch.fhir.epr.adapter.data.dto;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,24 +33,48 @@ import lombok.ToString;
 @ToString
 public class MedicalProblemDTO extends BaseDTO {
   private ValueDTO clinicalStatus;
-  private ValueDTO verificationStatus;
   private LocalDate begin;
   private LocalDate end;
   private LocalDate recordedDate;
 
   public MedicalProblemDTO(String id, ValueDTO code, ValueDTO clinicalStatus, ValueDTO verificationStatus,
-      LocalDate recordedDate, LocalDate begin, LocalDate end, HumanNameDTO recorder, List<CommentDTO> comments,
+      LocalDate recordedDate, LocalDate begin, LocalDate end, HumanNameDTO recorder, CommentDTO comment,
       String organization) {
     this.begin = begin;
     this.end = end;
     this.clinicalStatus = clinicalStatus;
-    this.verificationStatus = verificationStatus;
     this.recordedDate = recordedDate;
     setId(id);
     setCode(code);
     setRecorder(recorder);
     setOrganization(organization);
-    setComments(comments);
+    setComment(comment);
+    setVerificationStatus(verificationStatus);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (!(o instanceof MedicalProblemDTO medicalProblem)) {
+      return false;
+    }
+
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    return Objects.equals(clinicalStatus, medicalProblem.clinicalStatus) &&
+        Objects.equals(begin, medicalProblem.begin) &&
+        Objects.equals(end, medicalProblem.end) &&
+        Objects.equals(recordedDate, medicalProblem.recordedDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), clinicalStatus, begin, end, recordedDate);
   }
 
   @Override
