@@ -18,6 +18,7 @@
  */
 package ch.fhir.epr.adapter.data.dto;
 
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +33,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 public class ValueDTO {
   private String code;
@@ -42,5 +42,25 @@ public class ValueDTO {
 
   public ValueDTO(String code, String name, String system) {
     this(code, name, system, true);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (!(o instanceof ValueDTO value)) {
+      return false;
+    }
+
+    return name.equalsIgnoreCase(value.name) &&
+        code.equalsIgnoreCase(value.code) &&
+        system.equalsIgnoreCase(value.system);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(code, name, system);
   }
 }

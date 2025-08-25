@@ -75,7 +75,7 @@ public class ValueDTOTest {
     assertEquals(NAME, value.getCode());
     assertEquals(SYSTEM, value.getName());
     assertEquals(CODE, value.getSystem());
-    assertEquals(false, value.isAllowDisplay());
+    assertFalse(value.isAllowDisplay());
   }
 }
 
