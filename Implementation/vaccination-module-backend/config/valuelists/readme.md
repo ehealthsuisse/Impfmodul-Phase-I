@@ -17,4 +17,5 @@ This folder contains list of value lists for the vaccination module.
 - immunizationStatusCode: http://hl7.org/fhir/ValueSet/immunization-status
 - immunizationTargetDesease: http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-targetdiseasesandillnessesundergoneforimmunization-vs
 - immunizationVaccideCode: https://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html, http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-vaccines-snomedct-vs, http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs
+- immunizationVerificationStatus: https://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-ext-verification-status.html
 - medicalProblemCode: http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-complication-risks-cs
