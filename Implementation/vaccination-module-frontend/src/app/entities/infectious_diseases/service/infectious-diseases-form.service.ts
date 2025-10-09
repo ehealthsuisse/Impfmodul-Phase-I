@@ -148,7 +148,7 @@ export class InfectiousDiseasesFormService {
       { name: 'begin', value: new Date() },
       { name: 'organization', value: extractSessionDetails.organization },
       { name: 'recorder', value: recorder },
-      { name: 'confidentiality', value: { code: '17621005', name: 'Normal' } },
+      { name: 'confidentiality', value: { code: '17621005', name: 'Normal', system: '2.16.840.1.113883.6.96' } },
     ];
 
     fieldsToReset.forEach(field => setDefaultValues(form, field.name, field.value));

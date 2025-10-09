@@ -108,6 +108,11 @@ export class TableWrapperComponent<T> extends BreakPointSensorComponent implemen
     return this.dataSource?.data.some((record: any) => record.relatedId !== null && record.relatedId !== undefined);
   }
 
+  showValidatedIcon(element: any): boolean {
+    const { record, level } = element;
+    return !record.deleted && !record.updated && record.validated && level !== 1 && this.canValidated;
+  }
+
   get columnsToDisplay(): string[] {
     return this.enableGrouping && this.hasRelatedRecords() ? ['expand', ...this.displayedColumns] : this.displayedColumns;
   }
@@ -236,13 +241,21 @@ export class TableWrapperComponent<T> extends BreakPointSensorComponent implemen
     baseData.forEach(item => {
       expandedData.push(item);
       if (item.isParent && item.isExpanded && item.children) {
+        expandedData.push({
+          record: item.record,
+          isParent: false,
+          isExpanded: false,
+          children: [],
+          level: 1,
+        });
+
         item.children.forEach(child => {
           expandedData.push({
             record: child,
             isParent: false,
             isExpanded: false,
             children: [],
-            level: 1,
+            level: 2,
           });
         });
       }

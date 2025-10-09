@@ -21,8 +21,8 @@ The presentation layer of the vaccination module uses the following 3rd party li
 The business and communication layer of the vaccination module uses the following 3rd party libraries: 
 
 - Lombok 1.18.20.0, MIT
-- Spring Boot Starter Parent 3.4.8, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
-- Spring Core 6.2.9, [Apache 2.0](https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt)
+- Spring Boot Starter Parent 3.5.6, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
+- Spring Core 6.2.11, [Apache 2.0](https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt)
 - Project Husky 3.1.0, [Eclipse Public License 1.0](https://www.eclipse.org/org/documents/epl-v10.php)
 - HAPI Fire 8.0.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 - Springdoc-openapi-ui 1.8.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)

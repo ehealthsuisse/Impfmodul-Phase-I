@@ -30,6 +30,8 @@ public enum I18nKey {
       "Libretto delle vaccinazioni"), //
   BASIC_VACCINATION("Basic vaccinations", "Basisimpfungen", "Vaccinations de base", "Vaccinazioni di base"), //
   OTHER_VACCINATION("Other vaccinations", "Andere Impfungen", "Autres vaccinations", "Altere vaccinazioni"), //
+  COMMENTS_FOR_UNKNOWN_VACCINATIONS("Comments for unknown vaccinations", "Kommentare zu unbekannten Impfstoffen",
+      "Commentaires sur les vaccins inconnus", "Commenti per vaccinazioni sconosciute"), //
   ADVERSE_EVENTS("Adverse Events", "Nebenwirkungen (UIE)", "Effets secondaires (EIV)",
       "Effetti indesiderati delle vaccinazioni (EIV)"), //
   PASTILLNESSES("Infectious Diseases", "Infektionskrankheiten", "Maladies infectieuses", "Malattie infettive"), //
@@ -63,7 +65,9 @@ public enum I18nKey {
   LOGO_FILE_NAME("/Logo_EN_EPR.jpg", "/Logo_DE_EPD.jpg", "/Logo_FR_DEP.jpg", "/Logo_IT_CIP.jpg"),
   ACTIVE("Active", "Aktiv", "Actif", "Attivo"),
   INACTIVE("Inactive", "Inaktiv", "Inactif", "Inattivo"),
-  LAST_MODIFIED_BY("Last modified by: ", "Zuletzt geändert von: ", "Dernière modification par: ", "Ultima modifica di: ");
+  LAST_MODIFIED_BY("Last modified by: ", "Zuletzt geändert von: ", "Dernière modification par: ", "Ultima modifica di: "),
+  NO_VACCINATION_PROTECTION("Unknown - Note comment", "Unbekannt - Kommentar beachten",
+      "Inconnu - voir commentaire", "Sconosciuto - notare il commento");
 
   public static boolean exists(String gender) {
     return Arrays.stream(values()).anyMatch(value -> value.name().equals(gender));

@@ -2,6 +2,7 @@
   "ICONS": {
     "RECORD_VALIDATED": "Verified",
     "RECORD_DELETED": "Deleted",
-    "RECORD_UPDATED": "Updated"
+    "RECORD_UPDATED": "Updated",
+    "RECORD_CURRENT": "Current"
   }
 }

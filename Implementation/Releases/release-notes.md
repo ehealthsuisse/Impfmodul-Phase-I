@@ -1,3 +1,26 @@
+# October 2025 - Release 1.8.0-RC2
+This release candidate contains changes for all artifacts (frontend, backend, FHIR library).
+
+### Changes Fhir Library
+* Updated Spring Boot to version 3.5.6.
+* All entries in the bundle now use the following format:
+  - fullUrl: e.g. `urn:uuid:799504ec-8eae-45b9-b56e-6dd7567a6ce1`
+  - id: e.g. `799504ec-8eae-45b9-b56e-6dd7567a6ce1`
+* Resources referenced from the composition, Patient/Practitioner, will contain the epr suffix in the profile e.g. profile: `http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr`
+* Resources referenced from Immunization, AllergyIntolerance or Condition, Patient/PractitionerRole, will remain without the epr suffix in the profile e.g. profile: `http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient`
+
+### Changes Vaccination Module Backend
+* Updated Spring Boot to version 3.5.6.
+* Updated valuelists by modifying the system URL for Swiss-specific allergies and medical problems: replaced `http://snomed.info/sct` with `http://snomed.info/sct/2011000195101` in the following files:
+  - medicalProblemCode.properties
+  - allergyCode.properties
+
+### Changes Vaccination Module Frontend
+* Added new comment icon to indicate when a record has an associated comment. Visible in the vaccination certificate view as well in the detail view.
+* Added a new green circle shaped icon to indicate the current record when multiple records are grouped. Visible in the detail view.
+* Changed the logic to allow the vaccination protection field to be empty when the vaccine is unknown.
+* Revised and updated Help menu documentation to reflect the latest changes.
+
 # August 2025 - Release 1.8.0-RC1
 This release candidate contains major changes for all artifacts (frontend, backend, FHIR library).
 

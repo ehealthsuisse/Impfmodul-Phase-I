@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
@@ -43,43 +45,36 @@ public class TranslationsRequest {
   private List<ValueDTO> illnessCodes;
 
   @JsonIgnore
-  private Map<String, String> vaccineCodeToName;
+  private Map<Pair<String, String>, String> vaccineCodeToName;
   @JsonIgnore
-  private Map<String, String> allergyCodeToName;
+  private Map<Pair<String, String>, String> allergyCodeToName;
   @JsonIgnore
-  private Map<String, String> illnessCodeToName;
+  private Map<Pair<String, String>, String> illnessCodeToName;
   @JsonIgnore
-  private Map<String, String> medicalProblemCodeToName;
+  private Map<Pair<String, String>, String> medicalProblemCodeToName;
 
   public void setAllergyCodes(List<ValueDTO> allergyCodes) {
     this.allergyCodes = allergyCodes;
-    if (allergyCodes != null) {
-      allergyCodeToName = allergyCodes.stream().distinct()
-                            .collect(Collectors.toMap(ValueDTO::getCode, ValueDTO::getName));
-    }
+    allergyCodeToName = mapValuesFromCollection(allergyCodes);
   }
 
   public void setIllnessCodes(List<ValueDTO> illnessCodes) {
     this.illnessCodes = illnessCodes;
-    if (illnessCodes != null) {
-      illnessCodeToName = illnessCodes.stream().distinct()
-                            .collect(Collectors.toMap(ValueDTO::getCode, ValueDTO::getName));
-    }
+    illnessCodeToName = mapValuesFromCollection(illnessCodes);
   }
 
   public void setMedicalProblemCodes(List<ValueDTO> medicalProblemCodes) {
     this.medicalProblemCodes = medicalProblemCodes;
-    if (medicalProblemCodes != null) {
-      medicalProblemCodeToName = medicalProblemCodes.stream().distinct()
-                                  .collect(Collectors.toMap(ValueDTO::getCode, ValueDTO::getName));
-    }
+     medicalProblemCodeToName = mapValuesFromCollection(medicalProblemCodes);
   }
 
   public void setVaccineCodes(List<ValueDTO> vaccineCodes) {
     this.vaccineCodes = vaccineCodes;
-    if(vaccineCodes != null) {
-      vaccineCodeToName = vaccineCodes.stream().distinct()
-                            .collect(Collectors.toMap(ValueDTO::getCode, ValueDTO::getName));
-    }
+    vaccineCodeToName = mapValuesFromCollection(vaccineCodes);
+  }
+
+  private static Map<Pair<String, String>, String> mapValuesFromCollection(List<ValueDTO> valueDtos) {
+    return valueDtos == null ? null : valueDtos.stream().distinct()
+               .collect(Collectors.toMap(value -> Pair.of(value.getCode(), value.getSystem()), ValueDTO::getName));
   }
 }

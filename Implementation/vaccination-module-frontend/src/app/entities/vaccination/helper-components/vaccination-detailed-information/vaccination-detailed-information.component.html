@@ -26,8 +26,16 @@
     <mat-label vmTranslate="VACCINATION.TARGET_DISEASES" [attr.aria-label]="'VACCINATION.TARGET_DISEASES' | translate"></mat-label>
     <input
       matInput
-      [attr.aria-label]="translateAndConcatenate(vaccination?.targetDiseases)"
-      value="{{ translateAndConcatenate(vaccination?.targetDiseases) }}"
+      [attr.aria-label]="
+        vaccination?.targetDiseases?.length
+          ? translateAndConcatenate(vaccination?.targetDiseases)
+          : ('VACCINATION.NO_VACCINATION_PROTECTION' | translate)
+      "
+      value="{{
+        vaccination?.targetDiseases?.length
+          ? translateAndConcatenate(vaccination?.targetDiseases)
+          : ('VACCINATION.NO_VACCINATION_PROTECTION' | translate)
+      }}"
       disabled
     />
   </mat-form-field>
@@ -98,7 +106,7 @@
 
   <div *ngIf="!isConfirmComponentParent" class="commentsContent">
     <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
-      <h3 vmTranslate="GLOBAL.COMMENTS"></h3>
+      <h3 vmTranslate="GLOBAL.COMMENT"></h3>
       <mat-icon
         tabindex="0"
         class="openComments"

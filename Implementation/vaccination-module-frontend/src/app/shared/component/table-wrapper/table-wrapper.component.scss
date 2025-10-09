@@ -26,10 +26,13 @@ mat-table {
       line-height: 3;
     }
     &:nth-child(3) {
-      width: 30%;
+      width: 28%;
     }
     &:nth-child(6) {
       width: 18%;
+    }
+    &:last-child {
+      width: 2%;
     }
   }
 
@@ -37,22 +40,22 @@ mat-table {
     color: var(--text-color-secondary);
     font-weight: 400;
     padding: 8px 16px;
+    line-height: calc(var(--font-size-base) * 1.2);
 
     &:nth-child(1) {
       width: 2%;
-      line-height: calc(var(--font-size-base) * 1.2);
     }
     &:nth-child(2) {
       width: 10%;
-      line-height: calc(var(--font-size-base) * 1.2);
     }
     &:nth-child(3) {
-      width: 30%;
-      line-height: calc(var(--font-size-base) * 1.2);
+      width: 28%;
     }
     &:nth-child(6) {
       width: 18%;
-      line-height: calc(var(--font-size-base) * 1.2);
+    }
+    &:last-child {
+      width: 2%;
     }
   }
 
@@ -74,14 +77,18 @@ mat-table {
         padding-left: unset;
       }
       &:nth-child(4) {
-        width: 30%;
+        width: 28%;
       }
       &:nth-child(7) {
         width: 18%;
       }
+      &:last-child {
+        width: 2%;
+      }
     }
 
     td {
+      line-height: calc(var(--font-size-base) * 1.2);
       &:nth-child(1) {
         width: 40px;
         padding: 0;
@@ -90,20 +97,19 @@ mat-table {
       &:nth-child(2) {
         width: 2%;
         padding-left: 12px;
-        line-height: calc(var(--font-size-base) * 1.2);
       }
       &:nth-child(3) {
         width: 10%;
         padding-left: unset;
-        line-height: calc(var(--font-size-base) * 1.2);
       }
       &:nth-child(4) {
-        width: 30%;
-        line-height: calc(var(--font-size-base) * 1.2);
+        width: 28%;
       }
       &:nth-child(7) {
         width: 18%;
-        line-height: calc(var(--font-size-base) * 1.2);
+      }
+      &:last-child {
+        width: 2%;
       }
     }
   }
@@ -215,22 +221,44 @@ mat-table {
   cursor: pointer;
 }
 
+.status-icon {
+  color: var(--icon-color);
+  grid-column: var(--grid-column, initial);
+  grid-row: var(--grid-row, 1);
+  display: var(--icon-display, table) !important;
+  font-size: var(--icon-size, 20px) !important;
+  width: var(--icon-size, 20px) !important;
+  height: var(--icon-size, 20px) !important;
+}
+
 .warning-icon {
-  color: #915704;
-  grid-column: 2;
-  grid-row: 1;
+  --icon-color: #915704;
+  --grid-column: 2;
+  --icon-display: initial;
 }
 
 .deleted-icon {
-  color: #bb150a;
-  grid-column: 3;
-  grid-row: 1;
+  --icon-color: #bb150a;
+  --grid-column: 3;
 }
 
 .validated-icon {
-  color: #026560;
-  grid-column: 1;
-  grid-row: 1;
+  --icon-color: #026560;
+  --grid-column: 1;
+}
+
+.current-record-icon {
+  display: inline-block;
+  width: 17px !important;
+  height: 17px !important;
+  background-color: #026560;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.material-icons {
+  font-size: 18px;
+  align-content: center;
 }
 
 @include breakpoints.media-breakpoint(tm) {

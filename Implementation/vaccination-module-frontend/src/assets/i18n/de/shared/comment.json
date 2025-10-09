@@ -2,6 +2,7 @@
   "COMMENT": {
     "COMMENT": "Kommentar",
     "NO_COMMENTS": "Es gibt keine Kommentare.",
-    "PLACEHOLDER": "Was ist passiert? Bei welcher Impfung ist es passiert? Nach welchem zeitlichen Abstand?"
+    "PLACEHOLDER": "Was ist passiert? Bei welcher Impfung ist es passiert? Nach welchem zeitlichen Abstand?",
+    "ICON": "Kommentar vorhanden"
   }
 }

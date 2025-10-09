@@ -40,7 +40,15 @@ export class VaccinationListComponent extends BreakPointSensorComponent implemen
   sharedDataService: SharedDataService = inject(SharedDataService);
 
   @Input() toggleHeader: boolean = true;
-  @Input() vaccinationColumns: string[] = ['entryStatus', 'occurrenceDate', 'vaccineCode', 'targetDiseases', 'doseNumber', 'recorder'];
+  @Input() vaccinationColumns: string[] = [
+    'entryStatus',
+    'occurrenceDate',
+    'vaccineCode',
+    'targetDiseases',
+    'doseNumber',
+    'recorder',
+    'comment',
+  ];
   @Input() buttonVisibility: boolean = true;
   @Input() subtitleVisibility: boolean = true;
   @Input() isEmbedded: boolean = false;

@@ -28,6 +28,7 @@ import ch.admin.bag.vaccination.data.request.TranslationsRequest;
 import ch.admin.bag.vaccination.exception.BusinessException;
 import ch.admin.bag.vaccination.utils.DateComparator;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
+import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
@@ -44,14 +45,14 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -96,7 +97,7 @@ public class PdfService {
   private static final float[] VACCINE_TABLE_WIDTHS = {30, 10, 15, 20, 25};
   private static final float[] MEDICAL_PROBLEMS_TABLE_WIDTHS = {10, 15, 15, 15, 30, 15};
   private static final float[] PASTILLNESS_TABLE_WIDTHS = {10, 15, 15, 15, 45};
-  private static final float[] ADVERSE_EVENTS_TABLE_WIDTHS = {100};
+  private static final float[] ONE_COLUMN_TABLE_WIDTH = {100};
   private static final float MARGIN = 50;
   private static final float CELL_HEIGHT = 15;
   private static final float LONG_LINE_BREAK = 20;
@@ -107,6 +108,7 @@ public class PdfService {
   private static final String EMPTY_USER_PASSWORD = "";
   private static final String EMPTY_CONTENT = "";
   private static final String DEFAULT_FONT = "";
+  private static final String VACCINE_UNKNOWN_CODE = "787859002";
   private final ThreadLocal<TranslationsRequest> translationsRequest = new ThreadLocal<>();
 
   @Autowired
@@ -142,7 +144,6 @@ public class PdfService {
     PDType0Font font = getFont(BOLD, pdfDocument);
     contentStream.setFont(font, FONT_SIZE_TITLE);
     contentStream.beginText();
-    updateYposition(MARGIN, pdfDocument);
     contentStream.newLineAtOffset(MARGIN, pdfDocument.getYPositionOfTheLastLine());
 
     contentStream.setNonStrokingColor(COLOR_DARKBLUE);
@@ -157,30 +158,63 @@ public class PdfService {
     log.debug("create {} allergies", dtos == null ? 0 : dtos.size());
     if (dtos != null) {
       for (AllergyDTO dto : dtos) {
-        addAllergyRow(table, dto, pdfDocument, vaccinationRecordDTO.getLang());
+        LocalDate occurrenceDate = dto.getOccurrenceDate();
+        String translation = getTranslation(translationsRequest.get().getAllergyCodeToName(), dto.getCode());
+        addTableRow(table, dto, pdfDocument, vaccinationRecordDTO.getLang(), translation, occurrenceDate);
       }
     }
     table.draw();
   }
 
-  private Cell<PDPage> addAllergyCell(AllergyDTO dto, PdfDocument pdfDocument, Row<PDPage> row) throws IOException {
-    log.debug("addRow {}", dto.getCode().getName());
-    String value = (dto.isValidated() ? "(+) " : "") + getTranslation(translationsRequest.get().getAllergyCodeToName(), dto.getCode()) + ", " +
-        getFormattedDate(dto.getOccurrenceDate()) + ", " + dto.getAuthor().getUser().getFullName();
-    Cell<PDPage> allergyCell = addCell(BOLD, value, ADVERSE_EVENTS_TABLE_WIDTHS[0], row, pdfDocument);
-    allergyCell.setFontSize(FONT_SIZE);
-    setRowColor(row, pdfDocument.getRowBackgoundColor());
-    return allergyCell;
+  private void addCommentsForUnknownVaccinations(VaccinationRecordDTO record, PdfDocument pdfDocument)
+      throws IOException {
+    pdfDocument.setRowBackgoundColor(COLOR_WHITE);
+
+    List<VaccinationDTO> unknownVaccinationsWithComments = record.getVaccinations().stream()
+        .filter(vaccination -> ValueListService.UNKNOWN_VACCINE_CODE.equals(vaccination.getCode().getCode()))
+        .filter(unknownVaccination -> unknownVaccination.getComment() != null)
+        .toList();
+
+    if (!unknownVaccinationsWithComments.isEmpty()) {
+      ensureSufficientSpaceForContent(unknownVaccinationsWithComments.size(), pdfDocument);
+      addTitleSection(record, pdfDocument);
+      drawCommentsForUnknownVaccinationsTable(unknownVaccinationsWithComments, record, pdfDocument);
+    }
   }
 
-  private void addAllergyRow(BaseTable table, AllergyDTO dto, PdfDocument pdfDocument, String lang) throws IOException {
+  private Cell<PDPage> addTableCell(BaseDTO dto, PdfDocument pdfDocument, Row<PDPage> row, String translation,
+      LocalDate occurrenceDate) throws IOException {
+    log.debug("addRow {}", dto.getCode().getName());
+    String performer = dto.getRecorder() != null ? dto.getRecorder().getFullName() : dto.getOrganization();
+    String value = (dto.isValidated() ? "(+) " : "") + translation + ", " + getFormattedDate(occurrenceDate) + ", " +
+        performer;
+    Cell<PDPage> cell = addCell(BOLD, value, ONE_COLUMN_TABLE_WIDTH[0], row, pdfDocument);
+    cell.setFontSize(FONT_SIZE);
+    setRowColor(row, pdfDocument.getRowBackgoundColor());
+    return cell;
+  }
+
+  /**
+   * Adds a table row containing vaccination unknown or adverse event data along with its related comment.
+   * Creates a main cell with the vaccination/adverse event information and an additional comment row.
+   * Updates positioning and alternates row background colors for better readability.
+   *
+   * @param table the table to add the row to
+   * @param dto the vaccination or adverse event data {@link AllergyDTO}, {@link VaccinationDTO}
+   * @param pdfDocument the PDF document being generated
+   * @param lang the language code for localization
+   * @param translation the translated name of the vaccination/adverse event
+   * @param occurrenceDate the date when the vaccination/adverse event occurred
+   * @throws IOException if an error occurs during PDF generation
+   */
+  private void addTableRow(BaseTable table, BaseDTO dto, PdfDocument pdfDocument, String lang, String translation,
+      LocalDate occurrenceDate) throws IOException {
     if (dto == null) {
-      log.warn("addRow AllergyDTO null");
       return;
     }
     Row<PDPage> row = table.createRow(CELL_HEIGHT);
-    Cell<PDPage> allergyCell = addAllergyCell(dto, pdfDocument, row);
-    addCommentRow(table, dto, pdfDocument, allergyCell, lang);
+    Cell<PDPage> cell = addTableCell(dto, pdfDocument, row, translation, occurrenceDate);
+    addCommentRow(table, dto, pdfDocument, cell, lang);
     updateYposition(row.getHeight(), pdfDocument);
     swapColor(pdfDocument);
   }
@@ -209,47 +243,34 @@ public class PdfService {
 
   private void addCommentCells(PdfDocument pdfDocument, CommentDTO commentDTO, BaseTable table, String lang)
       throws IOException {
-    String header = I18nKey.LAST_MODIFIED_BY.getTranslation(lang) + commentDTO.getAuthor() + " " +
+    String header = I18nKey.LAST_MODIFIED_BY.getTranslation(lang) + commentDTO.getAuthor() + ", " +
         getFormattedDateTime(commentDTO.getDate());
+
     String[] textLines = commentDTO.getText().split("\\R");
 
-    float colWidth = ADVERSE_EVENTS_TABLE_WIDTHS[0];
-
-    // First row: header
-    Row<PDPage> headerRow = table.createRow(CELL_HEIGHT / 2);
-    Cell<PDPage> headerCell = addCell(header, colWidth, headerRow, pdfDocument);
-    headerCell.setFontSize(8);
-    headerCell.setBottomBorderStyle(null);
-    setRowColor(headerRow, pdfDocument.getRowBackgoundColor());
-
-    // Each line of the comment's text goes into a new row
-    for (int i = 0; i < textLines.length; i++) {
-      String line = textLines[i];
-      Row<PDPage> lineRow = table.createRow(CELL_HEIGHT / 2);
-      Cell<PDPage> lineCell = addCell(line.trim(), colWidth, lineRow, pdfDocument);
-      lineCell.setFontSize(8);
-      lineCell.setTopBorderStyle(null);
-      setRowColor(lineRow, pdfDocument.getRowBackgoundColor());
-
-      if (i == textLines.length - 1) {
-        // Set bottom border only after the texts last line
-        lineCell.setBottomBorderStyle(new LineStyle(Color.BLACK, 1.3f));
-      } else {
-        lineCell.setBottomBorderStyle(null);
-      }
+    // First row: header + all comment lines in the same cell (multiline)
+    StringBuilder firstCellContent = new StringBuilder(header);
+    for (String line : textLines) {
+      firstCellContent.append("<br>").append(line.trim());
     }
+
+    Row<PDPage> row = table.createRow(CELL_HEIGHT / 2);
+    Cell<PDPage> cell = addCell(firstCellContent.toString(), ONE_COLUMN_TABLE_WIDTH[0], row, pdfDocument);
+    cell.setFontSize(8);
+    cell.setBottomBorderStyle(new LineStyle(Color.BLACK, 1.3f));
+    setRowColor(row, pdfDocument.getRowBackgoundColor());
   }
 
-  private void addCommentRow(BaseTable table, AllergyDTO dto, PdfDocument pdfDocument, Cell<PDPage> allergyCell,
+  private void addCommentRow(BaseTable table, BaseDTO dto, PdfDocument pdfDocument, Cell<PDPage> cell,
       String lang) throws IOException {
     CommentDTO commentDTO = dto.getComment();
     if (commentDTO != null) {
       addCommentCells(pdfDocument, commentDTO, table, lang);
 
-      // Remove bottom border from allergy cell so allergy and comment appear as one block
-      allergyCell.setBottomBorderStyle(null);
+      // Remove bottom border from allergy/vaccination cell so that together with the comment appear as one block
+      cell.setBottomBorderStyle(null);
 
-      Row<PDPage> lastRow = table.getRows().get(table.getRows().size() - 1);
+      Row<PDPage> lastRow = table.getRows().getLast();
       updateYposition(lastRow.getHeight(), pdfDocument);
       setRowColor(lastRow, pdfDocument.getRowBackgoundColor());
     }
@@ -365,7 +386,50 @@ public class PdfService {
         .toList();
     addVaccinationBasedOnTargetDisease(vaccinationRecordDTO, pdfDocument, table, otherTargetDiseases,
         pdfOutputConfig.getOtherVaccination().isKeepEmpty());
-    table.draw();
+    addVaccinationUnknownSpecialCase(vaccinationRecordDTO, pdfDocument, table);
+    float nextY = table.draw();
+    pdfDocument.setYPositionOfTheLastLine(nextY);
+  }
+
+  private void addTitleSection(VaccinationRecordDTO record, PdfDocument pdfDocument) throws IOException {
+    PDDocument document = pdfDocument.getPdDocument();
+    PDPage lastPage = document.getPage(document.getNumberOfPages() - 1);
+
+    try (PDPageContentStream contentStream = new PDPageContentStream(document, lastPage, PDPageContentStream.AppendMode.APPEND, true)) {
+      // Setup font and positioning
+      PDType0Font font = getFont(BOLD, pdfDocument);
+      contentStream.setFont(font, FONT_SIZE_TITLE);
+      contentStream.setNonStrokingColor(COLOR_DARKBLUE);
+
+      // Position and write title
+      float spaceAbove = MARGIN;
+      float y = pdfDocument.getYPositionOfTheLastLine() - spaceAbove;
+
+      contentStream.beginText();
+      contentStream.newLineAtOffset(MARGIN, y);
+      writeText(I18nKey.COMMENTS_FOR_UNKNOWN_VACCINATIONS.getTranslation(record.getLang()), contentStream);
+      contentStream.endText();
+    }
+
+    // Update position after title
+    float titleHeight = FONT_SIZE_TITLE * 1.2f;
+    float spaceAbove = MARGIN;
+    float currentY = pdfDocument.getYPositionOfTheLastLine();
+
+    pdfDocument.setYPositionOfTheLastLine(currentY - spaceAbove - titleHeight);
+    updateYposition(8, pdfDocument);
+  }
+
+  private void addVaccinationUnknownSpecialCase(VaccinationRecordDTO vaccinationRecord, PdfDocument pdfDocument,
+      BaseTable table) throws IOException {
+    List<VaccinationDTO> unknownVaccinations = vaccinationRecord.getVaccinations().stream()
+        .filter(vaccination -> ValueListService.UNKNOWN_VACCINE_CODE.equals(vaccination.getCode().getCode()))
+        .filter(unknownVaccination -> unknownVaccination.getTargetDiseases().isEmpty())
+        .toList();
+    if (!unknownVaccinations.isEmpty()) {
+      addVaccinRows(table, I18nKey.NO_VACCINATION_PROTECTION.getTranslation(vaccinationRecord.getLang()),
+          unknownVaccinations, false, pdfDocument);
+    }
   }
 
   private void addPageNumbers(PdfDocument pdfDocument, String patientName) throws IOException {
@@ -391,7 +455,6 @@ public class PdfService {
         contentStream.newLineAtOffset(pageSize.getWidth() / 2 - 12, 0);
         writeText(i + "/" + allPages.getCount(), contentStream);
         contentStream.endText();
-        contentStream.close();
       }
     }
   }
@@ -639,6 +702,21 @@ public class PdfService {
     swapColor(pdfDocument);
   }
 
+  private void drawCommentsForUnknownVaccinationsTable(List<VaccinationDTO> unknownVaccinations, VaccinationRecordDTO record, PdfDocument pdfDocument) throws IOException {
+    PDDocument document = pdfDocument.getPdDocument();
+    pdfDocument.setRowBackgoundColor(COLOR_WHITE);
+
+    BaseTable table = createTable(pdfDocument.getYPositionOfTheLastLine(), document.getNumberOfPages() - 1, document);
+
+    for (VaccinationDTO vaccination : unknownVaccinations) {
+      LocalDate occurrenceDate = vaccination.getOccurrenceDate();
+      String translation = getTranslation(translationsRequest.get().getVaccineCodeToName(), vaccination.getCode());
+      addTableRow(table, vaccination, pdfDocument, record.getLang(), translation, occurrenceDate);
+    }
+
+    table.draw();
+  }
+
   private PDDocument createDocumentAndItsMeta() throws Exception {
     PDDocument document = new PDDocument();
     PDPage page = new PDPage(PDRectangle.A4);
@@ -694,6 +772,33 @@ public class PdfService {
         MARGIN, tableWidth, MARGIN, document, page, true, true);
   }
 
+  /**
+   * Ensures there is sufficient space on the current page for the unknown vaccinations content.
+   * Calculates the required height for the title, spacing, and table based on the number of vaccinations.
+   * If insufficient space is available, creates a new page and resets the Y position.
+   *
+   * @param vaccinationCount the number of unknown vaccinations to be displayed in the table
+   * @param pdfDocument the PDF document being modified
+   */
+  private void ensureSufficientSpaceForContent(int vaccinationCount, PdfDocument pdfDocument) {
+    float titleHeight = FONT_SIZE_TITLE * 1.2f;
+    int rowCount = vaccinationCount + 1;
+    float estimatedTableHeight = rowCount * CELL_HEIGHT;
+    float neededHeight = MARGIN + titleHeight + 8 + estimatedTableHeight;
+
+    float currentY = pdfDocument.getYPositionOfTheLastLine();
+    float bottomMargin = 50f;
+
+    if (currentY - neededHeight < bottomMargin) {
+      PDDocument document = pdfDocument.getPdDocument();
+      PDPage newPage = new PDPage(document.getPage(0).getMediaBox());
+      document.addPage(newPage);
+
+      float pageHeight = document.getPage(0).getMediaBox().getHeight();
+      pdfDocument.setYPositionOfTheLastLine(pageHeight - 20);
+    }
+  }
+
   private List<VaccinationDTO> extract(List<VaccinationDTO> inputs, String code) {
     return DateComparator.sortByDateDesc(inputs,
         Comparator.comparing(VaccinationDTO::getOccurrenceDate))
@@ -709,6 +814,7 @@ public class PdfService {
     addBaseVaccinations(createTable(pdfDocument.getYPositionOfTheLastLine(), 0, pdfDocument.getPdDocument()),
         record, pdfDocument);
     addOtherVaccinations(record, pdfDocument);
+    addCommentsForUnknownVaccinations(record, pdfDocument);
     addAdverseEvents(record, pdfDocument);
     addPastIllnessTable(record, pdfDocument);
     addMedicalProblems(record, pdfDocument);
@@ -786,8 +892,8 @@ public class PdfService {
     return spp;
   }
 
-  private String getTranslation(Map<String, String> valuesCodeToName, ValueDTO valueDTO) {
-    return valuesCodeToName.getOrDefault(valueDTO.getCode(), valueDTO.getName());
+  private String getTranslation(Map<Pair<String, String>, String> valuesCodeToName, ValueDTO valueDTO) {
+    return valuesCodeToName.getOrDefault(Pair.of(valueDTO.getCode(), valueDTO.getSystem()), valueDTO.getName());
   }
 
   private InputStream setReadOnlyPermissions(byte[] pdfFile) throws IOException {

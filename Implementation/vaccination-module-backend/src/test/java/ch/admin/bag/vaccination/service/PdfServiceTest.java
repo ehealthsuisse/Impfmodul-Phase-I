@@ -19,6 +19,7 @@
 package ch.admin.bag.vaccination.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.admin.bag.vaccination.data.request.TranslationsRequest;
@@ -90,6 +91,15 @@ public class PdfServiceTest {
       translationsRequest.setMedicalProblemCodes(medicalProblemDTOs.stream().map(MedicalProblemDTO::getCode).toList());
     }
     patient = new HumanNameDTO("Hans", "Müller", "Herr", LocalDate.now(), "MALE");
+  }
+
+  @Test
+  public void test_valueListWithConflicts_noExceptionOccurs() {
+    List<ValueDTO> list = Arrays.asList(
+      new ValueDTO("14189004", "Masern", "systemA"),
+      new ValueDTO("14189004", "OtherType", "systemB"));
+
+    assertDoesNotThrow(() -> translationsRequest.setVaccineCodes(list));
   }
 
   @Test

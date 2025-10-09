@@ -2,6 +2,7 @@
   "COMMENT": {
     "COMMENT": "Commento",
     "NO_COMMENTS": "Non vi sono commenti.",
-    "PLACEHOLDER": "Cosa è successo? Con quale vaccinazione è accaduto? Dopo quale intervallo di tempo?"
+    "PLACEHOLDER": "Cosa è successo? Con quale vaccinazione è accaduto? Dopo quale intervallo di tempo?",
+    "ICON": "Commento disponibile"
   }
 }

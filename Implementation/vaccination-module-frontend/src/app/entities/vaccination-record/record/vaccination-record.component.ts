@@ -51,10 +51,10 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   mapper: MapperService = inject(MapperService);
   vaccinationRecordService = inject(VaccinationRecordService);
   record$ = combineLatest([this.vaccinationRecordService.queryOneRecord(), trackLangChange()]);
-  allergyColumns: string[] = ['entryStatus', 'occurrenceDate', 'allergyCode', 'recorder'];
-  illnessesColumns: string[] = ['entryStatus', 'recordedDate', 'illnessCode', 'recorder'];
-  vaccinationColumns: string[] = ['entryStatus', 'occurrenceDate', 'targetDiseases', 'vaccineCode', 'doseNumber', 'recorder'];
-  medicalProblemColumns: string[] = ['entryStatus', 'recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder'];
+  allergyColumns: string[] = ['entryStatus', 'occurrenceDate', 'allergyCode', 'recorder', 'comment'];
+  illnessesColumns: string[] = ['entryStatus', 'recordedDate', 'illnessCode', 'recorder', 'comment'];
+  vaccinationColumns: string[] = ['entryStatus', 'occurrenceDate', 'targetDiseases', 'vaccineCode', 'doseNumber', 'recorder', 'comment'];
+  medicalProblemColumns: string[] = ['entryStatus', 'recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder', 'comment'];
   subscription!: Subscription;
   sharedDataService: SharedDataService = inject(SharedDataService);
   spinnerService: SpinnerService = inject(SpinnerService);

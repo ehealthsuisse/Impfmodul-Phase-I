@@ -24,6 +24,15 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+### October 2025 - Release 1.8.0-RC2
+Enhancements to the vaccination module based on updated FHIR regulations and recent technical advancements identified during the Digital Health Projectathon.
+
+1. Upgrade the backend application as well as the fhir library to Spring Boot 3.5.6.
+2. Small UI changes.
+3. Revised and updated Help menu documentation.
+4. Fhir library changes needed for the new FHIR implementation guide.
+5. Various bugfixes.
+
 ### August 2025 - Release 1.8.0-RC1
 The module has been enhanced by incorporating feedback from users, providers, and audits, while also integrating the latest technical advancements.
 

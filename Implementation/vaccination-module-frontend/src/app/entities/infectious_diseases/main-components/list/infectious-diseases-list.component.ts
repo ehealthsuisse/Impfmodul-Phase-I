@@ -44,7 +44,7 @@ export class InfectiousDiseasesListComponent extends BreakPointSensorComponent i
   sharedDataService: SharedDataService = inject(SharedDataService);
 
   @Input() toggleHeader: boolean = true;
-  @Input() displayedColumns: string[] = ['entryStatus', 'recordedDate', 'illnessCode', 'recorder'];
+  @Input() displayedColumns: string[] = ['entryStatus', 'recordedDate', 'illnessCode', 'recorder', 'comment'];
   @Input() buttonVisibility: boolean = true;
   @Input() subtitleVisibility: boolean = true;
   @Input() isEmbedded: boolean = false;

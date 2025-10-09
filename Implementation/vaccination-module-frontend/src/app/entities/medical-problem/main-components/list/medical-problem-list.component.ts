@@ -44,7 +44,7 @@ export class MedicalProblemListComponent extends BreakPointSensorComponent imple
   sharedDataService: SharedDataService = inject(SharedDataService);
 
   @Input() toggleHeader: boolean = true;
-  @Input() displayedColumns: string[] = ['entryStatus', 'recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder'];
+  @Input() displayedColumns: string[] = ['entryStatus', 'recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder', 'comment'];
   @Input() buttonVisibility: boolean = true;
   @Input() subtitleVisibility: boolean = true;
   @Input() showPatientName: boolean = true;

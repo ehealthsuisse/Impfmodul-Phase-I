@@ -48,15 +48,23 @@ public final class FhirConstants {
   public static final String META_VACCINATION_TYPE_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration";
   public static final String META_CORE_PATIENT_URL =
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient";
+  public static final String META_CORE_PATIENT_EPR_URL =
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient-epr";
   public static final String META_CORE_PRACTITIONER_URL =
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner";
+  public static final String META_CORE_PRACTITIONER_EPR_URL =
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitioner-epr";
   public static final String META_PRACTITIONER_ROLE_URL =
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole";
+  public static final String META_PRACTITIONER_ROLE_EPR_URL =
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-practitionerrole-epr";
+  public static final String META_RELATED_PERSON_URL =
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-relatedperson";
   public static final String META_VACD_IMMUNIZATION_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-immunization";
   public static final String META_ORGANIZATION_URL =
-      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization-epr";
+      "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization";
   public static final String META_VACD_MEDICAL_PROBLEMS_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medical-problems";
   public static final String META_VACD_COMPOSITION_VAC_REC_URL =
@@ -100,4 +108,10 @@ public final class FhirConstants {
   public static final String HCP = "HCP";
   public static final String ASS = "ASS";
   public static final String TCU = "TCU";
+
+  /** Vaccine codes */
+  public static final String VACCINE_UNKNOWN = "787859002";
+
+  /** Resource definitions */
+  public static final String IMMUNIZATION = "Immunization";
 }

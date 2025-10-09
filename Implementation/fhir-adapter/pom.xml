@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.admin.bag</groupId>
   <artifactId>fhir-adapter</artifactId>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.0</version>
+    <version>3.5.6</version>
   </parent>
 
   <name>FHIR Adapter library</name>
@@ -63,6 +63,12 @@
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>org.hl7.fhir.r4</artifactId>
         <version>${org.hl7.fhir.version}</version>
+      </dependency>
+      <!-- hapi-fhir-structures-r4 comes bundled with an older version of this dependency -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.19.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

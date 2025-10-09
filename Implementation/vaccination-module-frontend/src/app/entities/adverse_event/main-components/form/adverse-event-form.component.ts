@@ -77,24 +77,8 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
   ngOnInit(): void {
     this.displayMenu(false, false);
     initializeActionData('', this.sharedDataService);
-    let id = this.activatedRoute.snapshot.params['id'];
-    let role: string = this.sharedDataService.storedData['role']!;
-    this.adverseEventService.find(id).subscribe(allergy => {
-      if (allergy) {
-        this.adverseEvent = allergy;
-        this.updateForm(this.adverseEvent);
-      } else {
-        this.adverseEventService.query().subscribe({
-          next: list => {
-            this.adverseEvent = list.find(filteredAllergy => filteredAllergy.id === id)!;
-            this.updateForm(this.adverseEvent);
-          },
-        });
-      }
-    });
-
-    this.processFormOptions();
-    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
+    this.loadAdverseEventData();
+    this.initializeFormOptions();
   }
 
   ngAfterViewInit(): void {
@@ -134,6 +118,30 @@ export class AdverseEventFormComponent extends BreakPointSensorComponent impleme
           this.allergyFormService.resetMandatoryFields(this.editForm);
         }
       });
+  }
+
+  private initializeFormOptions(): void {
+    const role: string = this.sharedDataService.storedData['role']!;
+    this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
+  }
+
+  private loadAdverseEventData(): void {
+    const id = this.activatedRoute.snapshot.params['id'];
+    this.adverseEventService.find(id).subscribe(allergy => {
+      if (allergy) {
+        this.adverseEvent = allergy;
+        this.updateForm(this.adverseEvent);
+      } else {
+        this.adverseEventService.query().subscribe({
+          next: list => {
+            this.adverseEvent = list.find(filteredAllergy => filteredAllergy.id === id)!;
+            this.updateForm(this.adverseEvent);
+          },
+        });
+      }
+      this.commentMessage = this.editForm.get('comment')?.value?.text || '';
+    });
   }
 
   private processFormOptions(): void {

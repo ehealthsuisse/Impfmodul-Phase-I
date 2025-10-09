@@ -399,7 +399,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
         new HumanNameDTO("Max", "Mustermann", null, LocalDate.of(1900, 1, 1), "MALE"));
     dummy.setGlobalAuthority("global authority");
     dummy.setGlobalExtension("global extension");
-    dummy.setSpidExtension("spid extension");
+    dummy.setSpidExtension("7613376122000");
     dummy.setSpidRootAuthority("1.2.3.4");
 
     return dummy;
@@ -566,12 +566,11 @@ public class HuskyAdapter implements HuskyAdapterIfc {
     ValueDTO confidentiality = dto.getConfidentiality();
 
     confidentiality = switch (confidentiality.getCode()) {
-      case "17621005": // Normal
-        yield HuskyUtils.RESTRICTED_CONFIDENTIALITY_CODE;
-      case "263856008": // Restricted
-        yield HuskyUtils.SECRET_CONFIDENTIALITY_CODE;
-      default:
-        throw new TechnicalException("Writing failed after increasing confidentiality");
+      case "17621005" -> // Normal
+          HuskyUtils.RESTRICTED_CONFIDENTIALITY_CODE;
+      case "263856008" -> // Restricted
+          HuskyUtils.SECRET_CONFIDENTIALITY_CODE;
+      default -> throw new TechnicalException("Writing failed after increasing confidentiality");
     };
 
     dto.setConfidentiality(confidentiality);

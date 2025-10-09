@@ -44,7 +44,7 @@ export class AdverseEventListComponent extends BreakPointSensorComponent impleme
   sharedDataService: SharedDataService = inject(SharedDataService);
 
   @Input() toggleHeader: boolean = true;
-  @Input() displayedColumns: string[] = ['entryStatus', 'occurrenceDate', 'allergyCode', 'recorder'];
+  @Input() displayedColumns: string[] = ['entryStatus', 'occurrenceDate', 'allergyCode', 'recorder', 'comment'];
   @Input() buttonVisibility: boolean = true;
   @Input() subtitleVisibility: boolean = true;
   @Input() isEmbedded: boolean = false;

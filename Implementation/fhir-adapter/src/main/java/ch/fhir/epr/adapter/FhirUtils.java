@@ -18,15 +18,23 @@
  */
 package ch.fhir.epr.adapter;
 
+import ch.fhir.epr.adapter.data.PatientIdentifier;
+import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
+import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
+import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
+import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import java.util.List;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hl7.fhir.r4.model.AllergyIntolerance;
+import org.hl7.fhir.r4.model.Annotation;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -48,6 +56,11 @@ import org.hl7.fhir.r4.model.Resource;
 @Slf4j
 @NoArgsConstructor
 public final class FhirUtils {
+
+  public enum ReferenceType {
+    PATIENT,
+    PRACTITIONER_ROLE
+  }
 
   public static SectionComponent getSectionByType(Composition composition, SectionType type) {
     for (SectionComponent sectionComponent : composition.getSection()) {
@@ -75,6 +88,15 @@ public final class FhirUtils {
       coding.setDisplay(FhirConstants.CURRENT_TARGET_DISEASE_DISPLAY);
     }
     return codeableConcept;
+  }
+
+  static Annotation getAnnotation(Resource resource) {
+    return switch (resource) {
+      case Immunization immunization  -> getFirstAnnotation(immunization.getNote());
+      case AllergyIntolerance allergy -> getFirstAnnotation(allergy.getNote());
+      case Condition condition        -> getFirstAnnotation(condition.getNote());
+      case null, default              -> null;
+    };
   }
 
   static AuthorDTO getAuthor(Bundle bundle) {
@@ -122,21 +144,15 @@ public final class FhirUtils {
   }
 
   static String getIdentifierValue(Resource resource) {
-    String result = null;
-    if (resource instanceof Immunization vaccination) {
-      result = vaccination.getIdentifierFirstRep().getValue();
-    } else if (resource instanceof Condition condition) {
-      result = condition.getIdentifierFirstRep().getValue();
-    } else if (resource instanceof AllergyIntolerance allergy) {
-      result = allergy.getIdentifierFirstRep().getValue();
-    } else if (resource instanceof Patient patient) {
-      result = patient.getIdentifierFirstRep().getValue();
-    } else if (resource instanceof Practitioner practitioner) {
-      result = practitioner.getIdentifierFirstRep().getValue();
-    } else if (resource instanceof Composition composition) {
-      result = composition.getIdentifier().getValue();
-    }
-    return result;
+    return switch(resource) {
+      case Immunization vaccination -> vaccination.getIdentifierFirstRep().getValue();
+      case Condition condition -> condition.getIdentifierFirstRep().getValue();
+      case AllergyIntolerance allergy -> allergy.getIdentifierFirstRep().getValue();
+      case Patient patient -> patient.getIdPart();
+      case Practitioner practitioner -> practitioner.getIdPart();
+      case Composition composition -> composition.getIdentifier().getValue();
+      case null, default -> null;
+    };
   }
 
   static Organization getOrganization(Bundle bundle, String id) {
@@ -153,6 +169,34 @@ public final class FhirUtils {
 
   static PractitionerRole getPractitionerRole(Bundle bundle, String id) {
     return getResource(PractitionerRole.class, bundle, id);
+  }
+
+  static Resource getReference(Bundle bundle, Class<?> clazz) {
+    return bundle.getEntry().stream()
+        .filter(entry -> clazz.isAssignableFrom(entry.getResource().getClass()))
+        .findFirst().get().getResource();
+  }
+
+  static String getReference(DomainResource resource, ReferenceType type) {
+    if (resource == null) {
+      return null;
+    }
+
+    return switch (resource) {
+      case Immunization immunization -> switch (type) {
+        case PATIENT      -> immunization.getPatient().getReference();
+        case PRACTITIONER_ROLE -> immunization.getPerformer().getFirst().getActor().getReference();
+      };
+      case AllergyIntolerance allergy -> switch (type) {
+        case PATIENT      -> allergy.getPatient().getReference();
+        case PRACTITIONER_ROLE -> allergy.getRecorder().getReference();
+      };
+      case Condition condition -> switch (type) {
+        case PATIENT      -> condition.getSubject().getReference();
+        case PRACTITIONER_ROLE -> condition.getRecorder().getReference();
+      };
+      default -> null;
+    };
   }
 
   static Resource getResource(Bundle bundle, String identifier) {
@@ -192,11 +236,11 @@ public final class FhirUtils {
       for (BundleEntryComponent entry : bundle.getEntry()) {
         if (type.isInstance(entry.getResource())) {
           T resource = type.cast(entry.getResource());
-          log.debug("Ressource:{} found {}", type, resource);
+          log.debug("Resource:{} found {}", type, resource);
           return resource;
         }
       }
-      log.debug("Ressource:{} not found", type);
+      log.debug("Resource:{} not found", type);
       return null;
     } catch (Exception e) {
       log.warn("Exception:{}", e);
@@ -215,13 +259,13 @@ public final class FhirUtils {
           Resource resource = Resource.class.cast(entry.getResource());
           if (resource.getId() != null && //
               (resource.getId().endsWith(id) || id.endsWith(resource.getId()))) { // FIXME
-            log.debug("Ressource:{} id={} found {}", type, id,
+            log.debug("Resource:{} id={} found {}", type, id,
                 ToStringBuilder.reflectionToString(resource, ToStringStyle.JSON_STYLE));
             return type.cast(entry.getResource());
           }
         }
       }
-      log.debug("Ressource:{} id={} not found", type, id);
+      log.debug("Resource:{} id={} not found", type, id);
       return null;
     } catch (Exception e) {
       log.warn("Exception:{}", e.toString());
@@ -230,21 +274,31 @@ public final class FhirUtils {
   }
 
   static String getResourceType(Resource resource) {
-    String result = null;
-    if (resource instanceof Immunization) {
-      result = "Immunization";
-    } else if (resource instanceof Condition) {
-      result = "Condition";
-    } else if (resource instanceof AllergyIntolerance) {
-      result = "AllergyIntolerance";
-    } else if (resource instanceof Patient) {
-      result = "Patient";
-    } else if (resource instanceof Practitioner) {
-      result = "Practitioner";
-    } else if (resource instanceof Composition) {
-      result = "Composition";
+    return switch (resource) {
+      case Immunization immunization  -> "Immunization";
+      case Condition condition        -> "Condition";
+      case AllergyIntolerance allergy -> "AllergyIntolerance";
+      case Patient patient            -> "Patient";
+      case Practitioner practitioner  -> "Practitioner";
+      case Composition composition    -> "Composition";
+      case null, default              -> null;
+    };
+  }
+
+  static boolean isPatientTheAuthor(PatientIdentifier patientIdentifier, BaseDTO dto) {
+    return patientIdentifier.getPatientInfo() != null && dto.getAuthor().getUser().getFullName()
+        .equals(patientIdentifier.getPatientInfo().getFullName());
+  }
+
+  static boolean isSamePractitioner(Practitioner newPractitioner, HumanNameDTO authorsName) {
+    if (newPractitioner == null || authorsName == null) {
+      return false;
     }
-    return result;
+    HumanNameDTO newPractitionersName = FhirUtils.toHumanNameDTO(newPractitioner);
+    return authorsName.getFirstName() != null
+        && authorsName.getLastName() != null
+        && authorsName.getFirstName().equalsIgnoreCase(newPractitionersName.getFirstName())
+        && authorsName.getLastName().equalsIgnoreCase(newPractitionersName.getLastName());
   }
 
   static boolean isVaccinationRecord(Bundle bundle) {
@@ -258,6 +312,31 @@ public final class FhirUtils {
     return false;
   }
 
+  /**
+   * Strips the author reference down to its identifier.
+   * <p>
+   * If the reference starts with {@link FhirConstants#DEFAULT_ID_PREFIX}, that prefix is removed.
+   * Otherwise, the method expects the reference to be in the format {@code ResourceType/Identifier}
+   * (e.g. {@code Practitioner/TC-HCP1-C1}) and returns only the identifier part after the slash.
+   * </p>
+   *
+   * <p>Examples:</p>
+   * <ul>
+   *   <li>{@code "urn:uuid:abc123"} → {@code "abc123"}</li>
+   *   <li>{@code "Practitioner/TC-HCP1-C1"} → {@code "TC-HCP1-C1"}</li>
+   *   <li>{@code "Patient/TC"} → {@code "TC"}</li>
+   * </ul>
+   *
+   * @param reference the author reference string, may be {@code null}.
+   * @return the stripped identifier, or the original reference if it does not match expected patterns.
+   */
+  static String stripAuthorReference(String reference) {
+    if (reference.startsWith(FhirConstants.DEFAULT_ID_PREFIX)) {
+      return reference.substring(FhirConstants.DEFAULT_ID_PREFIX.length());
+    }
+    return reference.substring(reference.indexOf('/') + 1);
+  }
+
   static CodeableConcept toCodeableConcept(ValueDTO valueDTO) {
     if (valueDTO == null) {
       log.warn("valueDTO is null!");
@@ -268,6 +347,16 @@ public final class FhirUtils {
     codeableConcept.getCodingFirstRep().setDisplay(valueDTO.getName());
     codeableConcept.getCodingFirstRep().setSystem(valueDTO.getSystem());
     return codeableConcept;
+  }
+
+  static DomainResource toDomainResource(Bundle bundle, BaseDTO dto) {
+    return switch (dto) {
+      case VaccinationDTO vaccination -> (DomainResource) getReference(bundle, Immunization.class);
+      case AllergyDTO allergy -> (DomainResource) getReference(bundle, AllergyIntolerance.class);
+      case PastIllnessDTO pastIllness -> (DomainResource) getReference(bundle, Condition.class);
+      case MedicalProblemDTO medicalProblem -> (DomainResource) getReference(bundle, Condition.class);
+      case null, default -> null;
+    };
   }
 
   static HumanNameDTO toHumanNameDTO(Patient patient) {
@@ -297,6 +386,10 @@ public final class FhirUtils {
         concept.getCodingFirstRep().getCode(), //
         concept.getCodingFirstRep().getDisplay(), //
         concept.getCodingFirstRep().getSystem()); //
+  }
+
+  private static Annotation getFirstAnnotation(List<Annotation> notes) {
+    return notes != null && !notes.isEmpty() ? notes.getFirst() : null;
   }
 
   private static HumanNameDTO toHumanNameDTO(HumanName humanName) {

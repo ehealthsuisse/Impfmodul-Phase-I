@@ -25,21 +25,39 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link JsonFieldExtractor}.
+ * Unit tests for {@link ContentFieldExtractor}.
  *
  * This test class verifies that the {@code extractTimestamp} method correctly
- * extracts the timestamp from a valid JSON string and properly handles error cases,
- * such as missing fields or invalid JSON format.
+ * extracts the timestamp from a valid JSON/XML string and properly handles error cases,
+ * such as missing fields or invalid formats.
  */
-class JsonFieldExtractorTest {
+class ContentFieldExtractorTest {
+  private static final String TIMESTAMP = "timestamp";
   @Test
-  void shouldExtractTimestampSuccessfully() {
+  void shouldExtractTimestampFromJsonSuccessfully() {
     String json = "{ \"identifier\": { \"system\": \"ttt\", \"value\": \"ttt.rrr.eee\" }, \"type\": \"document\", \"timestamp\": \"2021-10-06T00:00:00.390+02:00\" }";
 
-    LocalDateTime timestamp = JsonFieldExtractor.extractFieldAsLocalDateTime(json, "timestamp");
+    LocalDateTime timestamp = ContentFieldExtractor.extractFieldAsLocalDateTime(json, TIMESTAMP);
 
-    assertEquals( LocalDateTime.of(2021, 10, 6, 0, 0, 0, 390_000_000),
+    assertEquals(LocalDateTime.of(2021, 10, 6, 0, 0, 0, 390_000_000),
         timestamp);
+  }
+  @Test
+  void shouldExtractTimestampFromXMLWithValueAttribute() {
+    String xmlContent = "<root><timestamp value='2023-11-23T16:21:24.202+01:00'/></root>";
+
+    String result = ContentFieldExtractor.extractField(xmlContent, TIMESTAMP);
+
+    assertEquals("2023-11-23T16:21:24.202+01:00", result);
+  }
+
+  @Test
+  void shouldExtractTimestampFromXmlWithTextContent() {
+    String xmlContent = "<root><timestamp>2023-11-23T16:21:24.202+01:00</timestamp></root>";
+
+    String result = ContentFieldExtractor.extractField(xmlContent, TIMESTAMP);
+
+    assertEquals("2023-11-23T16:21:24.202+01:00", result);
   }
 
   @Test
@@ -47,7 +65,7 @@ class JsonFieldExtractorTest {
     String json = "{ \"identifier\": { \"system\": \"ttt\", \"value\": \"ttt.rrr.eee\" }, \"type\": \"document\" }";
 
     Exception exception = assertThrows(TechnicalException.class, () -> {
-      JsonFieldExtractor.extractField(json, "timestamp");
+      ContentFieldExtractor.extractField(json, TIMESTAMP);
     });
 
     assertTrue(exception.getMessage().contains("Failed to extract timestamp from JSON"));
@@ -58,9 +76,31 @@ class JsonFieldExtractorTest {
     String invalidJson = "{ \"identifier\": { \"system\": \"ttt\" \"value\": \"ttt.rrr.eee\" }"; // missing comma
 
     Exception exception = assertThrows(TechnicalException.class, () -> {
-      JsonFieldExtractor.extractField(invalidJson, "timestamp");
+      ContentFieldExtractor.extractField(invalidJson, TIMESTAMP);
     });
 
     assertTrue(exception.getMessage().contains("Failed to extract timestamp from JSON"));
+  }
+
+  @Test
+  void shouldThrowExceptionForInvalidXML() {
+    String xmlContent = "<root><other value='some-value'/></root>";
+
+    TechnicalException exception = assertThrows(TechnicalException.class,
+        () -> ContentFieldExtractor.extractField(xmlContent, TIMESTAMP));
+
+    assertTrue(exception.getMessage().contains("Failed to extract timestamp from XML"));
+    assertTrue(exception.getCause().getMessage().contains("Field 'timestamp' not found in XML"));
+  }
+
+  @Test
+  void shouldThrowExceptionWhenXmlHasEmptyTimestampField() {
+    String xmlContent = "<root><timestamp/></root>";
+
+    TechnicalException exception = assertThrows(TechnicalException.class,
+        () -> ContentFieldExtractor.extractField(xmlContent, TIMESTAMP));
+
+    assertTrue(exception.getMessage().contains("Failed to extract timestamp from XML"));
+    assertTrue(exception.getCause().getMessage().contains("Field 'timestamp' has no text content or 'value' attribute in XML"));
   }
 }

@@ -92,17 +92,21 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   @Override
-  public Bundle delete(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle deletedBundle, String uuid) {
-
+  public Bundle delete(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle bundleToBeDeleted,
+      String toDeleteUuid) {
     try {
-      DomainResource resource = (DomainResource) FhirUtils.getResource(deletedBundle, uuid);
-      if (resource == null) {
-        throw new TechnicalException(uuid + " Not found in the bundle!");
+      DomainResource oldDomainResource = (DomainResource) FhirUtils.getResource(bundleToBeDeleted, toDeleteUuid);
+      if (oldDomainResource == null) {
+        throw new TechnicalException(toDeleteUuid + " Not found in the bundle!");
       }
       FhirContext ctx = getFhirContext();
-      Composition composition = FhirUtils.getResource(Composition.class, deletedBundle);
+      Composition composition = FhirUtils.getResource(Composition.class, bundleToBeDeleted);
 
-      return fhirConverter.deleteBundle(ctx, patientIdentifier, dto, composition, resource);
+      Bundle deletedBundle = fhirConverter.deleteBundle(ctx, patientIdentifier, dto, composition, oldDomainResource);
+      DomainResource deletedDomainResource = FhirUtils.toDomainResource(deletedBundle, dto);
+      fhirConverter.resolveAndApplyComment(bundleToBeDeleted, FhirUtils.getAnnotation(oldDomainResource),
+          deletedBundle, deletedDomainResource, dto, FhirUtils.isPatientTheAuthor(patientIdentifier, dto));
+      return deletedBundle;
     } catch (Exception e) {
       log.warn("Exception:{}", e);
       throw new TechnicalException(e.getMessage());
@@ -219,14 +223,18 @@ public class FhirAdapter implements FhirAdapterIfc {
   }
 
   @Override
-  public Bundle update(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle updatedBundle, String uuid) {
+  public Bundle update(PatientIdentifier patientIdentifier, BaseDTO dto, Bundle bundleToBeUpdated, String toUpdateUuid) {
     try {
-      DomainResource resource = (DomainResource) FhirUtils.getResource(updatedBundle, uuid);
+      DomainResource oldDomainResource = (DomainResource) FhirUtils.getResource(bundleToBeUpdated, toUpdateUuid);
 
       FhirContext ctx = getFhirContext();
-      Composition composition = FhirUtils.getResource(Composition.class, updatedBundle);
+      Composition composition = FhirUtils.getResource(Composition.class, bundleToBeUpdated);
 
-      return fhirConverter.updateBundle(ctx, patientIdentifier, dto, composition, resource);
+      Bundle updatedBundle = fhirConverter.updateBundle(ctx, patientIdentifier, dto, composition, oldDomainResource);
+      DomainResource updatedDomainResource = FhirUtils.toDomainResource(updatedBundle, dto);
+      fhirConverter.resolveAndApplyComment(bundleToBeUpdated, FhirUtils.getAnnotation(oldDomainResource), updatedBundle,
+          updatedDomainResource, dto, FhirUtils.isPatientTheAuthor(patientIdentifier, dto));
+      return updatedBundle;
     } catch (Exception e) {
       log.warn("Exception: {}", e.getMessage());
       throw new TechnicalException(e.getMessage());
@@ -257,7 +265,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     MedicalProblemDTO dto = fhirConverter.toMedicalProblemDTO(condition, practitioner, organization);
-    dto.setComment(fhirConverter.createComment(bundle, condition.getNote()));
+    dto.setComment(fhirConverter.extractCommentFromBundle(bundle, condition.getNote()));
     return dto;
   }
 
@@ -272,7 +280,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     PastIllnessDTO dto = fhirConverter.toPastIllnessDTO(condition, practitioner, organization);
-    dto.setComment(fhirConverter.createComment(bundle, condition.getNote()));
+    dto.setComment(fhirConverter.extractCommentFromBundle(bundle, condition.getNote()));
     return dto;
   }
 
@@ -310,7 +318,11 @@ public class FhirAdapter implements FhirAdapterIfc {
       boolean forceImmunizationAdministrationDocument) {
     try {
       FhirContext ctx = getFhirContext();
-      return fhirConverter.createBundle(ctx, patientIdentifier, dto, forceImmunizationAdministrationDocument);
+      Bundle bundle = fhirConverter.createBundle(ctx, patientIdentifier, dto, forceImmunizationAdministrationDocument);
+      DomainResource domainResource = FhirUtils.toDomainResource(bundle, dto);
+      fhirConverter.resolveAndApplyComment(null, null, bundle, domainResource, dto,
+          FhirUtils.isPatientTheAuthor(patientIdentifier, dto));
+      return bundle;
     } catch (Exception e) {
       log.warn("Exception: {}", e.getMessage());
       throw new TechnicalException(e.getMessage());
@@ -324,7 +336,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     AllergyDTO dto = fhirConverter.toAllergyDTO(allergyIntolerance, practitioner, organization);
-    dto.setComment(fhirConverter.createComment(bundle, allergyIntolerance.getNote()));
+    dto.setComment(fhirConverter.extractCommentFromBundle(bundle, allergyIntolerance.getNote()));
     return dto;
   }
 
@@ -397,7 +409,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     String organization = getOrganization(bundle, practitionerRole);
 
     VaccinationDTO dto = fhirConverter.toVaccinationDTO(immunization, practitioner, organization);
-    dto.setComment(fhirConverter.createComment(bundle, immunization.getNote()));
+    dto.setComment(fhirConverter.extractCommentFromBundle(bundle, immunization.getNote()));
     return dto;
   }
 
