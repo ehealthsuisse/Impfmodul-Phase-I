@@ -191,7 +191,7 @@ class HuskyAdapterTest {
    * Test <a href="https://jira.e-health-suisse.ch/browse/IMAW-299#value">IMAW-299</a>
    */
   @Test
-  @Disabled("Disabled until the Gazelle Patient Manager application is operational again")
+  @Disabled("Until Gazelles Patient Manager environment is more stable")
   void getPatient_existingPatient_GAZELLE() {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",
@@ -485,7 +485,7 @@ class HuskyAdapterTest {
   }
 
   @Test
-  @Disabled("Disabled until the Gazelle Patient Manager application is operational again")
+  @Disabled("Until Gazelles Patient Manager environment is more stable")
   void writeDocument_GAZELLE() throws Exception {
     PatientIdentifier patientIdentifier =
         huskyAdapter.getPatientIdentifier(EPDCommunity.GAZELLE.name(), "2.16.756.5.30.1.127.3.10.3",

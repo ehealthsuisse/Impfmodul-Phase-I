@@ -18,6 +18,7 @@
     "INACTIVE": "Inattivo",
     "SEARCH_TARGET_DISEASES": "Cerca protezione vaccinale",
     "DOSE_NUMBER_FORMAT": "Numero di dosi deve essere un numero intero positivo",
-    "CONFIDENTIALITY": "Riservatezza"
+    "CONFIDENTIALITY": "Riservatezza",
+    "NO_VACCINATION_PROTECTION": "Sconosciuto - notare il commento"
   }
 }

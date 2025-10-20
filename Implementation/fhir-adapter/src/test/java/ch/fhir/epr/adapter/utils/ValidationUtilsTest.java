@@ -187,11 +187,11 @@ public class ValidationUtilsTest {
     missingOccurrenceDate.setOrganization("Gruppenpraxis CH");
     assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingOccurrenceDate));
 
-    // Test with empty organization
+    // Test with empty organization and missing target disease (Vaccine unknown should not have a target disease associated)
     VaccinationDTO missingOrganization = new VaccinationDTO();
-    missingOrganization.setTargetDiseases(List.of(targetDisease));
+    ValueDTO vaccineUnknown = new ValueDTO("787859002", "Vaccine unknown", "http://snomed.info/sct");
     missingOrganization.setOccurrenceDate(LocalDate.now());
-    missingOrganization.setCode(targetDisease);
+    missingOrganization.setCode(vaccineUnknown);
     missingOrganization.setOrganization("");
     assertThrows(ValidationException.class, () -> ValidationUtils.isValid(missingOrganization));
   }

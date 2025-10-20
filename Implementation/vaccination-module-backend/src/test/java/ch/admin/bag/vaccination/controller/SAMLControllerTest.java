@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -127,7 +128,13 @@ public class SAMLControllerTest {
     RequestEntity<String> entity =
         new RequestEntity<>("RelayState=GAZELLE&SAMLart=samlArtifact", headers, HttpMethod.POST,
             new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT));
-    ResponseEntity<String> response = restTemplate.exchange(entity, String.class);
+
+    // Disable redirect following
+    TestRestTemplate noRedirectTemplate = restTemplate.withRedirects(
+        ClientHttpRequestFactorySettings.Redirects.DONT_FOLLOW
+    );
+
+    ResponseEntity<String> response = noRedirectTemplate.exchange(entity, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
   }
 

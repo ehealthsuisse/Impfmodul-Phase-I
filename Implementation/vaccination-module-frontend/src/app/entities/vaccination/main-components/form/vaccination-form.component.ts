@@ -40,7 +40,8 @@ import { VaccinationFormGroup, VaccinationFormService } from '../../services/vac
 import { VaccinationService } from '../../services/vaccination.service';
 import { ChipsHandler } from './chips-handler';
 import { SpinnerService } from '../../../../shared/services/spinner.service';
-import { FormGroupDirective } from '@angular/forms';
+import { FormGroupDirective, Validators } from '@angular/forms';
+import { VACCINE_CODES, VALIDATION_CODES } from '../../../../shared/constants/global.constants';
 
 @Component({
   selector: 'vm-vaccination-form',
@@ -78,8 +79,8 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   vaccinationService: VaccinationService = inject(VaccinationService);
   sharedDataService: SharedDataService = inject(SharedDataService);
-  helpDialogTitle = 'HELP.VACCINATION.DETAIL.TITLE';
-  helpDialogBody = 'HELP.VACCINATION.DETAIL.BODY';
+  helpDialogTitle = 'HELP.VACCINATION.SAVE_AND_EDIT.TITLE';
+  helpDialogBody = 'HELP.VACCINATION.SAVE_AND_EDIT.BODY';
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
   spinnerService: SpinnerService = inject(SpinnerService);
@@ -93,50 +94,19 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   ngOnInit(): void {
     this.dialogService.showActionSidenav(false);
     this.displayMenu(false, false);
-
     this.getDropdownData();
     initializeActionData('', this.sharedDataService);
-    let id = this.activatedRoute.snapshot.params['id'];
-    let role: string = this.sharedDataService.storedData['role']!;
-    this.vaccinationService.find(id).subscribe(vaccine => {
-      if (vaccine) {
-        this.vaccination = vaccine;
-        this.updateForm(this.vaccination);
-      } else {
-        this.vaccinationService.query().subscribe({
-          next: list => {
-            this.vaccination = list.find(filteredVaccine => filteredVaccine.id === id)!;
-            this.updateForm(this.vaccination);
-          },
-        });
-      }
-    });
 
-    this.processFormOptions();
-    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
-    this.editForm
-      .get('vaccineCode')
-      ?.valueChanges.pipe(takeUntil(this.unsubscribe$))
-      .subscribe(vaccine => {
-        const targetDiseases = this.vaccinationDiseases[vaccine?.code];
-
-        this.diseasesChips.selected = [];
-        this.editForm.get('targetDiseases')?.setValue([]);
-        targetDiseases?.forEach((disease: unknown) => {
-          if (this.diseasesChips) {
-            this.diseasesChips.select({ option: { value: disease } } as MatAutocompleteSelectedEvent, this.editForm);
-          }
-        });
-      });
-    if (this.vaccination!?.targetDiseases.length > 0) {
-      this.diseasesChips.assign(this.editForm);
-    }
+    this.loadVaccinationData();
+    this.initializeFormOptions();
   }
 
   ngAfterViewInit(): void {
     setDropDownInitialValue(this.vaccinationFilteredList, this.singleSelect);
     setDropDownInitialValue(this.reasons, this.reason);
     setDropDownInitialValue(this.diseases, this.diseasesList);
+    this.clearTargetDiseasesValidationForUnknownVaccine();
+
     this.editForm.controls['recorder'].get('firstName')?.markAsTouched();
     this.editForm.controls['recorder'].get('lastName')?.markAsTouched();
   }
@@ -148,7 +118,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     vaccination.status = this.formOptionsService.getOption('immunizationStatusCode', 'completed');
     vaccination.verificationStatus = this.formOptionsService.getOption(
       'immunizationVerificationStatus',
-      this.sessionInfoService.canValidate() ? '59156000' : '76104008'
+      this.sessionInfoService.canValidate() ? VALIDATION_CODES.CAN_VALIDATE : VALIDATION_CODES.CANNOT_VALIDATE
     );
     vaccination.lotNumber = vaccination.lotNumber || '-';
 
@@ -194,6 +164,7 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
   protected updateForm(vaccination: IVaccination): void {
     this.vaccination = vaccination;
     this.vaccinationFormService.resetForm(this.editForm, vaccination);
+    this.onVaccineCodeChanged(vaccination, true);
     this.vaccination?.targetDiseases.forEach(() => this.diseasesChips?.assign(this.editForm));
   }
 
@@ -205,6 +176,71 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(navigate),
     });
+  }
+
+  private clearTargetDiseasesValidationForUnknownVaccine(): void {
+    if (this.vaccination?.code?.code === VACCINE_CODES.VACCINE_UNKNOWN) {
+      const targetDiseaseControl = this.editForm.get('targetDiseases');
+      targetDiseaseControl?.clearValidators();
+      targetDiseaseControl?.setErrors(null);
+      targetDiseaseControl?.updateValueAndValidity();
+    }
+  }
+
+  private initializeFormOptions(): void {
+    const role: string = this.sharedDataService.storedData['role']!;
+    this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
+    this.editForm
+      .get('vaccineCode')
+      ?.valueChanges.pipe(takeUntil(this.unsubscribe$))
+      .subscribe(vaccine => this.onVaccineCodeChanged(vaccine));
+    if (this.vaccination!?.targetDiseases.length > 0) {
+      this.diseasesChips.assign(this.editForm);
+    }
+  }
+
+  private loadVaccinationData(): void {
+    const id = this.activatedRoute.snapshot.params['id'];
+    this.vaccinationService.find(id).subscribe(vaccine => {
+      if (vaccine) {
+        this.vaccination = vaccine;
+        this.updateForm(this.vaccination);
+      } else {
+        this.vaccinationService.query().subscribe({
+          next: list => {
+            this.vaccination = list.find(filteredVaccine => filteredVaccine.id === id)!;
+            this.updateForm(this.vaccination);
+          },
+        });
+      }
+      this.commentMessage = this.editForm.get('comment')?.value?.text || '';
+    });
+  }
+
+  private onVaccineCodeChanged(vaccine: any, skipReset = false): void {
+    const targetDiseases = this.vaccinationDiseases[vaccine?.code];
+    const targetDiseaseControl = this.editForm.get('targetDiseases');
+
+    // Remove validator when vaccineCode === Vaccine unknown, so that the target disease can remain unfilled
+    if (VACCINE_CODES.VACCINE_UNKNOWN === vaccine?.code) {
+      targetDiseaseControl?.clearValidators();
+    } else {
+      targetDiseaseControl?.setValidators([Validators.required]);
+    }
+    targetDiseaseControl?.updateValueAndValidity();
+
+    if (!skipReset) {
+      this.diseasesChips.selected = [];
+      targetDiseaseControl?.setValue([]);
+
+      // pre-fill chips only if not the special code
+      if (VACCINE_CODES.VACCINE_UNKNOWN !== vaccine?.code) {
+        targetDiseases?.forEach((disease: unknown) => {
+          this.diseasesChips.select({ option: { value: disease } } as MatAutocompleteSelectedEvent, this.editForm);
+        });
+      }
+    }
   }
 
   private processFormOptions(): void {

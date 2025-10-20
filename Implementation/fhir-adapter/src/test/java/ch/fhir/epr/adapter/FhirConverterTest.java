@@ -51,6 +51,7 @@ import org.hl7.fhir.r4.model.Annotation;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.HumanName;
@@ -124,7 +125,9 @@ class FhirConverterTest {
   @Test
   void createBundle_confidentialitySet_replaceSnomedInBundleButKeepDTOUnchanged() {
     vaccinationDTO.setConfidentiality(FhirConstants.DEFAULT_CONFIDENTIALITY_CODE);
+    HumanNameDTO patient = new HumanNameDTO("First", "Last", "prefix", LocalDate.now(), "MALE");
     PatientIdentifier identifier = mock(PatientIdentifier.class);
+    when(identifier.getPatientInfo()).thenReturn(patient);
 
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
     assertEquals("http://snomed.info/sct", FhirUtils.getConfidentiality(bundle).getSystem());
@@ -139,7 +142,9 @@ class FhirConverterTest {
     when(identifier.getPatientInfo()).thenReturn(patient);
 
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
-    Patient result = FhirUtils.getPatient(bundle, "Patient-0001");
+
+    String patientId = FhirUtils.getResource(Composition.class, bundle).getSubject().getReference();
+    Patient result = FhirUtils.getPatient(bundle, patientId);
     assertEquals("MALE", result.getGender().name());
   }
 
@@ -151,7 +156,9 @@ class FhirConverterTest {
     when(identifier.getPatientInfo()).thenReturn(patient);
 
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
-    Patient result = FhirUtils.getPatient(bundle, "Patient-0001");
+
+    String patientId = FhirUtils.getResource(Composition.class, bundle).getSubject().getReference();
+    Patient result = FhirUtils.getPatient(bundle, patientId);
     assertEquals("UNKNOWN", result.getGender().name());
   }
 
@@ -187,7 +194,10 @@ class FhirConverterTest {
 
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
 
-    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, "Practitioner-0001");
+    String practitionerRoleId = FhirUtils.getResource(Immunization.class, bundle).getPerformer().getFirst().getActor()
+        .getReference();
+    String practitionerId = FhirUtils.getPractitionerRole(bundle, practitionerRoleId).getPractitioner().getReference();
+    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, practitionerId);
 
     assertEquals("7601007922000", practitioner.getIdentifier().getFirst().getValue());
   }
@@ -205,7 +215,10 @@ class FhirConverterTest {
 
     Bundle bundle = fhirConverter.createBundle(FhirContext.forR4(), identifier, vaccinationDTO);
 
-    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, "Practitioner-0001");
+    String practitionerRoleId = FhirUtils.getResource(Immunization.class, bundle).getPerformer().getFirst().getActor()
+        .getReference();
+    String practitionerId = FhirUtils.getPractitionerRole(bundle, practitionerRoleId).getPractitioner().getReference();
+    Practitioner practitioner = FhirUtils.getResource(Practitioner.class, bundle, practitionerId);
 
     assertEquals("7601007922000", practitioner.getIdentifier().getFirst().getValue());
   }
@@ -220,7 +233,8 @@ class FhirConverterTest {
     when(dto.getAuthor()).thenReturn(author);
     PatientIdentifier identifier = mock(PatientIdentifier.class);
 
-    ReflectionTestUtils.invokeMethod(fhirConverter, "createComposition", bundle, dto, identifier, false);
+    ReflectionTestUtils.invokeMethod(fhirConverter, "createComposition", bundle, dto, identifier, false,
+        "7f2187f3-2d5f-4ccd-8369-00d6403f6791", "0443c19b-f05c-4859-b9b7-0972239a12ca");
 
     author = FhirUtils.getAuthor(bundle);
     assertEquals("principalId", author.getGln());
@@ -250,7 +264,7 @@ class FhirConverterTest {
         .setStatus(STATUS);
 
     vaccinationDTO = fhirConverter.toVaccinationDTO(immunization, practitioner, ORGANIZATION);
-    vaccinationDTO.setComment(fhirConverter.createComment(null, immunization.getNote()));
+    vaccinationDTO.setComment(fhirConverter.extractCommentFromBundle(null, immunization.getNote()));
     vaccinationDTO.setAuthor(createAuthor());
 
     fhirConfig.setPractitionerRoles(List.of("ASS", "HCP"));

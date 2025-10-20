@@ -237,13 +237,6 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     assertThat(dto.getEnd()).isEqualTo(LocalDate.of(2001, 12, 31));
   }
 
-  // @Test
-  void getData_emptyData_EPDPLAYGROUND() {
-    assertThat(
-        medicalProblemService.getAll(EPDCommunity.EPDPLAYGROUND.name(), "1.2.3.4.123456.1",
-            EPDCommunity.DUMMY.name(), null)).isEmpty();
-  }
-
   @BeforeEach
   void setUp() {
     super.before();

@@ -37,13 +37,13 @@ import lombok.Getter;
 public enum SectionType {
   ALLERGIES(
       "allergies",
-      "Allergies and adverse reactions Document",
+      "Allergies",
       "48765-2",
       "Allergies and adverse reactions Document",
       "http://loinc.org"), //
   PAST_ILLNESSES(
       "pastillnesses",
-      "undergone illnesses for immunization",
+      "Previous illnesses",
       "11348-0",
       "Hx of Past illness",
       "http://loinc.org"), //
@@ -51,7 +51,7 @@ public enum SectionType {
       "administration",
       "Immunization Administration",
       "11369-6",
-      "Hx of Immunization",
+      "History of Immunizations",
       "http://loinc.org"), //
   MEDICAL_PROBLEM(
       "medicalproblems",
@@ -66,7 +66,7 @@ public enum SectionType {
   private String display;
   private String system;
 
-  private SectionType(String id, String title, String code, String display, String system) {
+  SectionType(String id, String title, String code, String display, String system) {
     this.id = id;
     this.title = title;
     this.code = code;

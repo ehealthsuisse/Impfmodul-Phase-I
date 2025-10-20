@@ -44,7 +44,7 @@
       </ng-container>
       <ng-template #unsortables>
         <th mat-header-cell *matHeaderCellDef role="cell" scope="col">
-          <ng-container *ngIf="columnName !== 'entryStatus'">
+          <ng-container *ngIf="columnName !== 'entryStatus' && columnName !== 'comment'">
             {{ columnName | convertToSnakeCaseTranslation : translationPrefix | translate }}
           </ng-container>
         </th>
@@ -57,7 +57,11 @@
 
         <td mat-cell role="cell" [ngClass]="{ 'child-row': element.level > 0 }" *ngSwitchCase="'targetDiseases'">
           <span class="code">
-            {{ element.record.targetDiseases[0] | translate }}
+            {{
+              element.record.targetDiseases?.length
+                ? (element.record.targetDiseases[0] | translate)
+                : ('VACCINATION.NO_VACCINATION_PROTECTION' | translate)
+            }}
             <ng-container *ngIf="element.record.targetDiseases.length > 1">+{{ element.record.targetDiseases.length - 1 }}</ng-container>
           </span>
         </td>
@@ -66,10 +70,10 @@
           <div class="icon-wrapper">
             <mat-icon
               color="accent"
-              class="validated-icon"
+              class="status-icon validated-icon"
               [attr.aria-label]="'ICONS.RECORD_VALIDATED' | translate"
               [matTooltip]="'ICONS.RECORD_VALIDATED' | translate"
-              *ngIf="!element.record.deleted && !element.record.updated && element.record.validated && canValidated"
+              *ngIf="showValidatedIcon(element)"
               >check</mat-icon
             >
             <mat-icon
@@ -77,7 +81,7 @@
               [attr.aria-label]="'ICONS.RECORD_DELETED' | translate"
               [matTooltip]="'ICONS.RECORD_DELETED' | translate"
               *ngIf="element.record.deleted && !element.record.updated"
-              class="deleted-icon"
+              class="status-icon deleted-icon"
               >close</mat-icon
             >
             <mat-icon
@@ -85,8 +89,25 @@
               [attr.aria-label]="'ICONS.RECORD_UPDATED' | translate"
               [matTooltip]="'ICONS.RECORD_UPDATED' | translate"
               *ngIf="element.record.updated"
-              class="warning-icon"
+              class="status-icon warning-icon"
               >warning</mat-icon
+            >
+            <span
+              [attr.aria-label]="'ICONS.RECORD_CURRENT' | translate"
+              [matTooltip]="'ICONS.RECORD_CURRENT' | translate"
+              *ngIf="element.level === 1 && !element.record.deleted"
+              class="status-icon current-record-icon"
+            ></span>
+          </div>
+        </td>
+
+        <td class="w-60" mat-cell role="gridcell" [ngClass]="{ 'child-row': element.level > 0 }" *ngSwitchCase="'comment'">
+          <div class="icon-wrapper">
+            <mat-icon
+              *ngIf="element.record.comment?.text"
+              [attr.aria-label]="'COMMENT.ICON' | translate"
+              [matTooltip]="'COMMENT.ICON' | translate"
+              >comment</mat-icon
             >
           </div>
         </td>

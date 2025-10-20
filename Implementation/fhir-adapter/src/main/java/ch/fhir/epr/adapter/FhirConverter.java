@@ -20,6 +20,7 @@ package ch.fhir.epr.adapter;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.util.BundleBuilder;
+import ch.fhir.epr.adapter.FhirUtils.ReferenceType;
 import ch.fhir.epr.adapter.config.FhirConfig;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
@@ -42,15 +43,14 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hl7.fhir.r4.model.AllergyIntolerance;
@@ -113,42 +113,43 @@ public class FhirConverter implements FhirConverterIfc {
   public Bundle createBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
       boolean forceImmunizationAdministrationDocument) {
     dto.validate(dto.isDeleted());
-
+    String authorId = String.valueOf(UUID.randomUUID());
+    String resourceId = FhirUtils.isPatientTheAuthor(patientIdentifier, dto) ? authorId : String.valueOf(UUID.randomUUID());
     Bundle bundle = createBundle(ctx, !forceImmunizationAdministrationDocument && dto instanceof VaccinationRecordDTO);
-    Composition composition =
-        createComposition(bundle, dto, patientIdentifier, forceImmunizationAdministrationDocument);
-    createPatient(bundle, composition, patientIdentifier, "Patient-0001");
+    createComposition(bundle, dto, patientIdentifier, forceImmunizationAdministrationDocument, authorId, resourceId);
+    createPatient(bundle, patientIdentifier, resourceId, FhirConstants.META_CORE_PATIENT_EPR_URL);
 
     if (dto instanceof VaccinationRecordDTO tO) {
-      return createVaccinationRecord(bundle, tO);
+      return createVaccinationRecord(bundle, tO, patientIdentifier);
     }
 
-    DomainResource updatedResource;
-    if (dto instanceof VaccinationDTO vaccination) {
-      bundle = createVaccination(bundle, vaccination);
-      updatedResource = (DomainResource) getReference(bundle, Immunization.class);
-    } else if (dto instanceof AllergyDTO allergy) {
-      bundle = createAllergy(bundle, allergy);
-      updatedResource = (DomainResource) getReference(bundle, AllergyIntolerance.class);
-    } else {
-      if (dto instanceof PastIllnessDTO pastIllness) {
-        bundle = createPastIllness(bundle, pastIllness);
-      } else if (dto instanceof MedicalProblemDTO medicalProblem) {
-        bundle = createMedicalProblem(bundle, medicalProblem);
-      } else {
-        throw new TechnicalException("toBundle not supported for class " + dto.getClass().getSimpleName());
-      }
-      updatedResource = (DomainResource) getReference(bundle, Condition.class);
-    }
-
-    createComment(updatedResource, dto,
-        FhirUtils.getResource(Composition.class, bundle).getAuthorFirstRep().getReference());
-
-    return bundle;
+    return switch (dto) {
+      case VaccinationDTO vaccination -> createVaccination(bundle, vaccination, patientIdentifier);
+      case AllergyDTO allergy -> createAllergy(bundle, allergy, patientIdentifier);
+      case PastIllnessDTO pastIllness -> createPastIllness(bundle, pastIllness, patientIdentifier);
+      case MedicalProblemDTO medicalProblem -> createMedicalProblem(bundle, medicalProblem, patientIdentifier);
+      default -> throw new TechnicalException("toBundle not supported for class " + dto.getClass().getSimpleName());
+    };
   }
 
   @Override
-  public CommentDTO createComment(Bundle bundle, List<Annotation> notes) {
+  public void resolveAndApplyComment(Bundle bundleToBeUpdated, Annotation oldNote, Bundle newBundle, DomainResource resource,
+      BaseDTO dto, boolean isPatientTheAuthor) {
+    CommentDTO comment = dto.getComment();
+    if (comment != null) {
+      Annotation annotation = addNote(resource);
+
+      if (annotation != null) {
+        annotation.setTime(new Date());
+        annotation.setAuthor(new Reference(resolveAuthorReference(bundleToBeUpdated, oldNote, newBundle, dto, resource,
+            isPatientTheAuthor)));
+        annotation.setText(comment.getText());
+      }
+    }
+  }
+
+  @Override
+  public CommentDTO extractCommentFromBundle(Bundle bundle, List<Annotation> notes) {
     if (notes == null || notes.isEmpty()) {
       return null;
     }
@@ -158,30 +159,15 @@ public class FhirConverter implements FhirConverterIfc {
     HumanNameDTO author = getAuthor(bundle, firstNote);
     LocalDateTime date = convertToLocalDateTime(firstNote.getTime());
 
-    StringBuilder combinedText = new StringBuilder();
-    combinedText.append(firstNote.getText());
-
-    for (int i = notes.size() - 2; i >= 0; i--) {
-      Annotation note = notes.get(i);
-      HumanNameDTO noteAuthor = getAuthor(bundle, note);
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN);
-      String formattedDate = convertToLocalDateTime(note.getTime()).toLocalDate().format(formatter);
-
-      combinedText.append("\n\n")
-          .append(noteAuthor.getFullName()).append(", ").append(formattedDate)
-          .append("\n")
-          .append(note.getText());
-    }
-
-    return new CommentDTO(date, author.getFullName(), combinedText.toString());
+    return new CommentDTO(date, author.getFullName(), firstNote.getText());
   }
 
   @Override
-  public Bundle deleteBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
-      Composition compostion, DomainResource resource) {
+  public Bundle deleteBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto, Composition composition,
+      DomainResource resource) {
     dto.setDeleted(true);
 
-    return updateBundle(ctx, patientIdentifier, dto, compostion, resource);
+    return updateBundle(ctx, patientIdentifier, dto, composition, resource);
   }
 
   @Override
@@ -317,8 +303,8 @@ public class FhirConverter implements FhirConverterIfc {
   }
 
   @Override
-  public Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto,
-      Composition composition, DomainResource resource) {
+  public Bundle updateBundle(FhirContext ctx, PatientIdentifier patientIdentifier, BaseDTO dto, Composition composition,
+      DomainResource resource) {
     Bundle bundle = createBundle(ctx, patientIdentifier, dto);
 
     CompositionRelatesToComponent crc = new CompositionRelatesToComponent();
@@ -328,7 +314,7 @@ public class FhirConverter implements FhirConverterIfc {
     crc.setTarget(targetReference);
     ((Composition) bundle.getEntryFirstRep().getResource()).setRelatesTo(new ArrayList<>(List.of(crc)));
 
-    DomainResource updatedResource = (DomainResource) getReference(bundle, resource.getClass());
+    DomainResource updatedResource = (DomainResource) FhirUtils.getReference(bundle, resource.getClass());
     if (dto.isDeleted()) {
       markResourceDeleted(updatedResource);
     }
@@ -337,13 +323,13 @@ public class FhirConverter implements FhirConverterIfc {
     return bundle;
   }
 
-  private void addEntry(Bundle bundle, String url, Resource resource) {
+  private void addEntry(Bundle bundle, Resource resource) {
     if (resource == null) {
       return;
     }
 
     bundle.addEntry()
-      .setFullUrl(fhirConfig.getBaseURL() + url + resource.getIdElement().getValue())
+      .setFullUrl(FhirConstants.DEFAULT_ID_PREFIX + resource.getIdElement().getValue())
       .setResource(resource);
   }
 
@@ -427,20 +413,19 @@ public class FhirConverter implements FhirConverterIfc {
     }
   }
 
-  private Bundle createAllergy(Bundle bundle, AllergyDTO dto) {
-    return createAllergy(bundle, dto, 1);
-  }
-
-  private Bundle createAllergy(Bundle bundle, AllergyDTO dto, int entryNumber) {
-    String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
-    createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
+  private Bundle createAllergy(Bundle bundle, AllergyDTO dto, PatientIdentifier patientIdentifier) {
+    String patientId = String.valueOf(UUID.randomUUID());
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
+        FhirConstants.META_PRACTITIONER_ROLE_URL);
+    createPatient(bundle, patientIdentifier, patientId, FhirConstants.META_CORE_PATIENT_URL);
+    createOrganization(bundle, dto.getOrganization(), practitionerRole);
 
     AllergyIntolerance allergyIntolerance = new AllergyIntolerance();
-    allergyIntolerance.setId("AllergyIntolerance-" + entryNumberString);
+    allergyIntolerance.setId(String.valueOf(UUID.randomUUID()));
     allergyIntolerance.addIdentifier(createIdentifier());
-    allergyIntolerance.setPatient(new Reference("Patient/Patient-0001"));
-    allergyIntolerance.setRecorder(new Reference("PractitionerRole/PractitionerRole-" + entryNumberString));
+    allergyIntolerance.setPatient(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
+    allergyIntolerance.setRecorder(new Reference(FhirConstants.DEFAULT_ID_PREFIX +
+        practitionerRole.getIdElement().getValue()));
     allergyIntolerance.setCode(FhirUtils.toCodeableConcept(dto.getCode()));
     allergyIntolerance.addCategory(AllergyIntoleranceCategory.MEDICATION);
     if (dto.getType() != null) {
@@ -458,7 +443,7 @@ public class FhirConverter implements FhirConverterIfc {
     allergyIntolerance.setLastOccurrence(dateOccurrenceDate);
     allergyIntolerance.setRecordedDate(dateOccurrenceDate);
 
-    addEntry(bundle, "AllergyIntolerance/", allergyIntolerance);
+    addEntry(bundle, allergyIntolerance);
     createSectionIfNecessary(FhirUtils.getResource(Composition.class, bundle), SectionType.ALLERGIES,
         allergyIntolerance);
     return bundle;
@@ -496,31 +481,19 @@ public class FhirConverter implements FhirConverterIfc {
     return coding;
   }
 
-  private void createComment(DomainResource resource, BaseDTO dto, String authorReference) {
-    CommentDTO comment = dto.getComment();
-    if (comment != null) {
-      Annotation annotation = addNote(resource);
-
-      if (annotation != null) {
-        annotation.setTime(new Date());
-        annotation.setAuthor(new Reference(authorReference));
-        annotation.setText(comment.getText());
-      }
-    }
-  }
-
-  private Composition createComposition(Bundle bundle, BaseDTO dto, PatientIdentifier patientIdentifier,
-      boolean forceImmunizationAdministrationDocument) {
+  private void createComposition(Bundle bundle, BaseDTO dto, PatientIdentifier patientIdentifier,
+      boolean forceImmunizationAdministrationDocument, String authorId, String patientId) {
     Composition composition = new Composition();
-    composition.setId("Composition-0001");
-    addEntry(bundle, "Composition/", composition);
+    composition.setId(String.valueOf(UUID.randomUUID()));
+    addEntry(bundle, composition);
     boolean createVaccinationRecord = !forceImmunizationAdministrationDocument && dto instanceof VaccinationRecordDTO;
 
     composition.setMeta(createMeta(
         createVaccinationRecord ? FhirConstants.META_VACD_COMPOSITION_VAC_REC_URL
             : FhirConstants.META_VACD_COMPOSITION_IMMUN_URL));
     composition.setLanguage("en-US");
-    composition.setCategory(createVaccinationRecord ? FhirConstants.COMPOSITION_RECORD_CATEGORY : FhirConstants.COMPOSITION_IMMUNIZATON_CATEGORY);
+    composition.setCategory(createVaccinationRecord ? FhirConstants.COMPOSITION_RECORD_CATEGORY
+        : FhirConstants.COMPOSITION_IMMUNIZATON_CATEGORY);
 
     CodeableConcept compositionType =
         createCodeableConcept("41000179103", "Immunization record", FhirConstants.SNOMED_SYSTEM_URL);
@@ -531,21 +504,21 @@ public class FhirConverter implements FhirConverterIfc {
     composition.setDate(new Date());
 
     if (fhirConfig.isPractitioner(dto.getAuthor().getRole())) {
-      composition.addAuthor(new Reference("Practitioner/Practitioner-author"));
-      fillAuthor(bundle, dto);
-    } else if (dto.getAuthor().getUser().getFullName().equals(patientIdentifier.getPatientInfo().getFullName())) {
-      composition.addAuthor(new Reference("Patient/Patient-0001"));
+      String practitionerAuthorId = fillAuthor(bundle, dto);
+      composition.addAuthor(new Reference(practitionerAuthorId));
+    } else if (FhirUtils.isPatientTheAuthor(patientIdentifier, dto)) {
+      composition.addAuthor(new Reference(FhirConstants.DEFAULT_ID_PREFIX + authorId));
     } else if (fhirConfig.isPatient(dto.getAuthor().getRole())) {
-      composition.addAuthor(new Reference("Patient/Patient-author"));
-      PatientIdentifier authorPatientIdentifier = new PatientIdentifier(null, null, null);
-      authorPatientIdentifier.setPatientInfo(dto.getAuthor().getUser());
-      createPatient(bundle, composition, authorPatientIdentifier, "Patient-author");
+      // in this block we cover the case in which a record created by a PAT is modified by a REP(representative e.g. family member)
+      // this case is not supported at the moment!!!
+      createRelatedPerson(bundle, dto, authorId);
+      composition.addAuthor(new Reference(FhirConstants.DEFAULT_ID_PREFIX + authorId));
     } else {
       throw new TechnicalException("role:" + dto.getAuthor().getRole() + " not supported");
     }
 
     composition.setTitle(createVaccinationRecord ? "Vaccination Record" : "Immunization Administration");
-    composition.setSubject(new Reference("Patient/Patient-0001"));
+    composition.setSubject(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
     composition.setConfidentiality(DocumentConfidentiality.N);
 
     Extension confidentialityExtension = composition.getConfidentialityElement().addExtension();
@@ -560,18 +533,18 @@ public class FhirConverter implements FhirConverterIfc {
       confidentiality.getCodingFirstRep().setSystem(FhirConstants.SNOMED_SYSTEM_URL);
     }
     confidentialityExtension.setValue(confidentiality);
-
-    return composition;
   }
 
   private void createCrossReference(Composition composition, DomainResource resource,
       DomainResource updatedResource) {
-    Extension extension = updatedResource.addExtension();
-    extension.setUrl(
-        "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-author");
-    extension.setValue(composition.getAuthorFirstRep());
+    if (resource.hasType(FhirConstants.IMMUNIZATION)) {
+      Extension extension = updatedResource.addExtension();
+      extension.setUrl(
+          "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-author");
+      extension.setValue(composition.getAuthorFirstRep());
+    }
 
-    extension = updatedResource.addExtension();
+    Extension extension = updatedResource.addExtension();
     extension.setUrl("http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-ext-entry-resource-cross-references");
     extension.addExtension("entry", createReference(FhirUtils.getResourceType(resource),
         FhirUtils.getIdentifierValue(resource)));
@@ -591,20 +564,18 @@ public class FhirConverter implements FhirConverterIfc {
     return identifier;
   }
 
-  private Bundle createMedicalProblem(Bundle bundle, MedicalProblemDTO dto) {
-    return createMedicalProblem(bundle, dto, 1);
-  }
-
-  private Bundle createMedicalProblem(Bundle bundle, MedicalProblemDTO dto, int entryNumber) {
-    String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
-    createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
+  private Bundle createMedicalProblem(Bundle bundle, MedicalProblemDTO dto, PatientIdentifier patientIdentifier) {
+    String patientId = String.valueOf(UUID.randomUUID());
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
+        FhirConstants.META_PRACTITIONER_ROLE_URL);
+    createPatient(bundle, patientIdentifier, patientId, FhirConstants.META_CORE_PATIENT_URL);
+    createOrganization(bundle, dto.getOrganization(), practitionerRole);
 
     Condition condition = new Condition();
-    condition.setId("Condition-" + entryNumberString);
-    condition.setSubject(new Reference("Patient/Patient-0001"));
+    condition.setId(String.valueOf(UUID.randomUUID()));
+    condition.setSubject(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
     condition.addIdentifier(createIdentifier());
-    condition.setRecorder(new Reference("PractitionerRole/PractitionerRole-" + entryNumberString));
+    condition.setRecorder(new Reference(FhirConstants.DEFAULT_ID_PREFIX + practitionerRole.getIdElement().getValue()));
 
     CodeableConcept codeableConcept = new CodeableConcept();
     codeableConcept.getCodingFirstRep().setCode("problem-list-item");
@@ -624,7 +595,7 @@ public class FhirConverter implements FhirConverterIfc {
 
     condition.setMeta(createMeta(FhirConstants.META_VACD_MEDICAL_PROBLEMS_URL));
 
-    addEntry(bundle, "Condition/", condition);
+    addEntry(bundle, condition);
     createSectionIfNecessary(FhirUtils.getResource(Composition.class, bundle), SectionType.MEDICAL_PROBLEM,
         condition);
     return bundle;
@@ -637,32 +608,30 @@ public class FhirConverter implements FhirConverterIfc {
     return meta;
   }
 
-  private void createOrganization(Bundle bundle, String organizationName, PractitionerRole practitionerRole,
-      String entryNumber) {
+  private void createOrganization(Bundle bundle, String organizationName, PractitionerRole practitionerRole) {
     Organization organization = new Organization();
     organization.setMeta(createMeta(FhirConstants.META_ORGANIZATION_URL));
-    organization.setId("Organization-" + entryNumber);
+    organization.setId(String.valueOf(UUID.randomUUID()));
     organization.setName(organizationName != null ? organizationName : "-");
 
-    practitionerRole.setOrganization(new Reference("Organization/Organization-" + entryNumber));
+    practitionerRole.setOrganization(new Reference(FhirConstants.DEFAULT_ID_PREFIX +
+        organization.getIdElement().getValue()));
 
-    addEntry(bundle, "Organization/", organization);
+    addEntry(bundle, organization);
   }
 
-  private Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto) {
-    return createPastIllness(bundle, dto, 1);
-  }
-
-  private Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto, int entryNumber) {
-    String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
-    createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
+  private Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto, PatientIdentifier patientIdentifier) {
+    String patientId = String.valueOf(UUID.randomUUID());
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
+        FhirConstants.META_PRACTITIONER_ROLE_URL);
+    createPatient(bundle, patientIdentifier, patientId, FhirConstants.META_CORE_PATIENT_URL);
+    createOrganization(bundle, dto.getOrganization(), practitionerRole);
 
     Condition condition = new Condition();
-    condition.setId("Condition-" + entryNumberString);
-    condition.setSubject(new Reference("Patient/Patient-0001"));
+    condition.setId(String.valueOf(UUID.randomUUID()));
+    condition.setSubject(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
     condition.addIdentifier(createIdentifier());
-    condition.setRecorder(new Reference("PractitionerRole/PractitionerRole-" + entryNumberString));
+    condition.setRecorder(new Reference(FhirConstants.DEFAULT_ID_PREFIX + practitionerRole.getIdElement().getValue()));
 
     condition.setCode(FhirUtils.toCodeableConcept(dto.getCode()));
     condition.setClinicalStatus(FhirUtils.toCodeableConcept(dto.getClinicalStatus()));
@@ -675,15 +644,14 @@ public class FhirConverter implements FhirConverterIfc {
       condition.setAbatement(new DateTimeType(formatter.format(dto.getEnd())));
     }
 
-    addEntry(bundle, "Condition/", condition);
+    addEntry(bundle, condition);
     createSectionIfNecessary(FhirUtils.getResource(Composition.class, bundle), SectionType.PAST_ILLNESSES,
         condition);
     return bundle;
   }
 
   @SuppressWarnings("deprecation")
-  private void createPatient(Bundle bundle, Composition composition, PatientIdentifier patientIdentifier,
-      String patientId) {
+  private void createPatient(Bundle bundle, PatientIdentifier patientIdentifier, String patientId, String resourceUrl) {
     Identifier identifier = new Identifier();
     identifier
       .setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID()
@@ -693,7 +661,7 @@ public class FhirConverter implements FhirConverterIfc {
     Patient patient = new Patient();
     patient.setId(patientId);
     patient.setIdentifier(List.of(identifier));
-    patient.setMeta(createMeta(FhirConstants.META_CORE_PATIENT_URL));
+    patient.setMeta(createMeta(resourceUrl));
 
     HumanNameDTO patientInfo = patientIdentifier.getPatientInfo();
     if (patientInfo != null) {
@@ -704,18 +672,17 @@ public class FhirConverter implements FhirConverterIfc {
     } else {
       patient.addName().setFamily("emptyFamily").addGiven("emptyGiven").addPrefix("emptyPrefix");
       // For system generated data birthdate should be 1900-01-01
-      patient.setBirthDate(new Date(0, 0, 1));
+      patient.setBirthDate(new Date(0, Calendar.JANUARY, 1));
       patient.setGender(AdministrativeGender.UNKNOWN);
     }
     patient.setActive(true);
 
-    addEntry(bundle, "Patient/", patient);
-    composition.setSubject(new Reference("Patient/" + patient.getIdElement().getValue()));
+    addEntry(bundle, patient);
   }
 
-  private Practitioner createPractitioner(HumanNameDTO practitionerName, String gln, String entryNumberString) {
+  private Practitioner createPractitioner(HumanNameDTO practitionerName, String gln, String resourceUrl) {
     Practitioner practitioner = new Practitioner();
-    practitioner.setId("Practitioner-" + entryNumberString);
+    practitioner.setId(String.valueOf(UUID.randomUUID()));
     Identifier identifier = new Identifier();
     identifier.setValue(gln != null && !"GLN".equalsIgnoreCase(gln) ? gln : FhirConstants.DEFAULT_PRACTITIONER_CODE);
     identifier.setSystem(FhirConstants.FIXED_PRACTITIONER_SYSTEM);
@@ -725,25 +692,27 @@ public class FhirConverter implements FhirConverterIfc {
       .addGiven(practitionerName.getFirstName())
       .addPrefix(practitionerName.getPrefix());
 
-    practitioner.setMeta(createMeta(FhirConstants.META_CORE_PRACTITIONER_URL));
+    practitioner.setMeta(createMeta(resourceUrl));
     return practitioner;
   }
 
   private PractitionerRole createPractitionerRole(Bundle bundle, HumanNameDTO practitionerName, AuthorDTO authorDTO,
-      String entryNumberString) {
+      String resourceUrl) {
     PractitionerRole practitionerRole = new PractitionerRole();
-    practitionerRole.setId("PractitionerRole-" + entryNumberString);
-    practitionerRole.setMeta(createMeta(FhirConstants.META_PRACTITIONER_ROLE_URL));
-    addEntry(bundle, "PractitionerRole/", practitionerRole);
+    practitionerRole.setId(String.valueOf(UUID.randomUUID()));
+    practitionerRole.setMeta(createMeta(resourceUrl));
+    addEntry(bundle, practitionerRole);
 
     if (practitionerName != null && !practitionerName.getFirstName().isBlank()
         && !practitionerName.getLastName().isBlank()) {
       boolean isAuthorPractitioner = practitionerName.getFullName().equals(authorDTO.getUser().getFullName());
       String gln = isAuthorPractitioner ? authorDTO.getGln() : FhirConstants.DEFAULT_PRACTITIONER_CODE;
-
-      Practitioner practitioner = createPractitioner(practitionerName, gln, entryNumberString);
-      practitionerRole.setPractitioner(new Reference("Practitioner/Practitioner-" + entryNumberString));
-      addEntry(bundle, "Practitioner/", practitioner);
+      boolean shouldHaveEprSuffix = resourceUrl.contains("epr");
+      Practitioner practitioner = createPractitioner(practitionerName, gln,
+          shouldHaveEprSuffix ? FhirConstants.META_CORE_PRACTITIONER_EPR_URL : FhirConstants.META_CORE_PRACTITIONER_URL);
+      practitionerRole.setPractitioner(new Reference(FhirConstants.DEFAULT_ID_PREFIX +
+          practitioner.getIdElement().getValue()));
+      addEntry(bundle, practitioner);
     }
 
     return practitionerRole;
@@ -754,6 +723,13 @@ public class FhirConverter implements FhirConverterIfc {
     reference.setType(referenceType);
     reference.setIdentifier(createIdentifier(resourceValue));
     return reference;
+  }
+
+  private void createRelatedPerson(Bundle bundle, BaseDTO dto, String authorId) {
+    PatientIdentifier authorPatientIdentifier = new PatientIdentifier(null, null, null);
+    authorPatientIdentifier.setPatientInfo(dto.getAuthor().getUser());
+    // a new patient instance will be created for the REP
+    createPatient(bundle, authorPatientIdentifier, authorId, FhirConstants.META_RELATED_PERSON_URL);
   }
 
   private void createSectionIfNecessary(Composition composition, SectionType sectionType, Resource resource) {
@@ -774,30 +750,29 @@ public class FhirConverter implements FhirConverterIfc {
     }
 
     if (resource != null) {
-      sectionComponent.addEntry(new Reference(resource));
+      Reference reference =
+          new Reference(FhirConstants.DEFAULT_ID_PREFIX + resource.getIdElement().getValue());
+      reference.setResource(resource);
+      sectionComponent.addEntry(reference);
     }
   }
 
-  private Bundle createVaccination(Bundle bundle, VaccinationDTO vaccinationDTO) {
-    return createVaccination(bundle, vaccinationDTO, 1);
-  }
-
-  private Bundle createVaccination(Bundle bundle, VaccinationDTO dto, int entryNumber) {
-    String entryNumberString = StringUtils.leftPad(String.valueOf(entryNumber), 4, '0');
-
-    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(), entryNumberString);
-    createOrganization(bundle, dto.getOrganization(), practitionerRole, entryNumberString);
+  private Bundle createVaccination(Bundle bundle, VaccinationDTO dto, PatientIdentifier patientIdentifier) {
+    String patientId = String.valueOf(UUID.randomUUID());
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
+        FhirConstants.META_PRACTITIONER_ROLE_URL);
+    createPatient(bundle, patientIdentifier, patientId, FhirConstants.META_CORE_PATIENT_URL);
+    createOrganization(bundle, dto.getOrganization(), practitionerRole);
 
     Immunization immunization = new Immunization();
-    immunization.setId("Immunization-" + entryNumberString);
+    immunization.setId(String.valueOf(UUID.randomUUID()));
     immunization.addIdentifier(createIdentifier());
-    immunization.setPatient(new Reference("Patient/Patient-0001"));
+    immunization.setPatient(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
     immunization.setVaccineCode(FhirUtils.toCodeableConcept(dto.getCode()));
     immunization.setLotNumber(dto.getLotNumber());
 
-    immunization.addPerformer(
-        new Immunization.ImmunizationPerformerComponent(
-            new Reference("PractitionerRole/PractitionerRole-" + entryNumberString)));
+    immunization.addPerformer(new Immunization.ImmunizationPerformerComponent(new Reference(
+            FhirConstants.DEFAULT_ID_PREFIX + practitionerRole.getIdElement().getValue())));
     immunization.setOccurrence(new DateTimeType(Date.from(
         Instant.from(dto.getOccurrenceDate().atStartOfDay(ZoneId.systemDefault())))));
 
@@ -818,7 +793,7 @@ public class FhirConverter implements FhirConverterIfc {
     immunization.setExtension(new ArrayList<>(List.of(createImmunizationsVerificationStatus(dto.getVerificationStatus()))));
     immunization.setMeta(createMeta(FhirConstants.META_VACD_IMMUNIZATION_URL));
 
-    addEntry(bundle, "Immunization/", immunization);
+    addEntry(bundle, immunization);
     createSectionIfNecessary(FhirUtils.getResource(Composition.class, bundle), SectionType.IMMUNIZATION,
         immunization);
     log.debug("Bundle:{}", ToStringBuilder.reflectionToString(bundle, ToStringStyle.JSON_STYLE));
@@ -826,33 +801,29 @@ public class FhirConverter implements FhirConverterIfc {
     return bundle;
   }
 
-  private Bundle createVaccinationRecord(Bundle bundle, VaccinationRecordDTO vaccinationRecord) {
-    int entryNumber = 1;
+  private Bundle createVaccinationRecord(Bundle bundle, VaccinationRecordDTO vaccinationRecord,
+      PatientIdentifier patientIdentifier) {
     for (VaccinationDTO vaccination : vaccinationRecord.getVaccinations()) {
       if (!vaccination.isHasErrors()) {
-        createVaccination(bundle, vaccination, entryNumber);
-        entryNumber++;
+        createVaccination(bundle, vaccination, patientIdentifier);
       }
     }
 
     for (PastIllnessDTO pastIllness : vaccinationRecord.getPastIllnesses()) {
       if (!pastIllness.isHasErrors()) {
-        createPastIllness(bundle, pastIllness, entryNumber);
-        entryNumber++;
+        createPastIllness(bundle, pastIllness, patientIdentifier);
       }
     }
 
     for (AllergyDTO allergy : vaccinationRecord.getAllergies()) {
       if (!allergy.isHasErrors()) {
-        createAllergy(bundle, allergy, entryNumber);
-        entryNumber++;
+        createAllergy(bundle, allergy, patientIdentifier);
       }
     }
 
     for (MedicalProblemDTO medicalProblem : vaccinationRecord.getMedicalProblems()) {
       if (!medicalProblem.isHasErrors()) {
-        createMedicalProblem(bundle, medicalProblem, entryNumber);
-        entryNumber++;
+        createMedicalProblem(bundle, medicalProblem, patientIdentifier);
       }
     }
 
@@ -867,7 +838,7 @@ public class FhirConverter implements FhirConverterIfc {
     return verificationStatus;
   }
 
-  private void fillAuthor(Bundle bundle, BaseDTO dto) {
+  private String fillAuthor(Bundle bundle, BaseDTO dto) {
     AuthorDTO authorDTO = dto.getAuthor();
     if ("ASS".equals(dto.getAuthor().getRole())) {
       // use information of the principal instead of the ASS.
@@ -882,7 +853,9 @@ public class FhirConverter implements FhirConverterIfc {
       authorDTO.setUser(author);
     }
 
-    createPractitionerRole(bundle, authorDTO.getUser(), authorDTO, "author");
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, authorDTO.getUser(), authorDTO,
+        FhirConstants.META_PRACTITIONER_ROLE_EPR_URL);
+    return practitionerRole.getPractitioner().getReference();
   }
 
   private HumanNameDTO getAuthor(Bundle bundle, Annotation note) {
@@ -925,12 +898,6 @@ public class FhirConverter implements FhirConverterIfc {
     return null;
   }
 
-  private Resource getReference(Bundle bundle, Class<?> clazz) {
-    return bundle.getEntry().stream()
-        .filter(entry -> clazz.isAssignableFrom(entry.getResource().getClass()))
-        .findFirst().get().getResource();
-  }
-
   private ValueDTO getImmunizationsVerificationStatus(DomainResource domainResource) {
     Extension verificationStatusExtension = domainResource.getExtensionByUrl(
         "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-verification-status");
@@ -939,6 +906,12 @@ public class FhirConverter implements FhirConverterIfc {
       return coding != null ? new ValueDTO(coding.getCode(), coding.getDisplay(), coding.getSystem()) : null;
     }
     return null;
+  }
+
+  private String getPractitionerReference(Bundle bundle, DomainResource updatedResource) {
+    String practitionerRoleReference = FhirUtils.getReference(updatedResource, ReferenceType.PRACTITIONER_ROLE);
+    PractitionerRole practitionerRole = FhirUtils.getResource(PractitionerRole.class, bundle, practitionerRoleReference);
+    return practitionerRole.getPractitioner().getReference();
   }
 
   private void markResourceDeleted(DomainResource resource) {
@@ -954,5 +927,50 @@ public class FhirConverter implements FhirConverterIfc {
           .setSystem("http://terminology.hl7.org/CodeSystem/condition-ver-status");
       pastIllness.setVerificationStatus(enteredInError);
     }
+  }
+
+  private String resolveAuthorFromOldNote(Bundle bundleToBeUpdated, Annotation oldNote, Bundle bundle,
+      DomainResource updatedResource) {
+    String reference = FhirUtils.stripAuthorReference(oldNote.getAuthorReference().getReference());
+    Resource authorResource = FhirUtils.getResource(bundleToBeUpdated, reference);
+
+    return switch (authorResource) {
+      case Patient ignored -> FhirUtils.getReference(updatedResource, ReferenceType.PATIENT);
+      case Practitioner practitioner -> getOrCreatePractitionerReference(bundle, FhirUtils.toHumanNameDTO(practitioner),
+          FhirUtils.getAuthor(bundleToBeUpdated), updatedResource);
+      case null, default -> null;
+    };
+  }
+
+
+  private String resolveAuthorReference(Bundle bundleToBeUpdated, Annotation oldNote, Bundle bundle,
+      BaseDTO dto, DomainResource updatedResource, boolean patientIsTheAuthor) {
+    CommentDTO commentDTO = dto.getComment();
+    if (oldNote != null && commentDTO != null && commentDTO.getText().equals(oldNote.getText())) {
+      return resolveAuthorFromOldNote(bundleToBeUpdated, oldNote, bundle, updatedResource);
+    }
+
+    // If there is no old comment, or the text differs from the old one,
+    // treat it as a new comment and do not reuse the old comment's author reference.
+    return patientIsTheAuthor ? FhirUtils.getReference(updatedResource, ReferenceType.PATIENT) :
+        getOrCreatePractitionerReference(bundle, dto, updatedResource);
+  }
+
+  private String getOrCreatePractitionerReference(Bundle bundle, BaseDTO dto, DomainResource updatedResource) {
+    return getOrCreatePractitionerReference(bundle, dto.getAuthor().getUser(), dto.getAuthor(), updatedResource);
+  }
+
+  private String getOrCreatePractitionerReference(Bundle bundle, HumanNameDTO practitionerName, AuthorDTO authorDTO,
+      DomainResource updatedResource) {
+    String practitionerReference = getPractitionerReference(bundle, updatedResource);
+    Practitioner newPractitioner = FhirUtils.getResource(Practitioner.class, bundle, practitionerReference);
+    boolean samePractitioner = FhirUtils.isSamePractitioner(newPractitioner, practitionerName);
+
+    if (practitionerReference != null && samePractitioner) {
+      return practitionerReference;
+    }
+
+    return createPractitionerRole(bundle, practitionerName, authorDTO, FhirConstants.META_PRACTITIONER_ROLE_URL)
+        .getPractitioner().getReference();
   }
 }

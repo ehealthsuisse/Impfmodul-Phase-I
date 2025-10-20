@@ -43,7 +43,7 @@ export class ConfirmComponent {
   ) {
     this.isDetailPage = this.route.url.includes('detail');
 
-    this.breakpointObserver.observe(['(max-width: 715px)']).subscribe(result => {
+    this.breakpointObserver.observe(['(max-width: 892px)']).subscribe(result => {
       this.isMobile = result.matches;
       this.cdr.markForCheck();
     });

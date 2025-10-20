@@ -79,25 +79,9 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
 
   ngOnInit(): void {
     this.displayMenu(false, false);
-    let id = this.activatedRoute.snapshot.params['id'];
-    let role: string = this.sharedDataService.storedData['role']!;
-    this.illnessService.find(id).subscribe(illness => {
-      if (illness) {
-        this.illness = illness;
-        this.updateForm(this.illness);
-      } else {
-        this.illnessService.query().subscribe({
-          next: list => {
-            this.illness = list.find(filteredIllness => filteredIllness.id === id)!;
-            this.updateForm(this.illness);
-          },
-        });
-      }
-    });
-
     initializeActionData('', this.sharedDataService);
-    this.processFormOptions();
-    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
+    this.loadInfectiousDiseasesData();
+    this.initializeFormOptions();
   }
 
   ngAfterViewInit(): void {
@@ -152,6 +136,30 @@ export class InfectiousDiseasesFormComponent extends BreakPointSensorComponent i
           }
         },
       });
+  }
+
+  private initializeFormOptions(): void {
+    const role: string = this.sharedDataService.storedData['role']!;
+    this.processFormOptions();
+    this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
+  }
+
+  private loadInfectiousDiseasesData(): void {
+    const id = this.activatedRoute.snapshot.params['id'];
+    this.illnessService.find(id).subscribe(illness => {
+      if (illness) {
+        this.illness = illness;
+        this.updateForm(this.illness);
+      } else {
+        this.illnessService.query().subscribe({
+          next: list => {
+            this.illness = list.find(filteredIllness => filteredIllness.id === id)!;
+            this.updateForm(this.illness);
+          },
+        });
+      }
+      this.commentMessage = this.editForm.get('comment')?.value?.text || '';
+    });
   }
 
   private processFormOptions(): void {

@@ -186,7 +186,9 @@ public class ValidationUtils {
   }
 
   private static void validateVaccination(VaccinationDTO vaccination) {
-    ValidationUtils.isListNotNullOrEmpty("targetDiseases", vaccination.getTargetDiseases());
+    if (!FhirConstants.VACCINE_UNKNOWN.equals(vaccination.getCode().getCode())) {
+      ValidationUtils.isListNotNullOrEmpty("targetDiseases", vaccination.getTargetDiseases());
+    }
     vaccination.getTargetDiseases().forEach(ValidationUtils::validateValueDTO);
     ValidationUtils.isPositiveNumber("doseNumber", vaccination.getDoseNumber());
     ValidationUtils.isDateNotNull("occurrenceDate", vaccination.getOccurrenceDate());

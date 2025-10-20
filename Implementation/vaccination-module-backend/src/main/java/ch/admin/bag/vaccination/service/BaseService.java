@@ -24,7 +24,7 @@ import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
-import ch.admin.bag.vaccination.utils.JsonFieldExtractor;
+import ch.admin.bag.vaccination.utils.ContentFieldExtractor;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirUtils;
@@ -441,7 +441,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
 
     log.debug(LOAD_DATA_FOR_FROM + " Filesystem", patientIdentifier.getPatientInfo().getFullName());
     return fhirAdapter.getLocalEntities().stream().map(localEntity -> new EPRDocument(true, localEntity, null,
-            JsonFieldExtractor.extractFieldAsLocalDateTime(localEntity, "timestamp")))
+            ContentFieldExtractor.extractFieldAsLocalDateTime(localEntity, "timestamp")))
         .collect(Collectors.toList());
   }
 
@@ -470,7 +470,7 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
   private void handleRetrievedDocument(EPRDocument doc) {
     String document = getDocumentData(doc.getRetrievedDocument());
     doc.setJsonOrXmlFhirContent(document);
-    doc.setCreationDate(JsonFieldExtractor.extractFieldAsLocalDateTime(document, "timestamp"));
+    doc.setCreationDate(ContentFieldExtractor.extractFieldAsLocalDateTime(document, "timestamp"));
   }
 
   @SuppressWarnings("unchecked")
