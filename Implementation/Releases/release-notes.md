@@ -3,8 +3,9 @@ This release wraps up all the RC-feedback for the next stable release, along wit
 
 ### Changes Fhir Library
 * Added new validation: A medical problem with an end date cannot be created unless the clinical status is set to Inactive. The validation applies **only** to write operations. Read operations are excluded to maintain backward compatibility.
-* When an adverse event, past illness, or medical problem record is deleted, the clinical status section will be removed from the bundle. Additionally, for past illness and medical problem records with an end date, the abatementDateTime field will also be removed from the bundle.
+* When an adverse event, infectious disease, or medical problem record is deleted, the clinical status section will be removed from the bundle. Additionally, for infectious diseases and medical problem records with an end date, the abatementDateTime field will also be removed from the bundle.
 * When a representative **creates** or **modifies** a record **on behalf of** the patient, a **RelatedPerson** resource will be added to the bundle, referencing the **author** (the representative), instead of a **Patient** resource. This case is **not currently supported**.
+* Small changes regarding the patient identifier
 
 ### Changes Vaccination Module Frontend
 * When a medical problem with an end date is created, the clinical status field will be automatically set to Inactive and made read-only.
