@@ -52,7 +52,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     HumanNameDTO recorder = new HumanNameDTO("Victor", "Frankenstein", "Dr.", null, null);
 
     ValueDTO illnessCode = new ValueDTO("123456789", "987654321", "testsystem");
-    ValueDTO clinicalStatus = new ValueDTO("clinicalStatus", "clinicalStatus", "testsystem");
+    ValueDTO clinicalStatus = new ValueDTO("inactive", "Inactive", "testsystem");
     ValueDTO verificationStatus = new ValueDTO("verificationStatus", "verificationStatus", "testsystem");
     String commentText = "BlaBla";
     CommentDTO comment = new CommentDTO(null, recorder.getFullName(), commentText);
@@ -155,7 +155,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
     HumanNameDTO recorder = new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null);
 
     ValueDTO newIllnessCode = new ValueDTO("newCode", "newCode", "testsystem");
-    ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
+    ValueDTO newClinicalStatus = new ValueDTO("inactive", "Inactive", "testsystem");
     ValueDTO newVerificationStatus = new ValueDTO("newVerificationStatus", "newVerificationStatus", "testsystem");
     String commentText = "BlaBla";
     CommentDTO comment = new CommentDTO(null, author.getUser().getFullName(), commentText);
@@ -217,7 +217,7 @@ class MedicalProblemServiceTest extends AbstractServiceTest {
   public void testValidate() {
     HumanNameDTO recorder = new HumanNameDTO("Victor2", "Frankenstein2", "Dr.", null, null);
     ValueDTO newIllnessCode = new ValueDTO("newCode", "newCode", "testsystem");
-    ValueDTO newClinicalStatus = new ValueDTO("newClinicalStatus", "newClinicalStatus", "testsystem");
+    ValueDTO newClinicalStatus = new ValueDTO("inactive", "Inactive", "testsystem");
 
     MedicalProblemDTO newDto = new MedicalProblemDTO(null, newIllnessCode, newClinicalStatus, null,
         LocalDate.now(), LocalDate.of(2000, 1, 1), LocalDate.of(2001, 12, 31), recorder, null,

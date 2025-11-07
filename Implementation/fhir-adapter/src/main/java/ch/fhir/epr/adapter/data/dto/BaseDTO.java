@@ -79,13 +79,13 @@ public abstract class BaseDTO {
   public abstract LocalDate getDateOfEvent();
 
   /**
-   * Validates this entity, during read or delete operation, we are giving some more flexibility to
+   * Validates this entity, during read operation, we are giving some more flexibility to
    * what we allow, e.g. persons first or family name needn't be filled.
    *
-   * @param isReadOrDelete <code>true</code> if it is a reading or delete operation on a bundle.
+   * @param isReadOperation <code>true</code> if it is a reading operation on a bundle.
    */
-  public void validate(boolean isReadOrDelete) {
-    ValidationUtils.isValid(this, isReadOrDelete);
+  public void validate(boolean isReadOperation) {
+    ValidationUtils.isValid(this, isReadOperation);
   }
 
   /**

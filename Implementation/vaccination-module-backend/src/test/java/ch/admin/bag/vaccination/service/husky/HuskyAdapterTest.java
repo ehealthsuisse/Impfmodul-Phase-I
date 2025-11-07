@@ -224,7 +224,7 @@ class HuskyAdapterTest {
         huskyAdapter.getPatientIdentifier(EPDCommunity.EPDPLAYGROUND.name(),
             "1.2.3.4.123456.1", "waldspital-Id-1234");
     assertThat(patientIdentifier.getLocalAssigningAuthority()).isEqualTo("1.2.3.4.123456.1");
-    assertThat(patientIdentifier.getLocalExtenstion()).isEqualTo("waldspital-Id-1234");
+    assertThat(patientIdentifier.getLocalExtension()).isEqualTo("waldspital-Id-1234");
     assertThat(patientIdentifier.getGlobalAuthority()).isEqualTo("1.1.1.99.1");
     assertThat(patientIdentifier.getGlobalExtension())
         .isEqualTo("2dc7a783-78b1-4627-94fb-610a23135c42");

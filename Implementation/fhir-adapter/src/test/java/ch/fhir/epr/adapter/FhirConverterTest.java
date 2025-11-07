@@ -146,6 +146,8 @@ class FhirConverterTest {
     String patientId = FhirUtils.getResource(Composition.class, bundle).getSubject().getReference();
     Patient result = FhirUtils.getPatient(bundle, patientId);
     assertEquals("MALE", result.getGender().name());
+    assertEquals(FhirConstants.META_PATIENT_IDENTIFIER_TYPE_SYSTEM_URL,
+        result.getIdentifierFirstRep().getType().getCodingFirstRep().getSystem());
   }
 
   @Test
@@ -160,6 +162,8 @@ class FhirConverterTest {
     String patientId = FhirUtils.getResource(Composition.class, bundle).getSubject().getReference();
     Patient result = FhirUtils.getPatient(bundle, patientId);
     assertEquals("UNKNOWN", result.getGender().name());
+    assertEquals(FhirConstants.MEDICAL_RECORD_NUMBER,
+        result.getIdentifierFirstRep().getType().getCodingFirstRep().getCode());
   }
 
   @Test

@@ -46,7 +46,7 @@ public class PatientIdentifier implements Serializable {
   private String communityIdentifier;
   // local ID known only to the local assigning authority
   // Refering to the example 08242eb8-dd47-4298-8d2f-25d60114f137
-  private String localExtenstion;
+  private String localExtension;
 
   // Refering to the example 1.1.1.2.2
   private String localAssigningAuthority;
@@ -73,7 +73,7 @@ public class PatientIdentifier implements Serializable {
   public PatientIdentifier(String communityIdentifier, String localId,
       String localAssigningAuthorityId) {
     this.communityIdentifier = communityIdentifier;
-    localExtenstion = localId;
+    localExtension = localId;
     localAssigningAuthority = localAssigningAuthorityId;
   }
 

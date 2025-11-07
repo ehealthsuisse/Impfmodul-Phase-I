@@ -51,7 +51,7 @@ public class HttpSessionUtilsTest {
     PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
 
     assertEquals(EPDCommunity.GAZELLE.name(), patientIdentifierFromSession.getCommunityIdentifier());
-    assertEquals("otherLocalId", patientIdentifierFromSession.getLocalExtenstion());
+    assertEquals("otherLocalId", patientIdentifierFromSession.getLocalExtension());
     assertEquals("otherOid", patientIdentifierFromSession.getLocalAssigningAuthority());
   }
 

@@ -176,7 +176,7 @@ class CacheTest {
     pid1.setPatientInfo(patient);
     assertThat(pid1.getCommunityIdentifier()).isEqualTo("community");
     assertThat(pid1.getLocalAssigningAuthority()).isEqualTo("oid");
-    assertThat(pid1.getLocalExtenstion()).isEqualTo("localId");
+    assertThat(pid1.getLocalExtension()).isEqualTo("localId");
     assertThat(pid1.getSpidRootAuthority()).isEqualTo("2.16.756.5.30.1.127.3.10.3");
     assertThat(pid1.getPatientInfo().getPrefix()).isEqualTo("prefix");
     assertThat(pid1.getSpidExtension()).isNull();

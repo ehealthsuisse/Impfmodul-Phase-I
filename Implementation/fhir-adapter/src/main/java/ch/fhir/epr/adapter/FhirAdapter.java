@@ -51,6 +51,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -418,6 +419,11 @@ public class FhirAdapter implements FhirAdapterIfc {
     boolean validated = true;
     Patient patient = FhirUtils.getPatient(bundle, composition.getAuthorFirstRep().getReference());
     if (patient != null) {
+      validated = false;
+    }
+
+    RelatedPerson relatedPerson = FhirUtils.getRelatedPerson(bundle, composition.getAuthorFirstRep().getReference());
+    if (relatedPerson != null) {
       validated = false;
     }
 

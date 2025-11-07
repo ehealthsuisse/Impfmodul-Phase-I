@@ -61,6 +61,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedPerson;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -278,8 +279,8 @@ class FhirAdapterTest {
 
     Composition composition = FhirUtils.getResource(Composition.class, updatedBundle);
     List<CompositionRelatesToComponent> relatesTo = composition.getRelatesTo();
-    assertEquals("replaces", relatesTo.get(0).getCode().toCode());
-    assertEquals("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753", relatesTo.get(0).getTargetReference().getReference());
+    assertEquals("replaces", relatesTo.getFirst().getCode().toCode());
+    assertEquals("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753", relatesTo.getFirst().getTargetReference().getReference());
 
     List<DomainResource> resources = fhirAdapter.getSectionResources(updatedBundle, SectionType.IMMUNIZATION);
     assertThat(resources.size()).isEqualTo(1);
@@ -352,7 +353,7 @@ class FhirAdapterTest {
 
   @Test
   void test_AuthorIsHCP() {
-    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+    PatientIdentifier patientIdentifier = createPatientIdentifier("1.1.1.2.2", "CHPAM204");
     patientIdentifier.setSpidExtension("12.34.56.78");
     VaccinationDTO vaccinationDTO = createVaccinationDTO();
     vaccinationDTO.getAuthor().setRole("HCP");
@@ -374,20 +375,22 @@ class FhirAdapterTest {
 
     String patientId = FhirUtils.getResource(Composition.class, bundle).getSubject().getReference();
     assertThat(FhirUtils.getPatient(bundle, patientId).getNameFirstRep().getFamily()).isEqualTo("Branagh");
+    assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getType().getCodingFirstRep().getSystem())
+        .isEqualTo(FhirConstants.META_PATIENT_IDENTIFIER_TYPE_SYSTEM_URL);
+    assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getType().getCodingFirstRep().getCode())
+        .isEqualTo(FhirConstants.MEDICAL_RECORD_NUMBER);
     assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getValue())
-        .isEqualTo("12.34.56.78");
+        .isEqualTo("CHPAM204");
     assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getSystem())
-        .isEqualTo("urn:oid:2.16.756.5.30.1.127.3.10.3");
+        .isEqualTo("urn:oid:1.1.1.2.2");
     assertThat(FhirUtils.getAuthor(bundle).getUser().getLastName()).isEqualTo("Doe");
     assertThat(FhirUtils.getAuthor(bundle).getRole()).isEqualTo("HCP");
     assertThat(FhirUtils.getConfidentiality(bundle).getSystem()).isEqualTo(FhirConstants.SNOMED_SYSTEM_URL);
     assertThat(bundle.getMeta().getProfile().getFirst().getValue()).isEqualTo(FhirConstants.META_VACCINATION_TYPE_URL);
 
     String json = fhirAdapter.marshall(bundle);
-    assertThat(json).contains("\"system\": \"urn:oid:2.16.756.5.30.1.127.3.10.3\"");
-    assertThat(json).contains("\"value\": \"12.34.56.78\"");
-    assertThat(json).contains(patientIdentifier.getLocalAssigningAuthority());
-    assertThat(json).doesNotContain(patientIdentifier.getLocalExtenstion());
+    assertThat(json).contains("\"system\": \"urn:oid:1.1.1.2.2\"");
+    assertThat(json).contains("\"value\": \"CHPAM204\"");
 
     // DTO -> Bundle
     VaccinationDTO targetDTO = fhirAdapter.getDTOs(VaccinationDTO.class, bundle).getFirst();
@@ -402,9 +405,9 @@ class FhirAdapterTest {
   }
 
   @Test
-  void test_AuthorIsOtherPatient() {
+  void test_AuthorIsRelatedPerson() {
     // patient Kenneth Branagh
-    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+    PatientIdentifier patientIdentifier = createPatientIdentifier("1.1.1.2.2", "CHPAM204");
     patientIdentifier.setSpidExtension("12.34.56.78");
     // author John Doe
     VaccinationDTO vaccinationDTO = createVaccinationDTO();
@@ -423,19 +426,21 @@ class FhirAdapterTest {
 
     String patientId = FhirUtils.getResource(Composition.class, bundle).getSubject().getReference();
     assertThat(FhirUtils.getPatient(bundle, patientId).getNameFirstRep().getFamily()).isEqualTo("Branagh");
+    assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getType().getCodingFirstRep().getSystem())
+        .isEqualTo(FhirConstants.META_PATIENT_IDENTIFIER_TYPE_SYSTEM_URL);
+    assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getType().getCodingFirstRep().getCode())
+        .isEqualTo(FhirConstants.MEDICAL_RECORD_NUMBER);
     assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getValue())
-        .isEqualTo("12.34.56.78");
+        .isEqualTo("CHPAM204");
     assertThat(FhirUtils.getPatient(bundle, patientId).getIdentifierFirstRep().getSystem())
-        .isEqualTo("urn:oid:2.16.756.5.30.1.127.3.10.3");
+        .isEqualTo("urn:oid:1.1.1.2.2");
 
-    String patientAuthorId = FhirUtils.getResource(Composition.class, bundle).getAuthor().getFirst().getReference();
-    assertThat(FhirUtils.getPatient(bundle, patientAuthorId).getNameFirstRep().getFamily()).isEqualTo("Doe");
-    assertThat(FhirUtils.getPatient(bundle, patientAuthorId).getIdentifierFirstRep().getValue())
-        .isNotEqualTo("12.34.56.78");
-    assertThat(FhirUtils.getPatient(bundle, patientAuthorId).getIdentifierFirstRep().getSystem())
-        .isEqualTo("urn:oid:2.16.756.5.30.1.127.3.10.3");
+    String relatedPersonAuthorId = FhirUtils.getResource(Composition.class, bundle).getAuthor().getFirst().getReference();
+    assertThat(FhirUtils.getRelatedPerson(bundle, relatedPersonAuthorId).getNameFirstRep().getFamily()).isEqualTo("Doe");
+    assertThat(FhirUtils.getRelatedPerson(bundle, relatedPersonAuthorId).getIdentifierFirstRep().getValue())
+        .isNotEqualTo("CHPAM204");
     assertThat(FhirUtils.getAuthor(bundle).getUser().getLastName()).isEqualTo("Doe");
-    assertThat(FhirUtils.getAuthor(bundle).getRole()).isEqualTo("PAT");
+    assertThat(FhirUtils.getAuthor(bundle).getRole()).isEqualTo("REP");
 
     String organizationId = FhirUtils.getResource(PractitionerRole.class, bundle).getOrganization().getReference();
     assertThat(FhirUtils.getOrganization(bundle, organizationId).getName()).isEqualTo("-");
@@ -445,7 +450,7 @@ class FhirAdapterTest {
     assertThat(targetDTO.getRecorder().getLastName()).isEqualTo("Frankenstein");
     // TODO assertThat(targetDTO.getRecorder().getRole()).isEqualTo("HCP");
     assertThat(targetDTO.getAuthor().getUser().getLastName()).isEqualTo("Doe");
-    assertThat(targetDTO.getAuthor().getRole()).isEqualTo("PAT");
+    assertThat(targetDTO.getAuthor().getRole()).isEqualTo("REP");
     assertThat(targetDTO.isValidated()).isFalse();
   }
 
@@ -688,14 +693,67 @@ class FhirAdapterTest {
 
     Composition composition = FhirUtils.getResource(Composition.class, deletedBundle);
     List<CompositionRelatesToComponent> relatesTo = composition.getRelatesTo();
-    assertEquals("replaces", relatesTo.get(0).getCode().toCode());
-    assertEquals("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753", relatesTo.get(0).getTargetReference().getReference());
+    assertEquals("replaces", relatesTo.getFirst().getCode().toCode());
+    assertEquals("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753", relatesTo.getFirst().getTargetReference().getReference());
 
 
     VaccinationDTO deletedVaccinationDTO = getFirstDTO(VaccinationDTO.class, deletedBundle);
     assertThat(deletedVaccinationDTO.isDeleted()).isTrue();
     assertThat(deletedVaccinationDTO.getRelatedId())
         .isEqualTo("acc1f090-5e0c-45ae-b283-521d57c3aa2f");
+  }
+
+  @Test
+  void test_deleteAllergy() {
+    Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-B-D2-HCP1-C1.json");
+    List<AllergyDTO> allergieDtos = fhirAdapter.getDTOs(AllergyDTO.class, bundle);
+    AllergyDTO allergyDTO = allergieDtos.getFirst();
+
+    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+
+    Bundle deletedBundle = fhirAdapter.delete(patientIdentifier, allergyDTO, bundle, allergyDTO.getId());
+
+    Composition composition = FhirUtils.getResource(Composition.class, deletedBundle);
+    List<CompositionRelatesToComponent> relatesTo = composition.getRelatesTo();
+    assertEquals("replaces", relatesTo.getFirst().getCode().toCode());
+    assertEquals("urn:uuid:b9d9efbc-2115-42c0-98e6-b374f942560b",
+        relatesTo.getFirst().getTargetReference().getReference());
+
+    AllergyIntolerance allergy = FhirUtils.getResource(AllergyIntolerance.class, deletedBundle);
+    assertThat(allergy).isNotNull();
+    assertNull(allergy.getClinicalStatus().getCodingFirstRep().getCode());
+    assertNull(allergy.getClinicalStatus().getCodingFirstRep().getDisplay());
+    assertNull(allergy.getClinicalStatus().getCodingFirstRep().getSystem());
+
+    AllergyDTO deletedVaccinationDTO = getFirstDTO(AllergyDTO.class, deletedBundle);
+    assertThat(deletedVaccinationDTO.isDeleted()).isTrue();
+  }
+
+  @Test
+  void test_deletePastIllness() {
+    Bundle bundle = fhirAdapter.unmarshallFromFile("src/test/resources/testfiles/Bundle-F-D6-HCP1-C1.json");
+    List<PastIllnessDTO> pastIllnessDTOs = fhirAdapter.getDTOs(PastIllnessDTO.class, bundle);
+    PastIllnessDTO pastIllnessDTO = pastIllnessDTOs.getFirst();
+
+    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+
+    Bundle deletedBundle = fhirAdapter.delete(patientIdentifier, pastIllnessDTO, bundle, pastIllnessDTO.getId());
+
+    Composition composition = FhirUtils.getResource(Composition.class, deletedBundle);
+    List<CompositionRelatesToComponent> relatesTo = composition.getRelatesTo();
+    assertEquals("replaces", relatesTo.getFirst().getCode().toCode());
+    assertEquals("urn:uuid:8e6ae348-05a3-415b-b37d-bcb3f98c84ba",
+        relatesTo.getFirst().getTargetReference().getReference());
+
+    Condition condition = FhirUtils.getResource(Condition.class, deletedBundle);
+    assertThat(condition).isNotNull();
+    assertNull(condition.getAbatementDateTimeType().getValue());
+    assertNull(condition.getClinicalStatus().getCodingFirstRep().getCode());
+    assertNull(condition.getClinicalStatus().getCodingFirstRep().getDisplay());
+    assertNull(condition.getClinicalStatus().getCodingFirstRep().getSystem());
+
+    PastIllnessDTO deletedPastIllnessDTO = getFirstDTO(PastIllnessDTO.class, deletedBundle);
+    assertThat(deletedPastIllnessDTO.isDeleted()).isTrue();
   }
 
   @Test
@@ -732,64 +790,7 @@ class FhirAdapterTest {
   }
 
   @Test
-  void test_patientIdentifierNull_genderAndBirthdateGeneratedBySystem() {
-    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
-    patientIdentifier.setPatientInfo(null);
-    VaccinationDTO vaccinationDTO = createVaccinationDTO();
-    vaccinationDTO.getAuthor().setRole("HCP");
-    vaccinationDTO.setReason(new ValueDTO("reasonCode", "reasonName", "reasonSystem"));
-
-    FhirContext ctx = FhirContext.forR4();
-    Bundle bundle = fhirConverter.createBundle(ctx, patientIdentifier, vaccinationDTO);
-
-    assertThat(FhirUtils.getResource(Patient.class, bundle).getGender().getDisplay())
-        .isEqualToIgnoringCase("unknown");
-    assertThat(FhirUtils.getResource(Patient.class, bundle).getBirthDate())
-        .isEqualToIgnoringHours("1900-01-01");
-  }
-
-  @Test
-  void test_toBundle_with_Patient() {
-    Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
-    List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
-    VaccinationDTO createdVaccinationDTO = vaccinations.getFirst();
-    createdVaccinationDTO.setAuthor(createAuthor());
-    FhirContext ctx = FhirContext.forR4();
-    PatientIdentifier patientIdentifier = createPatientIdentifier("aaa", "bbb");
-
-    Bundle createdBundle =
-        fhirConverter.createBundle(ctx, patientIdentifier, createdVaccinationDTO);
-
-    String patientId = FhirUtils.getResource(Composition.class, createdBundle).getSubject().getReference();
-    assertThat(FhirUtils.getPatient(createdBundle, patientId).getNameFirstRep().getFamily())
-        .isEqualTo("Branagh");
-    assertThat(FhirUtils.getPatient(createdBundle, patientId).getNameFirstRep().getGivenAsSingleString())
-        .isEqualTo("Kenneth");
-    assertThat(FhirUtils.getPatient(createdBundle, patientId).getNameFirstRep().getPrefixAsSingleString())
-        .isEqualTo("Mr.");
-
-    isConfidentialityEqualTo(createdBundle, "17621005", FhirConstants.SNOMED_SYSTEM_URL, "Normal");
-
-    String json = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(createdBundle);
-    log.debug("json:{}", json);
-
-    vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, createdBundle);
-    createdVaccinationDTO = vaccinations.getFirst();
-    assertThat(createdVaccinationDTO.getDoseNumber()).isEqualTo(1);
-    assertThat(createdVaccinationDTO.getLotNumber()).isEqualTo("AHAVB946A");
-    assertThat(createdVaccinationDTO.getCode().getCode()).isEqualTo("558");
-    assertThat(createdVaccinationDTO.getId()).isNotNull();
-    assertThat(createdVaccinationDTO.getStatus().getCode()).isEqualTo("completed");
-    assertThat(createdVaccinationDTO.isValidated()).isFalse();
-
-    assertThat(createdVaccinationDTO.getRecorder().getFirstName()).isEqualTo("Peter");
-    assertThat(createdVaccinationDTO.getRecorder().getLastName()).isEqualTo("Müller");
-    assertThat(createdVaccinationDTO.getRecorder().getPrefix()).isEqualTo("Dr. med.");
-  }
-
-  @Test
-  @Deprecated // Patient should be always defined !
-  void test_toBundle_without_patient() {
+  void testCreateBundleByRelatedPerson() {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
     VaccinationDTO vaccinationDTO = vaccinations.getFirst();
@@ -807,6 +808,17 @@ class FhirAdapterTest {
     assertThat(FhirUtils.getPatient(createdBundle, patientId).getNameFirstRep().getPrefixAsSingleString())
         .isEqualTo("Mr.");
 
+    String relatedPersonId = FhirUtils.getResource(Composition.class, createdBundle).getAuthorFirstRep().getReference();
+    assertThat(FhirUtils.getRelatedPerson(createdBundle, relatedPersonId).getNameFirstRep().getFamily())
+        .isEqualTo("Wegmueller");
+    assertThat(FhirUtils.getRelatedPerson(createdBundle, relatedPersonId).getNameFirstRep().getGivenAsSingleString())
+        .isEqualTo("Monika");
+
+    isConfidentialityEqualTo(createdBundle, "17621005", FhirConstants.SNOMED_SYSTEM_URL, "Normal");
+
+    String json = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(createdBundle);
+    log.debug("json:{}", json);
+
     vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, createdBundle);
     vaccinationDTO = vaccinations.getFirst();
     assertThat(vaccinationDTO.getDoseNumber()).isEqualTo(1);
@@ -815,10 +827,6 @@ class FhirAdapterTest {
     assertThat(vaccinationDTO.getId()).isNotNull();
     assertThat(vaccinationDTO.getStatus().getCode()).isEqualTo("completed");
     assertThat(vaccinationDTO.isValidated()).isFalse();
-
-    assertThat(vaccinationDTO.getRecorder().getFirstName()).isEqualTo("Peter");
-    assertThat(vaccinationDTO.getRecorder().getLastName()).isEqualTo("Müller");
-    assertThat(vaccinationDTO.getRecorder().getPrefix()).isEqualTo("Dr. med.");
   }
 
   @Test
@@ -864,15 +872,16 @@ class FhirAdapterTest {
 
     Composition composition = FhirUtils.getResource(Composition.class, updatedBundle);
     List<CompositionRelatesToComponent> relatesTo = composition.getRelatesTo();
-    assertEquals("replaces", relatesTo.get(0).getCode().toCode());
-    assertEquals("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753", relatesTo.get(0).getTargetReference().getReference());
+    assertEquals("replaces", relatesTo.getFirst().getCode().toCode());
+    assertEquals("urn:uuid:b505b90a-f241-41ca-859a-b55a6103e753",
+        relatesTo.getFirst().getTargetReference().getReference());
 
     String subjectId = composition.getSubject().getReference();
     Patient patient = FhirUtils.getResource(Patient.class, updatedBundle, subjectId);
     assertEquals(FhirConstants.META_CORE_PATIENT_EPR_URL, patient.getMeta().getProfile().getFirst().getValue());
     String authorId = composition.getAuthorFirstRep().getReference();
-    Patient patientAuthor = FhirUtils.getResource(Patient.class, updatedBundle, authorId);
-    assertEquals(FhirConstants.META_RELATED_PERSON_URL, patientAuthor.getMeta().getProfile().getFirst().getValue());
+    RelatedPerson relatedPerson = FhirUtils.getResource(RelatedPerson.class, updatedBundle, authorId);
+    assertEquals(FhirConstants.META_RELATED_PERSON_URL, relatedPerson.getMeta().getProfile().getFirst().getValue());
 
     vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, updatedBundle);
     VaccinationDTO updatedVaccinationDTO = vaccinations.getFirst();

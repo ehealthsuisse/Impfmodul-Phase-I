@@ -28,6 +28,12 @@ import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +49,7 @@ import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Immunization;
@@ -51,6 +58,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedPerson;
 import org.hl7.fhir.r4.model.Resource;
 
 @Slf4j
@@ -90,6 +98,37 @@ public final class FhirUtils {
     return codeableConcept;
   }
 
+  static void convertAndSetGender(DomainResource resource, HumanNameDTO patientInfo) {
+    AdministrativeGender gender = null;
+    for (AdministrativeGender administrativeGender : AdministrativeGender.values()) {
+      if (administrativeGender.name().equals(patientInfo.getGender())) {
+        gender = administrativeGender;
+        break;
+      }
+    }
+
+    if (gender == null) {
+      gender = AdministrativeGender.UNKNOWN;
+    }
+
+    if (resource instanceof Patient patient) {
+      patient.setGender(gender);
+    } else if (resource instanceof RelatedPerson relatedPerson) {
+      relatedPerson.setGender(gender);
+    }
+  }
+
+  static Date convertToDate(LocalDate dateToConvert) {
+    if (dateToConvert == null) {
+      return null;
+    }
+    return Date.from(ZonedDateTime.of(dateToConvert, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant());
+  }
+
+  static LocalDate convertToLocalDate(Date dateToConvert) {
+    return dateToConvert != null ? LocalDate.ofInstant(dateToConvert.toInstant(), ZoneId.systemDefault()) : null;
+  }
+
   static Annotation getAnnotation(Resource resource) {
     return switch (resource) {
       case Immunization immunization  -> getFirstAnnotation(immunization.getNote());
@@ -119,6 +158,11 @@ public final class FhirUtils {
     Patient patient = getPatient(bundle, id);
     if (patient != null) {
       return new AuthorDTO(toHumanNameDTO(patient), null, "PAT", null, null, null, null);
+    }
+
+    RelatedPerson relatedPerson = getRelatedPerson(bundle, id);
+    if (relatedPerson != null) {
+      return new AuthorDTO(toHumanNameDTO(relatedPerson), null, "REP", null, null, null, null);
     }
 
     PractitionerRole practitionerRole = getPractitionerRole(bundle, id);
@@ -169,6 +213,10 @@ public final class FhirUtils {
 
   static PractitionerRole getPractitionerRole(Bundle bundle, String id) {
     return getResource(PractitionerRole.class, bundle, id);
+  }
+
+  static RelatedPerson getRelatedPerson(Bundle bundle, String id) {
+    return getResource(RelatedPerson.class, bundle, id);
   }
 
   static Resource getReference(Bundle bundle, Class<?> clazz) {
@@ -312,6 +360,14 @@ public final class FhirUtils {
     return false;
   }
 
+  static void populatePersonDetails(DomainResource resource, HumanNameDTO personInfo) {
+    switch (resource) {
+      case Patient patient -> applyHumanName(patient, personInfo);
+      case RelatedPerson relatedPerson -> applyHumanName(relatedPerson, personInfo);
+      default -> { /* no-op */ }
+    }
+  }
+
   /**
    * Strips the author reference down to its identifier.
    * <p>
@@ -377,6 +433,15 @@ public final class FhirUtils {
     return toHumanNameDTO(humanName);
   }
 
+  static HumanNameDTO toHumanNameDTO(RelatedPerson relatedPerson) {
+    if (relatedPerson == null) {
+      return null;
+    }
+
+    HumanName humanName = relatedPerson.getNameFirstRep();
+    return toHumanNameDTO(humanName);
+  }
+
   static ValueDTO toValueDTO(CodeableConcept concept) {
     if (concept == null) {
       log.warn("concept is null!");
@@ -386,6 +451,24 @@ public final class FhirUtils {
         concept.getCodingFirstRep().getCode(), //
         concept.getCodingFirstRep().getDisplay(), //
         concept.getCodingFirstRep().getSystem()); //
+  }
+
+  private static void applyHumanName(DomainResource resource, HumanNameDTO personInfo) {
+    switch (resource) {
+      case Patient patient -> {
+        patient.addName().setFamily(personInfo.getLastName()).addGiven(personInfo.getFirstName())
+            .addPrefix(personInfo.getPrefix());
+        patient.setBirthDate(convertToDate(personInfo.getBirthday()));
+        convertAndSetGender(patient, personInfo);
+      }
+      case RelatedPerson relatedPerson -> {
+        relatedPerson.addName().setFamily(personInfo.getLastName()).addGiven(personInfo.getFirstName())
+            .addPrefix(personInfo.getPrefix());
+        relatedPerson.setBirthDate(convertToDate(personInfo.getBirthday()));
+        convertAndSetGender(relatedPerson, personInfo);
+      }
+      default -> { /* no-op */ }
+    }
   }
 
   private static Annotation getFirstAnnotation(List<Annotation> notes) {

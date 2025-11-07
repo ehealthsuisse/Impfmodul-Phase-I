@@ -33,7 +33,7 @@ public class PatientIdentifierTest {
         new PatientIdentifier("communityIdentifier", "localId", "localAssigningAuthorityId");
 
     assertEquals(patientIdentifier.getCommunityIdentifier(), "communityIdentifier");
-    assertEquals(patientIdentifier.getLocalExtenstion(), "localId");
+    assertEquals(patientIdentifier.getLocalExtension(), "localId");
     assertEquals(patientIdentifier.getLocalAssigningAuthority(), "localAssigningAuthorityId");
 
     assertEquals(patientIdentifier.getSpidExtension(), null);

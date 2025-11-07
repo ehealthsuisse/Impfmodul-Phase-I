@@ -71,7 +71,7 @@ public class VaccinationRecordController {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
     PatientIdentifier patientIdentifierFromEPD = vaccinationService.getPatientIdentifier(communityIdentifier,
-        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtenstion());
+        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtension());
     return vaccinationRecordService.convertVaccinationToImmunization(patientIdentifierFromEPD, assertion);
   }
 
@@ -84,7 +84,7 @@ public class VaccinationRecordController {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
     vaccinationRecordService.create(communityIdentifier, patientIdentifierFromSession.getLocalAssigningAuthority(),
-        patientIdentifierFromSession.getLocalExtenstion(), record, assertion);
+        patientIdentifierFromSession.getLocalExtension(), record, assertion);
   }
 
   @PostMapping("/exportToPDF/{lang}")
@@ -115,7 +115,7 @@ public class VaccinationRecordController {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
     PatientIdentifier patientIdentifierFromEPD = vaccinationService.getPatientIdentifier(communityIdentifier,
-        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtenstion());
+        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtension());
 
     return vaccinationRecordService.create(patientIdentifierFromEPD, assertion);
   }
@@ -126,7 +126,7 @@ public class VaccinationRecordController {
       @Schema(example = "EPDPLAYGROUND") @PathVariable String communityIdentifier) {
     PatientIdentifier patientIdentifierFromSession = HttpSessionUtils.getPatientIdentifierFromSession();
     PatientIdentifier patientIdentifierFromEPD = vaccinationService.getPatientIdentifier(communityIdentifier,
-        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtenstion());
+        patientIdentifierFromSession.getLocalAssigningAuthority(), patientIdentifierFromSession.getLocalExtension());
 
     return patientIdentifierFromEPD.getPatientInfo().getFullName();
   }
