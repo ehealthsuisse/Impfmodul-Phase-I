@@ -20,7 +20,7 @@ import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, Observable, ReplaySubject, Subject } from 'rxjs';
+import { finalize, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { SessionInfoService } from '../../../../core/security/session-info.service';
 import { IMedicalProblem } from '../../../../model';
 import { FormOptionsService, IValueDTO } from '../../../../shared';
@@ -76,9 +76,12 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   confidentialityService: ConfidentialityService = inject(ConfidentialityService);
   commentMessage: string = '';
+  isEndDateSet: boolean = false;
+  clinicalStatusCode: string | undefined;
   private problemFormService: MedicalProblemFormService = inject(MedicalProblemFormService);
   private matDialog: MatDialog = inject(MatDialog);
   private destroy$: Subject<void> = new Subject<void>();
+  private clinicalStatusSubscription?: Subscription;
 
   ngOnInit(): void {
     this.displayMenu(false, false);
@@ -102,6 +105,10 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+
+    if (this.clinicalStatusSubscription) {
+      this.clinicalStatusSubscription.unsubscribe();
+    }
   }
 
   save(): void {
@@ -142,6 +149,7 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     const role: string = this.sharedDataService.storedData['role']!;
     this.processFormOptions();
     this.confidentialityService.loadConfidentialityOptionsWithDefaultSelection(role, this.confidentialityList, this.editForm);
+    this.clinicalStatusSubscription = this.setDefaultClinicalStatusBasedOnEndDate();
   }
 
   private loadMedicalProblemData(): void {
@@ -162,6 +170,18 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     });
   }
 
+  private onSaveFinalize(): void {
+    this.isSaving = false;
+  }
+
+  private onSaveSuccess(navigate: boolean): void {
+    if (navigate) {
+      routecall(this.router, this.sessionInfoService, '/medical-problem');
+    } else {
+      openSnackBar(this.translateService, this.snackBar, 'HELP.MEDICAL_PROBLEM.SAVE_AND_STAY.BODY');
+    }
+  }
+
   private processFormOptions(): void {
     this.formOptionsService.getAllOptions().subscribe({
       next: options => {
@@ -177,26 +197,31 @@ export class MedicalProblemFormComponent extends BreakPointSensorComponent imple
     });
   }
 
-  private onSaveSuccess(navigate: boolean): void {
-    if (navigate) {
-      routecall(this.router, this.sessionInfoService, '/medical-problem');
-    } else {
-      openSnackBar(this.translateService, this.snackBar, 'HELP.MEDICAL_PROBLEM.SAVE_AND_STAY.BODY');
-    }
-  }
+  private setDefaultClinicalStatusBasedOnEndDate(): Subscription | undefined {
+    return this.editForm.get('end')?.valueChanges.subscribe(endValue => {
+      const clinicalStatusControl = this.editForm.get('clinicalStatus');
 
-  private updateForm(problems: IMedicalProblem): void {
-    this.problems = problems;
-    this.problemFormService.resetForm(this.editForm, problems);
-  }
+      this.isEndDateSet = !!endValue;
 
-  private onSaveFinalize(): void {
-    this.isSaving = false;
+      if (endValue) {
+        clinicalStatusControl?.setValue(this.formOptionsService.getOption('conditionClinicalStatus', 'inactive'));
+        this.clinicalStatusCode = 'inactive';
+        clinicalStatusControl?.updateValueAndValidity();
+        clinicalStatusControl?.markAsTouched();
+      } else {
+        this.clinicalStatusCode = clinicalStatusControl?.value?.code;
+      }
+    });
   }
 
   private subscribeToSaveResponse(result: Observable<IMedicalProblem>, navigate: boolean): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(navigate),
     });
+  }
+
+  private updateForm(problems: IMedicalProblem): void {
+    this.problems = problems;
+    this.problemFormService.resetForm(this.editForm, problems);
   }
 }

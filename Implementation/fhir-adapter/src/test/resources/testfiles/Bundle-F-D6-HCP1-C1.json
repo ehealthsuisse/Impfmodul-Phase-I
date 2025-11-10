@@ -383,6 +383,7 @@
           "reference": "Patient/TC-patient"
         },
         "onsetDateTime": "2015-05-30",
+        "abatementDateTime": "2015-06-05",
         "recordedDate": "2015-05-30",
         "recorder": {
           "reference": "PractitionerRole/TC-HCP1-ORG1-ROLE-author"

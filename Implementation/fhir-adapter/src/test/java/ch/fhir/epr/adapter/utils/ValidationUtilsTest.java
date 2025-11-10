@@ -84,7 +84,10 @@ public class ValidationUtilsTest {
 
   @Test
   void testMedicalProblemDTOValidity_invalidCases_ShouldThrowException() {
-    ValueDTO medicalProblem = new ValueDTO("51244008", "Disorder of spleen (disorder)", "http://snomed.info/sct");
+    ValueDTO medicalProblem = new ValueDTO("51244008", "Disorder of spleen (disorder)",
+        "http://snomed.info/sct");
+    ValueDTO clinicalStatus = new ValueDTO("active", "Active",
+        "http://terminology.hl7.org/CodeSystem/condition-clinical");
 
     // Test with missing recordedDate
     MedicalProblemDTO missingRecordedDate = new MedicalProblemDTO();
@@ -99,6 +102,16 @@ public class ValidationUtilsTest {
     futureRecordedDate.setCode(medicalProblem);
     futureRecordedDate.setOrganization("Gruppenpraxis CH");
     assertThrows(ValidationException.class, () -> ValidationUtils.isValid(futureRecordedDate));
+
+    // Test with an end date and clinical status other than inactive
+    MedicalProblemDTO clinicalStatusOtherThanInactive = new MedicalProblemDTO();
+    clinicalStatusOtherThanInactive.setRecordedDate(LocalDate.now());
+    clinicalStatusOtherThanInactive.setBegin(LocalDate.now());
+    clinicalStatusOtherThanInactive.setEnd(LocalDate.now().plusDays(2L));
+    clinicalStatusOtherThanInactive.setCode(medicalProblem);
+    clinicalStatusOtherThanInactive.setClinicalStatus(clinicalStatus);
+    clinicalStatusOtherThanInactive.setOrganization("Gruppenpraxis CH");
+    assertThrows(ValidationException.class, () -> ValidationUtils.isValid(clinicalStatusOtherThanInactive));
 
     // Test with a missing recorder last name
     MedicalProblemDTO missingRecFirstName = new MedicalProblemDTO();

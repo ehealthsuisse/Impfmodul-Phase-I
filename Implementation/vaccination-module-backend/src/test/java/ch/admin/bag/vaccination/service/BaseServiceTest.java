@@ -87,7 +87,7 @@ class BaseServiceTest {
     when(mockRequest.getSession()).thenReturn(mockSession);
 
     patientIdentifier = allergyService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
-        patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion());
+        patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtension());
 
     assertNotNull(patientIdentifier);
     assertNotNull(patientIdentifier.getPatientInfo());
@@ -113,7 +113,7 @@ class BaseServiceTest {
     when(mockRequest.getSession()).thenReturn(mockSession);
 
     patientIdentifier = vaccinationService.getPatientIdentifier(patientIdentifier.getCommunityIdentifier(),
-        patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion());
+        patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtension());
 
     List<VaccinationDTO> vaccinations = vaccinationService.getAll(patientIdentifier, null, true);
 

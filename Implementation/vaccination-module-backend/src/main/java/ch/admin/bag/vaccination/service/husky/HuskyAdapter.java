@@ -268,7 +268,7 @@ public class HuskyAdapter implements HuskyAdapterIfc {
           patientIdentifier.getSpidExtension());
       Identificator localIdentifier =
           new Identificator(patientIdentifier.getLocalAssigningAuthority(),
-              patientIdentifier.getLocalExtenstion());
+              patientIdentifier.getLocalExtension());
 
       var repositoryConfig = communityConfig.getRepositoryConfig(EPDRepository.SubmitDocument);
       ensureCorrectConfidentialitySystemUrl(dto);

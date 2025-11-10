@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2023 eHealth Suisse
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the “Software”), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package ch.fhir.epr.adapter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +31,12 @@ import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.hl7.fhir.r4.model.AllergyIntolerance;
@@ -24,6 +47,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Immunization;
@@ -32,11 +56,42 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedPerson;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class FhirUtilsTest {
+
+  @Test
+  void testConvertToDate_withValidLocalDate() {
+    LocalDate localDate = LocalDate.of(2023, 10, 1);
+    Date result = FhirUtils.convertToDate(localDate);
+
+    assertNotNull(result);
+    assertEquals(Date.from(ZonedDateTime.of(localDate, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant()),
+        result);
+  }
+
+  @Test
+  void testConvertToDate_withNullLocalDate() {
+    assertNull(FhirUtils.convertToDate(null));
+  }
+
+  @Test
+  void testConvertToLocalDate_withValidDate() {
+    Date date = Date.from(ZonedDateTime.of(2023, 10, 1, 0, 0, 0, 0,
+        ZoneId.systemDefault()).toInstant());
+    LocalDate result = FhirUtils.convertToLocalDate(date);
+
+    assertNotNull(result);
+    assertEquals(LocalDate.of(2023, 10, 1), result);
+  }
+
+  @Test
+  void testConvertToLocalDate_withNullDate() {
+    assertNull(FhirUtils.convertToLocalDate(null));
+  }
 
   @Test
   void testGetAnnotation_allergyWithoutNote() {
@@ -89,7 +144,6 @@ public class FhirUtilsTest {
     SectionComponent sectionComponent = createSection();
     composition.addSection(sectionComponent);
 
-    // Test if getSectionByType returns the correct SectionComponent
     SectionComponent result = FhirUtils.getSectionByType(composition, SectionType.IMMUNIZATION);
     assertNotNull(result);
     assertEquals(SectionType.IMMUNIZATION.getId(), result.getId());
@@ -99,11 +153,9 @@ public class FhirUtilsTest {
   void testGetUuidFromBundle() {
     String bundleUUID = "bundleUuid";
 
-    // Create a Bundle with an Identifier
     Bundle bundle = new Bundle();
     bundle.setIdentifier(new Identifier().setValue(bundleUUID));
 
-    // Test if getUuidFromBundle returns the correct UUID
     String uuid = FhirUtils.getUuidFromBundle(bundle);
     assertNotNull(uuid);
     assertEquals(bundleUUID, uuid);
@@ -274,9 +326,39 @@ public class FhirUtilsTest {
   }
 
   @Test
+  void testPopulatePersonDetails_withPatient() {
+    Patient patient = new Patient();
+    HumanNameDTO personInfo = new HumanNameDTO("John", "Doe", "Mr.",
+        LocalDate.of(1990, 1, 1), "MALE");
+
+    FhirUtils.populatePersonDetails(patient, personInfo);
+
+    assertEquals("Doe", patient.getNameFirstRep().getFamily());
+    assertEquals("John", patient.getNameFirstRep().getGivenAsSingleString());
+    assertEquals("Mr.", patient.getNameFirstRep().getPrefixAsSingleString());
+    assertEquals(Date.from(LocalDate.of(1990, 1, 1).atStartOfDay(ZoneOffset.UTC).toInstant()),
+        patient.getBirthDate());
+    assertEquals(AdministrativeGender.MALE, patient.getGender());
+  }
+
+  @Test
+  void testPopulatePersonDetails_withRelatedPerson() {
+    RelatedPerson relatedPerson = new RelatedPerson();
+    HumanNameDTO personInfo = new HumanNameDTO("Jane", "Smith", "Ms.",
+        LocalDate.of(1985, 5, 15), "FEMALE");
+
+    FhirUtils.populatePersonDetails(relatedPerson, personInfo);
+
+    assertEquals("Smith", relatedPerson.getNameFirstRep().getFamily());
+    assertEquals("Jane", relatedPerson.getNameFirstRep().getGivenAsSingleString());
+    assertEquals("Ms.", relatedPerson.getNameFirstRep().getPrefixAsSingleString());
+    assertEquals(Date.from(LocalDate.of(1985, 5, 15).atStartOfDay(ZoneOffset.UTC).toInstant()),
+        relatedPerson.getBirthDate());
+  }
+
+  @Test
   void testStripAuthorReference_shouldStripDefaultIdPrefix() {
     String reference = FhirConstants.DEFAULT_ID_PREFIX + "abc123";
-
     String result = FhirUtils.stripAuthorReference(reference);
 
     assertEquals("abc123", result);
@@ -285,7 +367,6 @@ public class FhirUtilsTest {
   @Test
   void testStripAuthorReference_shouldReturnIdentifierPartAfterSlash() {
     String reference = "Practitioner/TC-HCP1-C1";
-
     String result = FhirUtils.stripAuthorReference(reference);
 
     assertEquals("TC-HCP1-C1", result);

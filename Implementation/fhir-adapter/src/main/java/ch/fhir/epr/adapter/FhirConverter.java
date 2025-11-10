@@ -84,6 +84,7 @@ import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedPerson;
 import org.hl7.fhir.r4.model.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -192,7 +193,7 @@ public class FhirConverter implements FhirConverterIfc {
           allergyIntolerance.getType().getDisplay(), allergyIntolerance.getType().getSystem());
     }
     Date dateOld = allergyIntolerance.getRecordedDate();
-    LocalDate occurrenceDate = convertToLocalDate(dateOld);
+    LocalDate occurrenceDate = FhirUtils.convertToLocalDate(dateOld);
 
     AllergyDTO allergyDTO = new AllergyDTO(
         id,
@@ -220,9 +221,9 @@ public class FhirConverter implements FhirConverterIfc {
     ValueDTO clinicalStatus = FhirUtils.toValueDTO(condition.getClinicalStatus());
     ValueDTO verificationStatus = FhirUtils.toValueDTO(condition.getVerificationStatus());
     Date dateOld = condition.getRecordedDate();
-    LocalDate recordedData = convertToLocalDate(dateOld);
-    LocalDate begin = convertToLocalDate(condition.getOnsetDateTimeType().getValue());
-    LocalDate end = convertToLocalDate(condition.getAbatementDateTimeType().getValue());
+    LocalDate recordedData = FhirUtils.convertToLocalDate(dateOld);
+    LocalDate begin = FhirUtils.convertToLocalDate(condition.getOnsetDateTimeType().getValue());
+    LocalDate end = FhirUtils.convertToLocalDate(condition.getAbatementDateTimeType().getValue());
 
     MedicalProblemDTO dto =
         new MedicalProblemDTO(id, code, clinicalStatus, verificationStatus, recordedData,
@@ -242,9 +243,9 @@ public class FhirConverter implements FhirConverterIfc {
     ValueDTO clinicalStatus = FhirUtils.toValueDTO(condition.getClinicalStatus());
     ValueDTO verificationStatus = FhirUtils.toValueDTO(condition.getVerificationStatus());
     Date dateOld = condition.getRecordedDate();
-    LocalDate recordedData = convertToLocalDate(dateOld);
-    LocalDate begin = convertToLocalDate(condition.getOnsetDateTimeType().getValue());
-    LocalDate end = convertToLocalDate(condition.getAbatementDateTimeType().getValue());
+    LocalDate recordedData = FhirUtils.convertToLocalDate(dateOld);
+    LocalDate begin = FhirUtils.convertToLocalDate(condition.getOnsetDateTimeType().getValue());
+    LocalDate end = FhirUtils.convertToLocalDate(condition.getAbatementDateTimeType().getValue());
 
     PastIllnessDTO pastIllnessDTO = new PastIllnessDTO(id, code, clinicalStatus, verificationStatus, recordedData,
             begin, end, recorder, null, organization);
@@ -265,7 +266,7 @@ public class FhirConverter implements FhirConverterIfc {
     ValueDTO vaccineCode = FhirUtils.toValueDTO(immunization.getVaccineCode());
 
     Date dateOld = immunization.getOccurrenceDateTimeType().getValue();
-    LocalDate occurrenceDate = convertToLocalDate(dateOld);
+    LocalDate occurrenceDate = FhirUtils.convertToLocalDate(dateOld);
 
     ImmunizationProtocolAppliedComponent protocolAppliedFirstRep =
         immunization.getProtocolAppliedFirstRep();
@@ -345,33 +346,6 @@ public class FhirConverter implements FhirConverterIfc {
     return annotation;
   }
 
-  private void convertAndSetGender(Patient patient, HumanNameDTO patientInfo) {
-    boolean found = false;
-    for (AdministrativeGender gender : AdministrativeGender.values()) {
-      if (gender.name().equals(patientInfo.getGender())) {
-        found = true;
-        patient.setGender(AdministrativeGender.valueOf(patientInfo.getGender()));
-        break;
-      }
-    }
-
-    if (!found) {
-      patient.setGender(AdministrativeGender.UNKNOWN);
-    }
-  }
-
-  private Date convertToDate(LocalDate dateToConvert) {
-    if (dateToConvert == null) {
-      return null;
-    }
-    return Date.from(ZonedDateTime.of(dateToConvert, LocalTime.of(0, 0), ZoneOffset.UTC).toInstant());
-  }
-
-  private LocalDate convertToLocalDate(Date dateToConvert) {
-    return dateToConvert != null ? LocalDate.ofInstant(
-        dateToConvert.toInstant(), ZoneId.systemDefault()) : null;
-  }
-
   private void copyNoteReferenceIfKnown(Bundle targetBundle, Bundle sourceBundle, Annotation note) {
     String reference = note.getAuthorReference().getReference();
     Practitioner sourcePractitioner = FhirUtils.getPractitioner(sourceBundle, reference);
@@ -439,7 +413,7 @@ public class FhirConverter implements FhirConverterIfc {
     allergyIntolerance.setClinicalStatus(FhirUtils.toCodeableConcept(dto.getClinicalStatus()));
     allergyIntolerance.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
 
-    Date dateOccurrenceDate = convertToDate(dto.getOccurrenceDate());
+    Date dateOccurrenceDate = FhirUtils.convertToDate(dto.getOccurrenceDate());
     allergyIntolerance.setLastOccurrence(dateOccurrenceDate);
     allergyIntolerance.setRecordedDate(dateOccurrenceDate);
 
@@ -511,7 +485,7 @@ public class FhirConverter implements FhirConverterIfc {
     } else if (fhirConfig.isPatient(dto.getAuthor().getRole())) {
       // in this block we cover the case in which a record created by a PAT is modified by a REP(representative e.g. family member)
       // this case is not supported at the moment!!!
-      createRelatedPerson(bundle, dto, authorId);
+      createRelatedPerson(bundle, dto, authorId, patientId);
       composition.addAuthor(new Reference(FhirConstants.DEFAULT_ID_PREFIX + authorId));
     } else {
       throw new TechnicalException("role:" + dto.getAuthor().getRole() + " not supported");
@@ -586,7 +560,7 @@ public class FhirConverter implements FhirConverterIfc {
     condition.setClinicalStatus(FhirUtils.toCodeableConcept(dto.getClinicalStatus()));
     condition.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
 
-    condition.setRecordedDate(convertToDate(dto.getRecordedDate()));
+    condition.setRecordedDate(FhirUtils.convertToDate(dto.getRecordedDate()));
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     condition.setOnset(new DateTimeType(formatter.format(dto.getBegin())));
     if (dto.getEnd() != null) {
@@ -637,7 +611,7 @@ public class FhirConverter implements FhirConverterIfc {
     condition.setClinicalStatus(FhirUtils.toCodeableConcept(dto.getClinicalStatus()));
     condition.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
 
-    condition.setRecordedDate(convertToDate(dto.getRecordedDate()));
+    condition.setRecordedDate(FhirUtils.convertToDate(dto.getRecordedDate()));
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     condition.setOnset(new DateTimeType(formatter.format(dto.getBegin())));
     if (dto.getEnd() != null) {
@@ -653,28 +627,19 @@ public class FhirConverter implements FhirConverterIfc {
   @SuppressWarnings("deprecation")
   private void createPatient(Bundle bundle, PatientIdentifier patientIdentifier, String patientId, String resourceUrl) {
     Identifier identifier = new Identifier();
-    identifier
-      .setValue(patientIdentifier.getSpidExtension() == null ? FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID()
-      : patientIdentifier.getSpidExtension());
-    identifier.setSystem(FhirConstants.PATIENT_SYSTEM_URL_PREFIX + patientIdentifier.getSpidRootAuthority());
+    identifier.setType(createCodeableConcept(FhirConstants.MEDICAL_RECORD_NUMBER, null,
+        FhirConstants.META_PATIENT_IDENTIFIER_TYPE_SYSTEM_URL));
+    identifier.setValue(patientIdentifier.getLocalExtension() == null ?
+        patientId : patientIdentifier.getLocalExtension());
+    identifier.setSystem(FhirConstants.PATIENT_SYSTEM_URL_PREFIX + patientIdentifier.getLocalAssigningAuthority());
 
     Patient patient = new Patient();
     patient.setId(patientId);
     patient.setIdentifier(List.of(identifier));
     patient.setMeta(createMeta(resourceUrl));
 
-    HumanNameDTO patientInfo = patientIdentifier.getPatientInfo();
-    if (patientInfo != null) {
-      patient.addName().setFamily(patientInfo.getLastName()).addGiven(patientInfo.getFirstName())
-        .addPrefix(patientInfo.getPrefix());
-      patient.setBirthDate(convertToDate(patientInfo.getBirthday()));
-      convertAndSetGender(patient, patientInfo);
-    } else {
-      patient.addName().setFamily("emptyFamily").addGiven("emptyGiven").addPrefix("emptyPrefix");
-      // For system generated data birthdate should be 1900-01-01
-      patient.setBirthDate(new Date(0, Calendar.JANUARY, 1));
-      patient.setGender(AdministrativeGender.UNKNOWN);
-    }
+    FhirUtils.populatePersonDetails(patient, patientIdentifier.getPatientInfo());
+
     patient.setActive(true);
 
     addEntry(bundle, patient);
@@ -725,11 +690,25 @@ public class FhirConverter implements FhirConverterIfc {
     return reference;
   }
 
-  private void createRelatedPerson(Bundle bundle, BaseDTO dto, String authorId) {
-    PatientIdentifier authorPatientIdentifier = new PatientIdentifier(null, null, null);
-    authorPatientIdentifier.setPatientInfo(dto.getAuthor().getUser());
-    // a new patient instance will be created for the REP
-    createPatient(bundle, authorPatientIdentifier, authorId, FhirConstants.META_RELATED_PERSON_URL);
+  private void createRelatedPerson(Bundle bundle, BaseDTO dto, String authorId, String patientId) {
+    Identifier identifier = new Identifier();
+    identifier.setType(createCodeableConcept(FhirConstants.MEDICAL_RECORD_NUMBER, null,
+        FhirConstants.META_PATIENT_IDENTIFIER_TYPE_SYSTEM_URL));
+    identifier.setValue(authorId);
+    identifier.setSystem(FhirConstants.FIXED_RELATED_PERSON_SYSTEM);
+
+    RelatedPerson relatedPerson = new RelatedPerson();
+    relatedPerson.setId(authorId);
+    relatedPerson.setIdentifier(List.of(identifier));
+    relatedPerson.setMeta(createMeta(FhirConstants.META_RELATED_PERSON_URL));
+    relatedPerson.setPatient(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
+
+    HumanNameDTO authorInfo = dto.getAuthor().getUser();
+    FhirUtils.populatePersonDetails(relatedPerson, authorInfo);
+
+    relatedPerson.setActive(true);
+
+    addEntry(bundle, relatedPerson);
   }
 
   private void createSectionIfNecessary(Composition composition, SectionType sectionType, Resource resource) {
@@ -921,11 +900,14 @@ public class FhirConverter implements FhirConverterIfc {
     } else if (resource instanceof AllergyIntolerance allergyIntolerance) {
       enteredInError.getCodingFirstRep()
           .setSystem("http://terminology.hl7.org/CodeSystem/allergyintolerance-verification");
+      allergyIntolerance.setClinicalStatus(null);
       allergyIntolerance.setVerificationStatus(enteredInError);
-    } else if (resource instanceof Condition pastIllness) {
+    } else if (resource instanceof Condition condition) {
       enteredInError.getCodingFirstRep()
           .setSystem("http://terminology.hl7.org/CodeSystem/condition-ver-status");
-      pastIllness.setVerificationStatus(enteredInError);
+      condition.setAbatement(null);
+      condition.setClinicalStatus(null);
+      condition.setVerificationStatus(enteredInError);
     }
   }
 

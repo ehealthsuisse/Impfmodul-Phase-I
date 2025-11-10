@@ -57,7 +57,7 @@ public abstract class BaseController<T extends BaseDTO> {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
     T result = service.create(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(), newDTO, assertion, false);
+        patientIdentifier.getLocalExtension(), newDTO, assertion, false);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -71,7 +71,7 @@ public abstract class BaseController<T extends BaseDTO> {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
     T result = service.delete(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(), uuid, confidentiality, assertion);
+        patientIdentifier.getLocalExtension(), uuid, confidentiality, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -83,7 +83,7 @@ public abstract class BaseController<T extends BaseDTO> {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
     return new ResponseEntity<>(service.getAll(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(), assertion, false), HttpStatus.OK);
+        patientIdentifier.getLocalExtension(), assertion, false), HttpStatus.OK);
   }
 
   @PostMapping("/communityIdentifier/{communityIdentifier}/uuid/{uuid}")
@@ -96,7 +96,7 @@ public abstract class BaseController<T extends BaseDTO> {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
     T result = service.update(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(), uuid, newDTO, assertion);
+        patientIdentifier.getLocalExtension(), uuid, newDTO, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -110,7 +110,7 @@ public abstract class BaseController<T extends BaseDTO> {
     Assertion assertion = AssertionUtils.getAssertionFromSession();
     PatientIdentifier patientIdentifier = HttpSessionUtils.getPatientIdentifierFromSession();
     T result = service.validate(communityIdentifier, patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(), uuid, newDTO, assertion);
+        patientIdentifier.getLocalExtension(), uuid, newDTO, assertion);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 }

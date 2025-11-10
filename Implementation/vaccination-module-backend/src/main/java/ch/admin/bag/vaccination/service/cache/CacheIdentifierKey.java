@@ -48,7 +48,7 @@ public class CacheIdentifierKey implements Serializable {
 
   public CacheIdentifierKey(PatientIdentifier patientIdentifier, AuthorDTO author) {
     this(patientIdentifier.getLocalAssigningAuthority(),
-        patientIdentifier.getLocalExtenstion(),
+        patientIdentifier.getLocalExtension(),
         author != null ? author.getGln() : null);
   }
 }

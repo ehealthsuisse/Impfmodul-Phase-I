@@ -31,7 +31,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,18 +50,18 @@ public class ValidationUtils {
   }
 
   /**
-   * Differenciate validation for read and write mode, especially for the recorder. In read mode, we
+   * Differentiate validation for read and write mode, especially for the recorder. In read mode, we
    * allow either first or last name to be empty.
    *
    * @param dto {@link BaseDTO}
-   * @param isReadOrDelete true for read or delete operations
+   * @param isReadOperation true for read operations
    */
-  public static void isValid(BaseDTO dto, boolean isReadOrDelete) {
+  public static void isValid(BaseDTO dto, boolean isReadOperation) {
     ValidationUtils.validateValueDTO(dto.getCode());
     if (Objects.nonNull(dto.getRecorder())) {
-      ValidationUtils.validateRecorder(dto.getRecorder(), isReadOrDelete);
+      ValidationUtils.validateRecorder(dto.getRecorder(), isReadOperation);
     } else {
-      ValidationUtils.isStringNotNullOrEmpty("organization", dto.getOrganization());
+      ValidationUtils.stringNotNullOrEmpty("organization", dto.getOrganization());
     }
 
     if (dto instanceof VaccinationDTO vaccination) {
@@ -72,7 +71,7 @@ public class ValidationUtils {
     } else if (dto instanceof PastIllnessDTO pastIllness) {
       validatePastIllness(pastIllness);
     } else if (dto instanceof MedicalProblemDTO medicalProblem) {
-      validateMedicalProblem(medicalProblem);
+      validateMedicalProblem(medicalProblem, isReadOperation);
     }
   }
 
@@ -89,7 +88,7 @@ public class ValidationUtils {
    * @param updatedObject the new {@code BaseDTO} instance after the update
    * @return {@code true} if the updated record should be re-validated; {@code false} otherwise
    */
-  public static Boolean shouldRecordBeValidated(BaseDTO oldObject, BaseDTO updatedObject) {
+  public static boolean shouldRecordBeValidated(BaseDTO oldObject, BaseDTO updatedObject) {
     if (isTrustedAuthor(updatedObject)) {
       return true;
     }
@@ -109,19 +108,31 @@ public class ValidationUtils {
     return !Objects.equals(oldObject.getComment(), updatedObject.getComment());
   }
 
-  private static void isDateInTheFuture(String field, LocalDate date) {
+  /**
+   * Ensures the clinical status is {@link FhirConstants#INACTIVE} whenever an end date is specified for a medical problem.
+   * Validation is skipped during read operations to maintain backward compatibility.
+   */
+  private static void clinicalStatusInactiveWhenEndDateSet(ValueDTO clinicalStatus, LocalDate end,
+      boolean isReadOperation) {
+    if (!Objects.isNull(end) && !FhirConstants.INACTIVE.equals(clinicalStatus.getCode()) && !isReadOperation) {
+      throw new ValidationException("If an end date is specified for a medical problem, the clinical status must "
+          + "be set to " + FhirConstants.INACTIVE + ".");
+    }
+  }
+
+  private static void dateInTheFuture(String field, LocalDate date) {
     if (date.isAfter(LocalDate.now())) {
       throw new ValidationException("The field " + field + " should not be in the future.");
     }
   }
 
-  private static void isDateNotNull(String field, LocalDate date) {
+  private static void dateNotNull(String field, LocalDate date) {
     if (Objects.isNull(date)) {
       throw new ValidationException("The field " + field + " should not be null.");
     }
   }
 
-  private static <T> void isListNotNullOrEmpty(String field, List<T> list) {
+  private static <T> void listNotNullOrEmpty(String field, List<T> list) {
     if (Objects.isNull(list)) {
       throw new ValidationException("The field " + field + " should not be null.");
     }
@@ -130,7 +141,7 @@ public class ValidationUtils {
     }
   }
 
-  private static void isPositiveNumber(String field, Integer value) {
+  private static void positiveNumber(String field, Integer value) {
     if (Objects.isNull(value)) {
       throw new ValidationException("The field " + field + " should not be null.");
     }
@@ -139,7 +150,7 @@ public class ValidationUtils {
     }
   }
 
-  private static void isStringNotNullOrEmpty(String field, String text) {
+  private static void stringNotNullOrEmpty(String field, String text) {
     if (Objects.isNull(text)) {
       throw new ValidationException("The field " + field + " should not be null.");
     }
@@ -154,30 +165,32 @@ public class ValidationUtils {
   }
 
   private static void validateAllergy(AllergyDTO allergy) {
-    ValidationUtils.isDateNotNull("occurrenceDate", allergy.getOccurrenceDate());
-    ValidationUtils.isDateInTheFuture("occurrenceDate", allergy.getOccurrenceDate());
+    ValidationUtils.dateNotNull("occurrenceDate", allergy.getOccurrenceDate());
+    ValidationUtils.dateInTheFuture("occurrenceDate", allergy.getOccurrenceDate());
   }
 
-  private static void validateMedicalProblem(MedicalProblemDTO medicalProblem) {
-    ValidationUtils.isDateNotNull("recordedDate", medicalProblem.getRecordedDate());
-    ValidationUtils.isDateNotNull("begin", medicalProblem.getBegin());
-    ValidationUtils.isDateInTheFuture("recordedDate", medicalProblem.getRecordedDate());
+  private static void validateMedicalProblem(MedicalProblemDTO medicalProblem, boolean isReadOperation) {
+    ValidationUtils.dateNotNull("recordedDate", medicalProblem.getRecordedDate());
+    ValidationUtils.dateNotNull("begin", medicalProblem.getBegin());
+    ValidationUtils.dateInTheFuture("recordedDate", medicalProblem.getRecordedDate());
+    ValidationUtils.clinicalStatusInactiveWhenEndDateSet(medicalProblem.getClinicalStatus(), medicalProblem.getEnd(),
+        isReadOperation);
   }
 
   private static void validatePastIllness(PastIllnessDTO pastIllness) {
-    ValidationUtils.isDateNotNull("recordedDate", pastIllness.getRecordedDate());
-    ValidationUtils.isDateNotNull("begin", pastIllness.getRecordedDate());
-    ValidationUtils.isDateInTheFuture("recordedDate", pastIllness.getRecordedDate());
-    ValidationUtils.isDateInTheFuture("begin", pastIllness.getBegin());
+    ValidationUtils.dateNotNull("recordedDate", pastIllness.getRecordedDate());
+    ValidationUtils.dateNotNull("begin", pastIllness.getRecordedDate());
+    ValidationUtils.dateInTheFuture("recordedDate", pastIllness.getRecordedDate());
+    ValidationUtils.dateInTheFuture("begin", pastIllness.getBegin());
   }
 
   private static void validateRecorder(HumanNameDTO recorder, boolean isRead) {
     if (!isRead) {
-      ValidationUtils.isStringNotNullOrEmpty("firstName", recorder.getFirstName());
+      ValidationUtils.stringNotNullOrEmpty("firstName", recorder.getFirstName());
     }
 
     if (!isRead) {
-      ValidationUtils.isStringNotNullOrEmpty("lastName", recorder.getLastName());
+      ValidationUtils.stringNotNullOrEmpty("lastName", recorder.getLastName());
     }
 
     if (isRead && areAllStringNullOrEmpty(Arrays.asList(recorder.getFirstName(), recorder.getLastName()))) {
@@ -187,16 +200,16 @@ public class ValidationUtils {
 
   private static void validateVaccination(VaccinationDTO vaccination) {
     if (!FhirConstants.VACCINE_UNKNOWN.equals(vaccination.getCode().getCode())) {
-      ValidationUtils.isListNotNullOrEmpty("targetDiseases", vaccination.getTargetDiseases());
+      ValidationUtils.listNotNullOrEmpty("targetDiseases", vaccination.getTargetDiseases());
     }
     vaccination.getTargetDiseases().forEach(ValidationUtils::validateValueDTO);
-    ValidationUtils.isPositiveNumber("doseNumber", vaccination.getDoseNumber());
-    ValidationUtils.isDateNotNull("occurrenceDate", vaccination.getOccurrenceDate());
+    ValidationUtils.positiveNumber("doseNumber", vaccination.getDoseNumber());
+    ValidationUtils.dateNotNull("occurrenceDate", vaccination.getOccurrenceDate());
   }
 
   private static void validateValueDTO(ValueDTO dto) {
-    ValidationUtils.isStringNotNullOrEmpty("code", dto.getCode());
-    ValidationUtils.isStringNotNullOrEmpty("name", dto.getName());
-    ValidationUtils.isStringNotNullOrEmpty("system", dto.getSystem());
+    ValidationUtils.stringNotNullOrEmpty("code", dto.getCode());
+    ValidationUtils.stringNotNullOrEmpty("name", dto.getName());
+    ValidationUtils.stringNotNullOrEmpty("system", dto.getSystem());
   }
 }

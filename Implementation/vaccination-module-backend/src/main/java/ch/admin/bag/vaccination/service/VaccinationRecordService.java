@@ -132,7 +132,7 @@ public class VaccinationRecordService {
       VaccinationRecordDTO vaccinationRecordDTO = createVaccinationRecordDTO(patientIdentifier, entities,
           HttpSessionUtils.getAuthorFromSession(), LocalDateTime.now());
       baseService.create(patientIdentifier.getCommunityIdentifier(),
-          patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtenstion(), vaccinationRecordDTO,
+          patientIdentifier.getLocalAssigningAuthority(), patientIdentifier.getLocalExtension(), vaccinationRecordDTO,
           assertion, true);
       cache.clear(cache.createCacheIdentifier(patientIdentifier), Cache.VACCINATION_RECORDS_CACHE_NAME);
       return vaccinationRecordDTO;

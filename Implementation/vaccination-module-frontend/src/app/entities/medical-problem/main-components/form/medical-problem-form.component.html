@@ -62,11 +62,13 @@
 
         <vm-reusable-select-field
           [formControl]="editForm.controls.clinicalStatus!"
-          [isEditable]="true"
+          [isEditable]="!isEndDateSet"
           [options$]="problemStatus"
           [translationKey]="'MEDICAL_PROBLEM_CLINICAL_STATUS'"
           [labelTranslationKey]="'MEDICAL_PROBLEM.CLINICAL_STATUS'"
-          [mainValueKey]="'MEDICAL_PROBLEM_CLINICAL_STATUS.' + problem?.clinicalStatus?.code! | translate"
+          [mainValueKey]="
+            'MEDICAL_PROBLEM_CLINICAL_STATUS.' + (isEndDateSet ? 'inactive' : problem?.clinicalStatus?.code || '') | translate
+          "
         ></vm-reusable-select-field>
 
         <vm-reusable-recorder-field

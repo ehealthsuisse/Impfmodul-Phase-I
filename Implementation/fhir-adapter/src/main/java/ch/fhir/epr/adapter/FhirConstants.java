@@ -39,6 +39,7 @@ public final class FhirConstants {
 
   /** Fixed system url defined in the standard */
   public static final String FIXED_PRACTITIONER_SYSTEM = "urn:oid:2.51.1.3";
+  public static final String FIXED_RELATED_PERSON_SYSTEM = "urn:oid:2.999.1.2.3.4";
   /** Used if practitioner GLN is unknown */
   public static final String DEFAULT_PRACTITIONER_CODE = "7601007922000";
 
@@ -47,6 +48,7 @@ public final class FhirConstants {
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-vaccination-record";
   public static final String META_VACCINATION_TYPE_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration";
+  public static final String META_PATIENT_IDENTIFIER_TYPE_SYSTEM_URL = "http://terminology.hl7.org/CodeSystem/v2-0203";
   public static final String META_CORE_PATIENT_URL =
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient";
   public static final String META_CORE_PATIENT_EPR_URL =
@@ -114,4 +116,10 @@ public final class FhirConstants {
 
   /** Resource definitions */
   public static final String IMMUNIZATION = "Immunization";
+
+  /** Code value for patient identifier type */
+  public static final String MEDICAL_RECORD_NUMBER = "MR";
+
+  /** Clinical status codes */
+  public static final String INACTIVE = "inactive";
 }
