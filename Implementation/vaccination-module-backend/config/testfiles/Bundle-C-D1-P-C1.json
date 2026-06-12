@@ -1,0 +1,200 @@
+{
+  "resourceType" : "Bundle",
+  "id" : "Bundle-0001",
+  "meta" : {
+    "lastUpdated" : "2026-04-16T13:42:59.958+02:00",
+    "profile" : [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-document-immunization-administration" ]
+  },
+  "identifier" : {
+    "system" : "urn:ietf:rfc:3986",
+    "value" : "urn:uuid:c64bbaa5-599c-474a-adf8-a3b84879484a"
+  },
+  "type" : "document",
+  "timestamp" : "2026-04-16T13:42:59.958+02:00",
+  "entry" : [ {
+    "fullUrl" : "urn:uuid:496d581f-05a6-42b8-926a-1a5a6e6a677b",
+    "resource" : {
+      "resourceType" : "Composition",
+      "id" : "496d581f-05a6-42b8-926a-1a5a6e6a677b",
+      "meta" : {
+        "lastUpdated" : "2026-04-16T13:42:59.958+02:00",
+        "profile" : [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-immunization-administration" ]
+      },
+      "language" : "en-US",
+      "identifier" : {
+        "system" : "urn:ietf:rfc:3986",
+        "value" : "urn:uuid:a14d9c77-c8f8-43b0-aef4-c9a3f2aa3bbe"
+      },
+      "status" : "final",
+      "type" : {
+        "coding" : [ {
+          "system" : "http://snomed.info/sct",
+          "code" : "41000179103",
+          "display" : "Immunization record"
+        } ]
+      },
+      "category" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:2.16.756.5.30.1.127.3.10.10",
+          "code" : "urn:che:epr:ch-vacd:immunization-administration:2022",
+          "display" : "CH VACD Immunization Administration"
+        } ]
+      } ],
+      "subject" : {
+        "reference" : "urn:uuid:3b72a2d6-673a-407e-906c-53a43835de95"
+      },
+      "date" : "2026-04-16T13:42:59+02:00",
+      "author" : [ {
+        "reference" : "urn:uuid:231cdc64-1b20-4b29-87c8-e58349031991"
+      } ],
+      "title" : "Immunization Administration",
+      "confidentiality" : "N",
+      "_confidentiality" : {
+        "extension" : [ {
+          "url" : "http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-confidentialitycode",
+          "valueCodeableConcept" : {
+            "coding" : [ {
+              "system" : "http://snomed.info/sct",
+              "code" : "1141000195107",
+              "display" : "Secret"
+            } ]
+          }
+        } ]
+      },
+      "section" : [ {
+        "id" : "administration",
+        "title" : "Immunization Administration",
+        "code" : {
+          "coding" : [ {
+            "system" : "http://loinc.org",
+            "code" : "11369-6",
+            "display" : "History of Immunizations"
+          } ]
+        },
+        "text" : {
+          "status" : "generated",
+          "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\">empty</div>"
+        },
+        "entry" : [ {
+          "reference" : "urn:uuid:f60ea21f-a226-4f31-982a-41e595ab9256"
+        } ]
+      } ]
+    }
+  }, {
+    "fullUrl" : "urn:uuid:231cdc64-1b20-4b29-87c8-e58349031991",
+    "resource" : {
+      "resourceType" : "RelatedPerson",
+      "id" : "231cdc64-1b20-4b29-87c8-e58349031991",
+      "meta" : {
+        "lastUpdated" : "2026-04-16T13:42:59.958+02:00",
+        "profile" : [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-relatedperson" ]
+      },
+      "identifier" : [ {
+        "type" : {
+          "coding" : [ {
+            "system" : "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code" : "MR"
+          } ]
+        },
+        "system" : "urn:oid:2.999.1.2.3.4",
+        "value" : "231cdc64-1b20-4b29-87c8-e58349031991"
+      } ],
+      "active" : true,
+      "patient" : {
+        "reference" : "urn:uuid:3b72a2d6-673a-407e-906c-53a43835de95"
+      },
+      "name" : [ {
+        "family" : "PAT",
+        "given" : [ "Patient" ]
+      } ],
+      "gender" : "unknown"
+    }
+  }, {
+    "fullUrl" : "urn:uuid:3b72a2d6-673a-407e-906c-53a43835de95",
+    "resource" : {
+      "resourceType" : "Patient",
+      "id" : "3b72a2d6-673a-407e-906c-53a43835de95",
+      "meta" : {
+        "lastUpdated" : "2026-04-16T13:42:59.958+02:00",
+        "profile" : [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient-epr" ]
+      },
+      "identifier" : [ {
+        "type" : {
+          "coding" : [ {
+            "system" : "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code" : "MR"
+          } ]
+        },
+        "system" : "urn:oid:1.3.6.1.4.1.12559.11.20.1",
+        "value" : "CHPAM204"
+      } ],
+      "active" : true,
+      "name" : [ {
+        "family" : "Mustermann",
+        "given" : [ "Max" ]
+      } ],
+      "gender" : "male",
+      "birthDate" : "1900-01-01"
+    }
+  }, {
+    "fullUrl" : "urn:uuid:29d8ac3b-1da5-45d3-a6aa-6f13f6e8ebea",
+    "resource" : {
+      "resourceType" : "Patient",
+      "id" : "29d8ac3b-1da5-45d3-a6aa-6f13f6e8ebea",
+      "meta" : {
+        "lastUpdated" : "2026-04-16T13:42:59.958+02:00",
+        "profile" : [ "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-patient" ]
+      },
+      "identifier" : [ {
+        "type" : {
+          "coding" : [ {
+            "system" : "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code" : "MR"
+          } ]
+        },
+        "system" : "urn:oid:1.3.6.1.4.1.12559.11.20.1",
+        "value" : "CHPAM204"
+      } ],
+      "active" : true,
+      "name" : [ {
+        "family" : "Mustermann",
+        "given" : [ "Max" ]
+      } ],
+      "gender" : "male",
+      "birthDate" : "1900-01-01"
+    }
+  }, {
+    "fullUrl" : "urn:uuid:f60ea21f-a226-4f31-982a-41e595ab9256",
+    "resource" : {
+      "resourceType" : "Condition",
+      "id" : "f60ea21f-a226-4f31-982a-41e595ab9256",
+      "meta" : {
+        "lastUpdated" : "2026-04-16T13:42:59.960+02:00",
+        "profile" : [ "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-basic-immunization" ]
+      },
+      "identifier" : [ {
+        "system" : "urn:ietf:rfc:3986",
+        "value" : "urn:uuid:db472869-3689-4cfc-9ec7-5d13988575a6"
+      } ],
+      "verificationStatus" : {
+        "coding" : [ {
+          "system" : "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code" : "unconfirmed",
+          "display" : "Unconfirmed"
+        } ]
+      },
+      "code" : {
+        "coding" : [ {
+          "system" : "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-basic-immunization-cs",
+          "code" : "bi-hib",
+          "display" : "Received basic immunization against Haemophilus influenzae type b."
+        } ]
+      },
+      "subject" : {
+        "reference" : "urn:uuid:29d8ac3b-1da5-45d3-a6aa-6f13f6e8ebea"
+      },
+      "onsetDateTime" : "1990-03-01",
+      "recordedDate" : "2026-04-02T02:00:00+02:00"
+    }
+  } ]
+}

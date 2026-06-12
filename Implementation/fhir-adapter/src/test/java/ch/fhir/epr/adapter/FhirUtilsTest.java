@@ -30,6 +30,7 @@ import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
+import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.hl7.fhir.r4.model.AllergyIntolerance;
 import org.hl7.fhir.r4.model.Annotation;
 import org.hl7.fhir.r4.model.Bundle;
@@ -62,6 +64,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class FhirUtilsTest {
+
+  @Test
+  void testAggregateExceptions_withMultipleExceptions() {
+    List<Exception> exceptions = List.of(
+        new IllegalArgumentException("Invalid argument"),
+        new NullPointerException("Null value")
+    );
+    RuntimeException ex = FhirUtils.aggregateExceptions(exceptions, "Aggregated error");
+    assertNotNull(ex);
+    assertTrue(ex.getMessage().contains("Aggregated error"));
+    assertTrue(ex.getMessage().contains("Invalid argument"));
+    assertTrue(ex.getMessage().contains("Null value"));
+    assertEquals(2, ex.getSuppressed().length);
+  }
+
+  @Test
+  void testAggregateExceptions_withExceptionWithoutCause() {
+    Exception exception = new Exception("Test exception");
+    List<Exception> exceptions = List.of(exception);
+    RuntimeException ex = FhirUtils.aggregateExceptions(exceptions, "Error occurred");
+    assertTrue(ex.getMessage().contains("Unknown cause"));
+    assertEquals(1, ex.getSuppressed().length);
+  }
 
   @Test
   void testConvertToDate_withValidLocalDate() {
@@ -397,6 +422,67 @@ public class FhirUtilsTest {
     assertNull(FhirUtils.getReference(null, ReferenceType.PRACTITIONER_ROLE));
   }
 
+  @Test
+  void testHandleRecordCreation_runsCreatorWhenDtoValid() {
+    VaccinationDTO dto = createVaccinationDto("Valid DTO");
+    Bundle bundle = new Bundle();
+    bundle.setId("bundle-valid");
+    List<RuntimeException> exceptions = new ArrayList<>();
+    AtomicBoolean executed = new AtomicBoolean(false);
+
+    FhirUtils.handleRecordCreation(dto, "Vaccination", () -> executed.set(true), exceptions, bundle);
+
+    assertTrue(executed.get());
+    assertTrue(exceptions.isEmpty());
+  }
+
+  @Test
+  void testHandleRecordCreation_doesNothingWhenDtoIsNull() {
+    Bundle bundle = new Bundle();
+    bundle.setId("bundle-null");
+    List<RuntimeException> exceptions = new ArrayList<>();
+    AtomicBoolean executed = new AtomicBoolean(false);
+
+    FhirUtils.handleRecordCreation(null, "Vaccination", () -> executed.set(true), exceptions, bundle);
+
+    assertFalse(executed.get());
+    assertTrue(exceptions.isEmpty());
+  }
+
+  @Test
+  void testHandleRecordCreation_doesNothingWhenDtoHasErrors() {
+    VaccinationDTO dto = createVaccinationDto("Broken DTO");
+    dto.setHasErrors(true);
+    Bundle bundle = new Bundle();
+    bundle.setId("bundle-errors");
+    List<RuntimeException> exceptions = new ArrayList<>();
+    AtomicBoolean executed = new AtomicBoolean(false);
+
+    FhirUtils.handleRecordCreation(dto, "Vaccination", () -> executed.set(true), exceptions, bundle);
+
+    assertFalse(executed.get());
+    assertTrue(exceptions.isEmpty());
+  }
+
+  @Test
+  void testHandleRecordCreation_collectsExceptionWhenCreatorFails() {
+    VaccinationDTO dto = createVaccinationDto("Failing DTO");
+    Bundle bundle = new Bundle();
+    bundle.setId("bundle-failure");
+    List<RuntimeException> exceptions = new ArrayList<>();
+    RuntimeException failure = new RuntimeException("Unable to create resource");
+
+    FhirUtils.handleRecordCreation(dto, "Vaccination",
+        () -> { throw failure; }, exceptions, bundle);
+
+    assertEquals(1, exceptions.size());
+    RuntimeException captured = exceptions.get(0);
+    assertTrue(captured.getMessage().contains("Vaccination"));
+    assertTrue(captured.getMessage().contains("bundle-failure"));
+    assertTrue(captured.getMessage().contains("Failing DTO"));
+    assertEquals(failure, captured.getCause());
+  }
+
   private Immunization createImmunization() {
     Identifier identifier = new Identifier();
     identifier.setValue(FhirConstants.DEFAULT_ID_PREFIX + UUID.randomUUID());
@@ -454,5 +540,11 @@ public class FhirUtilsTest {
 
     codeableConcept.setCoding(List.of(coding));
     return codeableConcept;
+  }
+
+  private VaccinationDTO createVaccinationDto(String name) {
+    VaccinationDTO dto = new VaccinationDTO();
+    dto.setCode(new ValueDTO("code", name, "system"));
+    return dto;
   }
 }

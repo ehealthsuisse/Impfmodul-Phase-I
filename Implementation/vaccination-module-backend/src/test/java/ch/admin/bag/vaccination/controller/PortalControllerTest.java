@@ -24,17 +24,20 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ch.admin.bag.vaccination.data.request.SignatureDataRequest;
 import ch.admin.bag.vaccination.service.SignatureService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.StringJoiner;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -43,6 +46,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 class PortalControllerTest {
 
   private static final String ANY_CONTENT = "anyContent";
+  private static final String FRONTEND_HOST = "localhost:9000";
 
   @LocalServerPort
   private int port;
@@ -119,30 +123,26 @@ class PortalControllerTest {
     return params;
   }
 
-  private String createURL(String inEndpoint) {
-    return "http://localhost:" + port + inEndpoint;
-  }
-
   private boolean sendContentToWebservice(Object content) {
     return sendContentToWebservice(content, true);
   }
 
   private boolean sendContentToWebservice(Object content, boolean isValid) {
-    String contentString = content.toString();
-    String endpoint = createURL(PortalController.ENDPOINT_VALIDATE);
+    String queryString = content.toString();
+    String endpoint = "http://localhost:" + port + PortalController.ENDPOINT_VALIDATE;
     if (content instanceof Map<?, ?> map) {
-      contentString = "";
+      StringJoiner queryJoiner = new StringJoiner("&");
       for (Entry<?, ?> entry : map.entrySet()) {
         if (entry.getValue() != null) {
-          contentString += "&" + entry.getKey() + "=" + entry.getValue();
+          queryJoiner.add(entry.getKey() + "=" + entry.getValue());
         }
       }
-
-      // remove first &
-      contentString = contentString.substring(1);
+      queryString = queryJoiner.toString();
     }
 
     when(signatureService.validateQueryString(anyString())).thenReturn(isValid);
-    return restTemplate.postForObject(endpoint, contentString, boolean.class);
+    ResponseEntity<Object> response = restTemplate.postForEntity(endpoint, new SignatureDataRequest(queryString,
+        FRONTEND_HOST), Object.class);
+    return Boolean.TRUE.equals(response.getBody());
   }
 }

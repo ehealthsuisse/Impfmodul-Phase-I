@@ -21,6 +21,7 @@ package ch.fhir.epr.adapter.utils;
 import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
@@ -58,10 +59,13 @@ public class ValidationUtils {
    */
   public static void isValid(BaseDTO dto, boolean isReadOperation) {
     ValidationUtils.validateValueDTO(dto.getCode());
-    if (Objects.nonNull(dto.getRecorder())) {
-      ValidationUtils.validateRecorder(dto.getRecorder(), isReadOperation);
-    } else {
-      ValidationUtils.stringNotNullOrEmpty("organization", dto.getOrganization());
+    // BasicImmunization has no recorder or organization
+    if (!(dto instanceof BasicImmunizationDTO)) {
+      if (Objects.nonNull(dto.getRecorder())) {
+        ValidationUtils.validateRecorder(dto.getRecorder(), isReadOperation);
+      } else {
+        ValidationUtils.stringNotNullOrEmpty("organization", dto.getOrganization());
+      }
     }
 
     if (dto instanceof VaccinationDTO vaccination) {
@@ -72,6 +76,8 @@ public class ValidationUtils {
       validatePastIllness(pastIllness);
     } else if (dto instanceof MedicalProblemDTO medicalProblem) {
       validateMedicalProblem(medicalProblem, isReadOperation);
+    } else if (dto instanceof BasicImmunizationDTO basicImmunization) {
+      validateBasicImmunization(basicImmunization);
     }
   }
 
@@ -182,6 +188,13 @@ public class ValidationUtils {
     ValidationUtils.dateNotNull("begin", pastIllness.getRecordedDate());
     ValidationUtils.dateInTheFuture("recordedDate", pastIllness.getRecordedDate());
     ValidationUtils.dateInTheFuture("begin", pastIllness.getBegin());
+  }
+
+  private static void validateBasicImmunization(BasicImmunizationDTO basicImmunization) {
+    ValidationUtils.dateNotNull("onsetDate", basicImmunization.getOnsetDate());
+    ValidationUtils.dateNotNull("recordedDate", basicImmunization.getRecordedDate());
+    ValidationUtils.dateInTheFuture("onsetDate", basicImmunization.getOnsetDate());
+    ValidationUtils.dateInTheFuture("recordedDate", basicImmunization.getRecordedDate());
   }
 
   private static void validateRecorder(HumanNameDTO recorder, boolean isRead) {

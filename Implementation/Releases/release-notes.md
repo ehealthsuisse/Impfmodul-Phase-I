@@ -1,3 +1,44 @@
+# June 2026 - Release 1.9.0-RC1
+This release candidate extends the vaccination module with the new CH VACD entities for basic immunization and laboratory/serology records. It also contains related updates for value lists, PDF output, FHIR conversion, help pages, configuration and dependency maintenance.
+
+### Changes Fhir Library
+* Added support for CH VACD Basic Immunization records based on the Condition resource.
+* Added support for CH VACD Laboratory and Serology records based on the Observation resource.
+* Added the new DTOs for basic immunization and laboratory/serology records to the vaccination record model.
+* Added FHIR conversion for the new entities when reading from and writing to FHIR bundles.
+* Added validation for basic immunization dates. The assumed immunization date is written to `onsetDateTime`; the date of determination is written to `recordedDate`.
+* Added laboratory/serology handling for observation value quantities, UCUM units and verification status.
+* Laboratory/serology status is handled automatically: `final` for create/update and `entered-in-error` for delete.
+* Refactored the FHIR converter by splitting entity-specific conversion logic into resource strategies.
+* Updated FHIR test bundles and unit tests for the new entities.
+* Updated FHIR/HAPI dependencies to address security scanner findings.
+
+### Changes Vaccination Module Backend
+* Added REST support for basic immunization records.
+* Added REST support for laboratory and serology records.
+* Added value lists for basic immunization codes and laboratory/serology observation codes.
+* Added a configured mapping from laboratory/serology observation codes to UCUM units. The unit is derived from the selected laboratory/serology code.
+* Added PDF output for basic immunization and laboratory/serology records.
+* Updated PDF translations so laboratory/serology test names are printed in the selected language.
+* Updated vaccination record loading and sorting to include the new entity lists.
+* Updated the value list utility API to expose observation-code-to-unit mappings to the frontend.
+* Externalized and adjusted Hazelcast configuration handling so providers can override the Hazelcast setup more easily.
+* Extended SAML logout propagation to support multiple configured logout URLs. Forwarded logout requests keep track of already attempted URL indexes to avoid loops and continue with the next configured URL if a node is not reachable.
+* Updated dependencies to address Trivy security scanner findings.
+
+### Changes Vaccination Module Frontend
+* Added a new Basic immunization section with list, detail, create and edit views.
+* Added a new Laboratory and serology section with list, detail, create and edit views.
+* Added the new entities to the vaccination certificate overview.
+* Basic immunization now distinguishes between the assumed date of immunization and the date of determination in create/edit views.
+* The basic immunization overview and detail display use the assumed date of immunization as the main date.
+* Laboratory/serology unit is filled automatically based on the selected laboratory/serology code and is displayed as read-only.
+* Laboratory/serology status was removed from the user interface and is set automatically.
+* Updated the PDF export dialog to include comments for basic immunization and laboratory/serology records.
+* Updated help pages for the new sections and for the new fields.
+* Updated translations and value-list based display values for the new entities.
+* Improved validation of select fields and text fields to avoid invalid values being submitted from the UI.
+
 # November 2025 - Release 1.8.0
 This release wraps up all the RC-feedback for the next stable release, along with a few frontend and fhir library improvements.
 

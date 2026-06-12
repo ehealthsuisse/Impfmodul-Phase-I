@@ -22,9 +22,11 @@ import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.data.request.EPRDocument;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
+import ch.admin.bag.vaccination.service.config.VaccinationConfig;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.utils.ContentFieldExtractor;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.FhirUtils;
@@ -33,6 +35,8 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -358,6 +362,12 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       case MedicalProblemDTO m -> shouldConfirm
           ? new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status")
           : new ValueDTO("unconfirmed", "Unconfirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status");
+      case BasicImmunizationDTO bi -> shouldConfirm
+          ? new ValueDTO("confirmed", "Confirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status")
+          : new ValueDTO("unconfirmed", "Unconfirmed", "http://terminology.hl7.org/CodeSystem/condition-ver-status");
+      case LaboratorySerologyDTO laboratorySerology -> shouldConfirm
+          ? new ValueDTO("59156000", "Confirmed", "http://snomed.info/sct")
+          : new ValueDTO("76104008", "Not confirmed", "http://snomed.info/sct");
       default -> updatedDto.getVerificationStatus();
     };
     updatedDto.setVerificationStatus(status);
@@ -487,7 +497,9 @@ public class BaseService<T extends BaseDTO> implements BaseServiceIfc<T> {
       results.addAll(fhirAdapter.getDTOs(VaccinationDTO.class, bundle));
       results.addAll(fhirAdapter.getDTOs(AllergyDTO.class, bundle));
       results.addAll(fhirAdapter.getDTOs(MedicalProblemDTO.class, bundle));
+      results.addAll(fhirAdapter.getDTOs(BasicImmunizationDTO.class, bundle));
       results.addAll(fhirAdapter.getDTOs(PastIllnessDTO.class, bundle));
+      results.addAll(fhirAdapter.getDTOs(LaboratorySerologyDTO.class, bundle));
 
       return (List<T>) results;
     } catch (Exception ex) {

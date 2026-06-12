@@ -31,8 +31,10 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -121,6 +123,58 @@ class FhirAdapterTest {
   }
 
   @Test
+  void createBundle_basicImmunization_roundtrip_contentIsCorrect() {
+    PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
+    ValueDTO code = new ValueDTO("bi-dtpa",
+        "Received basic immunization against DTPa in childhood.",
+        "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-basic-immunization-cs");
+    ValueDTO category = new ValueDTO("encounter-diagnosis", "Encounter Diagnosis",
+        "http://terminology.hl7.org/CodeSystem/condition-category");
+    ValueDTO clinicalStatus = new ValueDTO("active", "Active",
+        "http://terminology.hl7.org/CodeSystem/condition-clinical");
+    ValueDTO verificationStatus = new ValueDTO("unconfirmed", "Unconfirmed",
+        "http://terminology.hl7.org/CodeSystem/condition-ver-status");
+    LocalDate onsetDate = LocalDate.of(1990, 3, 1);
+    LocalDate recordedDate = LocalDate.of(2026, 3, 1);
+
+    BasicImmunizationDTO inputDto = new BasicImmunizationDTO(null, code, category, clinicalStatus,
+        verificationStatus, onsetDate, recordedDate, null);
+    inputDto.setAuthor(createAuthor());
+
+    // create bundle from DTO
+    Bundle bundle = fhirAdapter.create(patientIdentifier, inputDto);
+    assertNotNull(bundle);
+
+    // read DTOs from bundle
+    List<BasicImmunizationDTO> dtos = fhirAdapter.getDTOs(BasicImmunizationDTO.class, bundle);
+    assertThat(dtos).hasSize(1);
+
+    BasicImmunizationDTO resultDto = dtos.getFirst();
+    assertThat(resultDto.getCode().getCode()).isEqualTo(code.getCode());
+    assertThat(resultDto.getCode().getName()).isEqualTo(code.getName());
+    assertThat(resultDto.getCategory().getCode()).isEqualTo(category.getCode());
+    assertThat(resultDto.getClinicalStatus().getCode()).isEqualTo(clinicalStatus.getCode());
+    assertThat(resultDto.getVerificationStatus().getCode()).isEqualTo(verificationStatus.getCode());
+    assertThat(resultDto.getOnsetDate()).isEqualTo(onsetDate);
+    assertThat(resultDto.getRecordedDate()).isEqualTo(recordedDate);
+  }
+
+  @Test
+  void getDTOs_basicImmunizationAndVaccination_sharedSection_noClassCastException() {
+    // BasicImmunization (Condition) and Vaccination (Immunization) share the IMMUNIZATION section.
+    // Verify that getDTOs correctly filters by resource type.
+    Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
+
+    // Should return only Immunization resources, not Condition
+    List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
+    assertNotNull(vaccinations);
+
+    // Should return only Condition resources, not Immunization
+    List<BasicImmunizationDTO> basicImmunizations = fhirAdapter.getDTOs(BasicImmunizationDTO.class, bundle);
+    assertNotNull(basicImmunizations);
+  }
+
+  @Test
   void createBundle_vaccinationRecord_forceIADocument_returnedBundleIsAnIAM() {
     PatientIdentifier patientIdentifier = createPatientIdentifier("oid", "localId");
     VaccinationRecordDTO record = getVaccinationRecordFromTestfile(patientIdentifier);
@@ -139,10 +193,10 @@ class FhirAdapterTest {
     assertEquals(0, fhirAdapter.getDTOs(VaccinationDTO.class, bundle).size());
   }
 
-  // test cases are defined in config/fhir.yml (4) and config/testfiles/json (1)
+  // test cases are defined in config/fhir.yml (5) and config/testfiles/json (1)
   @Test
   void getLocalEntities_noInput_returnAllTestCasesAndTestfilesExceptEmptyBundle() {
-    assertEquals(5, fhirAdapter.getLocalEntities().size());
+    assertEquals(6, fhirAdapter.getLocalEntities().size());
   }
 
   @Test
@@ -523,6 +577,36 @@ class FhirAdapterTest {
   }
 
   @Test
+  void test_B_D5_labSerology() {
+    Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-B-D5-HCP1-C1.json");
+
+    assertThat(bundle.getId()).isEqualTo("Bundle/RDB04");
+
+    List<LaboratorySerologyDTO> laboratorySerologies = fhirAdapter.getDTOs(LaboratorySerologyDTO.class, bundle);
+    assertThat(laboratorySerologies).hasSize(1);
+
+    LaboratorySerologyDTO dto = laboratorySerologies.getFirst();
+    assertThat(dto.getId()).isEqualTo("135f604f-f5c8-4e9b-a49b-5f34cdb9cf60");
+    assertThat(dto.getRecordedDate()).isEqualTo(LocalDate.of(2021, 10, 1));
+    assertThat(dto.getCode().getCode()).isEqualTo("16935-9");
+    assertThat(dto.getCode().getName())
+        .isEqualTo("Hepatitis B virus surface Ab [Units/volume] in Serum");
+    assertThat(dto.getCode().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(dto.getStatus().getCode()).isEqualTo("final");
+    assertThat(dto.getValue().getCode()).isEqualTo("99");
+    assertThat(dto.getValue().getName()).isEqualTo("[iU]/L");
+    assertThat(dto.getValue().getSystem()).isEqualTo("http://unitsofmeasure.org");
+    assertThat(dto.getVerificationStatus().getCode()).isEqualTo("59156000");
+    assertThat(dto.getVerificationStatus().getName()).isEqualTo("Confirmed");
+    assertThat(dto.getVerificationStatus().getSystem()).isEqualTo("http://snomed.info/sct");
+    assertThat(dto.getInterpretation().getCode()).isEqualTo("POS");
+    assertThat(dto.getInterpretation().getName()).isEqualTo("Positive");
+    assertThat(dto.getInterpretation().getSystem())
+        .isEqualTo("http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation");
+    assertThat(dto.getOrganization()).isEqualTo("Labor Wir Messen Alles");
+  }
+
+  @Test
   void test_vaccinationWithCommentFromHCP_modifiedByAnotherHCPWithoutCommentChange_authorOfTheCommentShouldBeInitialHCP() {
     Bundle bundle = fhirAdapter.unmarshallFromFile("config/testfiles/Bundle-A-D1-P-C1.json");
     List<VaccinationDTO> vaccinations = fhirAdapter.getDTOs(VaccinationDTO.class, bundle);
@@ -758,7 +842,7 @@ class FhirAdapterTest {
 
   @Test
   void test_getJsonFilenames() {
-    assertThat(fhirAdapter.getJsonFilenames(CONFIG_TESTFILES_PATH).size()).isEqualTo(5);
+    assertThat(fhirAdapter.getJsonFilenames(CONFIG_TESTFILES_PATH).size()).isEqualTo(6);
 
     for (String jsonFilename : fhirAdapter.getJsonFilenames(CONFIG_TESTFILES_PATH)) {
       Bundle bundle = fhirAdapter.unmarshallFromFile(CONFIG_TESTFILES_PATH + "/" + jsonFilename);
@@ -938,10 +1022,13 @@ class FhirAdapterTest {
     List<AllergyDTO> allergies = fhirAdapter.getDTOs(AllergyDTO.class, originalBundle);
     List<MedicalProblemDTO> medicalProblems = fhirAdapter.getDTOs(MedicalProblemDTO.class, originalBundle);
     List<PastIllnessDTO> pastIllnessDTOs = fhirAdapter.getDTOs(PastIllnessDTO.class, originalBundle);
+    List<BasicImmunizationDTO> basicImmunizations = fhirAdapter.getDTOs(BasicImmunizationDTO.class, originalBundle);
+    List<LaboratorySerologyDTO> laboratorySerologies =
+        fhirAdapter.getDTOs(LaboratorySerologyDTO.class, originalBundle);
     AuthorDTO author = createAuthor();
 
     return new VaccinationRecordDTO(author, patientIdentifier.getPatientInfo(),
-        allergies, pastIllnessDTOs, vaccinations, medicalProblems);
+        allergies, pastIllnessDTOs, vaccinations, medicalProblems, basicImmunizations, laboratorySerologies);
   }
 
   private void isConfidentialityEqualTo(Bundle bundle, String code, String system, String name) {
@@ -957,4 +1044,3 @@ class FhirAdapterTest {
     assertThat(reference.getIdentifier().getValue()).isEqualTo(value);
   }
 }
-

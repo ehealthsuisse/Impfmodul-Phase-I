@@ -19,7 +19,7 @@
 package ch.admin.bag.vaccination.service.cache;
 
 import ch.admin.bag.vaccination.data.request.EPRDocument;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import com.hazelcast.config.Config;
@@ -146,7 +146,7 @@ public class Cache {
   @PostConstruct
   private void init() {
     log.info("Cache enabled: " + (isCacheEnabled));
-    Config config = new Config();
+    Config config = Config.load();
     config.setClusterName(clustername);
     MapConfig patientMapConfig = config.getMapConfig(PATIENT_IDENTIFIER_CACHE_NAME);
     patientMapConfig

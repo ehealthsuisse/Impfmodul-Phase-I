@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.admin.bag</groupId>
   <artifactId>fhir-adapter</artifactId>
-  <version>1.2.2</version>
+  <version>1.2.3</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.6</version>
+    <version>3.5.14</version>
   </parent>
 
   <name>FHIR Adapter library</name>
@@ -29,8 +29,8 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <junit.version>5.9.3</junit.version>
-    <fhir.version>8.0.0</fhir.version>
-    <org.hl7.fhir.version>6.5.20</org.hl7.fhir.version>
+    <fhir.version>8.10.0</fhir.version>
+    <org.hl7.fhir.version>6.9.7</org.hl7.fhir.version>
   </properties>
 
   <repositories>
@@ -52,17 +52,6 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>2.17.2</version>
-      </dependency>
-      <!-- Hapi Fhir -->
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.utilities</artifactId>
-        <version>${org.hl7.fhir.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ca.uhn.hapi.fhir</groupId>
-        <artifactId>org.hl7.fhir.r4</artifactId>
-        <version>${org.hl7.fhir.version}</version>
       </dependency>
       <!-- hapi-fhir-structures-r4 comes bundled with an older version of this dependency -->
       <dependency>
@@ -94,6 +83,17 @@
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-validation-resources-r4</artifactId>
       <version>${fhir.version}</version>
+    </dependency>
+    <!-- Temporary security overrides until these versions are bundled with the HAPI FHIR dependencies above. -->
+    <dependency>
+      <groupId>ca.uhn.hapi.fhir</groupId>
+      <artifactId>org.hl7.fhir.r4</artifactId>
+      <version>${org.hl7.fhir.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi.fhir</groupId>
+      <artifactId>org.hl7.fhir.utilities</artifactId>
+      <version>${org.hl7.fhir.version}</version>
     </dependency>
 
     <!-- Testing -->

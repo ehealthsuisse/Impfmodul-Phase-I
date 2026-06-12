@@ -56,7 +56,7 @@ public class ValueListServiceTest {
   @Test
   void getAllListOfValues_returnValues() {
     List<ValueListDTO> valueListDTO = valueListService.getAllListOfValues();
-    assertThat(valueListDTO.size()).isEqualByComparingTo(17);
+    assertThat(valueListDTO.size()).isEqualByComparingTo(23);
     assertFalse(valueListDTO.getFirst().getName().contains("properties"));
     assertEquals(valueListDTO.getFirst().getEntries().getFirst().getName(),
         valueListDTO.getFirst().getEntries().getFirst().getName().trim());
@@ -73,6 +73,7 @@ public class ValueListServiceTest {
         list.getEntries().forEach(entry -> {
           boolean shouldBeVisible = ValueListService.SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem())
               || ValueListService.MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem())
+              || ValueListService.IMMUNOGLOBULIN_CS_SYSTEM_URL.equals(entry.getSystem())
               || ValueListService.UNKNOWN_VACCINE_CODE.equals(entry.getCode());
           assertThat(entry.isAllowDisplay()).isEqualTo(shouldBeVisible);
         });
@@ -80,5 +81,28 @@ public class ValueListServiceTest {
     }
 
     assertThat(foundResult).isTrue();
+  }
+
+  @Test
+  void getObservationCodesToUnits_returnConfiguredMappings() {
+    var mappings = valueListService.getObservationCodesToUnits();
+
+    assertThat(mappings).hasSize(12);
+    assertThat(mappings)
+        .anySatisfy(mapping -> {
+          assertThat(mapping.getObservationCode().getCode()).isEqualTo("58770-9");
+          assertThat(mapping.getObservationCode().getSystem()).isEqualTo("http://loinc.org");
+          assertThat(mapping.getUnit().getCode()).isEqualTo("[iU]/L");
+          assertThat(mapping.getUnit().getName()).isEqualTo("[iU]/L");
+          assertThat(mapping.getUnit().getSystem()).isEqualTo("http://unitsofmeasure.org");
+        })
+        .anySatisfy(mapping -> {
+          assertThat(mapping.getObservationCode().getCode()).isEqualTo("22755-3");
+          assertThat(mapping.getUnit().getCode()).isEqualTo("ug/mL");
+        })
+        .anySatisfy(mapping -> {
+          assertThat(mapping.getObservationCode().getCode()).isEqualTo("22502-9");
+          assertThat(mapping.getUnit().getCode()).isEqualTo("[iU]/mL");
+        });
   }
 }

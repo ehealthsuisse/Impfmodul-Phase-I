@@ -1248,3 +1248,215 @@ vaccines-to-targetdiseases:
       target:
         - code: 55735004
           name: Respiratory syncytial virus infection
+    - code: 00687-01
+      name: Berirab 2 ml, Injektionslösung
+      target:
+        - code: 14168008
+          name: Rabies
+    - code: 00687-02
+      name: Berirab 5 ml, Injektionslösung
+      target:
+        - code: 14168008
+          name: Rabies
+    - code: 69039-02
+      name: Beyfortus 100 mg/1 ml, solution injectable en seringue préremplie
+      target:
+        - code: 55735004
+          name: Respiratory syncytial virus infection
+    - code: 69039-01
+      name: Beyfortus 50 mg/0.5 ml, solution injectable en seringue préremplie
+      target:
+        - code: 55735004
+          name: Respiratory syncytial virus infection
+    - code: 68222-01
+      name: Cutaquig 165 mg/ml, Injektionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 65992-01
+      name: Cuvitru 200 mg/ml, Injektionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 00506-02
+      name: Cytotect CP Biotest, Infusionslösung
+      target:
+        - code: 28944009
+          name: Infection caused by Cytomegalovirus
+    - code: 00701-02
+      name: Gammanorm, Injektionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 16318001000119107
+          name: Hypogammaglobulinemia due to multiple myeloma
+    - code: 00668-01
+      name: Gamunex 10%, solution pour injection intraveineuse
+      target:
+        - code: 14189004
+          name: Measles
+    - code: 00488-02
+      name: Hepatect CP, Infusionslösung
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B
+    - code: 00674-01
+      name: Hepatitis-B-Immunglobulin Behring, Injektionslösung
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B
+    - code: 66410-01
+      name: Hizentra 200mg/ml, Injektionslösung zur s.c. Anwendung, Fertigspritze
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 61547-01
+      name: Hizentra, Injektionslösung zur s.c. Anwendung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 66684-01
+      name: HyQvia 100 mg/ml, Infusionslösung zur subkutanen Anwendung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 58157-01
+      name: Ig Vena Kedrion 50 g/I, solution pour infusion
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 62913-01
+      name: Intratect 10%, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 57676-01
+      name: Intratect 5%, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 66332-03
+      name: Iqymune 10g/100ml, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 66332-04
+      name: Iqymune 20g/200ml, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 66332-01
+      name: Iqymune 2g/20ml, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 66332-02
+      name: Iqymune 5g/50ml, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 60323-01
+      name: Octagam 10 %, Lösung zur intravenösen Anwendung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 57469-01
+      name: Kiovig, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 58314-01
+      name: Privigen, Infusionslösung
+      target:
+        - code: 58606001
+          name: Primary immune deficiency disorder
+        - code: 33286000
+          name: Secondary immune deficiency disorder
+    - code: 53609-02
+      name: Rhophylac 300, Injektionslösung
+      target:
+        - code: 165746003
+          name: RhD negative
+    - code: 65695-02
+      name: Synagis 100 mg/1 ml, Injektionslösung
+      target:
+        - code: 55735004
+          name: Respiratory syncytial virus infection
+    - code: 65695-01
+      name: Synagis 50 mg/0.5 ml, Injektionslösung
+      target:
+        - code: 55735004
+          name: Respiratory syncytial virus infection
+    - code: 00673-02
+      name: Tetagam P, Injektionslösung
+      target:
+        - code: 76902006
+          name: Tetanus
+    - code: 59374-01
+      name: Uman Big 180 UI/1 ml, solution pour injection intramusculaire
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B
+    - code: 59374-02
+      name: Uman Big 540 UI/3 ml, solution pour injection intramusculaire
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B
+    - code: 59451-01
+      name: Varitect CP, Lösung zur intravenösen Injektion
+      target:
+        - code: 38907003
+          name: Varicella
+    - code: 59373-02
+      name: Venbig 2500 U.I/50 ml, poudre et solution pour injection intraveineuse
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B
+    - code: 59373-01
+      name: Venbig 500 U.I/10 ml, poudre et solution pour injection intraveineuse
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B
+    - code: 68471-01
+      name: Xevudy, Konzentrat zur Herstellung einer Infusionslösung
+      target:
+        - code: 840539006
+          name: COVID-19
+    - code: 66344-01
+      name: Zinplava, Konzentrat zur Herstellung einer Infusionslösung
+      target:
+        - code: 56688005
+          name: Clostridial infection
+    - code: 61639-01
+      name: Zutectra, Injektionslösung
+      target:
+        - code: 66071002
+          name: Viral hepatitis type B

@@ -24,6 +24,15 @@ This documentation covers the following documents:
 ### Releases
 All detailed release notes can be found [here](https://github.com/ehealthsuisse/Impfmodul-Phase-I/blob/main/Implementation/Releases/release-notes.md).
 
+### June 2026 - Release 1.9.0-RC1
+This release candidate extends the vaccination module with additional CH VACD entities and updates the corresponding frontend, backend, FHIR adapter, documentation and value lists.
+
+1. Added basic immunization records.
+2. Added laboratory and serology records.
+3. Updated FHIR bundle conversion, validation and PDF output for the new entities.
+4. Updated help pages, value lists and release documentation.
+5. Updated dependencies and configuration handling.
+
 ### November 2025 - Release 1.8.0
 This release wraps up all the RC-feedback for the next stable release, along with a few frontend and fhir library improvements.
 

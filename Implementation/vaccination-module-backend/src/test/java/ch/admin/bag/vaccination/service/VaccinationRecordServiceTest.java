@@ -34,6 +34,7 @@ import ch.admin.bag.vaccination.data.request.EPRDocument;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.FhirAdapter;
 import ch.fhir.epr.adapter.FhirConstants;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
@@ -41,6 +42,7 @@ import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -83,6 +85,8 @@ class VaccinationRecordServiceTest {
   private VaccinationRecordService vaccinationRecordService;
   @Autowired
   private VaccinationService vaccinationService;
+  @Autowired
+  private LaboratorySerologyService laboratorySerologyService;
   @MockitoBean
   private BaseService<BaseDTO> baseService;
   @MockitoBean
@@ -105,9 +109,11 @@ class VaccinationRecordServiceTest {
     List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
     List<MedicalProblemDTO> medicalProblems =
         medicalProblemService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
+    List<LaboratorySerologyDTO> laboratorySerologies =
+        laboratorySerologyService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
 
-    VaccinationRecordDTO record =
-        new VaccinationRecordDTO(null, null, allergies, pastIllnesses, vaccinations, medicalProblems);
+    VaccinationRecordDTO record = new VaccinationRecordDTO(null, null, allergies, pastIllnesses,
+        vaccinations, medicalProblems, List.of(), laboratorySerologies);
     String json = vaccinationRecordService.create(EPDPLAYGROUND, "dummy", "dummy", record, null);
     log.error("created record + json {}", json);
 
@@ -184,9 +190,11 @@ class VaccinationRecordServiceTest {
     List<PastIllnessDTO> pastIllnesses = pastIllnessService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
     List<MedicalProblemDTO> medicalProblems =
         medicalProblemService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
+    List<LaboratorySerologyDTO> laboratorySerologies =
+        laboratorySerologyService.getAll(EPDPLAYGROUND, "dummy", "dummy", null, true);
 
-    VaccinationRecordDTO record =
-        new VaccinationRecordDTO(null, null, allergies, pastIllnesses, vaccinations, medicalProblems);
+    VaccinationRecordDTO record = new VaccinationRecordDTO(null, null, allergies, pastIllnesses,
+        vaccinations, medicalProblems, List.of(), laboratorySerologies);
     String json = vaccinationRecordService.create(EPDPLAYGROUND, "dummy", "dummy", record, null);
     EPRDocument eprDocument = new EPRDocument(false, json, new RetrievedDocument(), LocalDateTime.now());
 

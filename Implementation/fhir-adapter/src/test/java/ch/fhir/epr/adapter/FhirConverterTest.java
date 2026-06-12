@@ -34,6 +34,7 @@ import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -64,6 +65,8 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -441,6 +444,35 @@ class FhirConverterTest {
     assertEquals(DISPLAY, vaccinationDTO.getCode().getName());
     assertEquals("Lot123", vaccinationDTO.getLotNumber());
     assertEquals(1, vaccinationDTO.getDoseNumber());
+  }
+
+  @Test
+  void testToLaboratorySerologyDTO_quantityValue() {
+    Observation observation = new Observation();
+    observation.addIdentifier(new Identifier().setValue("Obs-123"));
+    observation.setCode(CODEABLE_CONCEPT);
+    observation.setStatus(Observation.ObservationStatus.FINAL);
+    observation.setEffective(new DateTimeType(DATE));
+    observation.setInterpretation(List.of(CODEABLE_CONCEPT));
+
+    Quantity quantity = new Quantity();
+    quantity.setValue(99);
+    quantity.setUnit("[iU]/L");
+    quantity.setSystem("http://unitsofmeasure.org");
+    observation.setValue(quantity);
+
+    LaboratorySerologyDTO dto = fhirConverter.toLaboratorySerologyDTO(observation, null, ORGANIZATION);
+
+    assertEquals("Obs-123", dto.getId());
+    assertEquals(ORGANIZATION, dto.getOrganization());
+    assertEquals(CODE, dto.getCode().getCode());
+    assertEquals(DISPLAY, dto.getCode().getName());
+    assertEquals(SYSTEM, dto.getCode().getSystem());
+    assertEquals("final", dto.getStatus().getCode());
+    assertEquals("99", dto.getValue().getCode());
+    assertEquals("[iU]/L", dto.getValue().getName());
+    assertEquals("http://unitsofmeasure.org", dto.getValue().getSystem());
+    assertEquals(CODE, dto.getInterpretation().getCode());
   }
 
   @Test

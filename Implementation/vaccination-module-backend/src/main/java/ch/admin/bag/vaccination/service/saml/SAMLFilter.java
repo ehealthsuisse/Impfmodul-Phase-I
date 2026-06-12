@@ -20,7 +20,7 @@ package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.exception.AccessDeniedException;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import java.io.IOException;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;

@@ -21,10 +21,10 @@ package ch.admin.bag.vaccination.utils;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import ch.admin.bag.vaccination.data.request.SignatureDataRequest;
 import ch.admin.bag.vaccination.service.SignatureService;
 import java.util.List;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
@@ -36,13 +36,15 @@ import org.springframework.http.ResponseEntity;
  *
  */
 public abstract class MockSessionHelper {
+  private static final String FRONTEND_HOST = "localhost:9000";
+
   public List<String> enhanceSessionWithMockedData(TestRestTemplate restTemplate, SignatureService signatureService,
       int port, boolean shouldRetrieveCookies) {
     String urlQuery = "idp=GAZELLE&laaoid=1.3.6.1.4.1.12559.11.20.1&lang=EN_us&lpid=CHPAM204"
         + "&organization=Gruppenpraxis+CH"
         + "&purpose=NORM&role=PAT&timestamp=1729858049673&ufname=Max&ugname=Mustermann&utitle=Dr.Med&ugln=GLN"
         + "&sig=VK6o9r9/Kx+Q5cAdsdLnoEi4lbQZspPOr0usMBhhvRc=";
-    HttpEntity<String> request = new HttpEntity<>(urlQuery);
+    SignatureDataRequest request = new SignatureDataRequest(urlQuery, FRONTEND_HOST);
     when(signatureService.validateQueryString(urlQuery)).thenReturn(true);
     ResponseEntity<Boolean> portalResponse =
         restTemplate.postForEntity("http://localhost:" + port + "/signature/validate", request, Boolean.class);

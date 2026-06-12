@@ -39,7 +39,9 @@ public class VaccinationRecordTest {
         List.of(new AllergyDTO()), //
         List.of(new PastIllnessDTO()), //
         List.of(new VaccinationDTO()), //
-        List.of(new MedicalProblemDTO())//
+        List.of(new MedicalProblemDTO()), //
+        List.of(new BasicImmunizationDTO()), //
+        List.of(new LaboratorySerologyDTO()) //
     );
     vaccinationRecord.setCreatedAt(LocalDateTime.parse("2025-04-28T11:07:08"));
 
@@ -63,6 +65,8 @@ public class VaccinationRecordTest {
     assertEquals(1, vaccinationRecord.getPastIllnesses().size());
     assertEquals(1, vaccinationRecord.getVaccinations().size());
     assertEquals(1, vaccinationRecord.getMedicalProblems().size());
+    assertEquals(1, vaccinationRecord.getBasicImmunizations().size());
+    assertEquals(1, vaccinationRecord.getLaboratorySerologies().size());
     assertEquals(LocalDateTime.parse("2025-04-28T11:07:08"), vaccinationRecord.getCreatedAt());
   }
 
@@ -76,6 +80,8 @@ public class VaccinationRecordTest {
         List.of(new PastIllnessDTO()), //
         List.of(new VaccinationDTO()), //
         List.of(new MedicalProblemDTO()),//
+        List.of(new BasicImmunizationDTO()), //
+        List.of(new LaboratorySerologyDTO()), //
         List.of(new ValueDTO()) //
     );
     vaccinationRecord.setCreatedAt(LocalDateTime.parse("2025-04-28T11:07:08"));
@@ -94,6 +100,8 @@ public class VaccinationRecordTest {
     assertEquals(1, vaccinationRecord.getPastIllnesses().size());
     assertEquals(1, vaccinationRecord.getVaccinations().size());
     assertEquals(1, vaccinationRecord.getMedicalProblems().size());
+    assertEquals(1, vaccinationRecord.getBasicImmunizations().size());
+    assertEquals(1, vaccinationRecord.getLaboratorySerologies().size());
     assertEquals(1, vaccinationRecord.getI18nTargetDiseases().size());
     assertEquals(LocalDateTime.parse("2025-04-28T11:07:08"), vaccinationRecord.getCreatedAt());
 
@@ -110,8 +118,9 @@ public class VaccinationRecordTest {
     assertNull(vaccinationRecord.getPastIllnesses());
     assertNull(vaccinationRecord.getVaccinations());
     assertNull(vaccinationRecord.getMedicalProblems());
+    assertNull(vaccinationRecord.getBasicImmunizations());
+    assertNull(vaccinationRecord.getLaboratorySerologies());
     assertNull(vaccinationRecord.getCreatedAt());
     assertThrows(UnsupportedOperationException.class, vaccinationRecord::getDateOfEvent);
   }
 }
-

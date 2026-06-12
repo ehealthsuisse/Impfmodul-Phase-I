@@ -347,6 +347,15 @@
             }
           ]
         },
+        "reasonCode": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "429060002",
+              "display": "Procedure to meet occupational requirement"
+            }
+          ]
+        },
         "patient": {
           "reference": "Patient/TC-patient"
         },

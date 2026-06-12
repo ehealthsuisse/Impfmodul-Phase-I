@@ -19,7 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import ch.admin.bag.vaccination.service.saml.config.IdpProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,9 +32,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.SSLContext;
@@ -80,12 +82,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @EnableScheduling
 @Service
 @Slf4j
 public class SAMLService implements SAMLServiceIfc {
-  public static final String FORWARD_TOKEN = "FORWARD;;";
+  public static final String ATTEMPTED_LOGOUT_INDEXES_HEADER = "X-Logout-Attempted-Indexes";
 
   @Autowired
   private IdpProvider idpProviders;
@@ -206,7 +210,9 @@ public class SAMLService implements SAMLServiceIfc {
     MessageContext context = new MessageContext();
     AuthnRequest authnRequest = createAuthnRequest(idpConfig);
     context.setMessage(authnRequest);
-    SAMLBindingSupport.setRelayState(context, idpConfig.getIdentifier());
+    String host = HttpSessionUtils.getFrontendHostFromSession();
+    log.debug("Using frontendHost from session: {}", host);
+    SAMLBindingSupport.setRelayState(context, host + ";;" + idpConfig.getIdentifier());
 
     SAMLPeerEntityContext peerEntityContext = context.ensureSubcontext(SAMLPeerEntityContext.class);
 
@@ -312,26 +318,72 @@ public class SAMLService implements SAMLServiceIfc {
   }
 
   @Override
-  public void sendLogoutToOtherNode(String otherNodeLogoutURL, String logoutRequestBody) {
-    if (otherNodeLogoutURL == null || otherNodeLogoutURL.isBlank()) {
-      log.warn("No other node logout URL configured, skipping logout to other node.");
+  public void sendLogoutToNextNode(List<String> logoutURLs, String attemptedLogoutIndexes, String logoutRequestBody) {
+    List<String> configuredLogoutURLs = logoutURLs == null ? List.of()
+        : logoutURLs.stream().filter(url -> url != null && !url.isBlank()).map(String::trim).toList();
+    if (configuredLogoutURLs.isEmpty()) {
+      log.warn("Logout propagation is not configured, skipping logout to other nodes.");
       return;
     }
 
+    Set<Integer> attemptedIndexes = parseAttemptedLogoutIndexes(attemptedLogoutIndexes, configuredLogoutURLs.size());
+    for (int logoutIndex = 0; logoutIndex < configuredLogoutURLs.size(); logoutIndex++) {
+      if (attemptedIndexes.contains(logoutIndex)) {
+        continue;
+      }
+
+      attemptedIndexes.add(logoutIndex);
+      String nextLogoutURL = configuredLogoutURLs.get(logoutIndex);
+      if (sendLogoutToNode(nextLogoutURL, attemptedIndexes, logoutRequestBody)) {
+        return;
+      }
+    }
+
+    log.debug("All configured logout nodes have already been attempted.");
+  }
+
+  private Set<Integer> parseAttemptedLogoutIndexes(String attemptedLogoutIndexes, int logoutURLCount) {
+    Set<Integer> result = new LinkedHashSet<>();
+    if (attemptedLogoutIndexes == null || attemptedLogoutIndexes.isBlank()) {
+      return result;
+    }
+
+    for (String value : attemptedLogoutIndexes.split(",")) {
+      try {
+        int index = Integer.parseInt(value.trim());
+        if (index >= 0 && index < logoutURLCount) {
+          result.add(index);
+        }
+      } catch (NumberFormatException ex) {
+        log.warn("Ignoring invalid logout propagation index {}", value);
+      }
+    }
+    return result;
+  }
+
+  private boolean sendLogoutToNode(String logoutURL, Set<Integer> attemptedIndexes, String logoutRequestBody) {
     try {
-      log.debug("Sending logout request to other node: {}", otherNodeLogoutURL);
+      log.debug("Sending logout request to node: {}", logoutURL);
       HttpClient httpClient = HttpClient.newBuilder().sslContext(SSLContext.getDefault()).build();
       HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(otherNodeLogoutURL))
+        .uri(URI.create(logoutURL))
         .header("Content-Type", "application/soap+xml")
-        .POST(HttpRequest.BodyPublishers.ofString(FORWARD_TOKEN + logoutRequestBody))
+        .header(ATTEMPTED_LOGOUT_INDEXES_HEADER, formatAttemptedLogoutIndexes(attemptedIndexes))
+        .POST(HttpRequest.BodyPublishers.ofString(logoutRequestBody))
         .build();
 
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-      log.debug("Successfully sent logout request to other node, received statusCode {}.", response.statusCode());
+      log.debug("Successfully sent logout request to node {}, received statusCode {}.", logoutURL,
+          response.statusCode());
+      return response.statusCode() >= 200 && response.statusCode() < 300;
     } catch (Exception e) {
-      log.error("Failed to redirect to other node {} for logout", otherNodeLogoutURL, e);
+      log.error("Failed to redirect to node {} for logout", logoutURL, e);
+      return false;
     }
+  }
+
+  private String formatAttemptedLogoutIndexes(Set<Integer> attemptedIndexes) {
+    return String.join(",", attemptedIndexes.stream().map(String::valueOf).toList());
   }
 
   private void addAuthenticatedSessionId(String sessionId, SecurityContext securityContext) {
@@ -364,11 +416,6 @@ public class SAMLService implements SAMLServiceIfc {
 
   private String getEntityId(IdentityProviderConfig idpConfig) {
     return idpConfig != null && idpConfig.getEntityId() != null ? idpConfig.getEntityId() : spEntityId;
-  }
-
-  private void removeSecurityContextFromSession(HttpSession httpSession) {
-    SecurityContextHolder.clearContext();
-    removeSession(httpSession.getId());
   }
 
   private void signRequest(SignableSAMLObject request, IdentityProviderConfig idpConfig) {

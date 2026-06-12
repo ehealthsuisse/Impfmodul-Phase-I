@@ -22,6 +22,7 @@ import ch.admin.bag.vaccination.service.saml.config.IdentityProviderConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import org.opensaml.saml.saml2.core.Artifact;
 import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
@@ -125,11 +126,12 @@ public interface SAMLServiceIfc {
    */
   ArtifactResponse sendAndReceiveArtifactResolve(IdentityProviderConfig idpConfig, ArtifactResolve artifactResolve);
 
-  /**
-   * Sends a logout request to the other node in the cluster if configured.
+   /**
+   * Sends a logout request to the next available node in the cluster if configured.
    *
-   * @param otherNodeLogoutURL URL of the other node to send the logout request to
+   * @param logoutURLs ordered logout URLs of all nodes
+   * @param attemptedLogoutIndexes logout URL indexes already attempted by this logout request
    * @param logoutRequestBody body of the logout request containing the SAML logout request
    */
-  void sendLogoutToOtherNode(String otherNodeLogoutURL, String logoutRequestBody);
+  void sendLogoutToNextNode(List<String> logoutURLs, String attemptedLogoutIndexes, String logoutRequestBody);
 }

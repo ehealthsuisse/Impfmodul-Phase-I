@@ -18,8 +18,11 @@
  */
 package ch.admin.bag.vaccination.service;
 
+import ch.admin.bag.vaccination.data.dto.ObservationCodeToUnitDTO;
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
+import ch.admin.bag.vaccination.service.config.ObservationCodeToUnitsConfig;
+import ch.admin.bag.vaccination.service.config.VaccinesToTargetDiseasesConfig;
 import ch.admin.bag.vaccination.utils.PriorityComparator;
 import ch.admin.bag.vaccination.utils.PriorityValue;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
@@ -41,14 +44,21 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class ValueListService {
-  public static final String SWISSMEDIC_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs";
-  public static final String MYVACCINES_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs";
-  public static final String IMMUNIZATION_VACCINE_CODE_VALUELIST = "immunizationVaccineCode";
   public static final String CONDITION_CLINICAL_STATUS = "conditionClinicalStatus";
+
+  public static final String IMMUNOGLOBULIN_CS_SYSTEM_URL =
+      "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-immunoglobulin-cs";
+  public static final String IMMUNIZATION_VACCINE_CODE_VALUELIST = "immunizationVaccineCode";
+  public static final String MYVACCINES_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs";
+  public static final String SWISSMEDIC_CS_SYSTEM_URL = "http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-swissmedic-cs";
+
   public static final String UNKNOWN_VACCINE_CODE = "787859002";
 
   @Autowired
   private VaccinesToTargetDiseasesConfig vaccinesToTargetDiseasesConfig;
+
+  @Autowired
+  private ObservationCodeToUnitsConfig observationCodeToUnitsConfig;
 
   @Value("${application.valueListPath}")
   String folderPathValueListProperties;
@@ -97,6 +107,14 @@ public class ValueListService {
     return dtos;
   }
 
+  public List<ObservationCodeToUnitDTO> getObservationCodesToUnits() {
+    return observationCodeToUnitsConfig.getMappings().stream()
+        .map(mapping -> new ObservationCodeToUnitDTO(
+            mapping.getObservationCode(observationCodeToUnitsConfig.getObservationCodeSystem()),
+            mapping.getUnit(observationCodeToUnitsConfig.getUnitSystem())))
+        .toList();
+  }
+
   private PriorityValue createCodeSystemDTOs(String valueLine) {
     String[] codeValuePair = valueLine.split(";");
     int priority = 0;
@@ -129,6 +147,30 @@ public class ValueListService {
     }
   }
 
+  private void filterConditionStatuses(ValueListDTO valueList) {
+    valueList.getEntries().stream()
+        .filter(entry -> !isActiveStatus(entry.getCode()))
+        .forEach(entry -> entry.setAllowDisplay(false));
+  }
+
+  private void filterVaccinationEntries(ValueListDTO valueList) {
+    valueList.getEntries().stream()
+        .filter(entry -> !isVaccinationEntryAllowed(entry))
+        .forEach(entry -> entry.setAllowDisplay(false));
+  }
+
+  private boolean isActiveStatus(String code) {
+    return code != null && code.toLowerCase().contains("active");
+  }
+
+  private boolean isVaccinationEntryAllowed(ValueDTO entry) {
+    boolean isSwissMedic = SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem());
+    boolean isMyVaccines = MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem());
+    boolean isImmunoglobulinVaccine = IMMUNOGLOBULIN_CS_SYSTEM_URL.equals(entry.getSystem());
+    boolean isUnknownVaccine = UNKNOWN_VACCINE_CODE.equals(entry.getCode());
+    return isSwissMedic || isMyVaccines || isImmunoglobulinVaccine || isUnknownVaccine;
+  }
+
   private boolean isCodeSmaller200(String code) {
     try {
       return Integer.parseInt(code) <= 200;
@@ -138,20 +180,11 @@ public class ValueListService {
   }
 
   private void modifyVisibilities(ValueListDTO createdValueList) {
-    if (IMMUNIZATION_VACCINE_CODE_VALUELIST.equals(createdValueList.getName())) {
-      createdValueList.getEntries().stream()
-          .filter(entry -> {
-            boolean isSuisseMedicVaccination = SWISSMEDIC_CS_SYSTEM_URL.equals(entry.getSystem());
-            boolean isMyVaccinesVaccination = MYVACCINES_CS_SYSTEM_URL.equals(entry.getSystem());
-            boolean isUnknownVaccine = UNKNOWN_VACCINE_CODE.equals(entry.getCode());
-            return !(isSuisseMedicVaccination || isMyVaccinesVaccination ||isUnknownVaccine);
-          })
-          .forEach(entry -> entry.setAllowDisplay(false));
-    } else if (CONDITION_CLINICAL_STATUS.equals(createdValueList.getName())) {
-      // allow only active and inactive
-      createdValueList.getEntries().stream()
-          .filter(entry -> !entry.getCode().toLowerCase().contains("active"))
-          .forEach(entry -> entry.setAllowDisplay(false));
+    String valueListName = createdValueList.getName();
+    if (IMMUNIZATION_VACCINE_CODE_VALUELIST.equals(valueListName)) {
+      filterVaccinationEntries(createdValueList);
+    } else if (CONDITION_CLINICAL_STATUS.equals(valueListName)) {
+      filterConditionStatuses(createdValueList);
     }
   }
 }

@@ -21,6 +21,7 @@ package ch.admin.bag.vaccination.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ch.admin.bag.vaccination.data.dto.ObservationCodeToUnitDTO;
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
@@ -120,6 +121,20 @@ public class UtilityControllerTest {
         .isEqualTo("Rubella");
     assertThat(response.getBody()[0].getTargetDiseases().getFirst().getSystem())
         .isEqualTo("http://snomed.info/sct");
+  }
+
+  @Test
+  void getObservationCodesToUnits_returnValueList() {
+    ResponseEntity<ObservationCodeToUnitDTO[]> response = restTemplate.getForEntity(
+        createURL("/utility/observationCodesToUnits"),
+        ObservationCodeToUnitDTO[].class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotEmpty();
+    assertThat(response.getBody()).isInstanceOf(ObservationCodeToUnitDTO[].class);
+    assertThat(response.getBody().length).isEqualTo(12);
+    assertThat(response.getBody()[0].getObservationCode().getSystem()).isEqualTo("http://loinc.org");
+    assertThat(response.getBody()[0].getUnit().getSystem()).isEqualTo("http://unitsofmeasure.org");
   }
 
   @Test

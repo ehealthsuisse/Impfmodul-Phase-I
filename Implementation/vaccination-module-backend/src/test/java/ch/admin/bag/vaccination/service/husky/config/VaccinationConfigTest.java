@@ -20,7 +20,7 @@ package ch.admin.bag.vaccination.service.husky.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ch.admin.bag.vaccination.service.VaccinationConfig;
+import ch.admin.bag.vaccination.service.config.VaccinationConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

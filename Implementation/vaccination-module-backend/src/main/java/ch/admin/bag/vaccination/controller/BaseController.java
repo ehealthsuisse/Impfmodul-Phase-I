@@ -19,7 +19,7 @@
 package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.service.BaseServiceIfc;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;

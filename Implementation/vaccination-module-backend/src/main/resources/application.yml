@@ -10,9 +10,11 @@ spring:
     import: >
       file:${vaccination_config:config}/portal-config.yml,
       file:${vaccination_config:config}/husky.yml,
+      file:${vaccination_config:config}/hazelcast.yml,
       file:${vaccination_config:config}/idp-config-${SPRING_CLOUDPROFILES_ACTIVE:local}.yml,
       file:${vaccination_config:config}/fhir.yml,
       file:${vaccination_config:config}/valuelists/vaccines-to-targetdiseases.yml,
+      file:${vaccination_config:config}/valuelists/observation-code-to-units.yml,
       file:${vaccination_config:config}/valuelists/pdf-output.yml,
       file:${vaccination_config:config}/logging.properties
   banner:
@@ -38,12 +40,6 @@ springdoc:
     license: MIT
     licenseUrl: https://www.mit.edu/~amini/LICENSE.md
     version: 1.0
-
-# see : https://docs.hazelcast.com/imdg/4.2/cp-subsystem/configuration
-hazelcast:
-  cp-subsystem:
-    cp-member-count: 1 # Minimal configuration
-    group-size: 1      # to ensure safe mode or consistency.
 
 # Application relevant configuration
 application:

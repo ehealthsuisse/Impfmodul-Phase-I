@@ -22,12 +22,15 @@ import ch.admin.bag.vaccination.config.ProfileConfig;
 import ch.admin.bag.vaccination.data.request.EPRDocument;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapterIfc;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.FhirAdapterIfc;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -206,9 +209,15 @@ public class VaccinationRecordService {
         .filter(entity -> entity instanceof MedicalProblemDTO).map(entity -> (MedicalProblemDTO) entity).toList();
     List<PastIllnessDTO> pastIllnesses = entities.parallelStream().filter(entity -> entity instanceof PastIllnessDTO)
         .map(entity -> (PastIllnessDTO) entity).toList();
+    List<BasicImmunizationDTO> basicImmunizations = entities.parallelStream()
+        .filter(entity -> entity instanceof BasicImmunizationDTO).map(entity -> (BasicImmunizationDTO) entity).toList();
+    List<LaboratorySerologyDTO> laboratorySerologies = entities.parallelStream()
+        .filter(entity -> entity instanceof LaboratorySerologyDTO)
+        .map(entity -> (LaboratorySerologyDTO) entity)
+        .toList();
 
     VaccinationRecordDTO vaccinationRecordDTO = new VaccinationRecordDTO(createAuthor, patientIdentifier.getPatientInfo(),
-        allergies, pastIllnesses, vaccinations, medicalProblems);
+        allergies, pastIllnesses, vaccinations, medicalProblems, basicImmunizations, laboratorySerologies);
     vaccinationRecordDTO.setCreatedAt(createdAt);
 
     Bundle bundle = fhirAdapter.create(patientIdentifier, vaccinationRecordDTO);

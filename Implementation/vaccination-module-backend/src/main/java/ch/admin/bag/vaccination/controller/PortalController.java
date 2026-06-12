@@ -22,7 +22,8 @@ import static ch.admin.bag.vaccination.service.husky.HuskyUtils.ASS;
 import static ch.admin.bag.vaccination.service.husky.HuskyUtils.HCP;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.data.request.SignatureDataRequest;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.cache.CacheIdentifierKey;
@@ -38,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -79,15 +79,14 @@ public class PortalController {
   // A query string does start with the first parameter (no ?)
   // and has the sig parameter last, e.g. idp=test&sig=abc
   @PostMapping(ENDPOINT_VALIDATE)
-  @ResponseBody
   @Operation(description = "Validates an URL query string.")
-  public boolean validatePortalCall(HttpServletRequest request, @RequestBody String queryString) {
-    log.debug("Endpoint call - validate query string {}", queryString);
+  public boolean validatePortalCall(HttpServletRequest request, @RequestBody SignatureDataRequest signatureData) {
+    log.debug("Endpoint call - validate query string {}", signatureData.queryString());
 
-    boolean validateCall = validateSignature(queryString);
+    boolean validateCall = validateSignature(signatureData.queryString());
     if (validateCall) {
       log.debug("Signature validation successful.");
-      validateCall = initializeSession(request, queryString);
+      validateCall = initializeSession(request, signatureData.queryString(), signatureData.frontendHost());
     }
 
     return validateCall;
@@ -122,7 +121,7 @@ public class PortalController {
     return author;
   }
 
-  private boolean initializeSession(HttpServletRequest request, String queryString) {
+  private boolean initializeSession(HttpServletRequest request, String queryString, String frontendHost) {
     Map<String, String> paramsList = HttpSessionUtils.getQueryParameters(queryString);
     boolean validateCall = validateParameters(paramsList);
     if (validateCall) {
@@ -131,6 +130,7 @@ public class PortalController {
       HttpSessionUtils.setParameterInSession(HttpSessionUtils.AUTHOR, getAuthorFromParameters(paramsList));
       HttpSessionUtils.setParameterInSession(HttpSessionUtils.IDP, paramsList.get(IDP));
       HttpSessionUtils.setParameterInSession(HttpSessionUtils.PURPOSE, paramsList.get(PURPOSE));
+      HttpSessionUtils.setParameterInSession(HttpSessionUtils.FRONTEND_HOST, frontendHost);
 
       if (profileConfig.isLocalMode()) {
         samlService.createDummyAuthentication(request);

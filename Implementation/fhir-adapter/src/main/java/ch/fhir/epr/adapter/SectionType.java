@@ -27,6 +27,7 @@ import lombok.Getter;
  * <li>pastillnesses</li>
  * <li>administration</li>
  * <li>medicalproblems</li>
+ * <li>laboratoryserology</li>
  * </ul>
  *
  * @see <a href=
@@ -58,6 +59,12 @@ public enum SectionType {
       "Problem list Reported",
       "11450-4",
       "Problem list Reported",
+      "http://loinc.org"), //
+  LABORATORY_SEROLOGY(
+      "laboratory-serology",
+      "Laboratory-Serology",
+      "18727-8",
+      "Serology studies (set)",
       "http://loinc.org");
 
   private String id;
