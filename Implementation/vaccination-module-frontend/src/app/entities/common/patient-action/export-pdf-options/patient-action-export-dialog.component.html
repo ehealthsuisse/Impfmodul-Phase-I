@@ -1,0 +1,37 @@
+<h2 mat-dialog-title><span [vmTranslate]="'GLOBAL.EXPORT_PDF.TITLE'"></span></h2>
+
+<mat-dialog-content class="export-dialog">
+  <div class="option-row">
+    <span class="option-label" [vmTranslate]="'GLOBAL.BASIC_IMMUNIZATION'"></span>
+    <mat-checkbox [(ngModel)]="options.includeBasicImmunizationsComments"></mat-checkbox>
+  </div>
+  <div class="option-row">
+    <span class="option-label" [vmTranslate]="'GLOBAL.EXPORT_PDF.ALL_VACCINATIONS'"></span>
+    <mat-checkbox [(ngModel)]="options.includeVaccinationsComments"></mat-checkbox>
+  </div>
+  <div class="option-row">
+    <span class="option-label" [vmTranslate]="'GLOBAL.ALLERGIES'"></span>
+    <mat-checkbox [checked]="true" [disabled]="true"></mat-checkbox>
+  </div>
+  <div class="option-row">
+    <span class="option-label" [vmTranslate]="'GLOBAL.PAST_ILLNESSES'"></span>
+    <mat-checkbox [(ngModel)]="options.includeIllnessesComments"></mat-checkbox>
+  </div>
+  <div class="option-row">
+    <span class="option-label" [vmTranslate]="'GLOBAL.LABORATORY_SEROLOGY'"></span>
+    <mat-checkbox [(ngModel)]="options.includeLaboratorySerologiesComments"></mat-checkbox>
+  </div>
+  <div class="option-row">
+    <span class="option-label" [vmTranslate]="'GLOBAL.PROBLEM'"></span>
+    <mat-checkbox [(ngModel)]="options.includeMedicalProblemsComments"></mat-checkbox>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="start">
+  <button mat-raised-button type="button" class="ok-button" (click)="confirm()">
+    <span [vmTranslate]="'buttons.OK'"></span>
+  </button>
+  <button mat-raised-button type="button" class="cancel-button" (click)="cancel()">
+    <span [vmTranslate]="'buttons.CANCEL'"></span>
+  </button>
+</mat-dialog-actions>

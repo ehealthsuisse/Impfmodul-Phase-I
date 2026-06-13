@@ -1,6 +1,6 @@
-@use 'src/assets/scss/_breakpoints' as breakpoints;
-@use 'src/assets/scss/_mixins' as mixins;
-@use 'src/assets/scss/_variables' as variables;
+@use '_breakpoints' as breakpoints;
+@use '_mixins' as mixins;
+@use '_variables' as variables;
 
 // distribute angular material table styles to all tables
 mat-table {

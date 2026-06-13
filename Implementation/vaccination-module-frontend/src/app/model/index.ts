@@ -17,7 +17,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 export * from './adverse-event.interface';
+export * from './basic-immunization.interface';
 export * from './infectious-diseases.interface';
+export * from './laboratory-serology.interface';
 export * from './medical-problem.interface';
 export * from './vaccination-record.interface';
 export * from './vaccination.interface';

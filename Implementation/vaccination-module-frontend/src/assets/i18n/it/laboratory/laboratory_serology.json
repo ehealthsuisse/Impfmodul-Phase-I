@@ -1,0 +1,17 @@
+{
+  "LABORATORY_SEROLOGY": {
+    "TITLE": "Laboratorio e sierologia",
+    "NEW_HEADER": "Aggiungi referto di laboratorio e sierologia",
+    "EDIT_HEADER": "Modifica referto di laboratorio e sierologia",
+    "DETAILS_HEADER": "Dettagli del referto di laboratorio e sierologia",
+    "RECORDED_DATE": "Data",
+    "LABORATORY_SEROLOGY_CODE": "Laboratorio/sierologia",
+    "STATUS": "Stato",
+    "VALUE": "Valore",
+    "UNIT": "Unità",
+    "PERFORMER": "Esecutore",
+    "RECORDER": "Registrato da",
+    "DATE": "Data della constatazione",
+    "CONFIDENTIALITY": "Confidenzialità"
+  }
+}

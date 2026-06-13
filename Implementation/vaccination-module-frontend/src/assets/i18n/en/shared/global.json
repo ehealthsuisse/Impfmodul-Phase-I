@@ -3,6 +3,7 @@
     "ALLERGIES": "Adverse events",
     "PAST_ILLNESSES": "Infectious diseases",
     "PROBLEM": "Risk factors",
+    "BASIC_IMMUNIZATION": "Basic immunization",
     "VACCINATIONS": "Vaccinations",
     "HOME": "Vaccination certificate",
     "DATE": "Date",
@@ -41,6 +42,11 @@
     "DELETE_CONFIRMATION_MESSAGE": "Should this document be deleted?<br>Note: The deleted document is assigned the same confidentiality level as the document to be deleted.",
     "CONVERSION_DIALOG_TITLE": "Convert record",
     "NO_IMMUNIZATION_RECORDS_FOUND": "You have no vaccinations in this application yet.<br>Do you want to import the vaccinations from date {{ createdAt }} from your EPR?",
-    "LAST_MODIFIED_BY": "Last modified by: {{author}}"
+    "LAST_MODIFIED_BY": "Last modified by: {{author}}",
+    "EXPORT_PDF": {
+      "TITLE": "Should comments be included in the printout?",
+      "ALL_VACCINATIONS": "All vaccinations"
+    },
+    "LABORATORY_SEROLOGY": "Laboratory and serology"
   }
 }

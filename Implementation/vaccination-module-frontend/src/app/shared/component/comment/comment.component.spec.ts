@@ -33,10 +33,39 @@ describe('CommentComponent', () => {
 
     fixture = TestBed.createComponent(CommentComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
+  });
+
+  it('should set commentMessage from comment on init', () => {
+    component.comment = { text: 'Test comment', author: 'Author' };
+    component.ngOnInit();
+    expect(component.commentMessage).toBe('Test comment');
+  });
+
+  it('should set commentMessage to empty if no comment but canAddComments is true', () => {
+    component.comment = null;
+    component.canAddComments = true;
+    component.commentMessage = 'should be cleared';
+    component.ngOnInit();
+    expect(component.commentMessage).toBe('');
+  });
+
+  it('should not change commentMessage if no comment and canAddComments is false', () => {
+    component.comment = null;
+    component.canAddComments = false;
+    component.commentMessage = 'existing';
+    component.ngOnInit();
+    expect(component.commentMessage).toBe('existing');
+  });
+
+  it('should emit commentMessageChange on onCommentChange', () => {
+    spyOn(component.commentMessageChange, 'emit');
+    component.onCommentChange('new value');
+    expect(component.commentMessage).toBe('new value');
+    expect(component.commentMessageChange.emit).toHaveBeenCalledWith('new value');
   });
 });

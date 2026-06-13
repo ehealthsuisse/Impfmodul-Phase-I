@@ -25,7 +25,7 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
 import { IVaccinationRecord } from '../../../model';
 import { IValueDTO } from '../../../shared';
 import { SpinnerService } from '../../../shared/services/spinner.service';
-import { ITranslationRequest } from '../../../model/translation-request.interface';
+import { IPdfExportRequest } from '../../../model/pdf-export-request.interface';
 import { MatDialog } from '@angular/material/dialog';
 import dayjs from 'dayjs';
 import { ReusableDialogComponent } from '../../../shared/component/resuable-fields/reusable-dialog/reusable-dialog.component';
@@ -57,6 +57,8 @@ export class VaccinationRecordService {
           (!record.allergies || record.allergies.length === 0) &&
           (!record.vaccinations || record.vaccinations.length === 0) &&
           (!record.pastIllnesses || record.pastIllnesses.length === 0) &&
+          (!record.basicImmunizations || record.basicImmunizations.length === 0) &&
+          (!record.laboratorySerologies || record.laboratorySerologies.length === 0) &&
           (!record.medicalProblems || record.medicalProblems.length === 0);
 
         if (noImmunizationRecordsFound && record.createdAt) {
@@ -82,7 +84,7 @@ export class VaccinationRecordService {
     );
   }
 
-  exportPdf(body: ITranslationRequest, lang: string): Observable<Blob> {
+  exportPdf(body: IPdfExportRequest, lang: string): Observable<Blob> {
     this.spinnerService.show();
     return this.http
       .post<Blob>(`${this.configService.endpointPrefix}/vaccinationRecord/exportToPDF/${lang}`, body, {
@@ -126,7 +128,7 @@ export class VaccinationRecordService {
         record.allergies.map((allergy: any) => delete allergy.allergyCode);
         return {
           ...record,
-          lang: this.translateService.currentLang,
+          lang: this.translateService.getCurrentLang(),
           author: this.sessionInfoService.author.getValue(),
         };
       })
@@ -139,6 +141,8 @@ export function filterPatientRecordData(patientRecord: IVaccinationRecord): IVac
   patientRecord.medicalProblems = patientRecord.medicalProblems.filter(medicalProblem => !medicalProblem.hasErrors);
   patientRecord.pastIllnesses = patientRecord.pastIllnesses.filter(pastIllness => !pastIllness.hasErrors);
   patientRecord.allergies = patientRecord.allergies.filter(allergy => !allergy.hasErrors);
+  patientRecord.basicImmunizations = patientRecord.basicImmunizations.filter(basicImmunization => !basicImmunization.hasErrors);
+  patientRecord.laboratorySerologies = patientRecord.laboratorySerologies.filter(laboratorySerology => !laboratorySerology.hasErrors);
 
   return patientRecord;
 }

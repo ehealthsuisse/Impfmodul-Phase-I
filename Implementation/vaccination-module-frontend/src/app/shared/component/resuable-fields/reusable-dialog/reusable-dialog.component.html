@@ -1,6 +1,8 @@
-<mat-dialog-content *ngIf="data.message" role="dialog" [ngClass]="isMobile ? 'mobile-mat-dialog-content' : 'mat-dialog-content'">
+@if (data.message) {
+<mat-dialog-content role="dialog" [ngClass]="isMobile ? 'mobile-mat-dialog-content' : 'mat-dialog-content'">
   <mat-card-content [innerHTML]="data.message"></mat-card-content>
 </mat-dialog-content>
+}
 <mat-dialog-actions [ngClass]="isMobile ? 'mobile-mat-dialog-actions' : 'mat-dialog-actions'">
   <div>
     <button

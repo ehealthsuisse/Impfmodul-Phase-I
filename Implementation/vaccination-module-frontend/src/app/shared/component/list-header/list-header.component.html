@@ -1,4 +1,5 @@
-<mat-card *ngIf="isMobile" class="mat-elevation-z0" [ngClass]="isMobile ? 'mobile-mat-card' : ''">
+@if (isMobile) {
+<mat-card class="mat-elevation-z0" [ngClass]="isMobile ? 'mobile-mat-card' : ''">
   <mat-card-header>
     <mat-card-title class="mat-card-title" [vmTranslate]="title"></mat-card-title>
     <mat-card-actions align="start">
@@ -30,8 +31,8 @@
     </mat-form-field>
   </mat-card-content>
 </mat-card>
-
-<mat-card *ngIf="!isMobile" class="mat-elevation-z0 desktop-mat-card">
+} @if (!isMobile) {
+<mat-card class="mat-elevation-z0 desktop-mat-card">
   <mat-card-header class="mat-card-header">
     <mat-card-title [vmTranslate]="title"></mat-card-title>
   </mat-card-header>
@@ -40,7 +41,6 @@
       <mat-label vmTranslate="GLOBAL.SEARCH"></mat-label>
       <input matInput #input (keyup)="filterValue($event)" />
     </mat-form-field>
-
     <mat-card-actions align="start">
       <button
         mat-raised-button
@@ -69,3 +69,4 @@
     </mat-card-actions>
   </mat-card-content>
 </mat-card>
+}

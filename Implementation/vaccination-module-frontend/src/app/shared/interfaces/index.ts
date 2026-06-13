@@ -20,4 +20,5 @@ export * from './author';
 export * from './baseDTO.interface';
 export * from './commentDTO.interface';
 export * from './humanDTO.interface';
+export * from './observation-code-to-unit.interface';
 export * from './valueDTO.interface';

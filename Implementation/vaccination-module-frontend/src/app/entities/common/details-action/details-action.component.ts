@@ -16,7 +16,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
 import { FlexModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,32 +26,37 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService, IBaseDTO, IHumanDTO, TranslateDirective } from 'src/app/shared';
+import { DialogService, IBaseDTO, IHumanDTO, IValueDTO, TranslateDirective } from 'src/app/shared';
 import { SessionInfoService } from '../../../core/security/session-info.service';
-import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { PatientService } from '../../../shared/component/patient/patient.service';
 import { deleteRecord, downloadRecordValue } from '../../../shared/function';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { AdverseEventService } from '../../adverse_event/services/adverse-event.service';
+import { BasicImmunizationService } from '../../basic-immunization/service/basic-immunization.service';
 import { InfectiousDiseasesService } from '../../infectious_diseases/service/infectious-diseases.service';
 import { MedicalProblemService } from '../../medical-problem/service/medical-problem.service';
 import { VaccinationService } from '../../vaccination/services/vaccination.service';
+import { LaboratorySerologyService } from '../../laboratory-serology/services/laboratory-serology.service';
+import { Observable } from 'rxjs';
+
+type RecordService = {
+  deleteWithBody(id: string, confidentiality: IValueDTO): unknown;
+  find(id?: string): Observable<IBaseDTO>;
+  validate(entity: IBaseDTO): Observable<IBaseDTO>;
+};
+
+type RecordActionConfig = {
+  route: string;
+  service: RecordService;
+  helpTitle: string;
+  helpBody: string;
+};
 
 @Component({
   selector: 'vm-details-action',
   standalone: true,
-  imports: [
-    CommonModule,
-    FlexModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatTooltipModule,
-    NgIf,
-    TranslateModule,
-    TranslateDirective,
-  ],
+  imports: [CommonModule, FlexModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, TranslateModule, TranslateDirective],
   templateUrl: './details-action.component.html',
   styleUrls: ['./details-action.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,7 +68,9 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   vaccinationService: VaccinationService = inject(VaccinationService);
   illnessService: InfectiousDiseasesService = inject(InfectiousDiseasesService);
   problemService: MedicalProblemService = inject(MedicalProblemService);
+  basicImmunizationService: BasicImmunizationService = inject(BasicImmunizationService);
   adverseEventService: AdverseEventService = inject(AdverseEventService);
+  laboratorySerologyService: LaboratorySerologyService = inject(LaboratorySerologyService);
   matDialog: MatDialog = inject(MatDialog);
   router: Router = inject(Router);
   dialog: DialogService = inject(DialogService);
@@ -78,6 +85,45 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   isEditOrDeleteDisabled: boolean = false;
   isValidateDisabled: boolean = false;
   itemId: string = '';
+
+  private readonly recordActions: Record<string, RecordActionConfig> = {
+    vaccination: {
+      route: 'vaccination',
+      service: this.vaccinationService,
+      helpTitle: 'HELP.VACCINATION.DETAIL.TITLE',
+      helpBody: 'HELP.VACCINATION.DETAIL.BODY',
+    },
+    'infectious-diseases': {
+      route: 'infectious-diseases',
+      service: this.illnessService,
+      helpTitle: 'HELP.PAST_ILLNESS.DETAIL.TITLE',
+      helpBody: 'HELP.PAST_ILLNESS.DETAIL.BODY',
+    },
+    'medical-problem': {
+      route: 'medical-problem',
+      service: this.problemService,
+      helpTitle: 'HELP.MEDICAL_PROBLEM.DETAIL.TITLE',
+      helpBody: 'HELP.MEDICAL_PROBLEM.DETAIL.BODY',
+    },
+    allergy: {
+      route: 'allergy',
+      service: this.adverseEventService,
+      helpTitle: 'HELP.ALLERGY.DETAIL.TITLE',
+      helpBody: 'HELP.ALLERGY.DETAIL.BODY',
+    },
+    'basic-immunization': {
+      route: 'basic-immunization',
+      service: this.basicImmunizationService,
+      helpTitle: 'HELP.BASIC_IMMUNIZATION.DETAIL.TITLE',
+      helpBody: 'HELP.BASIC_IMMUNIZATION.DETAIL.BODY',
+    },
+    'laboratory-serology': {
+      route: 'laboratory-serology',
+      service: this.laboratorySerologyService,
+      helpTitle: 'HELP.LABORATORY_SEROLOGY.DETAIL.TITLE',
+      helpBody: 'HELP.LABORATORY_SEROLOGY.DETAIL.BODY',
+    },
+  };
 
   get patient(): IHumanDTO | null {
     return this.sharedDataService.storedData['patient']! ? this.sharedDataService.storedData['patient'] : null;
@@ -94,20 +140,9 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
 
   editRecord(): void {
     this.updateType();
-    if (this.type === 'vaccination') {
-      this.router.navigate([`vaccination`, this.itemId, 'edit']);
-    }
-
-    if (this.type === 'infectious-diseases') {
-      this.router.navigate([`infectious-diseases`, this.itemId, 'edit']);
-    }
-
-    if (this.type === 'medical-problem') {
-      this.router.navigate([`medical-problem`, this.itemId, 'edit']);
-    }
-
-    if (this.type === 'allergy') {
-      this.router.navigate([`allergy`, this.itemId, 'edit']);
+    const action = this.recordActions[this.type];
+    if (action) {
+      this.router.navigate([action.route, this.itemId, 'edit']);
     }
 
     this.sharedDataService.showActionMenu = false;
@@ -118,62 +153,27 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
     const baseDetails = { ...this.details };
     this.sharedDataService.showActionMenu = false;
     const deleteMessage = this.translateService.instant('GLOBAL.DELETE_CONFIRMATION_MESSAGE');
-    switch (this.type) {
-      case 'vaccination':
-        deleteRecord(this.matDialog, this.vaccinationService, baseDetails, deleteMessage);
-        break;
-      case 'infectious-diseases':
-        deleteRecord(this.matDialog, this.illnessService, baseDetails, deleteMessage);
-        break;
-      case 'medical-problem':
-        deleteRecord(this.matDialog, this.problemService, baseDetails, deleteMessage);
-        break;
-      case 'allergy':
-        deleteRecord(this.matDialog, this.adverseEventService, baseDetails, deleteMessage);
-        break;
+    const action = this.recordActions[this.type];
+    if (action) {
+      deleteRecord(this.matDialog, action.service, baseDetails, deleteMessage);
     }
   }
+
   download(): void {
     this.updateType();
     this.sharedDataService.showActionMenu = false;
     const url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.details.json!);
     const jsonExtension = '.json';
-    switch (this.type) {
-      case 'vaccination':
-        downloadRecordValue<IVaccination>(this.details, this.patientService, url, jsonExtension);
-        break;
-      case 'infectious-diseases':
-        downloadRecordValue<IInfectiousDiseases>(this.details, this.patientService, url, jsonExtension);
-        break;
-      case 'medical-problem':
-        downloadRecordValue<IMedicalProblem>(this.details, this.patientService, url, jsonExtension);
-        break;
-      case 'allergy':
-        downloadRecordValue<IAdverseEvent>(this.details, this.patientService, url, jsonExtension);
-        break;
-    }
+    downloadRecordValue<IBaseDTO>(this.details, this.patientService, url, jsonExtension);
   }
 
-  openHelpDialog(): any {
+  openHelpDialog(): void {
     this.updateType();
     this.sharedDataService.showActionMenu = false;
-    switch (this.type) {
-      case 'vaccination':
-        this.helpDialogTitle = 'HELP.VACCINATION.DETAIL.TITLE';
-        this.helpDialogBody = 'HELP.VACCINATION.DETAIL.BODY';
-        break;
-      case 'infectious-diseases':
-        this.helpDialogTitle = 'HELP.PAST_ILLNESS.DETAIL.TITLE';
-        this.helpDialogBody = 'HELP.PAST_ILLNESS.DETAIL.BODY';
-        break;
-      case 'medical-problem':
-        this.helpDialogTitle = 'HELP.MEDICAL_PROBLEM.DETAIL.TITLE';
-        this.helpDialogBody = 'HELP.MEDICAL_PROBLEM.DETAIL.BODY';
-        break;
-      case 'allergy':
-        this.helpDialogTitle = 'HELP.ALLERGY.DETAIL.TITLE';
-        this.helpDialogBody = 'HELP.ALLERGY.DETAIL.BODY';
-        break;
+    const action = this.recordActions[this.type];
+    if (action) {
+      this.helpDialogTitle = action.helpTitle;
+      this.helpDialogBody = action.helpBody;
     }
     this.dialog.openDialog(this.helpDialogTitle, this.helpDialogBody);
   }
@@ -186,19 +186,9 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
 
     if (this.checkEntry(copy)) {
       copy.author.role = this.sessionInfoService.author.getValue().role;
-      switch (this.type) {
-        case 'vaccination':
-          this.vaccinationService.validate(copy).subscribe(() => window.history.back());
-          break;
-        case 'infectious-diseases':
-          this.illnessService.validate(copy).subscribe(() => window.history.back());
-          break;
-        case 'medical-problem':
-          this.problemService.validate(copy).subscribe(() => window.history.back());
-          break;
-        case 'allergy':
-          this.adverseEventService.validate(copy).subscribe(() => window.history.back());
-          break;
+      const action = this.recordActions[this.type];
+      if (action) {
+        action.service.validate(copy).subscribe(() => window.history.back());
       }
 
       this.sharedDataService.showActionMenu = false;
@@ -210,27 +200,11 @@ export class DetailsActionComponent extends BreakPointSensorComponent implements
   }
 
   fetchDetails(type: string, id: string): void {
-    switch (type) {
-      case 'vaccination':
-        this.vaccinationService.find(this.itemId).subscribe(details => {
-          this.details = this.sharedDataService.storedData['detailedItem'] = details;
-        });
-        break;
-      case 'infectious-diseases':
-        this.illnessService.find(id).subscribe(details => {
-          this.details = this.sharedDataService.storedData['detailedItem'] = details;
-        });
-        break;
-      case 'medical-problem':
-        this.problemService.find(id).subscribe(details => {
-          this.details = this.sharedDataService.storedData['detailedItem'] = details;
-        });
-        break;
-      case 'allergy':
-        this.adverseEventService.find(id).subscribe(details => {
-          this.details = this.sharedDataService.storedData['detailedItem'] = details;
-        });
-        break;
+    const action = this.recordActions[type];
+    if (action) {
+      action.service.find(id).subscribe(details => {
+        this.details = this.sharedDataService.storedData['detailedItem'] = details;
+      });
     }
   }
 

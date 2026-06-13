@@ -17,13 +17,13 @@
     </ng-container>
   </button>
   <section>
+    @if (canValidate) {
     <button
       mat-raised-button
       type="button"
       role="button"
       class="mat-button"
       color="accent"
-      *ngIf="canValidate"
       (click)="validateRecord()"
       [disabled]="!canValidate || isValidateDisabled"
       [attr.aria-label]="'buttons.VALIDATE | translate'"
@@ -32,6 +32,7 @@
         <span class="button-text" [vmTranslate]="'buttons.VALIDATE'"></span>
       </ng-container>
     </button>
+    }
 
     <button
       mat-raised-button
@@ -70,17 +71,16 @@
       (click)="download()"
       [matTooltip]="'buttons.DOWNLOAD' | translate"
     >
-      <ng-template [ngIf]="isMobile">
-        <span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span>
-      </ng-template>
-      <ng-template [ngIf]="!isMobile">
-        <img
-          [attr.aria-label]="'buttons.DOWNLOAD' | translate"
-          alt="{{ 'buttons.DOWNLOAD' | translate }}"
-          class="download-icon"
-          src="./assets/images/download.png"
-        />
-      </ng-template>
+      @if (isMobile) {
+      <span class="button-text" [vmTranslate]="'buttons.DOWNLOAD'"></span>
+      } @if (!isMobile) {
+      <img
+        [attr.aria-label]="'buttons.DOWNLOAD' | translate"
+        alt="{{ 'buttons.DOWNLOAD' | translate }}"
+        class="download-icon"
+        src="./assets/images/download.png"
+      />
+      }
     </button>
 
     <button
@@ -92,12 +92,11 @@
       (click)="this.openHelpDialog()"
       [matTooltip]="'buttons.HELP' | translate"
     >
-      <ng-template [ngIf]="isMobile">
-        <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
-      </ng-template>
-      <ng-template [ngIf]="!isMobile">
-        <mat-icon class="mat-icon help-icon">help</mat-icon>
-      </ng-template>
+      @if (isMobile) {
+      <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
+      } @if (!isMobile) {
+      <mat-icon class="mat-icon help-icon">help</mat-icon>
+      }
     </button>
   </section>
 </mat-card-actions>

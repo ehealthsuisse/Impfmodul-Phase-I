@@ -502,3 +502,9 @@ a {
 .mdc-dialog__container {
   height: unset !important;
 }
+
+// General setting for icon size inside buttons (e.g Help)
+.mat-mdc-raised-button > .mat-icon {
+  font-size: 24px;
+  width: 24px;
+}

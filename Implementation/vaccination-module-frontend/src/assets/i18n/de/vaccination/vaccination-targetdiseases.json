@@ -31,6 +31,12 @@
     "37109004": "Ebola-Viruskrankheit",
     "860805006": "Neisseria-meningitidis-Enzephalomyelitis",
     "55735004": "Infektion durch Respiratorischen Synzytialvirus",
-    "38362002": "Dengue-Fieber"
+    "38362002": "Dengue-Fieber",
+    "58606001": "Primäre Immundefekt-Erkrankung",
+    "33286000": "Sekundäre Immundefekt-Erkrankung",
+    "28944009": "Zytomegalievirus-Infektion",
+    "56688005": "Clostridien-Infektion",
+    "16318001000119107": "Hypogammaglobulinemia due to multiple myeloma",
+    "165746003": "RhD negative"
   }
 }

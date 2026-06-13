@@ -1,0 +1,18 @@
+{
+  "LABORATORY_SEROLOGY": {
+    "TITLE": "Laboratory and serology",
+    "NEW_HEADER": "Add laboratory and serology",
+    "EDIT_HEADER": "Edit laboratory and serology",
+    "DETAILS_HEADER": "Laboratory and serology details",
+    "OCCURRENCE_DATE": "Datum",
+    "RECORDED_DATE": "Date",
+    "LABORATORY_SEROLOGY_CODE": "Laboratory/Serology",
+    "STATUS": "Status",
+    "VALUE": "Value",
+    "UNIT": "Unit",
+    "PERFORMER": "Performer",
+    "RECORDER": "Recorded by",
+    "DATE": "Date of determination",
+    "CONFIDENTIALITY": "Confidentiality"
+  }
+}

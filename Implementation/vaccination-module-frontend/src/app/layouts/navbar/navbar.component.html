@@ -1,7 +1,8 @@
 <mat-drawer-container class="mat-drawer-container">
   <mat-drawer #drawer mode="over" position="start" class="mat-drawer">
     <!-- Mobile content -->
-    <div class="drawer-content" *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()">
+    @if ((isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()) {
+    <div class="drawer-content">
       <div class="patient-name">
         <img
           [attr.alt]="'GLOBAL.LOGO_VACCINATION_MODULE' | translate"
@@ -12,11 +13,13 @@
         />
         <mat-label class="mat-label mat-list-item">{{ user.prefix + ' ' + user.firstName + ' ' + user.lastName.trim() }}</mat-label>
       </div>
-      <div class="logout-button" *ngIf="isVisible">
+      @if (isVisible) {
+      <div class="logout-button">
         <button mat-icon-button role="button" (click)="samlService.logout(); drawer.toggle()">
           <img class="logout-icon" src="./assets/images/logout.png" alt="Logout button image" />
         </button>
       </div>
+      }
       <vm-language></vm-language>
       <vm-navigation (toggleSidenav)="drawer.toggle()"></vm-navigation>
       <div aria-hidden="true" class="community-logo">
@@ -28,26 +31,28 @@
         <div class="version">Backend: {{ backendVersion }} | Frontend: {{ frontendVersion }}</div>
       </div>
     </div>
+    }
   </mat-drawer>
 
-  <mat-drawer #drawerAction mode="over" position="end" class="mat-drawer" *ngIf="showActionSidenav">
+  @if (showActionSidenav) {
+  <mat-drawer #drawerAction mode="over" position="end" class="mat-drawer">
     <!-- Mobile content -->
-    <div class="drawer-actions" *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()">
-      <ng-template [ngIf]="showActionSidenav">
-        <vm-details-action *ngIf="!showPatientSidenav"></vm-details-action>
-      </ng-template>
-      <ng-template [ngIf]="showPatientSidenav">
-        <vm-patient-action></vm-patient-action>
-      </ng-template>
+    @if ((isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()) {
+    <div class="drawer-actions">
+      @if (showActionSidenav) { @if (!showPatientSidenav) {
+      <vm-details-action></vm-details-action>
+      } } @if (showPatientSidenav) {
+      <vm-patient-action></vm-patient-action>
+      }
     </div>
+    }
   </mat-drawer>
+  }
 
   <mat-drawer-content>
     <!-- Desktop Toolbar -->
-    <mat-toolbar
-      *ngIf="isDesktop && (isAuthorized || (isAuthorized && samlService.isSsoRedirectCompleted.getValue()))"
-      class="mat-drawer-container__desktop"
-    >
+    @if (isDesktop && (isAuthorized || (isAuthorized && samlService.isSsoRedirectCompleted.getValue()))) {
+    <mat-toolbar class="mat-drawer-container__desktop">
       <div class="logo">
         <img
           [attr.title]="'GLOBAL.LOGO_VACCINATION_MODULE' | translate"
@@ -60,7 +65,8 @@
       </div>
       <vm-navigation></vm-navigation>
       <vm-language></vm-language>
-      <div class="logout-button" *ngIf="isVisible">
+      @if (isVisible) {
+      <div class="logout-button">
         <button
           mat-icon-button
           role="button"
@@ -71,6 +77,7 @@
           <img class="logout-icon" src="./assets/images/logout.png" alt="Logout button" />
         </button>
       </div>
+      }
       <div fxLayout="column" fxLayoutAlign="flex-start" class="navbar__community">
         <div aria-hidden="true" class="community-logo">
           <img
@@ -86,22 +93,31 @@
         </div>
       </div>
     </mat-toolbar>
+    }
     <!-- Mobile Toolbar -->
-    <mat-toolbar *ngIf="(isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()" class="mat-drawer-container__mobile">
+    @if ((isMobile || isTablet) && samlService.isSsoRedirectCompleted.getValue()) {
+    <mat-toolbar class="mat-drawer-container__mobile">
       <div class="menu-patient-wrapper">
         <button mat-icon-button (click)="drawer.toggle()">
-          <mat-icon aria-hidden="true" *ngIf="samlService.isSsoRedirectCompleted.getValue()">menu</mat-icon>
+          @if (samlService.isSsoRedirectCompleted.getValue()) {
+          <mat-icon aria-hidden="true">menu</mat-icon>
+          }
         </button>
         <vm-patient></vm-patient>
       </div>
-      <button mat-icon-button (click)="drawerAction.toggle()" *ngIf="showActionSidenav">
+      @if (showActionSidenav) {
+      <button mat-icon-button (click)="drawerAction.toggle()">
         <mat-icon aria-hidden="true">more_vert</mat-icon>
       </button>
+      }
     </mat-toolbar>
+    }
     <main>
-      <div class="spinner-overlay" *ngIf="spinnerService.IsWait">
+      @if (spinnerService.IsWait) {
+      <div class="spinner-overlay">
         <mat-progress-spinner class="vm-progress-spinner" mode="indeterminate"></mat-progress-spinner>
       </div>
+      }
       <router-outlet></router-outlet>
     </main>
   </mat-drawer-content>

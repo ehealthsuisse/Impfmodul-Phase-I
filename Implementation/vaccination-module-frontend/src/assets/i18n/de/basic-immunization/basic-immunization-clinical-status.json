@@ -1,0 +1,10 @@
+{
+  "BASIC_IMMUNIZATION_CLINICAL_STATUS": {
+    "active": "Aktiv",
+    "recurrence": "Wiederholung",
+    "relapse": "Rückfall",
+    "inactive": "Inaktiv",
+    "remission": "Erlass",
+    "resolved": "Geheilt"
+  }
+}

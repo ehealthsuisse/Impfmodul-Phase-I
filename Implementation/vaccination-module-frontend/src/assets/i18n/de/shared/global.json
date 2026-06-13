@@ -3,6 +3,7 @@
     "ALLERGIES": "Nebenwirkungen (UIE)",
     "PAST_ILLNESSES": "Infektionskrankheiten",
     "PROBLEM": "Risikofaktoren",
+    "BASIC_IMMUNIZATION": "Grundimmunisierung",
     "VACCINATIONS": "Impfungen",
     "HOME": "Impfausweis",
     "DATE": "Datum",
@@ -41,6 +42,11 @@
     "DELETE_CONFIRMATION_MESSAGE": "Soll das vorliegende Dokument gelöscht werden?<br>Hinweis: Das gelöschte Dokument erhält dieselbe Vertraulichkeitsstufe wie das zu löschen Dokument.",
     "CONVERSION_DIALOG_TITLE": "Datensatz konvertieren",
     "NO_IMMUNIZATION_RECORDS_FOUND": "Sie haben noch keine Impfeinträge in dieser Anwendung.<br>Sollen die Impfungen ab dem Datum {{ createdAt }} aus Ihrem EPD übernommen werden?",
-    "LAST_MODIFIED_BY": "Zuletzt geändert von: {{author}}"
+    "LAST_MODIFIED_BY": "Zuletzt geändert von: {{author}}",
+    "EXPORT_PDF": {
+      "TITLE": "Sollen Kommentare im Ausdruck berücksichtigt werden?",
+      "ALL_VACCINATIONS": "Alle Impfungen"
+    },
+    "LABORATORY_SEROLOGY": "Labor und Serologie"
   }
 }

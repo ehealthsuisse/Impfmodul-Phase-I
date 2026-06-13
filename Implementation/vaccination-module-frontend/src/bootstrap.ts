@@ -16,7 +16,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { enableProdMode } from '@angular/core';
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { DEBUG_INFO_ENABLED } from './app/app.constants';
@@ -28,6 +28,6 @@ if (!DEBUG_INFO_ENABLED) {
 }
 
 platformBrowserDynamic()
-  .bootstrapModule(AppModule, { preserveWhitespaces: true })
+  .bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection()], preserveWhitespaces: true })
   .then(() => console.log('Application started'))
   .catch(err => console.error(err));

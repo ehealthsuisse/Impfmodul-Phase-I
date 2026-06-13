@@ -20,9 +20,10 @@ import { inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../model';
+import { IAdverseEvent, IBasicImmunization, IInfectiousDiseases, ILaboratorySerology, IMedicalProblem, IVaccination } from '../../model';
 import { DATE_FORMAT } from '../date';
 import { humanToString } from '../function';
+import { IValueDTO } from '../interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class MapperService {
@@ -54,6 +55,19 @@ export class MapperService {
     return clone;
   }
 
+  laboratorySerologyTranslateMapper(records: ILaboratorySerology[]): ILaboratorySerology[] {
+    let clone = cloneDeep(records);
+    clone.sort(this.sortByRecordedDate());
+    clone.forEach(i => {
+      i.recordedDate = dayjs(i.recordedDate).format(DATE_FORMAT.display.dateInput);
+      i.laboratorySerologyCode = this.translateService.instant(`LABORATORY_SEROLOGY_CODE.${i.code?.code}`);
+      i.status = this.translateLaboratoryStatus(i.status) as any;
+      i.value = this.formatLaboratoryValue(i.value) as any;
+      i.recorder = (humanToString(i.recorder!) || i.organization || '') as any;
+    });
+    return clone;
+  }
+
   problemTranslateMapper(records: IMedicalProblem[]): IMedicalProblem[] {
     let clone = cloneDeep(records);
     clone.sort(this.sortByRecordedDate());
@@ -63,6 +77,18 @@ export class MapperService {
       i.clinicalStatus = this.translateService.instant(`MEDICAL_PROBLEM_CLINICAL_STATUS.${i.clinicalStatus?.code}`);
       i.verificationStatus = this.translateService.instant(`MEDICAL_PROBLEM_VERIFICATION_STATUS.${i.verificationStatus?.code}`);
       i.recorder = humanToString(i.recorder!);
+    });
+    return clone;
+  }
+
+  basicImmunizationTranslateMapper(records: IBasicImmunization[]): IBasicImmunization[] {
+    let clone = cloneDeep(records);
+    clone.sort(this.sortByOnsetDate());
+    clone.forEach(i => {
+      i.onsetDate = dayjs(i.onsetDate).format(DATE_FORMAT.display.dateInput);
+      i.recordedDate = dayjs(i.recordedDate).format(DATE_FORMAT.display.dateInput);
+      i.basicImmunizationCode = this.translateService.instant(`BASIC_IMMUNIZATION_CODE.${i.code?.code}`);
+      i.verificationStatus = this.translateService.instant(`BASIC_IMMUNIZATION_VERIFICATION_STATUS.${i.verificationStatus?.code}`);
     });
     return clone;
   }
@@ -91,8 +117,43 @@ export class MapperService {
     return (a, b) => this.sort(a.occurrenceDate, b.occurrenceDate, a.code?.name, b.code?.name, a.createdAt, b.createdAt);
   }
 
-  sortByRecordedDate(): ((a: IInfectiousDiseases | IMedicalProblem, b: IInfectiousDiseases | IMedicalProblem) => number) | undefined {
+  sortByRecordedDate():
+    | ((
+        a: IInfectiousDiseases | ILaboratorySerology | IMedicalProblem | IBasicImmunization,
+        b: IInfectiousDiseases | ILaboratorySerology | IMedicalProblem | IBasicImmunization
+      ) => number)
+    | undefined {
     return (a, b) => this.sort(a.recordedDate, b.recordedDate, a.code?.name, b.code?.name, a.createdAt, b.createdAt);
+  }
+
+  sortByOnsetDate(): ((a: IBasicImmunization, b: IBasicImmunization) => number) | undefined {
+    return (a, b) => this.sort(a.onsetDate, b.onsetDate, a.code?.name, b.code?.name, a.createdAt, b.createdAt);
+  }
+
+  private formatLaboratoryValue(value: ILaboratorySerology['value']): string {
+    if (!value || typeof value === 'string') {
+      return value ?? '';
+    }
+
+    const numericValue = value.code ?? '';
+    const unit = value.name ?? '';
+    return [numericValue, unit].filter(Boolean).join(' ');
+  }
+
+  private translateLaboratoryStatus(status: ILaboratorySerology['status']): string {
+    if (!status) {
+      return '';
+    }
+
+    if (typeof status === 'string') {
+      return status;
+    }
+
+    return this.translateValueCode('LABORATORY_SEROLOGY_STATUS', status);
+  }
+
+  private translateValueCode(prefix: string, value: IValueDTO): string {
+    return this.translateService.instant(`${prefix}.${value.code}`);
   }
 
   private sort(

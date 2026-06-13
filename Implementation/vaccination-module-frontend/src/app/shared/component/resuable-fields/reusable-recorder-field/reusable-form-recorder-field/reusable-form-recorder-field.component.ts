@@ -20,4 +20,36 @@ export class ReusableFormRecorderFieldComponent extends BreakPointSensorComponen
     this.parentForm.controls['recorder'].get('firstName')?.markAsTouched();
     this.parentForm.controls['recorder'].get('lastName')?.markAsTouched();
   }
+
+  trimControl(path: string): void {
+    const control = this.parentForm.get(path);
+    const value = control?.value;
+    if (typeof value === 'string') {
+      control?.setValue(value.trim());
+      this.updateRecorderValidation();
+    }
+  }
+
+  isFirstNameRequired(): boolean {
+    return !this.hasText('organization') || this.hasText('recorder.lastName');
+  }
+
+  isLastNameRequired(): boolean {
+    return !this.hasText('organization') || this.hasText('recorder.firstName');
+  }
+
+  isOrganizationRequired(): boolean {
+    return !this.hasText('recorder.firstName') || !this.hasText('recorder.lastName');
+  }
+
+  private hasText(path: string): boolean {
+    const value = this.parentForm.get(path)?.value;
+    return typeof value === 'string' && value.trim().length > 0;
+  }
+
+  private updateRecorderValidation(): void {
+    this.parentForm.get('recorder.firstName')?.updateValueAndValidity();
+    this.parentForm.get('recorder.lastName')?.updateValueAndValidity();
+    this.parentForm.get('organization')?.updateValueAndValidity();
+  }
 }

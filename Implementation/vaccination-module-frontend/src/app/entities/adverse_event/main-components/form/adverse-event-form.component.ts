@@ -28,6 +28,7 @@ import { BreakPointSensorComponent } from '../../../../shared/component/break-po
 import { ConfidentialityService } from '../../../../shared/services/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
 import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { buildComment, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { SharedDataService } from '../../../../shared/services/shared-data.service';
@@ -48,6 +49,7 @@ import { FormGroupDirective } from '@angular/forms';
     SharedComponentModule,
     ReusableDateFieldComponent,
     ReusableRecorderFieldComponent,
+    ReusableSelectFieldComponent,
     ReusableSelectFieldWithSearchComponent,
   ],
 })

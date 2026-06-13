@@ -1,14 +1,16 @@
 <mat-card-header>
-  <mat-card-title *ngIf="showTitle" class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+  @if (showTitle) {
+  <mat-card-title class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+  }
 </mat-card-header>
-<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" *ngIf="infectiousDiseases">
+@if (infectiousDiseases) {
+<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between">
   <vm-reusable-date-field
     [formControl]="infectiousDiseasesForm.controls.recordedDate"
     [labelTranslationKey]="'ILLNESS.DATE'"
     [isEditable]="false"
     [notEditableValue]="infectiousDiseases.recordedDate | formatDate"
   ></vm-reusable-date-field>
-
   <vm-reusable-select-field
     [formControl]="infectiousDiseasesForm.controls.code!"
     [isEditable]="false"
@@ -16,7 +18,6 @@
     [labelTranslationKey]="'ILLNESS.ILLNESS_CODE'"
     [mainValueKey]="'ILLNESS_CODE.' + infectiousDiseases.code.code! | translate"
   ></vm-reusable-select-field>
-
   <div fxLayout="row" fxLayoutAlign="space-between" class="datesWrap">
     <vm-reusable-date-field
       [formControl]="infectiousDiseasesForm.controls.begin"
@@ -24,7 +25,6 @@
       [isEditable]="false"
       [notEditableValue]="infectiousDiseases.begin | formatDate"
     ></vm-reusable-date-field>
-
     <vm-reusable-date-field
       [formControl]="infectiousDiseasesForm.controls.end"
       [labelTranslationKey]="'ILLNESS.END'"
@@ -32,7 +32,6 @@
       [notEditableValue]="infectiousDiseases.end | formatDate"
     ></vm-reusable-date-field>
   </div>
-
   <vm-reusable-recorder-field
     [parentForm]="infectiousDiseasesForm"
     [recorder]="infectiousDiseases.recorder!"
@@ -40,7 +39,6 @@
     [isEditable]="false"
   >
   </vm-reusable-recorder-field>
-
   <vm-reusable-select-field
     [formControl]="infectiousDiseasesForm.controls.confidentiality!"
     [isEditable]="false"
@@ -49,8 +47,8 @@
     [mainValueKey]="'CONFIDENTIALITY.' + infectiousDiseases.confidentiality.code! | translate"
   >
   </vm-reusable-select-field>
-
-  <mat-form-field class="detailed-card-content__form-field" *ngIf="infectiousDiseases.commentMessage">
+  @if (infectiousDiseases.commentMessage) {
+  <mat-form-field class="detailed-card-content__form-field">
     <mat-label vmTranslate="COMMENT.COMMENT" [attr.aria-label]="'COMMENT.COMMENT' | translate"></mat-label>
     <textarea
       matInput
@@ -59,32 +57,22 @@
       disabled
     ></textarea>
   </mat-form-field>
-
-  <div *ngIf="!isConfirmComponentParent" class="commentsContent">
+  } @if (!isConfirmComponentParent) {
+  <div class="commentsContent">
     <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
       <h3 vmTranslate="GLOBAL.COMMENT"></h3>
-      <mat-icon
-        tabindex="0"
-        class="openComments"
-        *ngIf="!commentsOpened"
-        (click)="toggleComments()"
-        (keydown.enter)="toggleComments()"
-        role="presentation"
+      @if (!commentsOpened) {
+      <mat-icon tabindex="0" class="openComments" (click)="toggleComments()" (keydown.enter)="toggleComments()" role="presentation"
         >add</mat-icon
       >
-      <mat-icon
-        tabindex="0"
-        class="closeComments"
-        *ngIf="commentsOpened"
-        (click)="toggleComments()"
-        (keydown.enter)="toggleComments()"
-        role="presentation"
+      } @if (commentsOpened) {
+      <mat-icon tabindex="0" class="closeComments" (click)="toggleComments()" (keydown.enter)="toggleComments()" role="presentation"
         >clear</mat-icon
       >
+      }
     </div>
-
+    @if (infectiousDiseases.comment; as comment) {
     <mat-card
-      *ngIf="infectiousDiseases?.comment as comment"
       role="article"
       class="commentsContent_card comment-card mat-elevation-z0"
       [ngClass]="{ active: commentsOpened }"
@@ -96,11 +84,10 @@
       </div>
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
     </mat-card>
-    <p
-      *ngIf="!infectiousDiseases?.comment"
-      vmTranslate="COMMENT.NO_COMMENTS"
-      class="commentsContent_card no-comments"
-      [ngClass]="{ active: commentsOpened }"
-    ></p>
+    } @if (!infectiousDiseases.comment) {
+    <p vmTranslate="COMMENT.NO_COMMENTS" class="commentsContent_card no-comments" [ngClass]="{ active: commentsOpened }"></p>
+    }
   </div>
+  }
 </mat-card-content>
+}

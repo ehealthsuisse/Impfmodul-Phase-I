@@ -3,19 +3,21 @@
     <mat-card-title [attr.aria-label]="'GLOBAL.COMMENT' | translate" vmTranslate="GLOBAL.COMMENT"></mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    @if (comment || canAddComments) {
     <mat-card
-      *ngIf="comment || canAddComments"
       role="article"
       class="comment-card mat-elevation-z0"
       [attr.aria-label]="'Comment by {{ comment?.author }} on {{ comment?.date | formatDate }}'"
     >
-      <div class="comment-header" *ngIf="comment?.text">
+      @if (comment?.text) {
+      <div class="comment-header">
         <mat-card-subtitle [attr.aria-label]="comment?.author"
           >{{ 'GLOBAL.LAST_MODIFIED_BY' | translate : { author: comment?.author } }}
         </mat-card-subtitle>
         <mat-card-subtitle [attr.aria-label]="comment?.date | formatDate">{{ comment?.date | formatDate }}</mat-card-subtitle>
       </div>
-      <mat-form-field *ngIf="canAddComments; else viewComment" class="detailed-card-content__form-field">
+      } @if (canAddComments) {
+      <mat-form-field class="detailed-card-content__form-field">
         <mat-label class="mat-label" vmTranslate="GLOBAL.COMMENT" [attr.aria-label]="'GLOBAL.COMMENT' | translate">
           {{ 'GLOBAL.COMMENT' | translate }}
         </mat-label>
@@ -30,12 +32,12 @@
           [attr.aria-label]="'GLOBAL.COMMENT' | translate"
         ></textarea>
       </mat-form-field>
-
-      <ng-template #viewComment>
-        <p class="comment-text" [attr.aria-label]="'GLOBAL.COMMENT' | translate">
-          {{ comment?.text }}
-        </p>
-      </ng-template>
+      } @else {
+      <p class="comment-text" [attr.aria-label]="'GLOBAL.COMMENT' | translate">
+        {{ comment?.text }}
+      </p>
+      }
     </mat-card>
+    }
   </mat-card-content>
 </mat-card>

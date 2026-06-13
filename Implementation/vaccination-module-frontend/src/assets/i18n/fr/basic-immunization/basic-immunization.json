@@ -1,0 +1,15 @@
+{
+  "BASIC_IMMUNIZATION": {
+    "TITLE": "Immunisation de base",
+    "EDIT_HEADER": "Modifier l'immunisation de base",
+    "NEW_HEADER": "Ajouter une immunisation de base",
+    "DETAILS_HEADER": "Détails de l'immunisation de base",
+    "FILTER": "Rechercher",
+    "BASIC_IMMUNIZATION_CODE": "Immunisation de base",
+    "ONSET_DATE": "Date",
+    "ASSUMED_IMMUNIZATION_DATE": "Date presumee de l'immunisation",
+    "DATE_OF_DETERMINATION": "Date de la constatation",
+    "CONFIDENTIALITY": "Confidentialité",
+    "FORM_HINT": "Veuillez utiliser ce formulaire uniquement si vous avez été vacciné(e) dans votre enfance mais ne savez pas quels vaccins ont été administrés."
+  }
+}

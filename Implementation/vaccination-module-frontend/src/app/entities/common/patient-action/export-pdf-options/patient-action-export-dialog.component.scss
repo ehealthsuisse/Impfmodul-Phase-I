@@ -1,0 +1,55 @@
+.export-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 272px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.option-row:first-child {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.option-row:last-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.mat-dialog-title {
+  font-weight: 700;
+}
+
+.option-label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.cancel-button {
+  --mat-button-protected-container-color: var(--alert-color);
+  --mat-button-protected-label-text-color: #ffffff;
+}
+
+.ok-button {
+  --mat-button-protected-container-color: var(--accent-color);
+  --mat-button-protected-label-text-color: #ffffff;
+}
+
+.cancel-button,
+.ok-button {
+  min-width: 120px;
+}
+
+.mat-mdc-dialog-actions {
+  margin-left: 15px;
+}
+
+:host ::ng-deep .mat-mdc-checkbox .mdc-checkbox__ripple {
+  position: unset !important;
+}

@@ -161,7 +161,9 @@ describe('Vaccination Service', () => {
     });
 
     it('should delete a Vaccination', () => {
-      service.deleteWithBody('123').subscribe((resp: any) => (expectedResult = resp.ok));
+      service
+        .deleteWithBody('123', { code: '17621005', name: 'Normal', system: '2.16.840.1.113883.6.96' })
+        .subscribe((resp: any) => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ clinicalStatus: 200 });

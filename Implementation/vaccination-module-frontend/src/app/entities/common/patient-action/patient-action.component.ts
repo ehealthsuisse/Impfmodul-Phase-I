@@ -21,14 +21,25 @@ import { DialogService, IValueDTO } from '../../../shared';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize, map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { downloadRecordValue, openSnackBar } from '../../../shared/function';
-import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination, IVaccinationRecord } from '../../../model';
+import {
+  IAdverseEvent,
+  IBasicImmunization,
+  IInfectiousDiseases,
+  ILaboratorySerology,
+  IMedicalProblem,
+  IVaccination,
+  IVaccinationRecord,
+} from '../../../model';
 import { filterPatientRecordData, VaccinationRecordService } from '../../vaccination-record/service/vaccination-record.service';
 import { SpinnerService } from '../../../shared/services/spinner.service';
 import { SharedLibsModule } from '../../../shared/shared-libs.module';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { PatientService } from '../../../shared/component/patient/patient.service';
-import { ITranslationRequest } from '../../../model/translation-request.interface';
+import { IPdfExportRequest } from '../../../model/pdf-export-request.interface';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { PatientActionExportDialogComponent } from './export-pdf-options/patient-action-export-dialog.component';
+import { PdfExportOptions } from '../../../model/pdf-export-options.interface';
 
 @Component({
   selector: 'vm-patient-action',
@@ -43,15 +54,12 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
   spinnerService: SpinnerService = inject(SpinnerService);
   translationService: TranslateService = inject(TranslateService);
   dialog: DialogService = inject(DialogService);
+  matDialog: MatDialog = inject(MatDialog);
   sessionInfoService: SessionInfoService = inject(SessionInfoService);
   patientService: PatientService = inject(PatientService);
   elementRef: ElementRef = inject(ElementRef);
   isEmergencyMode: boolean = false;
   showMoreOptions: boolean = false;
-
-  ngOnInit(): void {
-    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
-  }
 
   download = (): Subscription => {
     this.showMoreOptions = false;
@@ -64,26 +72,22 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
     });
   };
 
-  save(): Subscription {
-    this.showMoreOptions = false;
-    return this.queryRecord()
-      .pipe(switchMap(record => this.saveRecord(record)))
-      .subscribe();
+  exportPdf(): void {
+    const dialogConfig = this.getExportDialogConfig();
+    this.matDialog
+      .open(PatientActionExportDialogComponent, dialogConfig)
+      .afterClosed()
+      .subscribe(options => {
+        if (!options) {
+          return;
+        }
+
+        this.exportPdfWithOptions(options as PdfExportOptions);
+      });
   }
 
-  exportPdf(): void {
-    this.spinnerService.show();
-    this.vaccinationRecordService.queryOneRecord().subscribe({
-      next: record => {
-        filterPatientRecordData(record);
-        this.translateIllnesses(record.pastIllnesses);
-        this.translateAllergies(record.allergies);
-        this.translateMedicalProblem(record.medicalProblems);
-        this.translateVaccination(record.vaccinations);
-        this.exportPdfFromRecord(record);
-        this.spinnerService.hide();
-      },
-    });
+  ngOnInit(): void {
+    this.isEmergencyMode = this.sessionInfoService.isEmergencyMode();
   }
 
   @HostListener('document:click', ['$event'])
@@ -92,6 +96,91 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
     if (!clickedInside) {
       this.showMoreOptions = false;
     }
+  }
+
+  save(): Subscription {
+    this.showMoreOptions = false;
+    return this.queryRecord()
+      .pipe(switchMap(record => this.saveRecord(record)))
+      .subscribe();
+  }
+
+  private createPdfExportRequest(targetDiseases: IValueDTO[], record: IVaccinationRecord, options: PdfExportOptions): Observable<Blob> {
+    const payload: IPdfExportRequest = {
+      targetDiseases,
+      allergyCodes: record.allergies.map(item => item.code),
+      illnessCodes: record.pastIllnesses.map(item => item.illnessCode),
+      vaccineCodes: record.vaccinations.map(item => item.code),
+      medicalProblemCodes: record.medicalProblems.map(item => item.code),
+      basicImmunizationCodes: record.basicImmunizations.map(item => item.code),
+      laboratorySerologyCodes: record.laboratorySerologies.map(item => item.code),
+      pdfOptions: options,
+    };
+    return this.vaccinationRecordService.exportPdf(payload, this.translationService.getCurrentLang());
+  }
+
+  /**
+   * Exports a PDF file for the given vaccination record.
+   * @param record The vaccination record to export.
+   * @param options The options for PDF export, for which resource we need to show comments.
+   */
+  private exportPdfFromRecord(record: IVaccinationRecord, options: PdfExportOptions): void {
+    this.vaccinationRecordService
+      .fetchTargetDisease()
+      .pipe(
+        map(res => this.mapTargetDiseases(res)),
+        switchMap(targetDiseases => this.createPdfExportRequest(targetDiseases, record, options))
+      )
+      .subscribe(response => this.handlePdfResponse(response, record));
+  }
+
+  private exportPdfWithOptions(options: PdfExportOptions): void {
+    this.spinnerService.show();
+    this.vaccinationRecordService.queryOneRecord().subscribe({
+      next: record => {
+        filterPatientRecordData(record);
+        this.translateIllnesses(record.pastIllnesses);
+        this.translateAllergies(record.allergies);
+        this.translateMedicalProblem(record.medicalProblems);
+        this.translateLaboratorySerologies(record.laboratorySerologies);
+        this.translateVaccination(record.vaccinations);
+        this.translateBasicImmunization(record.basicImmunizations);
+        this.exportPdfFromRecord(record, options);
+        this.spinnerService.hide();
+      },
+    });
+  }
+
+  private getExportDialogConfig(): MatDialogConfig {
+    const config: MatDialogConfig = { width: '43.75rem' };
+
+    if (this.isTablet) {
+      config.width = '31.25rem';
+      config.maxHeight = '70vh';
+    }
+
+    if (this.isMobile) {
+      config.width = '90vw';
+      config.maxHeight = '60vh';
+      config.position = { top: '15vh' };
+    }
+
+    return config;
+  }
+
+  private handlePdfResponse(response: Blob, record: IVaccinationRecord): void {
+    const blob = new Blob([response], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const pdfExtension = '.pdf';
+    downloadRecordValue(record, this.patientService, url, pdfExtension);
+  }
+
+  private mapTargetDiseases(res: IValueDTO[]): IValueDTO[] {
+    return res.map(targetDisease => ({
+      code: targetDisease.code,
+      name: this.translationService.instant(`vaccination-targetdiseases.${targetDisease.code}`),
+      system: targetDisease.system,
+    }));
   }
 
   private queryRecord(): Observable<IVaccinationRecord> {
@@ -142,42 +231,15 @@ export class PatientActionComponent extends BreakPointSensorComponent implements
     });
   }
 
-  /**
-   * Exports a PDF file for the given vaccination record.
-   * @param record The vaccination record to export.
-   */
-  private exportPdfFromRecord(record: IVaccinationRecord): void {
-    this.vaccinationRecordService
-      .fetchTargetDisease()
-      .pipe(
-        map(res => this.mapTargetDiseases(res)),
-        switchMap(targetDiseases => this.createTranslationRequest(targetDiseases, record))
-      )
-      .subscribe(response => this.handlePdfResponse(response, record));
+  private translateBasicImmunization(basicImmunizations: IBasicImmunization[]): void {
+    basicImmunizations.map(basicImmunization => {
+      basicImmunization.code.name = this.translationService.instant(`BASIC_IMMUNIZATION_CODE.${basicImmunization.code.code}`);
+    });
   }
 
-  private mapTargetDiseases(res: IValueDTO[]): IValueDTO[] {
-    return res.map(targetDisease => ({
-      code: targetDisease.code,
-      name: this.translationService.instant(`vaccination-targetdiseases.${targetDisease.code}`),
-      system: targetDisease.system,
-    }));
-  }
-
-  private createTranslationRequest(targetDiseases: IValueDTO[], record: IVaccinationRecord): Observable<Blob> {
-    const payload: ITranslationRequest = {
-      targetDiseases,
-      allergyCodes: record.allergies.map(item => item.code),
-      illnessCodes: record.pastIllnesses.map(item => item.illnessCode),
-      vaccineCodes: record.vaccinations.map(item => item.code),
-      medicalProblemCodes: record.medicalProblems.map(item => item.code),
-    };
-    return this.vaccinationRecordService.exportPdf(payload, this.translateService.currentLang);
-  }
-  private handlePdfResponse(response: Blob, record: IVaccinationRecord): void {
-    const blob = new Blob([response], { type: 'application/pdf' });
-    const url = window.URL.createObjectURL(blob);
-    const pdfExtension = '.pdf';
-    downloadRecordValue(record, this.patientService, url, pdfExtension);
+  private translateLaboratorySerologies(laboratorySerologies: ILaboratorySerology[]): void {
+    laboratorySerologies.map(laboratorySerology => {
+      laboratorySerology.code.name = this.translationService.instant(`LABORATORY_SEROLOGY_CODE.${laboratorySerology.code.code}`);
+    });
   }
 }

@@ -63,7 +63,7 @@ export class TableWrapperComponent<T> extends BreakPointSensorComponent implemen
   @ViewChild('table') table!: MatTable<T>;
   @ViewChild(MatSort) sort!: MatSort;
 
-  sortables: string[] = ['recordedDate', 'occurrenceDate', 'doseNumber', 'recorder', 'vaccineCode'];
+  sortables: string[] = ['recordedDate', 'occurrenceDate', 'onsetDate', 'doseNumber', 'recorder', 'vaccineCode'];
   canValidated!: boolean;
   sharedDataService: SharedDataService = inject(SharedDataService);
   unsubscribe: Subject<void> = new Subject<void>();

@@ -1,0 +1,16 @@
+{
+  "LABORATORY_SEROLOGY_CODE": {
+    "22602-7": "Anticorps IgG du virus varicelle-zona [titre] dans le sérum",
+    "22502-9": "Anticorps IgG du virus de la rougeole [titre] dans le sérum",
+    "41763-4": "Anticorps IgG du virus de la rubéole [titre] dans le sérum",
+    "22313-1": "Anticorps IgG du virus de l'hépatite A [unités/volume] dans le sérum",
+    "16935-9": "Anticorps surface du virus de l'hépatite B [unités/volume] dans le sérum",
+    "26061-2": "Anticorps du virus de l'encéphalite à tiques [titre] dans le serum",
+    "6589-6": "Anticorps du virus de la fièvre jaune [titre] dans le sérum par immunofluorescence",
+    "58770-9": "Anticorps IgG de la toxine du Clostridium tetani [unités/volume] dans le sérum par immunofluorescence",
+    "94505-5": "Anticorps IgG du SARS-CoV-2 (COVID-19) [unités/volume] dans le sérum ou le plasma par immunoanalyse",
+    "14128-3": "Anticorps du virus de la rage [titre] dans le sérum",
+    "22755-3": "Haemophilus influenzae B Ac [masse/volume] dans le sérum",
+    "25531-5": "Streptococcus pneumoniae Ac [masse/volume] dans le sérum"
+  }
+}

@@ -1,5 +1,7 @@
 <mat-card-header>
-  <mat-card-title *ngIf="showTitle" class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+  @if (showTitle) {
+  <mat-card-title class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+  }
 </mat-card-header>
 <mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between" role="group">
   <mat-form-field class="detailed-card-content__form-field">
@@ -60,12 +62,8 @@
     />
   </mat-form-field>
 
-  <mat-card
-    class="mat-elevation-z0 recorder"
-    fxLayout="column"
-    fxLayoutAlign="center"
-    *ngIf="vaccination?.recorder?.firstName && vaccination?.recorder?.lastName"
-  >
+  @if (vaccination?.recorder?.firstName && vaccination?.recorder?.lastName) {
+  <mat-card class="mat-elevation-z0 recorder" fxLayout="column" fxLayoutAlign="center">
     <mat-label vmTranslate="VACCINATION.RECORDER"></mat-label>
     <div class="recorder--fields">
       <mat-form-field class="recorder-form-field">
@@ -84,10 +82,12 @@
       </mat-form-field>
     </div>
   </mat-card>
-  <mat-form-field class="detailed-card-content__form-field" *ngIf="vaccination?.organization">
+  } @if (vaccination?.organization) {
+  <mat-form-field class="detailed-card-content__form-field">
     <mat-label vmTranslate="GLOBAL.ORGANIZATION" [attr.aria-label]="'GLOBAL.ORGANIZATION' | translate"></mat-label>
     <input matInput [attr.aria-label]="vaccination?.organization" value="{{ vaccination?.organization }}" disabled />
   </mat-form-field>
+  }
 
   <mat-form-field class="detailed-card-content__form-field">
     <mat-label vmTranslate="GLOBAL.CONFIDENTIALITY" [attr.aria-label]="'GLOBAL.CONFIDENTIALITY' | translate"></mat-label>
@@ -99,36 +99,27 @@
     />
   </mat-form-field>
 
-  <mat-form-field class="mat-form-field" *ngIf="vaccination?.commentMessage">
+  @if (vaccination?.commentMessage) {
+  <mat-form-field class="mat-form-field">
     <mat-label vmTranslate="COMMENT.COMMENT" [attr.aria-label]="'COMMENT.COMMENT' | translate"></mat-label>
     <textarea matInput [attr.aria-label]="vaccination?.commentMessage" value="{{ vaccination?.commentMessage }}" disabled></textarea>
   </mat-form-field>
-
-  <div *ngIf="!isConfirmComponentParent" class="commentsContent">
+  } @if (!isConfirmComponentParent) {
+  <div class="commentsContent">
     <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
       <h3 vmTranslate="GLOBAL.COMMENT"></h3>
-      <mat-icon
-        tabindex="0"
-        class="openComments"
-        *ngIf="!commentsOpened"
-        (click)="toggleComments()"
-        (keydown.enter)="toggleComments()"
-        role="presentation"
+      @if (!commentsOpened) {
+      <mat-icon tabindex="0" class="openComments" (click)="toggleComments()" (keydown.enter)="toggleComments()" role="presentation"
         >add</mat-icon
       >
-      <mat-icon
-        tabindex="0"
-        class="closeComments"
-        *ngIf="commentsOpened"
-        (click)="toggleComments()"
-        (keydown.enter)="toggleComments()"
-        role="presentation"
+      } @if (commentsOpened) {
+      <mat-icon tabindex="0" class="closeComments" (click)="toggleComments()" (keydown.enter)="toggleComments()" role="presentation"
         >clear</mat-icon
       >
+      }
     </div>
-
+    @if (vaccination?.comment; as comment) {
     <mat-card
-      *ngIf="vaccination?.comment as comment"
       role="article"
       class="commentsContent_card comment-card mat-elevation-z0"
       [ngClass]="{ active: commentsOpened }"
@@ -140,11 +131,9 @@
       </div>
       <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
     </mat-card>
-    <p
-      *ngIf="!vaccination?.comment"
-      vmTranslate="COMMENT.NO_COMMENTS"
-      class="commentsContent_card no-comments"
-      [ngClass]="{ active: commentsOpened }"
-    ></p>
+    } @if (!vaccination?.comment) {
+    <p vmTranslate="COMMENT.NO_COMMENTS" class="commentsContent_card no-comments" [ngClass]="{ active: commentsOpened }"></p>
+    }
   </div>
+  }
 </mat-card-content>

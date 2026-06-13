@@ -1,6 +1,6 @@
-@use 'src/assets/scss/_breakpoints' as *;
+@use '_breakpoints' as breakpoints;
 
-@include media-breakpoint(tm) {
+@include breakpoints.media-breakpoint(tm) {
   .datesWrap {
     flex-direction: column !important;
   }

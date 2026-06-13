@@ -1,0 +1,17 @@
+{
+  "LABORATORY_SEROLOGY": {
+    "TITLE": "Laboratoire et sérologie",
+    "NEW_HEADER": "Ajouter un résultat de laboratoire et de sérologie",
+    "EDIT_HEADER": "Modifier un résultat de laboratoire et de sérologie",
+    "DETAILS_HEADER": "Détails du résultat de laboratoire et de sérologie",
+    "RECORDED_DATE": "Date",
+    "LABORATORY_SEROLOGY_CODE": "Code laboratoire/sérologie",
+    "STATUS": "Statut",
+    "VALUE": "Valeur",
+    "UNIT": "Unité",
+    "PERFORMER": "Exécutant",
+    "RECORDER": "Enregistré par",
+    "DATE": "Date du constat",
+    "CONFIDENTIALITY": "Confidentialité"
+  }
+}

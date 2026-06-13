@@ -110,3 +110,10 @@ $cardFontSizeMobile: 1rem;
     height: 8px;
   }
 }
+
+:host ::ng-deep vm-table-wrapper.basic-immunization-table mat-table {
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 86% !important;
+  }
+}

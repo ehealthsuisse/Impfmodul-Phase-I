@@ -1,0 +1,16 @@
+{
+  "LABORATORY_SEROLOGY_CODE": {
+    "22602-7": "Varizellen-Zoster-Virus IgG Ab [Titer] in Serum",
+    "22502-9": "Masern-Virus IgG Ab [Titer] in Serum",
+    "41763-4": "Röteln-Virus IgG Ab [Titer] in Serum",
+    "22313-1": "Hepatitis-A-Virus IgG Ab [Einheiten/Volumen] in SerumAktiv",
+    "16935-9": "Hepatitis-B-Virus-Oberfläche Ab [Einheiten/Volumen] in Serum",
+    "26061-2": "Europäischer Zeckenenzephalitis-Virus Ab [Titer] in Serum",
+    "6589-6": "Gelbfieber-Virus Ab [Titer] in Serum durch Immunfluoreszenz",
+    "58770-9": "Clostridium tetani Toxoid IgG Ab [Einheiten/Volumen] in Serum durch Immunfluoreszenz",
+    "94505-5": "SARS-CoV-2 (COVID-19) IgG Ab [Einheiten/Volumen] in Serum oder Plasma durch Immunoassay",
+    "14128-3": "Tollwut-Virus Ab [Titer] im Serum",
+    "22755-3": "Haemophilus influenzae B Ak [Masse/Volumen] im Serum",
+    "25531-5": "Streptococcus pneumoniae Ak [Masse/Volumen] im Serum"
+  }
+}

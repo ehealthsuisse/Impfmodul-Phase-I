@@ -51,4 +51,14 @@ export const ENTITIES_ROUTE: Routes = [
     loadChildren: () => import('./medical-problem/medical-problem.routing').then(r => r.PROBLEM_ROUTE),
     canActivate: [AuthGuard],
   },
+  {
+    path: 'basic-immunization',
+    loadChildren: () => import('./basic-immunization/basic-immunization-routing').then(r => r.BASIC_IMMUNIZATION_ROUTE),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'laboratory-serology',
+    loadChildren: () => import('./laboratory-serology/laboratory-serology-routing').then(r => r.LABORATORY_SEROLOGY_ROUTE),
+    canActivate: [AuthGuard],
+  },
 ];

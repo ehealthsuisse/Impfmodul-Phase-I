@@ -19,7 +19,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { IValueDTO } from '../interfaces';
+import { IValueDTO, ObservationCodeToUnit } from '../interfaces';
 import { VaccineWithDiseases } from '../interfaces/vaccination-with-disease.interface';
 import { ConfigService } from '../../core/config/config.service';
 
@@ -48,5 +48,9 @@ export class FormOptionsService {
 
   getVaccinationsWithDiseases(): Observable<VaccineWithDiseases[]> {
     return this.http.get<VaccineWithDiseases[]>(`${this.appConfig.endpointPrefix}/utility/vaccinesToTargetDiseases`);
+  }
+
+  getObservationCodesToUnits(): Observable<ObservationCodeToUnit[]> {
+    return this.http.get<ObservationCodeToUnit[]>(`${this.appConfig.endpointPrefix}/utility/observationCodesToUnits`);
   }
 }

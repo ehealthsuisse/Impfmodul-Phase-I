@@ -13,12 +13,21 @@ export class ConfigService {
   private _canActivate: boolean = false;
   private _isLogoutButtonVisible: boolean = true;
   private _logoutForwardUrl?: string | undefined;
-  
+  private _frontendHost?: string | undefined;
+
   public get logoutForwardUrl(): string | undefined {
     return this._logoutForwardUrl;
   }
   public set logoutForwardUrl(value: string | undefined) {
     this._logoutForwardUrl = value;
+  }
+
+  public get frontendHost(): string | undefined {
+    return this._frontendHost;
+  }
+
+  public set frontendHost(value: string | undefined) {
+    this._frontendHost = value;
   }
 
   get communityId(): string {
@@ -79,5 +88,6 @@ export class ConfigService {
     this.canActivate = config.allowStartWithoutInitialCall;
     this.isLogoutButtonVisible = config.isLogoutButtonVisible;
     this.logoutForwardUrl = config.logoutForwardUrl;
+    this.frontendHost = config.frontendHost;
   }
 }
