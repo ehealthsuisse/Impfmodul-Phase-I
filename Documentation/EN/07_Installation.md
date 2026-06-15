@@ -243,14 +243,20 @@ idp:
 sp:
   assertionConsumerServiceUrl: https://my.backend.url/saml/sso
   forwardArtifactToClientPath: /saml-acs
+  # For productive use, httpsEnabled: true is recommended for security reasons.
   httpsEnabled: true
+  # Logout propagation uses this ordered list. Each forwarded request contains the indexes already attempted,
+  # so the next node always calls the first URL in this list which has not been attempted yet.
+  logout-urls:
+  - https://node1.backend.url/saml/logout
+  - https://node2.backend.url/saml/logout
 
   # keystore containing the private key used for MTLS with the EPD backend
   keystore:
-   keystore-type: PKCS12
-   keystore-path: path.to.keystore
-   keystore-password: keystore.password
-   sp-alias: key.alias.used.for.idp
+    keystore-type: PKCS12
+    keystore-path: path.to.keystore
+    keystore-password: keystore.password
+    sp-alias: key.alias.used.for.idp
   # Keystore containing the private key used for MTLS with the IDPs
   tlsKeystore:
     keystore-type: JKS
@@ -279,7 +285,8 @@ The parameter are interpreted as follows:
 - supportedProvider.tlsKeystore.keystorePassword: Password to access the IdP truststore.
 - assertionConsumerServiceUrl: URL of the vaccination module accepting callbacks from the Identity Provider. Using the path variable *{idp}*, the vaccination module now can look up which IDP configuration it needs to check for the artifact response.
 - forwardArtifactToClientPath: Path used to dynamically construct the backend endpoint that forwards the SAML artifact to the corresponding frontend application, allowing multiple frontends to share the same backend while it still knows which frontend to forward the artifact to. This workaround was implemented for cases where the IdP cannot send an HTTP GET directly to the frontend application.
-- httpsEnabled: Boolean flag indicating whether the redirect URL should use HTTPS or HTTP as the scheme.
+- httpsEnabled: Boolean flag indicating whether the redirect URL should use HTTPS or HTTP as the scheme. For productive use, `httpsEnabled: true` is recommended for security reasons.
+- logout-urls: Ordered list of the complete SAML logout endpoint URLs of all backend nodes. If the receiving node cannot process a logout request locally, it forwards the request to the first URL whose index has not yet been attempted. All nodes must use the same URL order.
   
 **Note:** The suffix */saml/sso* is mandatory and only the root address must be set.
 - keystore: General keystore setting which can be overwritten by the IDP-specific setting. If not set, the keystore according to the security configuration chapter (see below) is used. 

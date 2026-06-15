@@ -27,6 +27,8 @@ All detailed release notes can be found [here](https://github.com/ehealthsuisse/
 ### June 2026 - Release 1.9.0-RC1
 This release candidate extends the vaccination module with additional CH VACD entities and updates the corresponding frontend, backend, FHIR adapter, documentation and value lists.
 
+This release contains a breaking change regarding logout propagation. More details can be found in the technical release notes.
+
 1. Added basic immunization records.
 2. Added laboratory and serology records.
 3. Updated FHIR bundle conversion, validation and PDF output for the new entities.

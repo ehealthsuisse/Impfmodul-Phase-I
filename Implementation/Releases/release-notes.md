@@ -23,7 +23,9 @@ This release candidate extends the vaccination module with the new CH VACD entit
 * Updated vaccination record loading and sorting to include the new entity lists.
 * Updated the value list utility API to expose observation-code-to-unit mappings to the frontend.
 * Externalized and adjusted Hazelcast configuration handling so providers can override the Hazelcast setup more easily.
-* Extended SAML logout propagation to support multiple configured logout URLs. Forwarded logout requests keep track of already attempted URL indexes to avoid loops and continue with the next configured URL if a node is not reachable.
+* **Breaking change:** The SAML configuration attributes `forwardArtifactToClientUrl` and `otherNodeLogoutURL` have been removed. The new attributes `forwardArtifactToClientPath`, `httpsEnabled` and `logout-urls` must be configured instead.
+* Extended SAML logout propagation to support an ordered list of configured logout URLs. If a node cannot process the request locally, it forwards it to the first configured URL that has not yet been attempted. If a URL is not reachable, propagation continues with the next URL.
+* Logout propagation now uses the HTTP header `X-Logout-Attempted-Indexes`. It contains a comma-separated list of the zero-based logout URL indexes already attempted and prevents a logout request from being sent repeatedly to the same node.
 * Updated dependencies to address Trivy security scanner findings.
 
 ### Changes Vaccination Module Frontend
@@ -38,6 +40,7 @@ This release candidate extends the vaccination module with the new CH VACD entit
 * Updated help pages for the new sections and for the new fields.
 * Updated translations and value-list based display values for the new entities.
 * Improved validation of select fields and text fields to avoid invalid values being submitted from the UI.
+* Added the `frontendHost` configuration parameter. It identifies the frontend host without the URL scheme and allows a shared backend to return the SAML artifact to the frontend that initiated the login.
 
 # November 2025 - Release 1.8.0
 This release wraps up all the RC-feedback for the next stable release, along with a few frontend and fhir library improvements.

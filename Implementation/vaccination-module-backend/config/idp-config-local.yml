@@ -41,12 +41,12 @@ sp:
 
   # keystore containing the private key used for MTLS with the EPD backend
   keystore:
-   keystore-type: PKCS12
-   keystore-path: path.to.keystore
-   keystore-password: keystore.password
-   sp-alias: key.alias.used.for.idp
+    keystore-type: PKCS12
+    keystore-path: path.to.keystore
+    keystore-password: keystore.password
+    sp-alias: key.alias.used.for.idp
   # Keystore containing the private key used for MTLS with the IDPs
   tlsKeystore:
-   keystore-type: JKS
-   keystore-path: path.to.keystore.jks
-   keystore-password: password
+    keystore-type: JKS
+    keystore-path: path.to.keystore.jks
+    keystore-password: password
