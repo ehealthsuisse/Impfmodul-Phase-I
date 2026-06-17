@@ -1,0 +1,5 @@
+# see : https://docs.hazelcast.com/imdg/4.2/cp-subsystem/configuration
+hazelcast:
+  cp-subsystem:
+    cp-member-count: 1 # Minimal configuration
+    group-size: 1      # to ensure safe mode or consistency.
