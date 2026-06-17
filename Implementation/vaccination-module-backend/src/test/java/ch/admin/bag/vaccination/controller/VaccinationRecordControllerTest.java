@@ -23,7 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.admin.bag.vaccination.data.request.TranslationsRequest;
+import ch.admin.bag.vaccination.data.dto.PdfExportOptionsDTO;
+import ch.admin.bag.vaccination.data.request.PdfExportRequest;
 import ch.admin.bag.vaccination.service.SignatureService;
 import ch.admin.bag.vaccination.service.VaccinationRecordService;
 import ch.admin.bag.vaccination.utils.MockSessionHelper;
@@ -97,7 +98,7 @@ public class VaccinationRecordControllerTest extends MockSessionHelper {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.put(HttpHeaders.COOKIE, cookies);
 
-    HttpEntity<TranslationsRequest> httpEntity = new HttpEntity<>(createTranslationsRequest(tuberkulose,
+    HttpEntity<PdfExportRequest> httpEntity = new HttpEntity<>(createPdfExportRequest(tuberkulose,
         herpes, masern), httpHeaders);
     // Call the /exportToPDF endpoint using the updated Session object from previous requests
     ResponseEntity<Resource> response =
@@ -135,13 +136,16 @@ public class VaccinationRecordControllerTest extends MockSessionHelper {
     verify(vaccinationRecordService).convertVaccinationToImmunization(any(PatientIdentifier.class), any(Assertion.class));
   }
 
-  private TranslationsRequest createTranslationsRequest(ValueDTO tuberkulose, ValueDTO herpes, ValueDTO masern) {
-    TranslationsRequest translationsRequest = new TranslationsRequest();
-    translationsRequest.setTargetDiseases(List.of(tuberkulose, herpes, masern));
-    translationsRequest.setVaccineCodes(Collections.emptyList());
-    translationsRequest.setAllergyCodes(Collections.emptyList());
-    translationsRequest.setMedicalProblemCodes(Collections.emptyList());
-    translationsRequest.setIllnessCodes(Collections.emptyList());
-    return translationsRequest;
+  private PdfExportRequest createPdfExportRequest(ValueDTO tuberkulose, ValueDTO herpes, ValueDTO masern) {
+    PdfExportRequest pdfExportRequest = new PdfExportRequest();
+    pdfExportRequest.setTargetDiseases(List.of(tuberkulose, herpes, masern));
+    pdfExportRequest.setVaccineCodes(Collections.emptyList());
+    pdfExportRequest.setAllergyCodes(Collections.emptyList());
+    pdfExportRequest.setMedicalProblemCodes(Collections.emptyList());
+    pdfExportRequest.setIllnessCodes(Collections.emptyList());
+    pdfExportRequest.setBasicImmunizationCodes(Collections.emptyList());
+    pdfExportRequest.setLaboratorySerologyCodes(Collections.emptyList());
+    pdfExportRequest.setPdfOptions(new PdfExportOptionsDTO(false, true, false, false, false, false));
+    return pdfExportRequest;
   }
 }

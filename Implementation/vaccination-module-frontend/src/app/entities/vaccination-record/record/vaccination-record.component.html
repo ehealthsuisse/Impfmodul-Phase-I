@@ -9,7 +9,8 @@
 >
   <mat-card class="vaccination-record__card mat-elevation-z0">
     <mat-card-title class="info-title">
-      <div class="patient-name" *ngIf="isDesktop">
+      @if (isDesktop) {
+      <div class="patient-name">
         <h1
           id="vaccination-header"
           class="h3-header"
@@ -18,40 +19,83 @@
         ></h1>
         <vm-patient></vm-patient>
       </div>
-      <vm-patient-action *ngIf="isDesktop"></vm-patient-action>
+      } @if (isDesktop) {
+      <vm-patient-action></vm-patient-action>
+      }
     </mat-card-title>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobileOrTablet ? 'mobile' : 'table-header-wrapper'">
-        <h3 class="h3-header" vmTranslate="GLOBAL.VACCINATIONS" [attr.aria-label]="'GLOBAL.VACCINATIONS' | translate"></h3>
-        <ng-container *ngIf="!isMobileOrTablet; else vacMobileButton">
-          <button
-            mat-raised-button
-            type="button"
-            color="accent"
-            (click)="addVaccination()"
-            (keydown.enter)="addVaccination()"
-            [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
-            [disabled]="isEmergencyMode"
-          >
-            {{ 'buttons.ADD_VACCINATION' | translate }}
-          </button>
-        </ng-container>
+        <h3 class="h3-header" vmTranslate="GLOBAL.BASIC_IMMUNIZATION" [attr.aria-label]="'GLOBAL.BASIC_IMMUNIZATION' | translate"></h3>
+        @if (!isMobileOrTablet) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="addBasicImmunization()"
+          (keydown.enter)="addBasicImmunization()"
+          [attr.aria-label]="'buttons.ADD_BASIC_IMMUNIZATION' | translate"
+          [disabled]="isEmergencyMode"
+        >
+          {{ 'buttons.ADD_BASIC_IMMUNIZATION' | translate }}
+        </button>
+        } @else {
+        <button
+          mat-icon-button
+          (click)="addBasicImmunization()"
+          (keydown.enter)="addBasicImmunization()"
+          [attr.aria-label]="'buttons.ADD_BASIC_IMMUNIZATION' | translate"
+          [disabled]="isEmergencyMode"
+          matTooltip="{{ 'buttons.ADD_BASIC_IMMUNIZATION' | translate }}"
+          matTooltipPosition="above"
+          class="mobile-add-button"
+        >
+          <mat-icon role="presentation">add</mat-icon>
+        </button>
+        }
+      </div>
+      <div class="custom-divider"></div>
+      <vm-table-wrapper
+        class="basic-immunization-table"
+        [dataSource]="basicImmunizations"
+        [displayedColumns]="basicImmunizationColumns"
+        [enableGrouping]="false"
+        [translationPrefix]="'BASIC_IMMUNIZATION.'"
+        [fullWidth]="'100%'"
+        (rowClick)="navigateToBasicImmunization($event)"
+      >
+      </vm-table-wrapper>
+    </mat-card-content>
 
-        <ng-template #vacMobileButton>
-          <button
-            mat-icon-button
-            (click)="addVaccination()"
-            (keydown.enter)="addVaccination()"
-            [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
-            [disabled]="isEmergencyMode"
-            matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
-            class="mobile-add-button"
-          >
-            <mat-icon [attr.aria-label]="'buttons.ADD_VACCINATION' | translate" matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
-              >add
-            </mat-icon>
-          </button>
-        </ng-template>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobileOrTablet ? 'mobile' : 'table-header-wrapper'">
+        <h3 class="h3-header" vmTranslate="GLOBAL.VACCINATIONS" [attr.aria-label]="'GLOBAL.VACCINATIONS' | translate"></h3>
+        @if (!isMobileOrTablet) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="addVaccination()"
+          (keydown.enter)="addVaccination()"
+          [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
+          [disabled]="isEmergencyMode"
+        >
+          {{ 'buttons.ADD_VACCINATION' | translate }}
+        </button>
+        } @else {
+        <button
+          mat-icon-button
+          (click)="addVaccination()"
+          (keydown.enter)="addVaccination()"
+          [attr.aria-label]="'buttons.ADD_VACCINATION' | translate"
+          [disabled]="isEmergencyMode"
+          matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
+          class="mobile-add-button"
+        >
+          <mat-icon [attr.aria-label]="'buttons.ADD_VACCINATION' | translate" matTooltip="{{ 'buttons.ADD_VACCINATION' | translate }}"
+            >add
+          </mat-icon>
+        </button>
+        }
       </div>
       <div class="custom-divider"></div>
       <vm-table-wrapper
@@ -68,34 +112,32 @@
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobileOrTablet ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="ALLERGY.TITLE" [attr.aria-label]="'ALLERGY.TITLE' | translate">Allergy</h3>
-        <ng-container *ngIf="!isMobileOrTablet; else allMobileButton">
-          <button
-            mat-raised-button
-            type="button"
-            color="accent"
-            (click)="addAllergy()"
-            (keydown.enter)="addAllergy()"
-            [attr.aria-label]="'buttons.ADD_ALLERGY' | translate"
-            [disabled]="isEmergencyMode"
-          >
-            {{ 'buttons.ADD_ALLERGY' | translate }}
-          </button>
-        </ng-container>
-
-        <ng-template #allMobileButton>
-          <button
-            mat-icon-button
-            (click)="addAllergy()"
-            (keydown.enter)="addAllergy()"
-            [attr.aria-label]="'buttons.ADD_ALLERGY' | translate"
-            [disabled]="isEmergencyMode"
-            matTooltip="{{ 'buttons.ADD_ALLERGY' | translate }}"
-            matTooltipPosition="above"
-            class="mobile-add-button"
-          >
-            <mat-icon role="presentation">add</mat-icon>
-          </button>
-        </ng-template>
+        @if (!isMobileOrTablet) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="addAllergy()"
+          (keydown.enter)="addAllergy()"
+          [attr.aria-label]="'buttons.ADD_ALLERGY' | translate"
+          [disabled]="isEmergencyMode"
+        >
+          {{ 'buttons.ADD_ALLERGY' | translate }}
+        </button>
+        } @else {
+        <button
+          mat-icon-button
+          (click)="addAllergy()"
+          (keydown.enter)="addAllergy()"
+          [attr.aria-label]="'buttons.ADD_ALLERGY' | translate"
+          [disabled]="isEmergencyMode"
+          matTooltip="{{ 'buttons.ADD_ALLERGY' | translate }}"
+          matTooltipPosition="above"
+          class="mobile-add-button"
+        >
+          <mat-icon role="presentation">add</mat-icon>
+        </button>
+        }
       </div>
       <div class="custom-divider"></div>
       <vm-table-wrapper
@@ -111,34 +153,32 @@
     <mat-card-content class="illness-table">
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobileOrTablet ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="ILLNESS.TITLE" [attr.aria-label]="'ILLNESS.TITLE' | translate"></h3>
-        <ng-container *ngIf="!isMobileOrTablet; else illMobileButton">
-          <button
-            mat-raised-button
-            type="button"
-            color="accent"
-            (click)="addIllness()"
-            (keydown.enter)="addIllness()"
-            [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
-            [disabled]="isEmergencyMode"
-          >
-            {{ 'buttons.ADD_PAST_ILLNESS' | translate }}
-          </button>
-        </ng-container>
-
-        <ng-template #illMobileButton>
-          <button
-            mat-icon-button
-            (click)="addIllness()"
-            (keydown.enter)="addIllness()"
-            [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
-            [disabled]="isEmergencyMode"
-            matTooltip="{{ 'buttons.ADD_PAST_ILLNESS' | translate }}"
-            matTooltipPosition="above"
-            class="mobile-add-button"
-          >
-            <mat-icon role="presentation">add</mat-icon>
-          </button>
-        </ng-template>
+        @if (!isMobileOrTablet) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="addIllness()"
+          (keydown.enter)="addIllness()"
+          [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
+          [disabled]="isEmergencyMode"
+        >
+          {{ 'buttons.ADD_PAST_ILLNESS' | translate }}
+        </button>
+        } @else {
+        <button
+          mat-icon-button
+          (click)="addIllness()"
+          (keydown.enter)="addIllness()"
+          [attr.aria-label]="'buttons.ADD_PAST_ILLNESS' | translate"
+          [disabled]="isEmergencyMode"
+          matTooltip="{{ 'buttons.ADD_PAST_ILLNESS' | translate }}"
+          matTooltipPosition="above"
+          class="mobile-add-button"
+        >
+          <mat-icon role="presentation">add</mat-icon>
+        </button>
+        }
       </div>
       <div class="custom-divider"></div>
       <vm-table-wrapper
@@ -151,38 +191,76 @@
       >
       </vm-table-wrapper>
     </mat-card-content>
-
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobileOrTablet ? 'mobile' : 'table-header-wrapper'">
+        <h3 class="h3-header" vmTranslate="LABORATORY_SEROLOGY.TITLE" [attr.aria-label]="'LABORATORY_SEROLOGY.TITLE' | translate"></h3>
+        @if (!isMobileOrTablet) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="addLaboratorySerology()"
+          (keydown.enter)="addLaboratorySerology()"
+          [attr.aria-label]="'buttons.ADD_LABORATORY_SEROLOGY' | translate"
+          [disabled]="isEmergencyMode"
+        >
+          {{ 'buttons.ADD_LABORATORY_SEROLOGY' | translate }}
+        </button>
+        } @else {
+        <button
+          mat-icon-button
+          (click)="addLaboratorySerology()"
+          (keydown.enter)="addLaboratorySerology()"
+          [attr.aria-label]="'buttons.ADD_LABORATORY_SEROLOGY' | translate"
+          [disabled]="isEmergencyMode"
+          matTooltip="{{ 'buttons.ADD_LABORATORY_SEROLOGY' | translate }}"
+          matTooltipPosition="above"
+          class="mobile-add-button"
+        >
+          <mat-icon role="presentation">add</mat-icon>
+        </button>
+        }
+      </div>
+      <div class="custom-divider"></div>
+      <vm-table-wrapper
+        [dataSource]="laboratorySerologies"
+        [displayedColumns]="laboratorySerologyColumns"
+        [enableGrouping]="false"
+        [translationPrefix]="'LABORATORY_SEROLOGY.'"
+        [fullWidth]="'100%'"
+        (rowClick)="navigateToLaboratorySerology($event)"
+      >
+      </vm-table-wrapper>
+    </mat-card-content>
     <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="space-between center" [ngClass]="isMobileOrTablet ? 'mobile' : 'table-header-wrapper'">
         <h3 class="h3-header" vmTranslate="GLOBAL.PROBLEM" [attr.aria-label]="'GLOBAL.PROBLEM' | translate"></h3>
-        <ng-container *ngIf="!isMobileOrTablet; else medMobileButton">
-          <button
-            mat-raised-button
-            type="button"
-            color="accent"
-            (click)="addMedicalProblem()"
-            (keydown.enter)="addMedicalProblem()"
-            [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
-            [disabled]="isEmergencyMode"
-          >
-            {{ 'buttons.ADD_PROBLEM' | translate }}
-          </button>
-        </ng-container>
-
-        <ng-template #medMobileButton>
-          <button
-            mat-icon-button
-            (click)="addMedicalProblem()"
-            (keydown.enter)="addMedicalProblem()"
-            [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
-            [disabled]="isEmergencyMode"
-            matTooltip="{{ 'buttons.ADD_PROBLEM' | translate }}"
-            matTooltipPosition="above"
-            class="mobile-add-button"
-          >
-            <mat-icon role="presentation">add</mat-icon>
-          </button>
-        </ng-template>
+        @if (!isMobileOrTablet) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="addMedicalProblem()"
+          (keydown.enter)="addMedicalProblem()"
+          [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
+          [disabled]="isEmergencyMode"
+        >
+          {{ 'buttons.ADD_PROBLEM' | translate }}
+        </button>
+        } @else {
+        <button
+          mat-icon-button
+          (click)="addMedicalProblem()"
+          (keydown.enter)="addMedicalProblem()"
+          [attr.aria-label]="'buttons.ADD_PROBLEM' | translate"
+          [disabled]="isEmergencyMode"
+          matTooltip="{{ 'buttons.ADD_PROBLEM' | translate }}"
+          matTooltipPosition="above"
+          class="mobile-add-button"
+        >
+          <mat-icon role="presentation">add</mat-icon>
+        </button>
+        }
       </div>
       <div class="custom-divider"></div>
       <vm-table-wrapper
@@ -195,8 +273,10 @@
       >
       </vm-table-wrapper>
     </mat-card-content>
-    <mat-card-content *ngIf="!isMobile">
+    @if (!isMobile) {
+    <mat-card-content>
       <div fxLayout="row" fxLayoutAlign="center center">Backend: {{ backendVersion }} | Frontend: {{ frontendVersion }}</div>
     </mat-card-content>
+    }
   </mat-card>
 </section>

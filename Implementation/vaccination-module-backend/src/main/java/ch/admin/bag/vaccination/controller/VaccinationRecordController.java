@@ -18,8 +18,8 @@
  */
 package ch.admin.bag.vaccination.controller;
 
-import ch.admin.bag.vaccination.data.request.TranslationsRequest;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.data.request.PdfExportRequest;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.PdfService;
 import ch.admin.bag.vaccination.service.VaccinationRecordService;
 import ch.admin.bag.vaccination.service.VaccinationService;
@@ -89,7 +89,7 @@ public class VaccinationRecordController {
 
   @PostMapping("/exportToPDF/{lang}")
   @Operation(summary = "Build a PDF out of the records")
-  public ResponseEntity<?> exportToPDF(@RequestBody TranslationsRequest translationsRequest, @PathVariable String lang) {
+  public ResponseEntity<?> exportToPDF(@RequestBody PdfExportRequest translationsRequest, @PathVariable String lang) {
     log.info("Generating PDF...");
 
     Assertion assertion = AssertionUtils.getAssertionFromSession();

@@ -17,10 +17,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { FormatBasedOnTypePipe } from './format-based-on-type.pipe';
+import dayjs from 'dayjs';
+import { DATE_FORMAT } from '../date';
 
 describe('FormatBasedOnTypePipe', () => {
-  it('create an instance', () => {
-    const pipe = new FormatBasedOnTypePipe();
+  let pipe: FormatBasedOnTypePipe;
+
+  beforeEach(() => {
+    pipe = new FormatBasedOnTypePipe();
+  });
+
+  it('should create an instance', () => {
     expect(pipe).toBeTruthy();
+  });
+
+  it('should format a dayjs object using DATE_FORMAT', () => {
+    const date = dayjs('2024-06-01');
+    const formatted = pipe.transform(date);
+    expect(formatted).toBe(date.format(DATE_FORMAT.parse.dateInput));
+  });
+
+  it('should return the value unchanged if not a dayjs object', () => {
+    const value = 'not a date';
+    expect(pipe.transform(value as any)).toBe(value);
   });
 });

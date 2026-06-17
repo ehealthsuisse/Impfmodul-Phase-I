@@ -1,4 +1,5 @@
-<mat-card class="mat-elevation-z0 recorder" *ngIf="recorder?.firstName && recorder?.lastName">
+@if (recorder?.firstName && recorder?.lastName) {
+<mat-card class="mat-elevation-z0 recorder">
   <mat-label vmTranslate="MEDICAL_PROBLEM.RECORDER" [attr.aria-label]="'MEDICAL_PROBLEM.RECORDER' | translate"></mat-label>
   <div class="recorder--fields">
     <mat-form-field>
@@ -12,7 +13,9 @@
     </mat-form-field>
   </div>
 </mat-card>
-<mat-form-field class="organization" *ngIf="organization">
+} @if (organization) {
+<mat-form-field class="organization">
   <mat-label vmTranslate="GLOBAL.ORGANIZATION" [attr.aria-label]="'GLOBAL.ORGANIZATION' | translate"></mat-label>
   <input matInput [attr.aria-label]="organization" value="{{ organization }}" disabled />
 </mat-form-field>
+}

@@ -1,6 +1,6 @@
-@use 'src/assets/scss/breakpoints' as breakpoints;
-@use 'src/assets/scss/mixins' as mixins;
-@use 'src/assets/scss/variables' as *;
+@use '_breakpoints' as breakpoints;
+@use '_mixins' as mixins;
+@use '_variables' as *;
 
 // Main content container
 main {

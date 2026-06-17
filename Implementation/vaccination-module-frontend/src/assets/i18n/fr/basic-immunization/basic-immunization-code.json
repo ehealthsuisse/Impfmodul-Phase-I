@@ -1,0 +1,17 @@
+{
+  "BASIC_IMMUNIZATION_CODE": {
+    "bi-dtpa": "Vaccination de base contre le DTPa effectuée durant l'enfance.",
+    "bi-polio": "Vaccination de base contre la poliomyélite effectuée durant l'enfance.",
+    "bi-fsme": "Vaccination de base contre la méningo-encéphalite verno-estivale effectuée.",
+    "bi-hib": "Vaccination de base contre l'Haemophilus influenzae de type b effectuée.",
+    "bi-hpv": "Vaccination de base contre le papillomavirus humain effectuée.",
+    "bi-variz": "Vaccination de base contre la varicelle effectuée.",
+    "bi-mmr": "Vaccination de base contre la rougeole, les oreillons et la rubéole effectuée.",
+    "bi-pneumo": "Vaccination de base contre la maladie à pneumocoques effectuée.",
+    "bi-hepb": "Vaccination de base contre l'hépatite virale de type B.",
+    "bi-hepa": "Vaccination de base contre l'hépatite virale de type A effectuée.",
+    "bi-herpzos": "Vaccination de base contre l'herpès zoster effectuée.",
+    "bi-mening": "Vaccination de base contre la maladie à méningocoque effectuée.",
+    "bi-rabi": "Vaccination de base contre la rage effectuée."
+  }
+}

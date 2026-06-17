@@ -25,16 +25,11 @@ import { IMedicalProblem } from 'src/app/model/medical-problem.interface';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { dateValidator, notFutureDateValidator } from '../../../core/validators/date-order-validator';
 import { IComment, IHumanDTO } from '../../../shared';
-import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { extractSessionDetailsByRole, setDefaultValues } from '../../../shared/function';
+import { PartialWithRequiredKeyOf, TNewEntity } from '../../../shared/typs/NewEntityType';
+import { extractSessionDetailsByRole, normalizeOrganization, normalizeRecorder, setDefaultValues } from '../../../shared/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-/**
- * A partial Type with required key is used as form input.
- */
-type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
-
 /**
  * Type for createFormGroup and resetForm argument.
  */
@@ -101,7 +96,7 @@ export class MedicalProblemFormService {
       organization: new FormControl(extractSessionDetails.organization),
       comment: new FormControl(),
       commentMessage: new FormControl(),
-      confidentiality: new FormControl(),
+      confidentiality: new FormControl(null, Validators.required),
     } as any);
   }
 
@@ -109,9 +104,8 @@ export class MedicalProblemFormService {
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     const dateWithTimezone = (date: string | Dayjs): Dayjs => dayjs.utc(date).tz('Europe/Berlin').startOf('date').add(10, 'hours');
     const formValue = form.value as IMedicalProblem;
-    if (!formValue.recorder?.firstName && !formValue.recorder?.lastName) {
-      formValue.recorder = undefined;
-    }
+    formValue.recorder = normalizeRecorder(formValue.recorder);
+    formValue.organization = normalizeOrganization(formValue.organization);
 
     return {
       ...formValue,

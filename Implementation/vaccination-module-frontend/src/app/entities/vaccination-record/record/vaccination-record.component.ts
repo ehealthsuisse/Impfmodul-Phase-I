@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
 import { environment } from '../../../../environment';
 import { SessionInfoService } from '../../../core/security/session-info.service';
-import { IAdverseEvent, IInfectiousDiseases, IMedicalProblem, IVaccination } from '../../../model';
+import { IAdverseEvent, IBasicImmunization, IInfectiousDiseases, ILaboratorySerology, IMedicalProblem, IVaccination } from '../../../model';
 import { IBaseDTO, IHumanDTO, MapperService, TableWrapperComponent, trackLangChange } from '../../../shared';
 import { BreakPointSensorComponent } from '../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { openVaccinationRecordErrorDialog } from '../../../shared/component/help/dialogContent';
@@ -48,13 +48,17 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   illnesses!: MatTableDataSource<IInfectiousDiseases>;
   allergies!: MatTableDataSource<IAdverseEvent>;
   medicalProblems!: MatTableDataSource<IMedicalProblem>;
+  basicImmunizations!: MatTableDataSource<IBasicImmunization>;
+  laboratorySerologies!: MatTableDataSource<ILaboratorySerology>;
   mapper: MapperService = inject(MapperService);
   vaccinationRecordService = inject(VaccinationRecordService);
   record$ = combineLatest([this.vaccinationRecordService.queryOneRecord(), trackLangChange()]);
   allergyColumns: string[] = ['entryStatus', 'occurrenceDate', 'allergyCode', 'recorder', 'comment'];
   illnessesColumns: string[] = ['entryStatus', 'recordedDate', 'illnessCode', 'recorder', 'comment'];
   vaccinationColumns: string[] = ['entryStatus', 'occurrenceDate', 'targetDiseases', 'vaccineCode', 'doseNumber', 'recorder', 'comment'];
+  laboratorySerologyColumns: string[] = ['entryStatus', 'recordedDate', 'laboratorySerologyCode', 'value', 'recorder', 'comment'];
   medicalProblemColumns: string[] = ['entryStatus', 'recordedDate', 'medicalProblemCode', 'clinicalStatus', 'recorder', 'comment'];
+  basicImmunizationColumns: string[] = ['entryStatus', 'onsetDate', 'basicImmunizationCode', 'comment'];
   subscription!: Subscription;
   sharedDataService: SharedDataService = inject(SharedDataService);
   spinnerService: SpinnerService = inject(SpinnerService);
@@ -83,7 +87,14 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
     }
     return (this.subscription = this.record$.subscribe({
       next: ([value]) => {
-        this.checkAndOpenErrorDialog([...value.allergies, ...value.vaccinations, ...value.pastIllnesses, ...value.medicalProblems]);
+        this.checkAndOpenErrorDialog([
+          ...value.allergies,
+          ...value.vaccinations,
+          ...value.pastIllnesses,
+          ...value.medicalProblems,
+          ...value.basicImmunizations,
+          ...value.laboratorySerologies,
+        ]);
         value = filterPatientRecordData(value);
         this.sharedDataService.setSessionStorage();
 
@@ -91,6 +102,12 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
         this.vaccinations = new MatTableDataSource<IVaccination>(this.mapper.vaccinationTranslateMapper(value.vaccinations));
         this.illnesses = new MatTableDataSource<IInfectiousDiseases>(this.mapper.illnessesTranslateMapper(value.pastIllnesses));
         this.medicalProblems = new MatTableDataSource<IMedicalProblem>(this.mapper.problemTranslateMapper(value.medicalProblems));
+        this.basicImmunizations = new MatTableDataSource<IBasicImmunization>(
+          this.mapper.basicImmunizationTranslateMapper(value.basicImmunizations)
+        );
+        this.laboratorySerologies = new MatTableDataSource<ILaboratorySerology>(
+          this.mapper.laboratorySerologyTranslateMapper(value.laboratorySerologies)
+        );
 
         this.patientService.patient.next(value.patient);
         this.spinnerService.hide();
@@ -118,6 +135,11 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
     this.router.navigate(['medical-problem', row.id, 'detail']);
   }
 
+  navigateToLaboratorySerology(row: ILaboratorySerology): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
+    this.router.navigate(['laboratory-serology', row.id, 'detail']);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
@@ -140,6 +162,21 @@ export class VaccinationRecordComponent extends BreakPointSensorComponent implem
   addAllergy(): void {
     this.sessionInfoService.isFromVaccinationRecord = true;
     this.router.navigateByUrl('allergy/new');
+  }
+
+  addLaboratorySerology(): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
+    this.router.navigateByUrl('laboratory-serology/new');
+  }
+
+  navigateToBasicImmunization(row: IBasicImmunization): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
+    this.router.navigate(['basic-immunization', row.id, 'detail']);
+  }
+
+  addBasicImmunization(): void {
+    this.sessionInfoService.isFromVaccinationRecord = true;
+    this.router.navigateByUrl('basic-immunization/new');
   }
 
   get isMobileOrTablet(): boolean {

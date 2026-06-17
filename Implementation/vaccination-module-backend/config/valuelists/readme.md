@@ -19,3 +19,7 @@ This folder contains list of value lists for the vaccination module.
 - immunizationVaccideCode: https://fhir.ch/ig/ch-vacd/CodeSystem-ch-vacd-swissmedic-cs.html, http://fhir.ch/ig/ch-vacd/ValueSet/ch-vacd-vaccines-snomedct-vs, http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-myvaccines-cs
 - immunizationVerificationStatus: https://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-ext-verification-status.html
 - medicalProblemCode: http://fhir.ch/ig/ch-vacd/CodeSystem/ch-vacd-complication-risks-cs
+- observationCode: https://fhir.ch/ig/ch-vacd/ValueSet-ch-vacd-laboratory-serology-vs.html
+- observationStatus: http://hl7.org/fhir/R4/valueset-observation-status.html
+- observationUnit: http://unitsofmeasure.org
+- observationVerificationStatus: https://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-ext-verification-status.html

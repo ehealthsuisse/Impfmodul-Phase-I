@@ -1,0 +1,15 @@
+{
+  "BASIC_IMMUNIZATION": {
+    "TITLE": "Immunizzazione di base",
+    "EDIT_HEADER": "Modifica immunizzazione di base",
+    "NEW_HEADER": "Nuova immunizzazione di base",
+    "DETAILS_HEADER": "Dettagli dell'immunizzazione di base",
+    "FILTER": "Cercando",
+    "BASIC_IMMUNIZATION_CODE": "Immunizzazione di base",
+    "ONSET_DATE": "Data",
+    "ASSUMED_IMMUNIZATION_DATE": "Data presunta dell'immunizzazione",
+    "DATE_OF_DETERMINATION": "Data di determinazione",
+    "CONFIDENTIALITY": "Riservatezza",
+    "FORM_HINT": "Si prega di utilizzare questo modulo solo se si è stati vaccinati da bambini ma non si sa quali vaccinazioni sono state effettuate."
+  }
+}

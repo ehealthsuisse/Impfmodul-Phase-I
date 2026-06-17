@@ -25,6 +25,8 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -52,6 +54,7 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedPerson;
+import org.hl7.fhir.r4.model.Observation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +78,8 @@ public class FhirAdapter implements FhirAdapterIfc {
   private FhirConfig fhirConfig;
   @Autowired
   private FhirConverterIfc fhirConverter;
+  @Autowired
+  private FhirResourceStrategyRegistry resourceStrategyRegistry;
 
   @Override
   public String convertBundleToJson(Bundle createdBundle) {
@@ -134,11 +139,18 @@ public class FhirAdapter implements FhirAdapterIfc {
       return dtos;
     }
 
-    SectionType sectionType = getSectionType(clazz);
+    FhirResourceStrategy<T, ? extends DomainResource> strategy = resourceStrategyRegistry.getStrategy(clazz);
+    SectionType sectionType = strategy.getSectionType();
+    Class<?> expectedResourceType = strategy.getResourceClass();
     try {
       for (DomainResource resource : getSectionResources(bundle, sectionType)) {
+        // BasicImmunization (Condition) and Vaccination (Immunization) share the same IMMUNIZATION section.
+        // Filter by FHIR resource type to prevent ClassCastExceptions when parsing mixed resource types.
+        if (expectedResourceType != null && !expectedResourceType.isInstance(resource)) {
+          continue;
+        }
         try {
-          T dto = parseFhirResource(clazz, bundle, resource);
+          T dto = parseFhirResource(strategy, bundle, resource);
           dto.validate(true);
           if (dto != null) {
             dtos.add(dto);
@@ -259,6 +271,12 @@ public class FhirAdapter implements FhirAdapterIfc {
     return jsonFilenames;
   }
 
+  protected BasicImmunizationDTO getBasicImmunizationDTO(Bundle bundle, Condition condition) {
+    BasicImmunizationDTO dto = fhirConverter.toBasicImmunizationDTO(condition);
+    dto.setComment(fhirConverter.extractCommentFromBundle(bundle, condition.getNote()));
+    return dto;
+  }
+
   protected MedicalProblemDTO getMedicalProblemDTO(Bundle bundle, Condition condition) {
     PractitionerRole practitionerRole =
         FhirUtils.getPractitionerRole(bundle, condition.getRecorder().getReference());
@@ -325,12 +343,11 @@ public class FhirAdapter implements FhirAdapterIfc {
           FhirUtils.isPatientTheAuthor(patientIdentifier, dto));
       return bundle;
     } catch (Exception e) {
-      log.warn("Exception: {}", e.getMessage());
       throw new TechnicalException(e.getMessage());
     }
   }
 
-  private AllergyDTO getAllergyDTO(Bundle bundle, AllergyIntolerance allergyIntolerance) {
+  AllergyDTO getAllergyDTO(Bundle bundle, AllergyIntolerance allergyIntolerance) {
     PractitionerRole practitionerRole =
         FhirUtils.getPractitionerRole(bundle, allergyIntolerance.getRecorder().getReference());
     Practitioner practitioner = getPractitioner(bundle, practitionerRole);
@@ -338,6 +355,24 @@ public class FhirAdapter implements FhirAdapterIfc {
 
     AllergyDTO dto = fhirConverter.toAllergyDTO(allergyIntolerance, practitioner, organization);
     dto.setComment(fhirConverter.extractCommentFromBundle(bundle, allergyIntolerance.getNote()));
+    return dto;
+  }
+
+  protected LaboratorySerologyDTO getLaboratorySerologyDTO(Bundle bundle, Observation observation) {
+    String performerReference = observation.hasPerformer() ? observation.getPerformerFirstRep().getReference() : null;
+    Organization performerOrganization = performerReference != null
+        ? FhirUtils.getOrganization(bundle, performerReference)
+        : null;
+    PractitionerRole practitionerRole = performerOrganization == null && performerReference != null
+        ? FhirUtils.getPractitionerRole(bundle, performerReference)
+        : null;
+    Practitioner practitioner = practitionerRole != null ? getPractitioner(bundle, practitionerRole) : null;
+    String organization = performerOrganization != null
+        ? performerOrganization.getName()
+        : getOrganization(bundle, practitionerRole);
+
+    LaboratorySerologyDTO dto = fhirConverter.toLaboratorySerologyDTO(observation, practitioner, organization);
+    dto.setComment(fhirConverter.extractCommentFromBundle(bundle, observation.getNote()));
     return dto;
   }
 
@@ -370,40 +405,7 @@ public class FhirAdapter implements FhirAdapterIfc {
     return FhirUtils.getResource(Practitioner.class, bundle);
   }
 
-  private <T extends BaseDTO> Class<?> getResourceType(Class<T> clazz) {
-    Class<?> type = null;
-    if (clazz.equals(VaccinationDTO.class)) {
-      type = Immunization.class;
-    } else if (clazz.equals(PastIllnessDTO.class)) {
-      type = Condition.class;
-    } else if (clazz.equals(AllergyDTO.class)) {
-      type = AllergyIntolerance.class;
-    } else if (clazz.equals(MedicalProblemDTO.class)) {
-      type = Condition.class;
-    } else {
-      log.warn("getDTOs {} not supported", clazz.getSimpleName());
-    }
-    return type;
-  }
-
-  private <T> SectionType getSectionType(Class<T> clazz) {
-    SectionType type = null;
-    if (clazz.equals(VaccinationDTO.class)) {
-      type = SectionType.IMMUNIZATION;
-    } else if (clazz.equals(PastIllnessDTO.class)) {
-      type = SectionType.PAST_ILLNESSES;
-    } else if (clazz.equals(AllergyDTO.class)) {
-      type = SectionType.ALLERGIES;
-    } else if (clazz.equals(MedicalProblemDTO.class)) {
-      type = SectionType.MEDICAL_PROBLEM;
-    } else {
-      log.warn("getDTOs {} not supported", clazz.getSimpleName());
-    }
-
-    return type;
-  }
-
-  private VaccinationDTO getVaccinationDTO(Bundle bundle, Immunization immunization) {
+  VaccinationDTO getVaccinationDTO(Bundle bundle, Immunization immunization) {
     PractitionerRole practitionerRole =
         FhirUtils.getPractitionerRole(bundle, immunization.getPerformerFirstRep().getActor().getReference());
     Practitioner practitioner = getPractitioner(bundle, practitionerRole);
@@ -461,21 +463,9 @@ public class FhirAdapter implements FhirAdapterIfc {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private <T extends BaseDTO> T parseFhirResource(Class<T> clazz, Bundle bundle, DomainResource resource) {
-    T result;
-    if (clazz.equals(VaccinationDTO.class)) {
-      result = (T) getVaccinationDTO(bundle, (Immunization) resource);
-    } else if (clazz.equals(AllergyDTO.class)) {
-      result = (T) getAllergyDTO(bundle, (AllergyIntolerance) resource);
-    } else if (clazz.equals(PastIllnessDTO.class)) {
-      result = (T) getPastIllnessDTO(bundle, (Condition) resource);
-    } else if (clazz.equals(MedicalProblemDTO.class)) {
-      result = (T) getMedicalProblemDTO(bundle, (Condition) resource);
-    } else {
-      throw new TechnicalException("Resource not supported");
-    }
-
+  private <T extends BaseDTO, R extends DomainResource> T parseFhirResource(FhirResourceStrategy<T, R> strategy,
+      Bundle bundle, DomainResource resource) {
+    T result = strategy.toDto(this, bundle, strategy.getResourceClass().cast(resource));
     result.setValidated(isBundleValidated(bundle));
     result.setCreatedAt(fhirConverter.convertToLocalDateTime(bundle.getTimestamp()));
     result.setAuthor(FhirUtils.getAuthor(bundle));

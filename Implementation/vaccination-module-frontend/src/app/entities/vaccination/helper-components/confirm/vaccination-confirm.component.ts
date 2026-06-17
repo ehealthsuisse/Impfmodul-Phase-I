@@ -21,13 +21,13 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VaccinationDetailedInformationComponent } from '../vaccination-detailed-information/vaccination-detailed-information.component';
 import { MaterialModule } from '../../../../shared/material.module';
 import { TranslateModule } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
+
 import { ConfirmComponent } from '../../../../shared/component/confirm/confirm.component';
 
 @Component({
   selector: 'vm-vaccination-confirm',
   standalone: true,
-  imports: [CommonModule, MaterialModule, VaccinationDetailedInformationComponent, TranslateModule, ConfirmComponent],
+  imports: [MaterialModule, VaccinationDetailedInformationComponent, TranslateModule, ConfirmComponent],
   templateUrl: './vaccination-confirm.component.html',
   styleUrls: ['./vaccination-confirm.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

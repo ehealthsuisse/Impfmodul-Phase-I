@@ -59,6 +59,7 @@ The configuration of the vaccination module frontend is stored in file `assets\c
 ```
 {
   "backendURL": "https://this.is.my.server.url/vaccination-module-backend",
+  "frontendHost": "this.is.my.server.url",
   "communityId": "EPDBackend",
   "allowStartWithoutInitialCall": false,
   "isLogoutButtonVisible": true,
@@ -67,6 +68,7 @@ The configuration of the vaccination module frontend is stored in file `assets\c
 ```
 It configs 2 parameter to be configured:
 - *backendURL* : Defines the URL of the vaccination module backend.
+- *frontendHost* : Host of the Angular frontend application.
 - *communityId* : The OID of the community the vaccination module is connected to.
 - *allowStartWithoutInitialCall* : Allows the start of the vaccination module without the initial webcall.<br>
 **Important**: Put *allowStartWithoutInitialCall* to false for productive use.
@@ -80,6 +82,7 @@ The Web Archive of the vaccination module backend uses the following configurati
  - `config\valuelists` all files apart from the following 2 are configurations of the value sets used. 
  - `config\valuelists\pdf-output.yml` configuration of pdf-output used for printing.
  - `config\valuelists\vaccines-to-targetdiseases.yml` mapping tables to map vaccines to targetdiseases.
+ - `config\valuelists\observation-code-to-units.yml` mapping tables to map observations to units of measure.
  - `fhir.yml` configuration of the FHIR profile for vaccination.
  - `husky.yml` configuration of the communication components of the Husky Library.
  - `idp-config-local.yml` configuration of the Identity Providers to be used.
@@ -103,7 +106,7 @@ Vaccination Module for the EPR
 profile: local
 config: ${vaccination_config}
 
-Powered by Spring Boot 3.4.8
+Powered by Spring Boot 3.5.14
 ```
 
 The following environment variables must be set appropriately:
@@ -239,15 +242,21 @@ idp:
 # Service Provider - this application
 sp:
   assertionConsumerServiceUrl: https://my.backend.url/saml/sso
-  forwardArtifactToClientUrl: https://my.frontend.url/saml-acs
-  otherNodeLogoutURL: https://otherNode.backend.url/saml/logout
+  forwardArtifactToClientPath: /saml-acs
+  # For productive use, httpsEnabled: true is recommended for security reasons.
+  httpsEnabled: true
+  # Logout propagation uses this ordered list. Each forwarded request contains the indexes already attempted,
+  # so the next node always calls the first URL in this list which has not been attempted yet.
+  logout-urls:
+  - https://node1.backend.url/saml/logout
+  - https://node2.backend.url/saml/logout
 
   # keystore containing the private key used for MTLS with the EPD backend
   keystore:
-   keystore-type: PKCS12
-   keystore-path: path.to.keystore
-   keystore-password: keystore.password
-   sp-alias: key.alias.used.for.idp
+    keystore-type: PKCS12
+    keystore-path: path.to.keystore
+    keystore-password: keystore.password
+    sp-alias: key.alias.used.for.idp
   # Keystore containing the private key used for MTLS with the IDPs
   tlsKeystore:
     keystore-type: JKS
@@ -275,8 +284,9 @@ The parameter are interpreted as follows:
 - supportedProvider.tlsKeystore.keystorePath: Filesystem path to the IdP truststore file.
 - supportedProvider.tlsKeystore.keystorePassword: Password to access the IdP truststore.
 - assertionConsumerServiceUrl: URL of the vaccination module accepting callbacks from the Identity Provider. Using the path variable *{idp}*, the vaccination module now can look up which IDP configuration it needs to check for the artifact response.
-- forwardArtifactToClientUrl: URL of a backend endpoint which will forward the SAMLartifact to the Angular frontend application. This workaround was implemented if it is not possible by the IDP to send a HTTP GET to the Frontend application directly.
-- otherNodeLogoutURL: URL of a secondary backend node to forward logout requests when the session cannot be retrieved locally. Enables logout propagation across nodes when configured.
+- forwardArtifactToClientPath: Path used to dynamically construct the backend endpoint that forwards the SAML artifact to the corresponding frontend application, allowing multiple frontends to share the same backend while it still knows which frontend to forward the artifact to. This workaround was implemented for cases where the IdP cannot send an HTTP GET directly to the frontend application.
+- httpsEnabled: Boolean flag indicating whether the redirect URL should use HTTPS or HTTP as the scheme. For productive use, `httpsEnabled: true` is recommended for security reasons.
+- logout-urls: Ordered list of the complete SAML logout endpoint URLs of all backend nodes. If the receiving node cannot process a logout request locally, it forwards the request to the first URL whose index has not yet been attempted. All nodes must use the same URL order.
   
 **Note:** The suffix */saml/sso* is mandatory and only the root address must be set.
 - keystore: General keystore setting which can be overwritten by the IDP-specific setting. If not set, the keystore according to the security configuration chapter (see below) is used. 

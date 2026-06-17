@@ -1,0 +1,17 @@
+{
+  "BASIC_IMMUNIZATION_CODE": {
+    "bi-dtpa": "Completamento dell'immunizzazione di base contro DTPa durante l'infanzia.",
+    "bi-polio": "Completamento dell'immunizzazione di base contro la poliomielite durante l'infanzia.",
+    "bi-fsme": "Completamento dell'immunizzazione di base contro la meningoencefalite verno-estiva.",
+    "bi-hib": "Completamento dell'immunizzazione di base contro l'Haemophilus influenzae di tipo b.",
+    "bi-hpv": "Completamento dell'immunizzazione di base contro i papillomavirus umani.",
+    "bi-variz": "Completamento dell'immunizzazione di base contro la varicella.",
+    "bi-mmr": "Completamento dell'immunizzazione di base contro morbillo, orecchioni e rosolia.",
+    "bi-pneumo": "Completamento dell'immunizzazione di base contro la malattia invasiva da pneumococchi.",
+    "bi-hepb": "Completamento dell'immunizzazione di base contro l'epatite virale B.",
+    "bi-hepa": "Completamento dell'immunizzazione di base contro l'epatite virale A.",
+    "bi-herpzos": "Completamento dell'immunizzazione di base contro l'herpes zoster.",
+    "bi-mening": "Completamento dell'immunizzazione di base contro la malattia invasiva da meningococchi.",
+    "bi-rabi": "Completamento dell'immunizzazione di base contro la rabbia."
+  }
+}

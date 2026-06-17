@@ -1,0 +1,17 @@
+{
+  "BASIC_IMMUNIZATION_CODE": {
+    "bi-dtpa": "Received basic immunization against DTPa in childhood.",
+    "bi-polio": "Received basic immunization against poliomyelitis in childhood.",
+    "bi-fsme": "Received basic immunization against tick-borne encephalitis.",
+    "bi-hib": "Received basic immunization against Haemophilus influenzae type b.",
+    "bi-hpv": "Received basic immunization against Human papillomavirus.",
+    "bi-variz": "Received basic immunization against varicella.",
+    "bi-mmr": "Received basic immunization against Measles, Mumps, Rubella.",
+    "bi-pneumo": "Received basic immunization against Pneumococcal infectious disease.",
+    "bi-hepb": "Received basic immunization against viral hepatitis type B.",
+    "bi-hepa": "Received basic immunization against viral hepatitis type A.",
+    "bi-herpzos": "Received basic immunization against herpes zoster.",
+    "bi-mening": "Received basic immunization against meningococcal infectious disease.",
+    "bi-rabi": "Received basic immunization against rabies."
+  }
+}

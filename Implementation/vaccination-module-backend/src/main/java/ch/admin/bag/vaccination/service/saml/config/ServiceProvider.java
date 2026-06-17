@@ -19,8 +19,11 @@
 package ch.admin.bag.vaccination.service.saml.config;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,8 +37,10 @@ import org.springframework.core.env.Environment;
 public class ServiceProvider {
   @Value("${sp.assertionConsumerServiceUrl}")
   private String assertionConsumerServiceUrl;
-  @Value("${sp.forwardArtifactToClientUrl}")
-  private String forwardArtifactToClientUrl;
+  @Value("${sp.forwardArtifactToClientPath}")
+  private String forwardArtifactToClientPath;
+  @Value("${sp.httpsEnabled:true}")
+  private boolean httpsEnabled;
 
   @Value("${sp.keystore.keystore-type}")
   private String samlKeystoreType;
@@ -49,6 +54,7 @@ public class ServiceProvider {
   private String tlsKeystoreType;
   private String tlsKeystorePath;
   private String tlsKeystorePassword;
+  private List<String> logoutURLs = List.of();
 
   @Autowired
   private Environment environment;
@@ -58,5 +64,8 @@ public class ServiceProvider {
     this.tlsKeystoreType = environment.getProperty("sp.tlsKeystore.keystore-type");
     this.tlsKeystorePath = environment.getProperty("sp.tlsKeystore.keystore-path");
     this.tlsKeystorePassword = environment.getProperty("sp.tlsKeystore.keystore-password");
+    this.logoutURLs = Binder.get(environment)
+        .bind("sp.logout-urls", Bindable.listOf(String.class))
+        .orElse(List.of());
   }
 }

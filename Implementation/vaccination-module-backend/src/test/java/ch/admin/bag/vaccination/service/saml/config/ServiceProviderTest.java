@@ -18,8 +18,9 @@ class ServiceProviderTest {
   void serviceProvider_hasDefaultSamlKeystoreValuesSet() {
     assertThat(sp.getAssertionConsumerServiceUrl()).isNotNull();
     assertThat(sp.getAssertionConsumerServiceUrl()).isEqualTo("http://localhost:8080/saml/sso");
-    assertThat(sp.getForwardArtifactToClientUrl()).isNotNull();
-    assertThat(sp.getForwardArtifactToClientUrl()).isEqualTo("http://localhost:9000/saml-acs");
+    assertThat(sp.getForwardArtifactToClientPath()).isNotNull();
+    assertThat(sp.getForwardArtifactToClientPath()).isEqualTo("/saml-acs");
+    assertThat(sp.isHttpsEnabled()).isFalse();
     assertThat(sp.getSamlKeystorePath()).isNotNull();
     assertThat(sp.getSamlKeystorePath()).isEqualTo("config/keystore-idp.p12");
     assertThat(sp.getSamlKeystoreType()).isNotNull();

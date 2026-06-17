@@ -30,6 +30,8 @@ import { CommentComponent, CommonCardFooterComponent, FormOptionsService, IValue
 import { BreakPointSensorComponent } from '../../../../shared/component/break-point-sensor/break-point-sensor.component';
 import { ConfidentialityService } from '../../../../shared/services/confidentiality.service';
 import { ReusableDateFieldComponent } from '../../../../shared/component/resuable-fields/reusable-date-field/reusable-date-field.component';
+import { ReusableRecorderFieldComponent } from '../../../../shared/component/resuable-fields/reusable-recorder-field/reusable-recorder-field.component';
+import { ReusableSelectFieldComponent } from '../../../../shared/component/resuable-fields/reusable-select-field/reusable-select-field.component';
 import { ReusableSelectFieldWithSearchComponent } from '../../../../shared/component/resuable-fields/reusable-select-field-with-search/reusable-select-field-with-search.component';
 import { buildComment, initializeActionData, openSnackBar, routecall, setDropDownInitialValue } from '../../../../shared/function';
 import { VaccinePredefinedDiseases } from '../../../../shared/interfaces/vaccination-with-disease.interface';
@@ -54,6 +56,8 @@ import { VACCINE_CODES, VALIDATION_CODES } from '../../../../shared/constants/gl
     CommonCardFooterComponent,
     CommentComponent,
     ReusableDateFieldComponent,
+    ReusableRecorderFieldComponent,
+    ReusableSelectFieldComponent,
     ReusableSelectFieldWithSearchComponent,
   ],
 })
@@ -106,9 +110,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
     setDropDownInitialValue(this.reasons, this.reason);
     setDropDownInitialValue(this.diseases, this.diseasesList);
     this.clearTargetDiseasesValidationForUnknownVaccine();
-
-    this.editForm.controls['recorder'].get('firstName')?.markAsTouched();
-    this.editForm.controls['recorder'].get('lastName')?.markAsTouched();
   }
 
   save(): void {
@@ -279,7 +280,6 @@ export class VaccinationFormComponent extends BreakPointSensorComponent implemen
       this.diseasesChips.setupChipsControls(_.cloneDeep(res));
     });
   }
-
   // Resets the selected items in diseasesChips list
   private resetDiseasesSelection(): void {
     this.diseasesChips.list.forEach(item => {

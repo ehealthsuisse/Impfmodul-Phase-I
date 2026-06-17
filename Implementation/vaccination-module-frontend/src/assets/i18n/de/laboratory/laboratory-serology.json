@@ -1,0 +1,17 @@
+{
+  "LABORATORY_SEROLOGY": {
+    "TITLE": "Labor und Serologie",
+    "NEW_HEADER": "Labor- und Serologiebefund hinzufügen",
+    "EDIT_HEADER": "Labor- und Serologiebefund bearbeiten",
+    "DETAILS_HEADER": "Details zum Labor- und Serologiebefund",
+    "RECORDED_DATE": "Datum",
+    "LABORATORY_SEROLOGY_CODE": "Labor-/Serologiecode",
+    "STATUS": "Status",
+    "VALUE": "Wert",
+    "UNIT": "Einheit",
+    "PERFORMER": "Durchführende Person",
+    "RECORDER": "Erfasst von",
+    "DATE": "Datum der Feststellung",
+    "CONFIDENTIALITY": "Vertraulichkeit"
+  }
+}

@@ -19,7 +19,7 @@
 package ch.admin.bag.vaccination.service.saml;
 
 import ch.admin.bag.vaccination.controller.SAMLController;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

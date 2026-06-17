@@ -22,10 +22,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -99,6 +101,10 @@ public interface FhirConverterIfc {
   AllergyDTO toAllergyDTO(AllergyIntolerance allergyIntolerance, Practitioner practitioner, String organization);
 
   MedicalProblemDTO toMedicalProblemDTO(Condition condition, Practitioner practitioner, String organization);
+
+  BasicImmunizationDTO toBasicImmunizationDTO(Condition condition);
+  LaboratorySerologyDTO toLaboratorySerologyDTO(org.hl7.fhir.r4.model.Observation observation,
+      Practitioner practitioner, String organization);
 
   PastIllnessDTO toPastIllnessDTO(Condition condition, Practitioner practitioner, String organization);
 

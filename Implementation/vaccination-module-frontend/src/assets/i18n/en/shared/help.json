@@ -60,6 +60,20 @@
         "BODY": "Risk factor has been successfully stored in the system"
       }
     },
+    "BASIC_IMMUNIZATION": {
+      "LIST": {
+        "TITLE": "<h2>Basic immunization</h2>",
+        "BODY": "<p>List of all basic immunizations recorded in the EPR. While the vaccination certificate displays only the most recent entries, the general overview also records the corrected, commented or deleted entries. This general overview can be used to identify and correct any inconsistencies in the vaccination certificate.</p><br><p>The table allows the following functionalities: <ul> <li>Display a specific basic immunization by clicking on it</li> <li>Add a new basic immunization</li> </ul> </p><br> <hr><br> <p>List of all documented basic immunizations sorted by date: <ul> <li>Date: Assumed date of immunization</li> <li>Basic immunization: Description of the basic immunization</li> </ul> </p>"
+      },
+      "DETAIL": {
+        "TITLE": "<h2>Basic immunization</h2>",
+        "BODY": "<p>Detailed view of a selected basic immunization from the EPR.</p><br> <p>The detailed view serves as a starting point for editing and commenting on the selected basic immunization and supports the following functions: <ul> <li>Correct an entry</li> <li>Cancel an incorrectly recorded basic immunization</li> <li>Validate a basic immunization (only for healthcare professionals)</li> <li>Download the data record in structured form</li> </ul> </p><br> <hr><br> <p>The detailed view lists the following information:</p> <p> <ul> <li>Assumed date of immunization: Assumed date when the immunization took place</li> <li>Date of determination: Date when the basic immunization was determined</li> <li>Basic immunization: Description of the basic immunization</li> <li>Confidentiality: Confidentiality level of the entry</li> <li>Comment: Displays the most recent comment for the selected entry</li> </ul> </p>"
+      },
+      "SAVE_AND_STAY": {
+        "TITLE": "<h2>Basic immunization</h2>",
+        "BODY": "Basic immunization has been successfully stored in the system"
+      }
+    },
     "VACCINATION_RECORD": {
       "SAVE": {
         "TITLE": "Save vaccination certificate",
@@ -67,7 +81,7 @@
       },
       "HELP": {
         "TITLE": "<h2>Vaccination certificate</h2>",
-        "BODY": "<p> The vaccination certificate presents current vaccination data in table form, as well as adverse reactions, infectious diseases and risk factors. The information must be validated by a healthcare professional, who is connected to the EPR. Vaccination data can be downloaded in PDF format and then printed out. Vaccination data can also be exported in a structured format for re-use in other systems. </p><br> <hr><br> <h3>Vaccinations</h3> <p>List of all documented vaccinations sorted by date of vaccination: <ul> <li>Date: Date of vaccination</li> <li>Vaccine: Administered vaccine</li> <li>Vaccine protection: One or more infectious diseases against which the vaccine is effective</li> <li>Dose: Number of the administered vaccine dose</li> <li>Administered by: Name of the healthcare professional who administered the vaccine, or if unknown, name of the organization where the vaccine was administered.</li> </ul> </p><br> <h3>Adverse events</h3> <p>List of all documented adverse events sorted by date of occurrence: <ul> <li>Date: Date of occurrence of the adverse effect </li> <li>Adverse effect: Description of the adverse effect</li> <li>Recorded by: Name of the person who noted the adverse effect</li> </ul> </p><br> <h3>Infectious diseases</h3> <p>List of all contracted infectious diseases, for which a vaccine exists, sorted by diagnosis date: <ul> <li>Date: Date of diagnosis of the infectious disease</li> <li>Infectious disease: Name of the infectious disease</li> <li>Recorded by: Name of the person who diagnosed the infectious disease </li> </ul> </p><br> <h3>Risk factors</h3> <p>List of all risk factors, sorted by diagnosis date: <ul> <li>Date: Date of diagnosis of the risk factor</li> <li>Risk factor: Name of the risk factor</li> <li>Clinical status: Is the risk factor currently applicable (active) or no longer applicable (inactive)?</li> <li>Recorded by: Name of the person who diagnosed the risk factor</li> </ul> </p>"
+        "BODY": "<p> The vaccination certificate presents current vaccination data in table form, as well as adverse reactions, infectious diseases, laboratory and serology records and risk factors. The information must be validated by a healthcare professional, who is connected to the EPR. Vaccination data can be downloaded in PDF format and then printed out. Vaccination data can also be exported in a structured format for re-use in other systems. </p><br> <hr><br> <h3>Basic immunization</h3> <p>List of all documented basic immunizations sorted by date: <ul> <li>Date: Assumed date of immunization</li> <li>Basic immunization: Description of the basic immunization</li> </ul> </p><br> <h3>Vaccinations</h3> <p>List of all documented vaccinations sorted by date of vaccination: <ul> <li>Date: Date of vaccination</li> <li>Vaccine: Administered vaccine</li> <li>Vaccine protection: One or more infectious diseases against which the vaccine is effective</li> <li>Dose: Number of the administered vaccine dose</li> <li>Administered by: Name of the healthcare professional who administered the vaccine, or if unknown, name of the organization where the vaccine was administered.</li> </ul> </p><br> <h3>Adverse events</h3> <p>List of all documented adverse events sorted by date of occurrence: <ul> <li>Date: Date of occurrence of the adverse effect </li> <li>Adverse effect: Description of the adverse effect</li> <li>Recorded by: Name of the person who noted the adverse effect</li> </ul> </p><br> <h3>Infectious diseases</h3> <p>List of all contracted infectious diseases, for which a vaccine exists, sorted by diagnosis date: <ul> <li>Date: Date of diagnosis of the infectious disease</li> <li>Infectious disease: Name of the infectious disease</li> <li>Recorded by: Name of the person who diagnosed the infectious disease </li> </ul> </p><br> <h3>Laboratory and serology</h3> <p>List of all documented laboratory and serology records sorted by date: <ul> <li>Date: Date of determination</li> <li>Laboratory/Serology: Laboratory or serology finding</li> <li>Value: Result value</li> <li>Recorded by: Name of the person who recorded the laboratory or serology finding</li> </ul> </p><br> <h3>Risk factors</h3> <p>List of all risk factors, sorted by diagnosis date: <ul> <li>Date: Date of diagnosis of the risk factor</li> <li>Risk factor: Name of the risk factor</li> <li>Clinical status: Is the risk factor currently applicable (active) or no longer applicable (inactive)?</li> <li>Recorded by: Name of the person who diagnosed the risk factor</li> </ul> </p>"
       }
     },
     "COMMENT": {
@@ -84,6 +98,20 @@
         "TITLE": "Defective document",
         "BODY": "Unfortunately, the present document could not be read as it is not in a valid HL7 format (XML/JSON). Please clarify this matter with your EPD home community. You can gladly download the document here in the original.",
         "FOOTER": "Each document must be in a valid HL7 format (XML / JSON). Please check this matter with your EPD home community."
+      }
+    },
+    "LABORATORY_SEROLOGY": {
+      "LIST": {
+        "TITLE": "<h2>Laboratory and serology</h2>",
+        "BODY": "<p>List of all laboratory and serology records recorded in the EPR. While the vaccination certificate displays only the most recent laboratory and serology records, the general overview of the laboratory and serology records also records the corrected, commented or deleted entries. This general overview can be used to identify and correct any inconsistencies in the vaccination certificate.</p><br> <p>The table allows the following functionalities: <ul> <li>Display a specific record by clicking on it</li> <li>Add a new record</li> </ul> </p><br> <hr><br> <p>List of all documented laboratory and serology records sorted by date: <ul> <li>Date: Date of determination</li> <li>Laboratory/Serology: Laboratory or serology finding</li> <li>Value: Result value</li> <li>Recorded by: Name of the person who recorded the laboratory or serology finding</li> </ul> </p>"
+      },
+      "DETAIL": {
+        "TITLE": "<h2>Laboratory and serology</h2>",
+        "BODY": "<p>Detailed view of a selected laboratory/serology record from the EPR.</p><br> <p>The detailed view serves as a starting point for editing and commenting on the selected laboratory/serology record and supports the following functions: <ul> <li>Correct an entry</li> <li>Cancel an incorrectly recorded laboratory/serology record</li> <li>Validate a laboratory/serology record (only for healthcare professionals)</li> <li>Download the data record in structured form to transfer it to another system</li> </ul> </p><br> <hr><br> <p>The detailed view lists the following information:</p> <p> <ul> <li>Date: Date of determination</li> <li>Laboratory/Serology: Laboratory or serology finding</li> <li>Value: Result value</li> <li>Unit: Unit of the result value</li> <li>Recorded by: Name of the person who recorded the laboratory or serology finding</li> <li>Organization: Name of the organization which recorded the laboratory or serology finding</li> <li>Confidentiality: Confidentiality level of the laboratory/serology record stored in the EPR</li> <li>Comment: Displays the most recent comment for the selected entry, showing the name of the author as well as the date and content.</li> </ul> </p>"
+      },
+      "SAVE_AND_STAY": {
+        "TITLE": "<h2>Laboratory and serology</h2>",
+        "BODY": "Laboratory/serology record has been successfully stored in the system"
       }
     }
   }

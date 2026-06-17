@@ -5,14 +5,15 @@
   }"
   aria-label="Language Selection"
 >
-  <div class="dropdown" #dropdown (click)="onLanguageClick()" *ngIf="isDesktop">
+  @if (isDesktop) {
+  <div class="dropdown" #dropdown (click)="onLanguageClick()">
     <button class="dropbtn" aria-haspopup="true" [attr.aria-expanded]="dropdownOpen ? 'true' : 'false'">
       {{ currentLanguage }}
       <mat-icon aria-hidden="true">keyboard_arrow_down</mat-icon>
     </button>
     <div class="dropdown-content" role="menu" [ngStyle]="{ display: dropdownOpen ? 'block' : 'none' }">
+      @for (lang of languages; track lang) {
       <a
-        *ngFor="let lang of languages"
         role="menuitem"
         tabindex="0"
         [class.active]="currentLanguage === lang"
@@ -24,12 +25,14 @@
         <span class="sr-only">{{ ('GLOBAL.LANGUAGE_HELP_TEXT' | translate) + '' + lang.slice(0, 1).toUpperCase() }}</span>
         {{ lang | uppercase }}
       </a>
+      }
     </div>
   </div>
-  <div #dropdown class="m" *ngIf="isMobile || isTablet">
+  } @if (isMobile || isTablet) {
+  <div #dropdown class="m">
+    @for (lang of languages; track lang) {
     <a
       role="menuitem"
-      *ngFor="let lang of languages"
       [class.active]="currentLanguage === lang"
       (keydown.enter)="changeLanguage(lang, $event)"
       (click)="changeLanguage(lang, $event)"
@@ -41,5 +44,7 @@
       <span class="sr-only">{{ ('GLOBAL.LANGUAGE_HELP_TEXT' | translate) + '' + lang.slice(0, 1).toUpperCase() }}</span>
       {{ lang | uppercase }}
     </a>
+    }
   </div>
+  }
 </nav>

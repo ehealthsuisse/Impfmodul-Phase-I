@@ -1,4 +1,5 @@
-<mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
+@if (isEditable) {
+<mat-form-field [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
   <mat-label [vmTranslate]="translationKey + '.' + labelKey"></mat-label>
   <mat-select
     [required]="isRequired"
@@ -7,9 +8,11 @@
     [formControl]="formControl"
     [attr.aria-label]="labelKey | translate"
   >
-    <mat-select-trigger *ngIf="searchControl.value">
+    @if (searchControl.value) {
+    <mat-select-trigger>
       {{ searchControl.value.code | translate }}
     </mat-select-trigger>
+    }
     <mat-option>
       <ngx-mat-select-search
         [noEntriesFoundLabel]="'GLOBAL.NO_ENTRIES_FOUND' | translate"
@@ -17,17 +20,16 @@
         [formControl]="searchControl"
       ></ngx-mat-select-search>
     </mat-option>
-    <mat-option
-      *ngFor="let option of sortedOptions$ | async | filterPipe : searchControl.value : labelKey + '.'"
-      [value]="option"
-      [attr.aria-label]="option.code | translate"
-    >
+    @for (option of sortedOptions$ | async | filterPipe : searchControl.value : labelKey + '.'; track option) {
+    <mat-option [value]="option" [attr.aria-label]="option.code | translate">
       {{ labelKey + '.' + option.code | translate }}
     </mat-option>
+    }
   </mat-select>
 </mat-form-field>
-
-<mat-form-field *ngIf="!isEditable">
+} @if (!isEditable) {
+<mat-form-field>
   <mat-label vmTranslate="{{ labelKey | translate }}" [attr.aria-label]="labelKey | translate"></mat-label>
   <input matInput [attr.aria-label]="translationKey" value="{{ translationKey + item.code | translate }}" disabled />
 </mat-form-field>
+}

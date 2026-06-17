@@ -19,7 +19,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ConfigService } from './../config/config.service';
+import { ConfigService } from '../config/config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,11 @@ export class SignatureService {
   constructor(private http: HttpClient, private configService: ConfigService) {}
 
   validateQueryString(queryString: string): Observable<boolean> {
-    return this.http.post<boolean>(`${this.configService.endpointPrefix}/signature/validate`, queryString);
+    const endpointPrefix = this.configService.endpointPrefix;
+
+    return this.http.post<boolean>(`${endpointPrefix}/signature/validate`, {
+      queryString,
+      frontendHost: this.configService.frontendHost,
+    });
   }
 }

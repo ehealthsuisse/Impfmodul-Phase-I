@@ -1,0 +1,22 @@
+<div [ngClass]="isMobile ? 'mobile-list-wrapper' : 'list-wrapper'">
+  <vm-list-header
+    class="mat-card mat-elevation-z0"
+    [toggle]="toggleHeader()"
+    (filter)="filter($event)"
+    [helpTitle]="'HELP.LABORATORY_SEROLOGY.LIST.TITLE' | translate"
+    [helpBody]="'HELP.LABORATORY_SEROLOGY.LIST.BODY' | translate"
+    (add)="addNewRecord()"
+    [title]="'LABORATORY_SEROLOGY.TITLE'"
+  >
+  </vm-list-header>
+  <vm-table-wrapper
+    [dataSource]="laboratorySerologies"
+    [displayedColumns]="displayedColumns()"
+    [enableGrouping]="true"
+    [translationPrefix]="'LABORATORY_SEROLOGY.'"
+    [fullWidth]="tableWidth()"
+    (rowClick)="navigateToDetails($event)"
+    [tableName]="'LABORATORY_SEROLOGY.TITLE' | translate"
+  >
+  </vm-table-wrapper>
+</div>

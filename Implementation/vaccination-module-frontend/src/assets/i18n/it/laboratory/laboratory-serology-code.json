@@ -1,0 +1,16 @@
+{
+  "LABORATORY_SEROLOGY_CODE": {
+    "22602-7": "Virus varicella-zoster Ab IgG [titolo] in siero",
+    "22502-9": "Virus del morbillo Ab IgG [titolo] in siero",
+    "41763-4": "Virus della rosolia Ab IgG [titolo] in siero",
+    "22313-1": "Virus dell'epatite A Ab IgG [unità/volume] in siero attivo",
+    "16935-9": "Virus dell'epatite B Ab di superficie [unità/volume] in siero",
+    "26061-2": "Virus della meningoencefalite da zecche europea Ab [titolo] in siero",
+    "6589-6": "Virus della febbre gialla Ab [titolo] in siero mediante immunofluorescenza",
+    "58770-9": "Tossoide di Clostridium tetani Ab IgG [unità/volume] in siero mediante immunofluorescenza",
+    "94505-5": "SARS-CoV-2 (COVID-19) Ab IgG [unità/volume] in siero o plasma mediante immunodosaggio",
+    "14128-3": "Virus della rabbia Ab [titolo] in siero",
+    "22755-3": "Haemophilus influenzae B Ab [masse/volume] in siero",
+    "25531-5": "Streptococcus pneumoniae Ab [masse/volume] in siero"
+  }
+}

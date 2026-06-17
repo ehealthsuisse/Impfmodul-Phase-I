@@ -21,8 +21,8 @@ package ch.admin.bag.vaccination.service.husky;
 import static ch.admin.bag.vaccination.service.husky.HuskyUtils.UPLOADER_ROLE_METADATA_KEY;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
-import ch.admin.bag.vaccination.service.VaccinationConfig;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
+import ch.admin.bag.vaccination.service.config.VaccinationConfig;
 import ch.admin.bag.vaccination.service.cache.Cache;
 import ch.admin.bag.vaccination.service.husky.config.CommunitiesConfig;
 import ch.admin.bag.vaccination.service.husky.config.CommunityConfig;

@@ -16,7 +16,6 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
@@ -33,7 +32,7 @@ import { BreakPointSensorComponent } from '../break-point-sensor/break-point-sen
 @Component({
   selector: 'vm-common-card-footer',
   standalone: true,
-  imports: [CommonModule, MaterialModule, FlexLayoutModule, TranslateDirective, TranslateModule],
+  imports: [MaterialModule, FlexLayoutModule, TranslateDirective, TranslateModule],
   templateUrl: './common-card-footer.component.html',
   styleUrls: ['./common-card-footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

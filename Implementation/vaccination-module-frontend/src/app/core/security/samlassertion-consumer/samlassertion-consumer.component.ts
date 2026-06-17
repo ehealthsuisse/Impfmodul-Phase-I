@@ -16,7 +16,6 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -25,7 +24,7 @@ import { SessionInfoService } from '../session-info.service';
 
 @Component({
   selector: 'vm-samlassertion-consumer',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './samlassertion-consumer.component.html',
   styleUrls: ['./samlassertion-consumer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

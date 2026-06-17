@@ -1,0 +1,15 @@
+{
+  "BASIC_IMMUNIZATION": {
+    "TITLE": "Basic immunization",
+    "EDIT_HEADER": "Edit basic immunization",
+    "NEW_HEADER": "Add basic immunization",
+    "DETAILS_HEADER": "Basic immunization details",
+    "FILTER": "Search",
+    "BASIC_IMMUNIZATION_CODE": "Basic immunization",
+    "ONSET_DATE": "Date",
+    "ASSUMED_IMMUNIZATION_DATE": "Assumed date of immunization",
+    "DATE_OF_DETERMINATION": "Date of determination",
+    "CONFIDENTIALITY": "Confidentiality",
+    "FORM_HINT": "Please use this form only if you were vaccinated as a child but do not know which vaccinations were administered."
+  }
+}

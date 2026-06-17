@@ -24,16 +24,11 @@ import utc from 'dayjs/plugin/utc';
 import { SessionInfoService } from '../../../core/security/session-info.service';
 import { IMedicalProblem, IVaccination } from '../../../model';
 import { IComment, IHumanDTO, IValueDTO } from '../../../shared';
-import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { extractSessionDetailsByRole, setDefaultValues } from '../../../shared/function';
+import { PartialWithRequiredKeyOf, TNewEntity } from '../../../shared/typs/NewEntityType';
+import { extractSessionDetailsByRole, normalizeOrganization, normalizeRecorder, setDefaultValues } from '../../../shared/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-/**
- * A partial Type with required key is used as form input.
- */
-type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
-
 /**
  * Type for createFormGroup and resetForm argument.
  * It accepts IVaccination for edit and NewVaccinationFormGroupInput for create.
@@ -105,16 +100,15 @@ export class VaccinationFormService {
       organization: new FormControl(extractSessionDetails.organization),
       comment: new FormControl(),
       commentMessage: new FormControl(),
-      confidentiality: new FormControl(),
+      confidentiality: new FormControl(null, Validators.required),
     } as any);
   }
 
   getVaccination(form: VaccinationFormGroup): IVaccination | TNewEntity<IVaccination> {
     const vaccination: IVaccination = form.value as IVaccination;
     vaccination.status = vaccination.status as unknown as IValueDTO;
-    if (!vaccination.recorder?.firstName && !vaccination.recorder?.lastName) {
-      vaccination.recorder = undefined;
-    }
+    vaccination.recorder = normalizeRecorder(vaccination.recorder);
+    vaccination.organization = normalizeOrganization(vaccination.organization);
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     vaccination.occurrenceDate = dayjs.utc(vaccination.occurrenceDate).tz('Europe/Berlin').startOf('date').add(10, 'hours');
     return { ...vaccination };

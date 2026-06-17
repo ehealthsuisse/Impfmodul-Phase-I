@@ -31,6 +31,7 @@ import ch.admin.bag.vaccination.service.saml.SAMLUtilsTest;
 import ch.admin.bag.vaccination.service.saml.SAMLXmlTestUtils;
 import java.net.URI;
 import java.time.Instant;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
@@ -49,6 +50,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  *
@@ -59,6 +61,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @ActiveProfiles("test")
 public class SAMLControllerTest {
   private static final String SAML_ART = "1234567890";
+  private static final String FRONTEND_HOST_HTTPS =
+      "develop-vaccination-module.apps.ocp4.innershift.sodigital.io";
+  private static final String FRONTEND_HOST_HTTP = "localhost:9000";
+  private static final String IDP_IDENTIFIER = "GAZELLE";
 
   @Autowired
   private SAMLService samlService;
@@ -72,6 +78,9 @@ public class SAMLControllerTest {
 
   @Autowired
   private TestRestTemplate restTemplate;
+
+  @Autowired
+  private SAMLController samlController;
 
   @Test
   void sendEmptySoapSamlLogoutRequest_expectException() {
@@ -89,11 +98,6 @@ public class SAMLControllerTest {
   }
 
   @Test
-  void sendSoapSamlLogoutRequest_forwardToken_expectValidResponse() {
-    performLogout("saml/samlSoapLogoutRequest_forwarded.xml");
-  }
-
-  @Test
   void sendSoapSamlLogoutRequest_swissId_expectValidResponse() {
     performLogout("saml/samlLogoutRequestSwissId.xml");
   }
@@ -101,6 +105,12 @@ public class SAMLControllerTest {
   @BeforeEach
   void setUp() {
     when(profileConfig.isSamlAuthenticationActive()).thenReturn(true);
+  }
+
+  @AfterEach
+  void resetHttpsActivation() {
+    ReflectionTestUtils.setField(samlController, "httpsEnabled", true);
+    samlController.init();
   }
 
   @Test
@@ -125,17 +135,49 @@ public class SAMLControllerTest {
     headers.add("Origin", null);
     headers.add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
     headers.add("Content-Type", "application/x-www-form-urlencoded");
-    RequestEntity<String> entity =
-        new RequestEntity<>("RelayState=GAZELLE&SAMLart=samlArtifact", headers, HttpMethod.POST,
-            new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT));
+    RequestEntity<String> entity = new RequestEntity<>("RelayState=" + FRONTEND_HOST_HTTPS + ";;" + IDP_IDENTIFIER
+        + "&SAMLart=samlArtifact", headers, HttpMethod.POST, new URI("http://localhost:" + port
+        + SAMLController.SSO_ENDPOINT));
 
     // Disable redirect following
-    TestRestTemplate noRedirectTemplate = restTemplate.withRedirects(
-        ClientHttpRequestFactorySettings.Redirects.DONT_FOLLOW
-    );
+    TestRestTemplate noRedirectTemplate = createNoRedirectTemplate();
 
     ResponseEntity<String> response = noRedirectTemplate.exchange(entity, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+    assertThat(response.getHeaders().getLocation()).hasToString(
+        "https://" + FRONTEND_HOST_HTTPS + "/saml-acs?SAMLart=samlArtifact&RelayState=" + IDP_IDENTIFIER);
+  }
+
+  @Test
+  void ssoArtifactRedirectGet_shouldRedirectToFrontendHostFromRelayState() throws Exception {
+    TestRestTemplate noRedirectTemplate = createNoRedirectTemplate();
+    RequestEntity<Void> entity = new RequestEntity<>(null, HttpMethod.GET,
+        new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT + "?RelayState=" + FRONTEND_HOST_HTTPS
+            + ";;" + IDP_IDENTIFIER + "&SAMLart=" + SAML_ART));
+
+    ResponseEntity<String> response = noRedirectTemplate.exchange(entity, String.class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+    assertThat(response.getHeaders().getLocation()).hasToString(
+        "https://" + FRONTEND_HOST_HTTPS + "/saml-acs?SAMLart=" + SAML_ART + "&RelayState=" + IDP_IDENTIFIER);
+  }
+
+  @Test
+  void ssoArtifactRedirectPost_shouldRedirectToFrontendHostFromRelayStateInHttpMode() throws Exception {
+    ReflectionTestUtils.setField(samlController, "httpsEnabled", false);
+    samlController.init();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/x-www-form-urlencoded");
+    RequestEntity<String> entity = new RequestEntity<>(
+        "RelayState=" + FRONTEND_HOST_HTTP + ";;" + IDP_IDENTIFIER + "&SAMLart=" + SAML_ART,
+        headers, HttpMethod.POST, new URI("http://localhost:" + port + SAMLController.SSO_ENDPOINT));
+
+    ResponseEntity<String> response = createNoRedirectTemplate().exchange(entity, String.class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+    assertThat(response.getHeaders().getLocation()).hasToString(
+        "http://" + FRONTEND_HOST_HTTP + "/saml-acs?SAMLart=" + SAML_ART + "&RelayState=" + IDP_IDENTIFIER);
   }
 
   private void performLogout(String requestFile) {
@@ -157,5 +199,9 @@ public class SAMLControllerTest {
             + SAML_ART));
     ResponseEntity<Void> response = restTemplate.exchange(entity, Void.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  private TestRestTemplate createNoRedirectTemplate() {
+    return restTemplate.withRedirects(ClientHttpRequestFactorySettings.Redirects.DONT_FOLLOW);
   }
 }

@@ -30,12 +30,31 @@ public enum I18nKey {
       "Libretto delle vaccinazioni"), //
   BASIC_VACCINATION("Basic vaccinations", "Basisimpfungen", "Vaccinations de base", "Vaccinazioni di base"), //
   OTHER_VACCINATION("Other vaccinations", "Andere Impfungen", "Autres vaccinations", "Altere vaccinazioni"), //
-  COMMENTS_FOR_UNKNOWN_VACCINATIONS("Comments for unknown vaccinations", "Kommentare zu unbekannten Impfstoffen",
-      "Commentaires sur les vaccins inconnus", "Commenti per vaccinazioni sconosciute"), //
+  COMMENTS_FOR_ADVERSE_EVENTS("Comments for adverse events", "Kommentare für Nebenwirkungen",
+      "Commentaires sur les effets secondaires", "Commenti sugli effetti collaterali"), //
+  COMMENTS_FOR_VACCINATIONS("Comments for vaccinations", "Kommentare für Impfungen",
+      "Commentaires sur les vaccinations", "Commenti sulle vaccinazioni"), //
+  COMMENTS_FOR_PAST_ILLNESSES("Comments for infectious diseases", "Kommentare für Infektionskrankheiten",
+      "Commentaires sur les maladies infectieuses", "Commenti sulle malattie infettive"), //
+  COMMENTS_FOR_RISK_FACTORS("Comments for risk factors", "Kommentare für Risikofaktoren",
+      "Commentaires sur les facteurs de risque", "Commenti sui fattori di rischio"), //
+  COMMENTS_FOR_BASIC_IMMUNIZATIONS("Comments for basic immunizations", "Kommentare für Grundimmunisierungen",
+      "Commentaires sur les immunisations de base", "Commenti sulle immunizzazioni di base"), //
+  COMMENTS_FOR_LABORATORY_SEROLOGIES("Comments for laboratory and serology", "Kommentare für Labor und Serologie",
+      "Commentaires sur le laboratoire et la sérologie", "Commenti su laboratorio e sierologia"), //
   ADVERSE_EVENTS("Adverse Events", "Nebenwirkungen (UIE)", "Effets secondaires (EIV)",
       "Effetti indesiderati delle vaccinazioni (EIV)"), //
   PASTILLNESSES("Infectious Diseases", "Infektionskrankheiten", "Maladies infectieuses", "Malattie infettive"), //
   RISK_FACTORS("Risk Factors", "Risikofaktoren ", "Facteurs de risque", "Fattori di rischio"), //
+  BASIC_IMMUNIZATIONS("Basic immunizations", "Grundimmunisierungen", "Immunisations de base",
+      "Immunizzazioni di base"), //
+  BASIC_IMMUNIZATION("Basic immunization", "Grundimmunisierung", "Immunisation de base",
+      "Immunizzazione di base"), //
+  LABORATORY_SEROLOGY("Laboratory and Serology", "Labor & Serologie", "Laboratoire et serologie",
+      "Laboratorio e sierologia"), //
+  LABORATORY_TEST("Laboratory test", "Labortest", "Test de laboratoire", "Test di laboratorio"), //
+  RESULT("Result", "Ergebnis", "Resultat", "Risultato"), //
+  ADVERSE_EVENT("Adverse event", "Nebenwirkung", "Effet secondaire", "Effetto indesiderato"), //
   PASTILLNESS("Infectious Disease", "Infektionskrankheit", "Maladie", "Malattie"), //
   RISK_FACTOR("Risk Factor", "Risikofaktor", "Facteur de risqué", "Fattore di rischio"), //
 

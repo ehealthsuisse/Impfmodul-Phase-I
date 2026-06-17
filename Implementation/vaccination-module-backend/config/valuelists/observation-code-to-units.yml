@@ -1,0 +1,64 @@
+observation-code-to-units:
+  observationCodeSystem: http://loinc.org
+  unitSystem: http://unitsofmeasure.org
+  mappings:
+    - code: 22602-7
+      name: Varicella zoster virus IgG Ab [Titer] in Serum
+      unit:
+        code: '[iU]/mL'
+        name: '[iU]/mL'
+    - code: 22502-9
+      name: Measles virus IgG Ab [Titer] in Serum
+      unit:
+        code: '[iU]/mL'
+        name: '[iU]/mL'
+    - code: 41763-4
+      name: Rubella virus IgG Ab [Titer] in Serum
+      unit:
+        code: '[iU]/mL'
+        name: '[iU]/mL'
+    - code: 22313-1
+      name: Hepatitis A virus IgG Ab [Units/volume] in Serum
+      unit:
+        code: '[iU]/L'
+        name: '[iU]/L'
+    - code: 16935-9
+      name: Hepatitis B virus surface Ab [Units/volume] in Serum
+      unit:
+        code: '[iU]/L'
+        name: '[iU]/L'
+    - code: 26061-2
+      name: European tick borne encephalitis virus Ab [Titer] in Serum
+      unit:
+        code: '[iU]/mL'
+        name: '[iU]/mL'
+    - code: 6589-6
+      name: Yellow fever virus Ab [Titer] in Serum by Immunofluorescence
+      unit:
+        code: '[iU]/mL'
+        name: '[iU]/mL'
+    - code: 58770-9
+      name: Clostridium tetani toxoid IgG Ab [Units/volume] in Serum by Immunofluorescence
+      unit:
+        code: '[iU]/L'
+        name: '[iU]/L'
+    - code: 94505-5
+      name: SARS-CoV-2 (COVID-19) IgG Ab [Units/volume] in Serum or Plasma by Immunoassay
+      unit:
+        code: '[iU]/L'
+        name: '[iU]/L'
+    - code: 14128-3
+      name: Rabies virus Ab [Titer] in Serum
+      unit:
+        code: '[iU]/mL'
+        name: '[iU]/mL'
+    - code: 22755-3
+      name: Haemophilus influenzae B Ab [Mass/volume] in Serum
+      unit:
+        code: ug/mL
+        name: ug/mL
+    - code: 25531-5
+      name: Streptococcus pneumoniae Ab [Mass/volume] in Serum
+      unit:
+        code: ug/mL
+        name: ug/mL

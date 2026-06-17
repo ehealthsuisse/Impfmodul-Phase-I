@@ -26,24 +26,23 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
 import ch.fhir.epr.adapter.data.dto.CommentDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationRecordDTO;
 import ch.fhir.epr.adapter.data.dto.ValueDTO;
 import ch.fhir.epr.adapter.exception.TechnicalException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +69,6 @@ import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Immunization;
@@ -83,9 +81,12 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PositiveIntType;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
+import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedPerson;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,9 +96,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class FhirConverter implements FhirConverterIfc {
+  private static final DateTimeFormatter FHIR_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   @Autowired
   private FhirConfig fhirConfig;
+  @Autowired
+  private FhirResourceStrategyRegistry resourceStrategyRegistry;
 
   @Override
   public LocalDateTime convertToLocalDateTime(Date dateToConvert) {
@@ -120,17 +124,11 @@ public class FhirConverter implements FhirConverterIfc {
     createComposition(bundle, dto, patientIdentifier, forceImmunizationAdministrationDocument, authorId, resourceId);
     createPatient(bundle, patientIdentifier, resourceId, FhirConstants.META_CORE_PATIENT_EPR_URL);
 
-    if (dto instanceof VaccinationRecordDTO tO) {
-      return createVaccinationRecord(bundle, tO, patientIdentifier);
+    if (dto instanceof VaccinationRecordDTO vaccinationRecord) {
+      return createVaccinationRecord(bundle, vaccinationRecord, patientIdentifier);
     }
 
-    return switch (dto) {
-      case VaccinationDTO vaccination -> createVaccination(bundle, vaccination, patientIdentifier);
-      case AllergyDTO allergy -> createAllergy(bundle, allergy, patientIdentifier);
-      case PastIllnessDTO pastIllness -> createPastIllness(bundle, pastIllness, patientIdentifier);
-      case MedicalProblemDTO medicalProblem -> createMedicalProblem(bundle, medicalProblem, patientIdentifier);
-      default -> throw new TechnicalException("toBundle not supported for class " + dto.getClass().getSimpleName());
-    };
+    return createResource(bundle, dto, patientIdentifier);
   }
 
   @Override
@@ -236,6 +234,55 @@ public class FhirConverter implements FhirConverterIfc {
   }
 
   @Override
+  public BasicImmunizationDTO toBasicImmunizationDTO(Condition condition) {
+    String id = condition.getIdentifierFirstRep().getValue().replace(FhirConstants.DEFAULT_ID_PREFIX, "");
+    ValueDTO code = FhirUtils.toValueDTO(condition.getCode());
+    ValueDTO category = condition.getCategory().isEmpty() ? null
+        : FhirUtils.toValueDTO(condition.getCategoryFirstRep());
+    ValueDTO clinicalStatus = FhirUtils.toValueDTO(condition.getClinicalStatus());
+    ValueDTO verificationStatus = FhirUtils.toValueDTO(condition.getVerificationStatus());
+    LocalDate onsetDate = condition.hasOnsetDateTimeType()
+        ? FhirUtils.convertToLocalDate(condition.getOnsetDateTimeType().getValue())
+        : null;
+    LocalDate recordedDate = FhirUtils.convertToLocalDate(condition.getRecordedDate());
+
+    BasicImmunizationDTO dto = new BasicImmunizationDTO(id, code, category, clinicalStatus, verificationStatus,
+        onsetDate, recordedDate, null);
+    dto.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(verificationStatus.getCode()));
+    dto.setRelatedId(getCrossReference(condition));
+    return dto;
+  }
+
+  @Override
+  public LaboratorySerologyDTO toLaboratorySerologyDTO(Observation observation, Practitioner practitioner,
+      String organization) {
+    HumanNameDTO performer = FhirUtils.toHumanNameDTO(practitioner);
+    String id = observation.getIdentifierFirstRep().getValue().replace(FhirConstants.DEFAULT_ID_PREFIX, "");
+    ValueDTO code = FhirUtils.toValueDTO(observation.getCode());
+    ValueDTO status = new ValueDTO(observation.getStatus().toCode(), observation.getStatus().getDisplay(),
+        observation.getStatus().getSystem());
+    ValueDTO value = null;
+    if (observation.getValue() instanceof CodeableConcept concept) {
+      value = FhirUtils.toValueDTO(concept);
+    } else if (observation.getValue() instanceof org.hl7.fhir.r4.model.Quantity quantity) {
+      String displayValue = quantity.getValue() != null ? quantity.getValue().toString() : null;
+      value = new ValueDTO(displayValue, quantity.getUnit(), quantity.getSystem());
+    }
+    ValueDTO interpretation = observation.getInterpretation().isEmpty() ? null
+        : FhirUtils.toValueDTO(observation.getInterpretationFirstRep());
+
+    Date dateOld = observation.getEffectiveDateTimeType().getValue();
+    LocalDate recordedDate = FhirUtils.convertToLocalDate(dateOld);
+
+    LaboratorySerologyDTO dto = new LaboratorySerologyDTO(id, recordedDate, code, status,
+        getCommonVerificationStatus(observation), value, interpretation, performer, null, organization);
+
+    dto.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(status.getCode()));
+    dto.setRelatedId(getCrossReference(observation));
+    return dto;
+  }
+
+  @Override
   public PastIllnessDTO toPastIllnessDTO(Condition condition, Practitioner practitioner, String organization) {
     HumanNameDTO recorder = FhirUtils.toHumanNameDTO(practitioner);
     String id = condition.getIdentifierFirstRep().getValue().replace(FhirConstants.DEFAULT_ID_PREFIX, "");
@@ -295,7 +342,7 @@ public class FhirConverter implements FhirConverterIfc {
         lotNumber,
         reason,
         status,
-        getImmunizationsVerificationStatus(immunization));
+        getCommonVerificationStatus(immunization));
 
     vaccinationDTO.setDeleted(FhirConstants.ENTERED_IN_ERROR.equalsIgnoreCase(status.getCode()));
     vaccinationDTO.setRelatedId(getCrossReference(immunization));
@@ -342,6 +389,8 @@ public class FhirConverter implements FhirConverterIfc {
       annotation = condition.addNote();
     } else if (resource instanceof AllergyIntolerance allergyIntolerance) {
       annotation = allergyIntolerance.addNote();
+    } else if (resource instanceof Observation observation) {
+      annotation = observation.addNote();
     }
     return annotation;
   }
@@ -387,7 +436,7 @@ public class FhirConverter implements FhirConverterIfc {
     }
   }
 
-  private Bundle createAllergy(Bundle bundle, AllergyDTO dto, PatientIdentifier patientIdentifier) {
+  Bundle createAllergy(Bundle bundle, AllergyDTO dto, PatientIdentifier patientIdentifier) {
     String patientId = String.valueOf(UUID.randomUUID());
     PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
         FhirConstants.META_PRACTITIONER_ROLE_URL);
@@ -538,7 +587,33 @@ public class FhirConverter implements FhirConverterIfc {
     return identifier;
   }
 
-  private Bundle createMedicalProblem(Bundle bundle, MedicalProblemDTO dto, PatientIdentifier patientIdentifier) {
+  Bundle createBasicImmunization(Bundle bundle, BasicImmunizationDTO dto, PatientIdentifier patientIdentifier) {
+    String patientId = String.valueOf(UUID.randomUUID());
+    createPatient(bundle, patientIdentifier, patientId, FhirConstants.META_CORE_PATIENT_URL);
+
+    Condition condition = new Condition();
+    condition.setId(String.valueOf(UUID.randomUUID()));
+    condition.setSubject(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
+    condition.addIdentifier(createIdentifier());
+
+    if (dto.getCategory() != null) {
+      condition.setCategory(List.of(Objects.requireNonNull(FhirUtils.toCodeableConcept(dto.getCategory()))));
+    }
+    condition.setCode(FhirUtils.toCodeableConcept(dto.getCode()));
+    condition.setClinicalStatus(FhirUtils.toCodeableConcept(dto.getClinicalStatus()));
+    condition.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
+    condition.setOnset(toDateTimeType(dto.getOnsetDate()));
+    condition.setRecordedDate(FhirUtils.convertToDate(dto.getRecordedDate()));
+
+    condition.setMeta(createMeta(FhirConstants.META_VACD_BASIC_IMMUNIZATION_URL));
+
+    addEntry(bundle, condition);
+    createSectionIfNecessary(FhirUtils.getResource(Composition.class, bundle), SectionType.IMMUNIZATION,
+        condition);
+    return bundle;
+  }
+
+  Bundle createMedicalProblem(Bundle bundle, MedicalProblemDTO dto, PatientIdentifier patientIdentifier) {
     String patientId = String.valueOf(UUID.randomUUID());
     PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
         FhirConstants.META_PRACTITIONER_ROLE_URL);
@@ -561,10 +636,9 @@ public class FhirConverter implements FhirConverterIfc {
     condition.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
 
     condition.setRecordedDate(FhirUtils.convertToDate(dto.getRecordedDate()));
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    condition.setOnset(new DateTimeType(formatter.format(dto.getBegin())));
+    condition.setOnset(toDateTimeType(dto.getBegin()));
     if (dto.getEnd() != null) {
-      condition.setAbatement(new DateTimeType(formatter.format(dto.getEnd())));
+      condition.setAbatement(toDateTimeType(dto.getEnd()));
     }
 
     condition.setMeta(createMeta(FhirConstants.META_VACD_MEDICAL_PROBLEMS_URL));
@@ -575,11 +649,62 @@ public class FhirConverter implements FhirConverterIfc {
     return bundle;
   }
 
+  Bundle createLaboratorySerology(Bundle bundle, LaboratorySerologyDTO dto,
+      PatientIdentifier patientIdentifier) {
+    String patientId = String.valueOf(UUID.randomUUID());
+    PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
+        FhirConstants.META_PRACTITIONER_ROLE_URL);
+    createPatient(bundle, patientIdentifier, patientId, FhirConstants.META_CORE_PATIENT_URL);
+    createOrganization(bundle, dto.getOrganization(), practitionerRole);
+
+    Observation observation = new Observation();
+    observation.setId(String.valueOf(UUID.randomUUID()));
+    observation.addIdentifier(createIdentifier());
+    observation.setSubject(new Reference(FhirConstants.DEFAULT_ID_PREFIX + patientId));
+    if (practitionerRole != null) {
+      observation.addPerformer(new Reference(FhirConstants.DEFAULT_ID_PREFIX +
+          practitionerRole.getIdElement().getValue()));
+    }
+
+    observation.setCode(FhirUtils.toCodeableConcept(dto.getCode()));
+    ObservationStatus status = dto.getStatus() != null
+        ? ObservationStatus.fromCode(dto.getStatus().getCode())
+        : ObservationStatus.FINAL;
+    observation.setStatus(status);
+
+    if (dto.getRecordedDate() != null) {
+      observation.setEffective(new DateTimeType(Date.from(
+          Instant.from(dto.getRecordedDate().atStartOfDay(ZoneId.systemDefault())))));
+    }
+
+    if (dto.getValue() != null) {
+      observation.setValue(toObservationValue(dto.getValue()));
+    }
+
+    if (dto.getInterpretation() != null) {
+      observation.setInterpretation(List.of(FhirUtils.toCodeableConcept(dto.getInterpretation())));
+    }
+
+    observation.setExtension(new ArrayList<>(
+        List.of(createImmunizationsVerificationStatus(dto.getVerificationStatus()))));
+    observation.setMeta(createMeta(FhirConstants.META_VACD_LABORATORY_SEROLOGY_URL));
+
+    addEntry(bundle, observation);
+    createSectionIfNecessary(FhirUtils.getResource(Composition.class, bundle), SectionType.LABORATORY_SEROLOGY,
+        observation);
+
+    return bundle;
+  }
+
   private Meta createMeta(String url) {
     Meta meta = new Meta();
     meta.setLastUpdated(new Date());
     meta.setProfile(List.of(new CanonicalType(url)));
     return meta;
+  }
+
+  private DateTimeType toDateTimeType(LocalDate date) {
+    return new DateTimeType(FHIR_DATE_FORMATTER.format(date));
   }
 
   private void createOrganization(Bundle bundle, String organizationName, PractitionerRole practitionerRole) {
@@ -594,7 +719,7 @@ public class FhirConverter implements FhirConverterIfc {
     addEntry(bundle, organization);
   }
 
-  private Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto, PatientIdentifier patientIdentifier) {
+  Bundle createPastIllness(Bundle bundle, PastIllnessDTO dto, PatientIdentifier patientIdentifier) {
     String patientId = String.valueOf(UUID.randomUUID());
     PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
         FhirConstants.META_PRACTITIONER_ROLE_URL);
@@ -612,10 +737,9 @@ public class FhirConverter implements FhirConverterIfc {
     condition.setVerificationStatus(FhirUtils.toCodeableConcept(dto.getVerificationStatus()));
 
     condition.setRecordedDate(FhirUtils.convertToDate(dto.getRecordedDate()));
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    condition.setOnset(new DateTimeType(formatter.format(dto.getBegin())));
+    condition.setOnset(toDateTimeType(dto.getBegin()));
     if (dto.getEnd() != null) {
-      condition.setAbatement(new DateTimeType(formatter.format(dto.getEnd())));
+      condition.setAbatement(toDateTimeType(dto.getEnd()));
     }
 
     addEntry(bundle, condition);
@@ -736,7 +860,7 @@ public class FhirConverter implements FhirConverterIfc {
     }
   }
 
-  private Bundle createVaccination(Bundle bundle, VaccinationDTO dto, PatientIdentifier patientIdentifier) {
+  Bundle createVaccination(Bundle bundle, VaccinationDTO dto, PatientIdentifier patientIdentifier) {
     String patientId = String.valueOf(UUID.randomUUID());
     PractitionerRole practitionerRole = createPractitionerRole(bundle, dto.getRecorder(), dto.getAuthor(),
         FhirConstants.META_PRACTITIONER_ROLE_URL);
@@ -782,28 +906,16 @@ public class FhirConverter implements FhirConverterIfc {
 
   private Bundle createVaccinationRecord(Bundle bundle, VaccinationRecordDTO vaccinationRecord,
       PatientIdentifier patientIdentifier) {
-    for (VaccinationDTO vaccination : vaccinationRecord.getVaccinations()) {
-      if (!vaccination.isHasErrors()) {
-        createVaccination(bundle, vaccination, patientIdentifier);
-      }
+    List<RuntimeException> collectedExceptions = new ArrayList<>();
+
+    for (FhirResourceStrategy<? extends BaseDTO, ? extends DomainResource> strategy :
+        resourceStrategyRegistry.getStrategies()) {
+      processRecordEntries(strategy, vaccinationRecord, bundle, patientIdentifier, collectedExceptions);
     }
 
-    for (PastIllnessDTO pastIllness : vaccinationRecord.getPastIllnesses()) {
-      if (!pastIllness.isHasErrors()) {
-        createPastIllness(bundle, pastIllness, patientIdentifier);
-      }
-    }
-
-    for (AllergyDTO allergy : vaccinationRecord.getAllergies()) {
-      if (!allergy.isHasErrors()) {
-        createAllergy(bundle, allergy, patientIdentifier);
-      }
-    }
-
-    for (MedicalProblemDTO medicalProblem : vaccinationRecord.getMedicalProblems()) {
-      if (!medicalProblem.isHasErrors()) {
-        createMedicalProblem(bundle, medicalProblem, patientIdentifier);
-      }
+    if (!collectedExceptions.isEmpty()) {
+      throw FhirUtils.aggregateExceptions(collectedExceptions,
+          "Error(s) occurred during vaccination record loading:");
     }
 
     return bundle;
@@ -815,6 +927,29 @@ public class FhirConverter implements FhirConverterIfc {
     verificationStatus.setValue(
         status != null ? createCoding(status.getCode(), status.getName(), status.getSystem()) :  null);
     return verificationStatus;
+  }
+
+  /**
+   * Converts a {@link ValueDTO} to the appropriate Observation.value[x] type.
+   * If the DTO uses the UCUM system, emits a {@link Quantity} (value + unit).
+   * Otherwise falls back to a {@link CodeableConcept}.
+   */
+  private org.hl7.fhir.r4.model.Type toObservationValue(ValueDTO valueDto) {
+    if (valueDto != null && "http://unitsofmeasure.org".equals(valueDto.getSystem())) {
+      Quantity quantity = new Quantity();
+      if (valueDto.getCode() != null) {
+        try {
+          quantity.setValue(new BigDecimal(valueDto.getCode()));
+        } catch (NumberFormatException ex) {
+          log.warn("Cannot parse observation value '{}' as number", valueDto.getCode());
+        }
+      }
+      quantity.setUnit(valueDto.getName());
+      quantity.setSystem(valueDto.getSystem());
+      quantity.setCode(valueDto.getName());
+      return quantity;
+    }
+    return FhirUtils.toCodeableConcept(valueDto);
   }
 
   private String fillAuthor(Bundle bundle, BaseDTO dto) {
@@ -877,7 +1012,10 @@ public class FhirConverter implements FhirConverterIfc {
     return null;
   }
 
-  private ValueDTO getImmunizationsVerificationStatus(DomainResource domainResource) {
+  /**
+   * Creates a common verification status for {@link Immunization} and {@link Observation} resources.
+   */
+  private ValueDTO getCommonVerificationStatus(DomainResource domainResource) {
     Extension verificationStatusExtension = domainResource.getExtensionByUrl(
         "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-ext-verification-status");
     if (Objects.nonNull(verificationStatusExtension)) {
@@ -887,10 +1025,19 @@ public class FhirConverter implements FhirConverterIfc {
     return null;
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  private Bundle createResource(Bundle bundle, BaseDTO dto, PatientIdentifier patientIdentifier) {
+    FhirResourceStrategy strategy = resourceStrategyRegistry.getStrategy(dto.getClass());
+    return strategy.create(this, bundle, dto, patientIdentifier);
+  }
+
   private String getPractitionerReference(Bundle bundle, DomainResource updatedResource) {
     String practitionerRoleReference = FhirUtils.getReference(updatedResource, ReferenceType.PRACTITIONER_ROLE);
+    if (practitionerRoleReference == null) {
+      return null;
+    }
     PractitionerRole practitionerRole = FhirUtils.getResource(PractitionerRole.class, bundle, practitionerRoleReference);
-    return practitionerRole.getPractitioner().getReference();
+    return practitionerRole != null ? practitionerRole.getPractitioner().getReference() : null;
   }
 
   private void markResourceDeleted(DomainResource resource) {
@@ -908,6 +1055,22 @@ public class FhirConverter implements FhirConverterIfc {
       condition.setAbatement(null);
       condition.setClinicalStatus(null);
       condition.setVerificationStatus(enteredInError);
+    } else if (resource instanceof Observation observation) {
+      observation.setStatus(ObservationStatus.ENTEREDINERROR);
+    }
+  }
+
+  private <T extends BaseDTO> void processRecordEntries(FhirResourceStrategy<T, ?> strategy,
+      VaccinationRecordDTO vaccinationRecord, Bundle bundle, PatientIdentifier patientIdentifier,
+      List<RuntimeException> collectedExceptions) {
+    List<T> entries = strategy.getRecordEntries(vaccinationRecord);
+    if (entries == null) {
+      return;
+    }
+
+    for (T entry : entries) {
+      FhirUtils.handleRecordCreation(entry, strategy.getResourceName(),
+          () -> strategy.create(this, bundle, entry, patientIdentifier), collectedExceptions, bundle);
     }
   }
 

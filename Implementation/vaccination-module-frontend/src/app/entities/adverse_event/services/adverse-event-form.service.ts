@@ -26,16 +26,11 @@ import { SessionInfoService } from '../../../core/security/session-info.service'
 import { notFutureDateValidator } from '../../../core/validators/date-order-validator';
 import { IAdverseEvent } from '../../../model';
 import { IComment, IHumanDTO } from '../../../shared';
-import { TNewEntity } from '../../../shared/typs/NewEntityType';
-import { extractSessionDetailsByRole, setDefaultValues } from '../../../shared/function';
+import { PartialWithRequiredKeyOf, TNewEntity } from '../../../shared/typs/NewEntityType';
+import { extractSessionDetailsByRole, normalizeOrganization, normalizeRecorder, setDefaultValues } from '../../../shared/function';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-/**
- * A partial Type with required key is used as form input.
- */
-type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
-
 /**
  * Type for createFormGroup and resetForm argument.
  * It accepts IAllergy for edit and NewAllergyFormGroupInput for create.
@@ -96,15 +91,14 @@ export class AdverseEventFormService {
       organization: new FormControl(extractSessionDetails.organization),
       comment: new FormControl(),
       commentMessage: new FormControl(),
-      confidentiality: new FormControl(),
+      confidentiality: new FormControl(null, Validators.required),
     } as any);
   }
 
   getAllergy(form: AdverseEventFormGroup): IAdverseEvent {
     const formValue = form.value as IAdverseEvent;
-    if (!formValue.recorder?.firstName && !formValue.recorder?.lastName) {
-      formValue.recorder = undefined;
-    }
+    formValue.recorder = normalizeRecorder(formValue.recorder);
+    formValue.organization = normalizeOrganization(formValue.organization);
     // adding hours here to avoid displaying the wrong day due to timedifference to UTC time
     return { ...formValue, occurrenceDate: dayjs.utc(formValue.occurrenceDate).tz('Europe/Berlin').startOf('date').add(10, 'hours') };
   }

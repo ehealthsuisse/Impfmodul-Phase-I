@@ -4,14 +4,14 @@
 
 The presentation layer of the vaccination module uses the following 3rd party libraries:
 
-- Angular 20.1.4, MIT
+- Angular 21.1.0, MIT
 - ngx-translate 17.0.0, MIT
 - dayjs 1.11.3, MIT
 - lodash 4.17.21, MIT
 - ng-multiselect-dropdown 1.0.0, MIT
-- ngx-mat-select-search 8.0.2, MIT
+- ngx-mat-select-search 8.0.4, MIT
 - ngx-ordered-initializer 6.0.0, MIT
-- ngx-webstorage 20.0.0, MIT
+- ngx-webstorage 21.0.1, MIT
 - rxjs 7.5.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 - sonar-scanner 3.1.0, MIT
 - tslib 2.3.0, [BSD Zero Clause License](https://opensource.org/licenses/0BSD)
@@ -21,12 +21,12 @@ The presentation layer of the vaccination module uses the following 3rd party li
 The business and communication layer of the vaccination module uses the following 3rd party libraries: 
 
 - Lombok 1.18.20.0, MIT
-- Spring Boot Starter Parent 3.5.6, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
-- Spring Core 6.2.11, [Apache 2.0](https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt)
-- Project Husky 3.1.0, [Eclipse Public License 1.0](https://www.eclipse.org/org/documents/epl-v10.php)
-- HAPI Fire 8.0.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
+- Spring Boot Starter Parent 3.5.14, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
+- Spring Core 6.2.18, [Apache 2.0](https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt)
+- Project Husky 3.2.0, [Eclipse Public License 1.0](https://www.eclipse.org/org/documents/epl-v10.php)
+- HAPI Fire 8.10.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 - Springdoc-openapi-ui 1.8.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
-- OpenSAML 5.1.3, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
+- OpenSAML 5.1.6, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 - Hazelcast 5.5.0, [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)
 - PDFBox 2.0.30 [Apache 2.0](https://github.com/apache/pdfbox/blob/trunk/LICENSE.txt)
 - Boxable 1.7.0 [Apache 2.0](https://github.com/dhorions/boxable/blob/master/COPYING)

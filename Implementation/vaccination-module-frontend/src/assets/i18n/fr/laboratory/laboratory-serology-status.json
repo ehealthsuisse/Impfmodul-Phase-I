@@ -1,0 +1,12 @@
+{
+  "LABORATORY_SEROLOGY_STATUS": {
+    "registered": "Registered",
+    "preliminary": "Preliminary",
+    "final": "Final",
+    "amended": "Amended",
+    "corrected": "Corrected",
+    "cancelled": "Cancelled",
+    "entered-in-error": "Entered in Error",
+    "unknown": "Unknown"
+  }
+}

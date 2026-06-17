@@ -1,0 +1,21 @@
+<div [ngClass]="isMobile ? 'mobile-list-wrapper' : 'list-wrapper'">
+  <vm-list-header
+    class="mat-card mat-elevation-z0"
+    [toggle]="toggleHeader()"
+    (filter)="filter($event)"
+    [helpTitle]="'HELP.BASIC_IMMUNIZATION.LIST.TITLE' | translate"
+    [helpBody]="'HELP.BASIC_IMMUNIZATION.LIST.BODY' | translate"
+    (add)="addNewRecord()"
+    [title]="'BASIC_IMMUNIZATION.TITLE'"
+  >
+  </vm-list-header>
+  <vm-table-wrapper
+    [dataSource]="basicImmunizations"
+    [displayedColumns]="displayedColumns()"
+    [enableGrouping]="true"
+    [translationPrefix]="'BASIC_IMMUNIZATION.'"
+    [fullWidth]="tableWidth()"
+    (rowClick)="navigateToDetails($event)"
+  >
+  </vm-table-wrapper>
+</div>

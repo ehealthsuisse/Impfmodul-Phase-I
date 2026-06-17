@@ -19,7 +19,7 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { TranslateDirective } from '../../../language';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButton } from '@angular/material/button';
@@ -37,7 +37,6 @@ import { MatCardContent } from '@angular/material/card';
     MatDialogContent,
     MatCardContent,
     MatDialogActions,
-    NgIf,
     TranslateModule,
     MatDialogClose,
     TranslateDirective,

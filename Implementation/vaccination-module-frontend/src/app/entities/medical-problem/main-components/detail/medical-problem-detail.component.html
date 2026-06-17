@@ -1,4 +1,5 @@
-<section *ngIf="problem!" [ngClass]="isMobile ? 'mobile-detail-wrapper' : 'detail-wrapper'">
+@if (problem!) {
+<section [ngClass]="isMobile ? 'mobile-detail-wrapper' : 'detail-wrapper'">
   <mat-card class="detail-wrapper__card" [ngClass]="isMobile ? 'mat-elevation-z0' : 'mat-elevation-z10'">
     <mat-card-header class="detail-wrapper__card-title mat-card-title">
       <mat-card-title
@@ -9,7 +10,10 @@
     <mat-card-content class="detail-wrapper__card-content mat-card-content">
       <vm-problem-detailed-information [problem]="problem"></vm-problem-detailed-information>
     </mat-card-content>
-    <vm-details-action *ngIf="!isMobile" class="details__action"></vm-details-action>
+    @if (!isMobile) {
+    <vm-details-action class="details__action"></vm-details-action>
+    }
   </mat-card>
   <vm-comment class="detail-wrapper__comment" [comment]="problem.comment!" [canAddComments]="false"></vm-comment>
 </section>
+}

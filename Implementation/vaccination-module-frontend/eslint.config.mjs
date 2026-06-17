@@ -18,7 +18,7 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
-  globalIgnores(['projects/**/*', 'node_modules/', 'dist/', 'node/', 'postcss.config.js', 'webpack/']),
+  globalIgnores(['projects/**/*', 'node_modules/', 'dist/', 'node/', 'postcss.config.js', 'webpack/', 'kics-reports/']),
   {
     plugins: {
       '@angular-eslint': angularEslintEslintPlugin,

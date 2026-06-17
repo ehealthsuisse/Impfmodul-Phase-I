@@ -1,0 +1,84 @@
+<mat-card-header>
+  @if (showTitle()) {
+  <mat-card-title class="mat-card-title" vmTranslate="GLOBAL.SAVE_NEW_RECORD_CONFIRM_TITLE"></mat-card-title>
+  }
+</mat-card-header>
+<mat-card-content class="detailed-card-content" fxLayout="column" fxLayoutAlign="space-between">
+  <vm-reusable-date-field
+    [formControl]="laboratorySerologyForm().controls.recordedDate"
+    [labelTranslationKey]="'LABORATORY_SEROLOGY.RECORDED_DATE'"
+    [isEditable]="false"
+    [notEditableValue]="laboratorySerology()?.recordedDate | formatDate"
+  ></vm-reusable-date-field>
+
+  <vm-reusable-select-field
+    [formControl]="laboratorySerologyForm().controls.code!"
+    [isEditable]="false"
+    [translationKey]="'LABORATORY_SEROLOGY.LABORATORY_SEROLOGY_CODE'"
+    [labelTranslationKey]="'LABORATORY_SEROLOGY.LABORATORY_SEROLOGY_CODE'"
+    [mainValueKey]="'LABORATORY_SEROLOGY_CODE.' + laboratorySerology()?.code?.code! | translate"
+  ></vm-reusable-select-field>
+
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label>{{ 'LABORATORY_SEROLOGY.VALUE' | translate }}</mat-label>
+    <input matInput type="text" [attr.aria-label]="formattedValue" [value]="formattedValue" disabled />
+  </mat-form-field>
+
+  <vm-reusable-recorder-field
+    [parentForm]="laboratorySerologyForm()"
+    [recorder]="laboratorySerology()?.recorder!"
+    [organization]="laboratorySerology()?.organization!"
+    [isEditable]="false"
+  ></vm-reusable-recorder-field>
+
+  <vm-reusable-select-field
+    [formControl]="laboratorySerologyForm().controls.confidentiality!"
+    [isEditable]="false"
+    [translationKey]="'GLOBAL.CONFIDENTIALITY'"
+    [labelTranslationKey]="'GLOBAL.CONFIDENTIALITY'"
+    [mainValueKey]="'CONFIDENTIALITY.' + laboratorySerology()?.confidentiality?.code! | translate"
+  ></vm-reusable-select-field>
+
+  @if (laboratorySerology()?.comment?.text) {
+  <mat-form-field class="detailed-card-content__form-field">
+    <mat-label vmTranslate="COMMENT.COMMENT" [attr.aria-label]="'COMMENT.COMMENT' | translate"></mat-label>
+    <textarea
+      matInput
+      [attr.aria-label]="laboratorySerology()?.comment?.text"
+      value="{{ laboratorySerology()?.comment?.text }}"
+      disabled
+    ></textarea>
+  </mat-form-field>
+  } @if (!isConfirmComponentParent) {
+  <div class="commentsContent">
+    <div fxLayout="row" fxLayoutAlign="space-between center" role="group">
+      <h3 vmTranslate="GLOBAL.COMMENT"></h3>
+      @if (!commentsOpened) {
+      <mat-icon tabindex="0" class="openComments" (click)="toggleComments()" (keydown.enter)="toggleComments()" role="presentation"
+        >add</mat-icon
+      >
+      } @if (commentsOpened) {
+      <mat-icon tabindex="0" class="closeComments" (click)="toggleComments()" (keydown.enter)="toggleComments()" role="presentation"
+        >clear</mat-icon
+      >
+      }
+    </div>
+    @if (laboratorySerology()?.comment; as comment) {
+    <mat-card
+      role="article"
+      class="commentsContent_card comment-card mat-elevation-z0"
+      [ngClass]="{ active: commentsOpened }"
+      [attr.aria-label]="'Comment by {{ comment.author }} on {{ comment.date | formatDateTime }}'"
+    >
+      <div class="comment-header">
+        <mat-card-subtitle [attr.aria-label]="comment.author">{{ comment.author }}</mat-card-subtitle>
+        <mat-card-subtitle [attr.aria-label]="comment.date | formatDate">{{ comment.date | formatDate }}</mat-card-subtitle>
+      </div>
+      <div class="comment-text" [attr.aria-label]="comment.text">{{ comment.text }}</div>
+    </mat-card>
+    } @if (!laboratorySerology()?.comment) {
+    <p vmTranslate="COMMENT.NO_COMMENTS" class="commentsContent_card no-comments" [ngClass]="{ active: commentsOpened }"></p>
+    }
+  </div>
+  }
+</mat-card-content>

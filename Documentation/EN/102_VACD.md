@@ -14,6 +14,19 @@
 
 siehe [CH VACD Immunization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-immunization.html)
 
+### Basic immunization
+
+- Assumed date of immunization - [BasicImmunization.onsetDateTime](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.onset)
+- Date of determination - [BasicImmunization.recordedDate](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.recordedDate)
+- Basic immunization - CodeableConcept, [BasicImmunization.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.code)
+- Confidentiality - [Composition.confidentiality](http://hl7.org/fhir/R4/composition-definitions.html#Composition.confidentiality) with CH EPR confidentiality code extension
+- Comments - [BasicImmunization.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.note) with time, text und author.name
+- *Category* - [BasicImmunization.category](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.category) (not displayed. Fixed value set to **encounter-diagnosis**)
+- *Clinical status* - [BasicImmunization.clinicalStatus](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.clinicalStatus) (not displayed. Fixed value set to **active**)
+- *Verification status* - [BasicImmunization.verificationStatus](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization-definitions.html#Condition.verificationStatus) (not displayed. Automatically set according to the validation status)
+
+see [CH VACD Basic Immunization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-basic-immunization.html)
+
 ### Adverse effects
 
 - Date - [AllergyIntolerance.recordedDate](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-allergyintolerances-definitions.html#AllergyIntolerance.recordedDate)
@@ -36,6 +49,21 @@ see [CH VACD AllergyIntolerance](http://fhir.ch/ig/ch-vacd/StructureDefinition-c
 - Comments - [PastIllness.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html#Condition.note) with time, text und author.name
 
 see [CH VACD Past Illness](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-pastillnesses-definitions.html)
+
+### Laboratory and serology
+
+- Date of determination - [LaboratorySerology.effectiveDateTime](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.effective[x]:effectiveDateTime)
+- Laboratory/Serology - CodeableConcept, [LaboratorySerology.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.code)
+- Value - [LaboratorySerology.valueQuantity](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.value[x]:valueQuantity)
+- Unit - [LaboratorySerology.valueQuantity.unit](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.value[x]:valueQuantity) and [LaboratorySerology.valueQuantity.code](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.value[x]:valueQuantity), automatically derived from the selected laboratory/serology code.
+- Recorded by - [LaboratorySerology.performer -> PractitionerRole.practitioner](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.performer), resolved per reference.
+- Organization - [LaboratorySerology.performer -> PractitionerRole.organization](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.performer), resolved per reference.
+- Confidentiality - [Composition.confidentiality](http://hl7.org/fhir/R4/composition-definitions.html#Composition.confidentiality) with CH EPR confidentiality code extension
+- Comments - [LaboratorySerology.note](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.note) with time, text und author.name
+- *Status* - [LaboratorySerology.status](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.status) (not displayed. Automatically set to **final** for create/update and to **entered-in-error** for delete)
+- *Verification status* - [LaboratorySerology.extension:verificationStatus](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology-definitions.html#Observation.extension:verificationStatus) (not displayed. Automatically set according to the validation status)
+
+see [CH VACD Laboratory and Serology](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-laboratory-serology.html)
 
 ### Medical Problems
 - Date of diagnosis - [MedicalProblems.recordedDate](http://fhir.ch/ig/ch-vacd/StructureDefinition-ch-vacd-medical-problems-definitions.html#Condition.recordedDate)

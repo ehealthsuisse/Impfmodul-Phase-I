@@ -8,7 +8,7 @@ epdbackend:
     facilityOid: 
 
   communities:
-    # EPD Backend configuration 
+    # EPD Backend configuration
     - identifier: EPDBackend
       globalAssigningAuthorityOid: "1.2.3.4.5.6.7.8.9"
       spidEprOid: "1.2.3.4.5.6.7.8.9"

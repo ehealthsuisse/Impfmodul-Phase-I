@@ -6,7 +6,8 @@
   </button>
 
   <!-- Desktop view: More button with dropdown menu -->
-  <div *ngIf="isDesktop">
+  @if (isDesktop) {
+  <div>
     <button
       mat-raised-button
       color="accent"
@@ -26,9 +27,11 @@
       </button>
     </mat-menu>
   </div>
+  }
 
   <!-- Mobile and Tablet views: Individual raised buttons -->
-  <div *ngIf="isMobile || isTablet">
+  @if (isMobile || isTablet) {
+  <div>
     <button
       mat-raised-button
       color="accent"
@@ -42,6 +45,7 @@
       <span [vmTranslate]="'buttons.DOWNLOAD'"></span>
     </button>
   </div>
+  }
 
   <button
     type="button"
@@ -52,9 +56,10 @@
     (click)="dialog.openDialog('HELP.VACCINATION_RECORD.HELP.TITLE', 'HELP.VACCINATION_RECORD.HELP.BODY')"
     [matTooltip]="'buttons.HELP' | translate"
   >
-    <ng-template [ngIf]="isMobile || isTablet"><span class="button-text" [vmTranslate]="'buttons.HELP'"></span> </ng-template>
-    <ng-template [ngIf]="isDesktop">
-      <mat-icon class="mat-icon help-icon">help</mat-icon>
-    </ng-template>
+    @if (isMobile || isTablet) {
+    <span class="button-text" [vmTranslate]="'buttons.HELP'"></span>
+    } @if (isDesktop) {
+    <mat-icon class="mat-icon help-icon">help</mat-icon>
+    }
   </button>
 </mat-card-actions>

@@ -18,6 +18,7 @@
  */
 package ch.admin.bag.vaccination.controller;
 
+import ch.admin.bag.vaccination.data.dto.ObservationCodeToUnitDTO;
 import ch.admin.bag.vaccination.data.dto.VaccineToTargetDiseasesDTO;
 import ch.admin.bag.vaccination.data.dto.ValueListDTO;
 import ch.admin.bag.vaccination.service.ValueListService;
@@ -71,6 +72,12 @@ public class UtilityController {
   public List<VaccineToTargetDiseasesDTO> getVaccinesToTargetDiseases() {
     log.debug("getVaccinesToTargetDiseases");
     return valueListService.getVaccinesToTargetDiseases();
+  }
+
+  @GetMapping("/observationCodesToUnits")
+  public List<ObservationCodeToUnitDTO> getObservationCodesToUnits() {
+    log.debug("getObservationCodesToUnits");
+    return valueListService.getObservationCodesToUnits();
   }
 
   @GetMapping("/backendVersion")

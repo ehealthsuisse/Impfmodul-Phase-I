@@ -31,6 +31,12 @@
     "37109004": "EVD-Ebola virus disease",
     "860805006": "Encephalomyelitis caused by Neisseria meningitidis",
     "55735004": "Respiratory syncytial virus infection",
-    "38362002": "Dengue"
+    "38362002": "Dengue",
+    "58606001": "Primary immune deficiency disorder",
+    "33286000": "Secondary immune deficiency disorder",
+    "28944009": "Infection caused by Cytomegalovirus",
+    "56688005": "Clostridial infection",
+    "16318001000119107": "Hypogammaglobulinemia due to multiple myeloma",
+    "165746003": "RhD negative"
   }
 }

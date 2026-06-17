@@ -3,6 +3,7 @@
     "ALLERGIES": "Effetti indesiderati della vaccinazione (EIV)",
     "PAST_ILLNESSES": "Malattie infettive",
     "PROBLEM": "Fattori di rischio",
+    "BASIC_IMMUNIZATION": "Immunizzazione di base",
     "VACCINATIONS": "Vaccinazioni",
     "HOME": "Libretto delle vaccinazioni",
     "DATA": "Data",
@@ -41,6 +42,11 @@
     "DELETE_CONFIRMATION_MESSAGE": "Questo documento deve essere cancellato?<br>Nota: al documento cancellato viene assegnato lo stesso livello di riservatezza del documento da cancellare.",
     "CONVERSION_DIALOG_TITLE": "Convertire il record",
     "NO_IMMUNIZATION_RECORDS_FOUND": "Non ha ancora vaccinazioni registrate in questa applicazione.<br>Desidera importare le vaccinazioni dalla sua CIP a partire dalla data {{ createdAt }}?",
-    "LAST_MODIFIED_BY": "Ultima modifica di: {{author}}"
+    "LAST_MODIFIED_BY": "Ultima modifica di: {{author}}",
+    "EXPORT_PDF": {
+      "TITLE": "I commenti devono essere inclusi nella stampa?",
+      "ALL_VACCINATIONS": "Tutte le vaccinazioni"
+    },
+    "LABORATORY_SEROLOGY": "Laboratorio e sierologia"
   }
 }

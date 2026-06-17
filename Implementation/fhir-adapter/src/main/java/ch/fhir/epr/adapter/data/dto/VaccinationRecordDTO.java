@@ -38,10 +38,13 @@ public class VaccinationRecordDTO extends BaseDTO {
   private List<PastIllnessDTO> pastIllnesses;
   private List<VaccinationDTO> vaccinations;
   private List<MedicalProblemDTO> medicalProblems;
+  private List<BasicImmunizationDTO> basicImmunizations;
+  private List<LaboratorySerologyDTO> laboratorySerologies;
   private List<ValueDTO> i18nTargetDiseases;
 
   public VaccinationRecordDTO(AuthorDTO author, HumanNameDTO patient, List<AllergyDTO> allergies,
-      List<PastIllnessDTO> pastIllnesses, List<VaccinationDTO> vaccinations, List<MedicalProblemDTO> medicalProblems) {
+      List<PastIllnessDTO> pastIllnesses, List<VaccinationDTO> vaccinations, List<MedicalProblemDTO> medicalProblems,
+      List<BasicImmunizationDTO> basicImmunizations, List<LaboratorySerologyDTO> laboratorySerologies) {
     setAuthor(author);
     lang = "en";
     this.patient = patient;
@@ -49,6 +52,8 @@ public class VaccinationRecordDTO extends BaseDTO {
     this.pastIllnesses = pastIllnesses;
     this.vaccinations = vaccinations;
     this.medicalProblems = medicalProblems;
+    this.basicImmunizations = basicImmunizations;
+    this.laboratorySerologies = laboratorySerologies;
     setValidated(false);
     setJson(null);
   }
@@ -68,5 +73,7 @@ public class VaccinationRecordDTO extends BaseDTO {
     pastIllnesses.forEach(dto -> dto.validate(true));
     vaccinations.forEach(dto -> dto.validate(true));
     medicalProblems.forEach(dto -> dto.validate(true));
+    basicImmunizations.forEach(dto -> dto.validate(true));
+    laboratorySerologies.forEach(dto -> dto.validate(true));
   }
 }

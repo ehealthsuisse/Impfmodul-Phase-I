@@ -48,6 +48,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -99,6 +100,20 @@ public class SAMLControllerMockTest {
         "http://localhost:" + port + "/saml/logout", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(samlService).logout(eq("remery"));
+  }
+
+  @Test
+  void ssoLogout_forwardedHeader_passesAttemptedIndexesToService() throws Exception {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(SAMLService.ATTEMPTED_LOGOUT_INDEXES_HEADER, "0,1");
+    HttpEntity<String> request = new HttpEntity<>(SAMLXmlTestUtils.xml("saml/samlLogoutRequest.xml"), headers);
+    mockLogoutResponse();
+
+    ResponseEntity<String> response = restTemplate.postForEntity(
+        "http://localhost:" + port + "/saml/logout", request, String.class);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    verify(samlService).sendLogoutToNextNode(any(), eq("0,1"), any());
   }
 
   private void createArtifactResolveMock() throws Exception {

@@ -17,11 +17,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { PerformerToStringPipe } from './performer-to-string.pipe';
+import { IHumanDTO } from '../interfaces';
 
 describe('PerformerToStringPipe', () => {
-  it('create an instance', () => {
-    let user = { prefix: 'Dr.', firstName: 'Max', lastName: 'Mustermann' };
-    let output = new PerformerToStringPipe().transform(user);
-    expect(output).toEqual('Dr. Max Mustermann');
+  let pipe: PerformerToStringPipe;
+
+  beforeEach(() => {
+    pipe = new PerformerToStringPipe();
+  });
+
+  it('should create an instance', () => {
+    expect(pipe).toBeTruthy();
+  });
+
+  it('should format all fields', () => {
+    const user: IHumanDTO = { prefix: 'Dr.', firstName: 'Max', lastName: 'Mustermann' };
+    expect(pipe.transform(user)).toBe('Dr. Max Mustermann');
+  });
+
+  it('should handle missing prefix', () => {
+    const user: IHumanDTO = { firstName: 'Max', lastName: 'Mustermann' };
+    expect(pipe.transform(user)).toBe('Max Mustermann');
+  });
+
+  it('should handle fields as "null" string', () => {
+    const user: IHumanDTO = { prefix: 'null', firstName: 'null', lastName: 'null' };
+    expect(pipe.transform(user)).toBe('');
+  });
+
+  it('should return empty string for undefined', () => {
+    expect(pipe.transform(undefined)).toBe('');
   });
 });

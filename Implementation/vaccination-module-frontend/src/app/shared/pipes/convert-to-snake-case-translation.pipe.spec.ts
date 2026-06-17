@@ -19,8 +19,37 @@
 import { ConvertToSnakeCaseTranslationPipe } from './convert-to-snake-case-translation.pipe';
 
 describe('ConvertToSnakeCaseTranslationPipe', () => {
-  it('create an instance', () => {
-    const pipe = new ConvertToSnakeCaseTranslationPipe();
+  let pipe: ConvertToSnakeCaseTranslationPipe;
+
+  beforeEach(() => {
+    pipe = new ConvertToSnakeCaseTranslationPipe();
+  });
+
+  it('should create an instance', () => {
     expect(pipe).toBeTruthy();
+  });
+
+  it('should convert camelCase to SNAKE_CASE with prefix', () => {
+    expect(pipe.transform('camelCaseInput', 'PREFIX_')).toBe('PREFIX_CAMEL_CASE_INPUT');
+  });
+
+  it('should handle single word input', () => {
+    expect(pipe.transform('word', 'PRE_')).toBe('PRE_WORD');
+  });
+
+  it('should handle empty string input', () => {
+    expect(pipe.transform('', 'PRE_')).toBe('PRE_');
+  });
+
+  it('should handle input with no uppercase letters', () => {
+    expect(pipe.transform('lowercase', 'PRE_')).toBe('PRE_LOWERCASE');
+  });
+
+  it('should handle input with special characters', () => {
+    expect(pipe.transform('someValue123', 'PRE_')).toBe('PRE_SOME_VALUE123');
+  });
+
+  it('should handle prefix as empty string', () => {
+    expect(pipe.transform('someValue', '')).toBe('SOME_VALUE');
   });
 });

@@ -1,21 +1,45 @@
-<mat-card *ngIf="parentForm" [formGroup]="parentForm" class="mat-elevation-z0 recorder">
+@if (parentForm) {
+<mat-card [formGroup]="parentForm" class="mat-elevation-z0 recorder">
   <mat-label id="recorder-label" vmTranslate="MEDICAL_PROBLEM.RECORDER"></mat-label>
   <div formGroupName="recorder" [ngClass]="isMobile ? 'mobile-recorder--fields' : 'recorder--fields'">
     <mat-form-field>
       <mat-label vmTranslate="USER.PREFIX"></mat-label>
-      <input matInput formControlName="prefix" [attr.aria-labelledby]="'recorder-label'" />
+      <input matInput formControlName="prefix" [attr.aria-labelledby]="'recorder-label'" (blur)="trimControl('recorder.prefix')" />
     </mat-form-field>
     <mat-form-field>
       <mat-label vmTranslate="USER.FIRSTNAME"></mat-label>
-      <input matInput formControlName="firstName" #fName [required]="!org.value || !!lName.value" [attr.aria-labelledby]="'recorder-label'" />
+      <input
+        matInput
+        formControlName="firstName"
+        #fName
+        [required]="isFirstNameRequired()"
+        [attr.aria-labelledby]="'recorder-label'"
+        (blur)="trimControl('recorder.firstName')"
+      />
     </mat-form-field>
     <mat-form-field>
       <mat-label vmTranslate="USER.LASTNAME"></mat-label>
-      <input matInput formControlName="lastName" #lName [required]="!org.value || !!fName.value" [attr.aria-labelledby]="'recorder-label'" />
+      <input
+        matInput
+        formControlName="lastName"
+        #lName
+        [required]="isLastNameRequired()"
+        [attr.aria-labelledby]="'recorder-label'"
+        (blur)="trimControl('recorder.lastName')"
+      />
     </mat-form-field>
   </div>
   <mat-form-field class="organization">
     <mat-label vmTranslate="GLOBAL.ORGANIZATION"></mat-label>
-    <input matInput type="text" formControlName="organization" #org [required]="!fName.value || !lName.value" [attr.aria-labelledby]="'recorder-label'" />
+    <input
+      matInput
+      type="text"
+      formControlName="organization"
+      #org
+      [required]="isOrganizationRequired()"
+      [attr.aria-labelledby]="'recorder-label'"
+      (blur)="trimControl('organization')"
+    />
   </mat-form-field>
 </mat-card>
+}

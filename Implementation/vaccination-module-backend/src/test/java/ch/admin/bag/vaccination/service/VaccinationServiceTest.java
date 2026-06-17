@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 
+import ch.admin.bag.vaccination.service.config.VaccinationConfig;
 import ch.admin.bag.vaccination.service.husky.HuskyAdapter;
 import ch.admin.bag.vaccination.service.husky.HuskyUtils;
 import ch.admin.bag.vaccination.service.husky.config.EPDCommunity;

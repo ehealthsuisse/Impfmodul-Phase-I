@@ -19,16 +19,19 @@
 package ch.admin.bag.vaccination.controller;
 
 import ch.admin.bag.vaccination.config.ProfileConfig;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
 import ch.admin.bag.vaccination.service.saml.SAMLService;
 import ch.admin.bag.vaccination.service.saml.SAMLServiceIfc;
 import ch.admin.bag.vaccination.service.saml.SAMLUtils;
+import ch.admin.bag.vaccination.service.saml.config.ServiceProvider;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.exception.TechnicalException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -59,17 +62,25 @@ public class SAMLController {
   public static final String SSO_ENDPOINT = "/saml/sso";
   public static final String SSO_ENDPOINT_NEW = "/saml/ssoNew";
 
-  @Value("${sp.forwardArtifactToClientUrl}")
-  private String forwardArtifactToClientUrl;
+  @Value("${sp.forwardArtifactToClientPath}")
+  private String forwardArtifactToClientPath;
 
-  @Value("${sp.otherNodeLogoutURL:#{null}}")
-  private String otherNodeLogoutURL;
+  @Value("${sp.httpsEnabled:true}")
+  private boolean httpsEnabled;
 
   @Autowired
   private SAMLServiceIfc samlService;
 
   @Autowired
   private ProfileConfig profileConfig;
+
+  @Autowired
+  private ServiceProvider serviceProvider;
+
+  @PostConstruct
+  public void init() {
+    HttpSessionUtils.setHttpsActivated(httpsEnabled);
+  }
 
   /**
    * Returns if session is authenticated
@@ -121,8 +132,7 @@ public class SAMLController {
     log.debug("Received samlLogout, to switch to TRACE log level");
     log.trace("Saml logout request: {}", xml);
     try {
-      String xmlWithoutForwardToken = xml.replace(SAMLService.FORWARD_TOKEN, "");
-      XMLObject samlObject = SAMLUtils.unmarshall(xmlWithoutForwardToken);
+      XMLObject samlObject = SAMLUtils.unmarshall(xml);
       if (samlObject == null) {
         log.warn("Received empty logout - ignoring request.");
         return new ResponseEntity<>("SamlObject was not found or could not be parsed.", HttpStatus.BAD_REQUEST);
@@ -153,10 +163,11 @@ public class SAMLController {
   @GetMapping(value = SSO_ENDPOINT)
   @Operation(description = "Pushes the SAML-Artifact to the SP")
   public void ssoArtifactRedirectGet(@RequestParam(name = "SAMLart") String samlArtifact,
-      @RequestParam(name = "RelayState") String idpIdentifier, HttpServletResponse response) throws IOException {
+      @RequestParam(name = "RelayState") String relayState, HttpServletResponse response) throws IOException {
+    String idpIdentifier = HttpSessionUtils.getIdpIdentifierFromRelayState(relayState);
     log.debug("Artifact {} received for idp {}", samlArtifact, idpIdentifier);
-
-    response.sendRedirect(forwardArtifactToClientUrl + "?SAMLart=" + samlArtifact + "&RelayState=" + idpIdentifier);
+    response.sendRedirect(HttpSessionUtils.getForwardArtifactLocationUrl(relayState, forwardArtifactToClientPath,
+        samlArtifact));
   }
 
   @PostMapping(value = SSO_ENDPOINT)
@@ -166,17 +177,18 @@ public class SAMLController {
     log.debug("Artifact request received {}", idpResponse);
     Map<String, String> params = HttpSessionUtils.getQueryParameters(idpResponse);
     String samlArtifact = params.get("samlart");
-    String idpIdentifier = params.get("relaystate");
+    String relayState = params.get("relaystate");
 
-    response.sendRedirect(forwardArtifactToClientUrl + "?SAMLart=" + samlArtifact + "&RelayState=" + idpIdentifier);
+    response.sendRedirect(HttpSessionUtils.getForwardArtifactLocationUrl(relayState, forwardArtifactToClientPath,
+        samlArtifact));
   }
 
   private String performLogout(LogoutRequest logoutRequest, String xml, HttpServletRequest request) throws MarshallingException {
     String idp = samlService.logout(logoutRequest.getNameID().getValue());
-    boolean isForwardedRequest = xml.startsWith(SAMLService.FORWARD_TOKEN);
-    if (idp == null && !isForwardedRequest) {
+    if (idp == null) {
       log.debug("Session not found for logout request with NameID: {}", logoutRequest.getNameID().getValue());
-      samlService.sendLogoutToOtherNode(otherNodeLogoutURL, xml);
+      samlService.sendLogoutToNextNode(serviceProvider.getLogoutURLs(),
+          request.getHeader(SAMLService.ATTEMPTED_LOGOUT_INDEXES_HEADER), xml);
     }
 
     LogoutResponse logoutResponse = samlService.createLogoutResponse(idp, logoutRequest, request);

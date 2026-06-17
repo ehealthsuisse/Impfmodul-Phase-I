@@ -1,0 +1,12 @@
+@use 'src/app/entities/common/styles/common.edit.component';
+
+.form-hint {
+  color: #666;
+  font-style: italic;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f5f5f5;
+  border-left: 0.25rem solid #673ab7;
+  border-radius: 0.25rem;
+}

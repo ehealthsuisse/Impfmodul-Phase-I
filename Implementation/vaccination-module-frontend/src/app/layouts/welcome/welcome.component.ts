@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { Router } from '@angular/router';
@@ -8,7 +7,7 @@ import { SpinnerService } from '../../shared/services/spinner.service';
 @Component({
   selector: 'vm-welcome',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +24,7 @@ export class WelcomeComponent {
             next: response => {
               // Manually forward in localmode (both for localhost and internal dev environments)
               if (response?.includes('localhost') || response?.includes('apps.ocp4.innershift.sodigital.io')) {
-                document.location.href = response;
+                this.redirectTo(response);
               } else {
                 this.router.navigateByUrl('/vaccination-record');
               }
@@ -43,4 +42,8 @@ export class WelcomeComponent {
     localStorage.removeItem('vaccination-portal-data');
     localStorage.removeItem('validation-status');
   };
+
+  redirectTo(url: string): void {
+    window.location.assign(url);
+  }
 }

@@ -129,7 +129,7 @@ export const parseStringToDate = (input: string | null): Date | null => {
 /**
  * Overwrites the default filterPredicate from Angular by removing the JSON field.
  * This is necessary because one json could contain multiple entries which would then be found even
- * if only one of the entries are refered to.
+ * if only one of the entries are referred to.
  */
 export const filterPredicateExcludeJSONField = (data: any, filter: string): boolean => {
   // Transform the data into a lowercase string of all property values.
@@ -177,6 +177,32 @@ export function routecall(router: Router, sessionInfoService: SessionInfoService
 export function buildComment(commentText: string, author = 'will be added by the system'): IComment | undefined {
   const trimmed = commentText?.trim();
   return trimmed ? { text: trimmed, author } : undefined;
+}
+
+export function normalizeRecorder(recorder: IHumanDTO | undefined): IHumanDTO | undefined {
+  if (!recorder) {
+    return undefined;
+  }
+
+  const firstName = recorder.firstName?.trim();
+  const lastName = recorder.lastName?.trim();
+  const prefix = recorder.prefix?.trim();
+
+  if (!firstName || !lastName) {
+    return undefined;
+  }
+
+  return {
+    ...recorder,
+    firstName: firstName ?? '',
+    lastName: lastName ?? '',
+    prefix: prefix || undefined,
+  };
+}
+
+export function normalizeOrganization(organization: string | null | undefined): string | undefined {
+  const trimmed = organization?.trim();
+  return trimmed || undefined;
 }
 
 // function used when resetting a form to provide default values

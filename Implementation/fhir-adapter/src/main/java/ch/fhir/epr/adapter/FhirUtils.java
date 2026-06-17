@@ -22,7 +22,9 @@ import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AllergyDTO;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.BaseDTO;
+import ch.fhir.epr.adapter.data.dto.BasicImmunizationDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import ch.fhir.epr.adapter.data.dto.LaboratorySerologyDTO;
 import ch.fhir.epr.adapter.data.dto.MedicalProblemDTO;
 import ch.fhir.epr.adapter.data.dto.PastIllnessDTO;
 import ch.fhir.epr.adapter.data.dto.VaccinationDTO;
@@ -60,6 +62,7 @@ import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedPerson;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.Observation;
 
 @Slf4j
 @NoArgsConstructor
@@ -68,6 +71,32 @@ public final class FhirUtils {
   public enum ReferenceType {
     PATIENT,
     PRACTITIONER_ROLE
+  }
+
+  /**
+   * Aggregates a list of exceptions into a single {@link RuntimeException} with a detailed message.
+   * <p>
+   * The returned exception's message includes the provided message and a list of all exception messages and their causes.
+   * All original exceptions are added as suppressed exceptions to the aggregated exception.
+   * It is used to ease the debugging when one or more records fail during loading or processing.
+   * </p>
+   *
+   * @param exceptions the list of exceptions to aggregate
+   * @param message the base message to include in the aggregated exception
+   * @return a {@link RuntimeException} containing all exceptions as suppressed
+   */
+  public static RuntimeException aggregateExceptions(List<? extends Throwable> exceptions, String message) {
+    StringBuilder errorMessage = new StringBuilder(message);
+    for (int i = 0; i < exceptions.size(); i++) {
+      Throwable exception = exceptions.get(i);
+      String causeMessage = exception.getCause() != null ? exception.getCause().getMessage() : "Unknown cause";
+      errorMessage.append(String.format("\n%d. %s; reason: %s", i + 1, exception.getMessage(), causeMessage));
+    }
+    RuntimeException aggregatedException = new RuntimeException(errorMessage.toString());
+    for (Throwable exception : exceptions) {
+      aggregatedException.addSuppressed(exception);
+    }
+    return aggregatedException;
   }
 
   public static SectionComponent getSectionByType(Composition composition, SectionType type) {
@@ -84,6 +113,30 @@ public final class FhirUtils {
 
   public static String getUuidFromBundle(Bundle bundle) {
     return bundle != null && bundle.getIdentifier() != null ? bundle.getIdentifier().getValue() : null;
+  }
+
+  /**
+   * Executes a record creation callback if the DTO is valid and captures any thrown exception so that
+   * callers can aggregate failures and report them together.
+   *
+   * @param dto the record DTO, skipped when {@code null} or flagged with errors
+   * @param type human-readable resource type used in the error message
+   * @param creator creation callback that adds the resource to the bundle
+   * @param collectedExceptions sink for wrapping failures so they can be aggregated later
+   * @param bundle the bundle being populated; used to enrich the error message with the bundle id
+   */
+  public static void handleRecordCreation(BaseDTO dto, String type, Runnable creator,
+      List<RuntimeException> collectedExceptions, Bundle bundle) {
+    if (dto == null || dto.isHasErrors()) {
+      return;
+    }
+    try {
+      creator.run();
+    } catch (Exception e) {
+      String name = dto.getCode() != null ? dto.getCode().getName() : "Unknown";
+      collectedExceptions.add(new RuntimeException(
+          String.format("Failed to create %s - bundle ID: %s, Name: %s", type, bundle.getId(), name), e));
+    }
   }
 
   public static CodeableConcept replaceLegacyTargetDiseaseCoding(CodeableConcept codeableConcept) {
@@ -134,6 +187,7 @@ public final class FhirUtils {
       case Immunization immunization  -> getFirstAnnotation(immunization.getNote());
       case AllergyIntolerance allergy -> getFirstAnnotation(allergy.getNote());
       case Condition condition        -> getFirstAnnotation(condition.getNote());
+      case Observation observation    -> getFirstAnnotation(observation.getNote());
       case null, default              -> null;
     };
   }
@@ -192,6 +246,7 @@ public final class FhirUtils {
       case Immunization vaccination -> vaccination.getIdentifierFirstRep().getValue();
       case Condition condition -> condition.getIdentifierFirstRep().getValue();
       case AllergyIntolerance allergy -> allergy.getIdentifierFirstRep().getValue();
+      case Observation observation -> observation.getIdentifierFirstRep().getValue();
       case Patient patient -> patient.getIdPart();
       case Practitioner practitioner -> practitioner.getIdPart();
       case Composition composition -> composition.getIdentifier().getValue();
@@ -241,7 +296,11 @@ public final class FhirUtils {
       };
       case Condition condition -> switch (type) {
         case PATIENT      -> condition.getSubject().getReference();
-        case PRACTITIONER_ROLE -> condition.getRecorder().getReference();
+        case PRACTITIONER_ROLE -> condition.hasRecorder() ? condition.getRecorder().getReference() : null;
+      };
+      case Observation observation -> switch (type) {
+        case PATIENT -> observation.getSubject().getReference();
+        case PRACTITIONER_ROLE -> observation.getPerformerFirstRep().getReference();
       };
       default -> null;
     };
@@ -326,6 +385,7 @@ public final class FhirUtils {
       case Immunization immunization  -> "Immunization";
       case Condition condition        -> "Condition";
       case AllergyIntolerance allergy -> "AllergyIntolerance";
+      case Observation observation    -> "Observation";
       case Patient patient            -> "Patient";
       case Practitioner practitioner  -> "Practitioner";
       case Composition composition    -> "Composition";
@@ -411,6 +471,8 @@ public final class FhirUtils {
       case AllergyDTO allergy -> (DomainResource) getReference(bundle, AllergyIntolerance.class);
       case PastIllnessDTO pastIllness -> (DomainResource) getReference(bundle, Condition.class);
       case MedicalProblemDTO medicalProblem -> (DomainResource) getReference(bundle, Condition.class);
+      case BasicImmunizationDTO basicImmunization -> (DomainResource) getReference(bundle, Condition.class);
+      case LaboratorySerologyDTO laboratorySerology -> (DomainResource) getReference(bundle, Observation.class);
       case null, default -> null;
     };
   }

@@ -1,0 +1,15 @@
+{
+  "BASIC_IMMUNIZATION": {
+    "TITLE": "Grundimmunisierung",
+    "EDIT_HEADER": "Grundimmunisierung bearbeiten",
+    "NEW_HEADER": "Grundimmunisierung hinzufügen",
+    "DETAILS_HEADER": "Details zur Grundimmunisierung",
+    "FILTER": "Suchen",
+    "BASIC_IMMUNIZATION_CODE": "Grundimmunisierung",
+    "ONSET_DATE": "Datum",
+    "ASSUMED_IMMUNIZATION_DATE": "Angenommener Zeitpunkt der Immunisierung",
+    "DATE_OF_DETERMINATION": "Datum der Feststellung",
+    "CONFIDENTIALITY": "Vertraulichkeit",
+    "FORM_HINT": "Bitte verwenden Sie dieses Formular nur, wenn Sie als Kind geimpft wurden, aber nicht mehr wissen, welche Impfungen durchgeführt wurden."
+  }
+}

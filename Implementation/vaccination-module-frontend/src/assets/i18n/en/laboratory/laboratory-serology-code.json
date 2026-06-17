@@ -1,0 +1,16 @@
+{
+  "LABORATORY_SEROLOGY_CODE": {
+    "22602-7": "Varicella zoster virus IgG Ab [Titer] in Serum",
+    "22502-9": "Measles virus IgG Ab [Titer] in Serum",
+    "41763-4": "Rubella virus IgG Ab [Titer] in Serum",
+    "22313-1": "Hepatitis A virus IgG Ab [Units/volume] in Serum",
+    "16935-9": "Hepatitis B virus surface Ab [Units/volume] in Serum",
+    "26061-2": "European tick borne encephalitis virus Ab [Titer] in Serum",
+    "6589-6": "Yellow fever virus Ab [Titer] in Serum by Immunofluorescence",
+    "58770-9": "Clostridium tetani toxoid IgG Ab [Units/volume] in Serum by Immunofluorescence",
+    "94505-5": "SARS-CoV-2 (COVID-19) IgG Ab [Units/volume] in Serum or Plasma by Immunoassay",
+    "14128-3": "Rabies virus Ab [Titer] in Serum",
+    "22755-3": "Haemophilus influenzae B Ab [Mass/volume] in Serum",
+    "25531-5": "Streptococcus pneumoniae Ab [Mass/volume] in Serum"
+  }
+}

@@ -1,0 +1,17 @@
+:host ::ng-deep mat-table {
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 86% !important;
+  }
+
+  &.has-expand-column {
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 10% !important;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 86% !important;
+    }
+  }
+}

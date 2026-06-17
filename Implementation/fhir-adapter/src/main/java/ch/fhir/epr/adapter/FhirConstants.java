@@ -69,6 +69,10 @@ public final class FhirConstants {
       "http://fhir.ch/ig/ch-core/StructureDefinition/ch-core-organization";
   public static final String META_VACD_MEDICAL_PROBLEMS_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-medical-problems";
+  public static final String META_VACD_BASIC_IMMUNIZATION_URL =
+      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-basic-immunization";
+  public static final String META_VACD_LABORATORY_SEROLOGY_URL =
+      "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-laboratory-serology";
   public static final String META_VACD_COMPOSITION_VAC_REC_URL =
       "http://fhir.ch/ig/ch-vacd/StructureDefinition/ch-vacd-composition-vaccination-record";
   public static final String META_VACD_COMPOSITION_IMMUN_URL =

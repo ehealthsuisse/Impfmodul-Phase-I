@@ -1,0 +1,17 @@
+{
+  "BASIC_IMMUNIZATION_CODE": {
+    "bi-dtpa": "Grundimmunisierung gegen DTPa in der Kindheit erhalten.",
+    "bi-polio": "Grundimmunisierung gegen Poliomyelitis in der Kindheit erhalten.",
+    "bi-fsme": "Grundimmunisierung gegen die Frühsommer-Meningoenzephalitis erhalten.",
+    "bi-hib": "Grundimmunisierung gegen Hämophilus influenzae Typ b erhalten.",
+    "bi-hpv": "Grundimmunisierung gegen Humanes Papillomavirus erhalten.",
+    "bi-variz": "Grundimmunisierung gegen Windpocken erhalten.",
+    "bi-mmr": "Grundimmunisierung gegen Masern, Mumps, Röteln erhalten.",
+    "bi-pneumo": "Grundimmunisierung gegen Pneumokokken-Erkrankung erhalten.",
+    "bi-hepb": "Grundimmunisierung gegen virale Hepatitis Typ B erhalten.",
+    "bi-hepa": "Grundimmunisierung gegen virale Hepatitis Typ A erhalten.",
+    "bi-herpzos": "Grundimmunisierung gegen Herpes zoster erhalten.",
+    "bi-mening": "Grundimmunisierung gegen Meningokokken-Erkrankung erhalten.",
+    "bi-rabi": "Grundimmunisierung gegen Tollwut erhalten."
+  }
+}

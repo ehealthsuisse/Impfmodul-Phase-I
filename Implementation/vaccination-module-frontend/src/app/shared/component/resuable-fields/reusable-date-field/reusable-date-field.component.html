@@ -1,4 +1,5 @@
-<mat-form-field *ngIf="isEditable" [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
+@if (isEditable) {
+<mat-form-field [ngClass]="isMobile ? 'mat-form-field__mobile' : 'mat-form-field'">
   <mat-label [attr.aria-label]="labelTranslationKey | translate">{{ labelTranslationKey | translate }}</mat-label>
   <input
     matInput
@@ -15,18 +16,23 @@
   />
   <mat-datepicker-toggle matSuffix [disableRipple]="true" [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
-  <mat-error *ngIf="visibleError === 'endDateBeforeStartDate'">
+  @if (visibleError === 'endDateBeforeStartDate') {
+  <mat-error>
     <div>{{ 'GLOBAL.END_DATE_BEFORE_START_DATE' | translate }}</div>
   </mat-error>
-  <mat-error *ngIf="visibleError === 'futureDate'">
+  } @if (visibleError === 'futureDate') {
+  <mat-error>
     <div>{{ 'GLOBAL.NOT_FUTURE_DATE' | translate }}</div>
   </mat-error>
-  <mat-error *ngIf="visibleError === 'startDateBeforeEndDate'">
+  } @if (visibleError === 'startDateBeforeEndDate') {
+  <mat-error>
     <div>{{ 'GLOBAL.START_DATE_BEFORE_END_DATE' | translate }}</div>
   </mat-error>
+  }
 </mat-form-field>
-
-<mat-form-field *ngIf="!isEditable" class="detailed-card-content__form-field">
+} @if (!isEditable) {
+<mat-form-field class="detailed-card-content__form-field">
   <mat-label [attr.aria-label]="labelTranslationKey | translate">{{ labelTranslationKey | translate }}</mat-label>
   <input matInput [attr.aria-label]="notEditableValue" value="{{ notEditableValue }}" disabled role="textbox" />
 </mat-form-field>
+}

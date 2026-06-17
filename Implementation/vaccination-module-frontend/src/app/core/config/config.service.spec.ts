@@ -52,4 +52,14 @@ describe('ConfigService', () => {
       expect(service.endpointPrefix).toEqual('prefix');
     });
   });
+
+  describe('with frontend host', () => {
+    beforeEach(() => {
+      service.frontendHost = 'frontend.example.ch';
+    });
+
+    it('should return correctly', () => {
+      expect(service.frontendHost).toEqual('frontend.example.ch');
+    });
+  });
 });

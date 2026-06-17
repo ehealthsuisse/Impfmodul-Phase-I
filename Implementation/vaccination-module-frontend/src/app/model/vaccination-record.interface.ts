@@ -18,7 +18,9 @@
  */
 import { Author, IBaseDTO, IHumanDTO, IValueDTO } from '../shared';
 import { IAdverseEvent } from './adverse-event.interface';
+import { IBasicImmunization } from './basic-immunization.interface';
 import { IInfectiousDiseases } from './infectious-diseases.interface';
+import { ILaboratorySerology } from './laboratory-serology.interface';
 import { IMedicalProblem } from './medical-problem.interface';
 import { IVaccination } from './vaccination.interface';
 
@@ -26,8 +28,10 @@ export interface IVaccinationRecord extends IBaseDTO {
   lang: string;
   allergies: IAdverseEvent[];
   pastIllnesses: IInfectiousDiseases[];
+  laboratorySerologies: ILaboratorySerology[];
   vaccinations: IVaccination[];
   medicalProblems: IMedicalProblem[];
+  basicImmunizations: IBasicImmunization[];
   i18nTargetDiseases: IValueDTO[];
   patient: IHumanDTO;
   author?: Author;

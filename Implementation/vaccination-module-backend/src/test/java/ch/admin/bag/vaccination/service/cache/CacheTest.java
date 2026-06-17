@@ -22,17 +22,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ch.admin.bag.vaccination.data.request.EPRDocument;
-import ch.admin.bag.vaccination.service.HttpSessionUtils;
+import ch.admin.bag.vaccination.utils.HttpSessionUtils;
 import ch.fhir.epr.adapter.data.PatientIdentifier;
 import ch.fhir.epr.adapter.data.dto.AuthorDTO;
 import ch.fhir.epr.adapter.data.dto.HumanNameDTO;
+import com.hazelcast.core.HazelcastInstance;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -76,6 +78,26 @@ class CacheTest {
 
     patientIdentifier = cache.getPatientIdentifier("oid", "localId");
     assertThat(patientIdentifier).isNull();
+  }
+
+  @Test
+  void init_hazelcastConfigFileIsLoaded(@TempDir Path tempDir) throws Exception {
+    Path hazelcastConfig = tempDir.resolve("hazelcast.yml");
+    Files.writeString(hazelcastConfig, """
+        hazelcast:
+          instance-name: configured-cache-instance
+        """);
+
+    System.setProperty("hazelcast.config", hazelcastConfig.toString());
+    try {
+      setEnableCacheAndReinit(false);
+
+      HazelcastInstance hazelcast = (HazelcastInstance) ReflectionTestUtils.getField(cache, "hazelcast");
+      assertThat(hazelcast).isNotNull();
+      assertThat(hazelcast.getConfig().getInstanceName()).isEqualTo("configured-cache-instance");
+    } finally {
+      System.clearProperty("hazelcast.config");
+    }
   }
 
   @BeforeEach
